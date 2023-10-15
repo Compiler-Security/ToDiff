@@ -99,7 +99,7 @@ USER frr:frr
 #download mininet, build and install mininet
 RUN cd && pwd && ls -al && git clone https://github.com/mininet/mininet && \
     cd /home/frr/mininet && \
-    sudo util/install.sh -nfv
+    sudo PYTHON=python3 util/install.sh -nfv
 
 # build and install libyang2
 RUN cd && pwd && ls -al && \
@@ -190,12 +190,24 @@ fi
 
 
 
-#start ssh
+#for dev, start ssh
 RUN sudo apt-get install ssh
 COPY docker/sshd_config /etc/ssh/sshd_config
 
+
+#for use, copy topo-fuzz to docker
+#COPY . /home/frr/topo-fuzz/
 
 #copy docker-start
 COPY docker/docker-start /usr/sbin/docker-start
 
 CMD ["/usr/sbin/docker-start"]
+
+#for dev
+USER root
+
+RUN echo 'root:frr' | chpasswd
+
+
+
+

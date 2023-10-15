@@ -20,6 +20,8 @@ services:
     - type: bind
       source: /lib/modules
       target: /lib/modules
+
+    ##for dev
     - topo-fuzz-data:/home/frr
     #- type: bind
       #source: /home/shuibing/topo-fuzz
