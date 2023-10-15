@@ -1,0 +1,1 @@
+docker build -t topo-fuzz:latest -f Dockerfile --no-cache --build-arg nproc=16 . 2>&1 | tee build_log.txt

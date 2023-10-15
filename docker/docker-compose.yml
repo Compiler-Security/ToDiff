@@ -1,0 +1,19 @@
+version: '3'
+services:
+  topo-fuzz:  # Web应用程序服务
+    platform: linux/amd64
+    build:
+      context: .
+      args:
+      - build_mode=interested
+      - frr_check=false
+      - nproc=16
+      - proxy=114.212.85.76:9981
+    init: true
+    privileged: true
+    user: frr
+    working_dir: /home/frr
+    volumes: 
+    - type: bind
+      source: /lib/modules
+      target: /lib/modules
