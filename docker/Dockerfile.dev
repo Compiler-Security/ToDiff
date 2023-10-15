@@ -189,10 +189,25 @@ else \
 fi 
 
 
+
+#for dev, start ssh
+RUN sudo apt-get install ssh
+COPY docker/dev/sshd_config /etc/ssh/sshd_config
+
+
+#for use, copy topo-fuzz to docker
+#COPY . /home/frr/topo-fuzz/
+
 #copy docker-start
 COPY docker/docker-start /usr/sbin/docker-start
 
 CMD ["/usr/sbin/docker-start"]
+
+#for dev
+USER root
+
+RUN echo 'root:frr' | chpasswd
+
 
 
 

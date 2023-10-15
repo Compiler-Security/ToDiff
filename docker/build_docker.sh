@@ -1,1 +1,0 @@
-docker build -t topo-fuzz:latest -f Dockerfile --build-arg nproc=16 --build-arg proxy=114.212.85.76:9981 . 2>&1 | tee build_log.txt
