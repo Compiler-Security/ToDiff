@@ -1,0 +1,1 @@
+BIN_DIR="/usr/lib/frr"
