@@ -1,3 +1,0 @@
-import mininet
-
-assert(False)
