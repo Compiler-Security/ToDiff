@@ -3,7 +3,8 @@ services:
   topo-fuzz:  # Web应用程序服务
     platform: linux/amd64
     build:
-      context: .
+      context: ../
+      dockerfile: ./docker/Dockerfile
       args:
       - build_mode=interested
       - frr_check=false
@@ -12,7 +13,7 @@ services:
     init: true
     privileged: true
     user: frr
-    working_dir: /home/frr
+    working_dir: /home/frr/topo-fuzz
     volumes: 
     - type: bind
       source: /lib/modules

@@ -4,15 +4,14 @@ FROM ubuntu:$UBUNTU_VERSION
 ARG DEBIAN_FRONTEND=noninteractive
 ENV APT_KEY_DONT_WARN_ON_DANGEROUS_USAGE=DontWarn
 ARG proxy
-ENV https_proxy "${proxy}"
+ENV https_proxy $proxy
 
-RUN apt update && apt upgrade -y && \
-    apt-get install -y curl
-
+RUN echo $https_proxy
 # Update and install build requirements.
 RUN apt update && apt upgrade -y && \
     # Basic build requirements from documentation
     apt-get install -y \
+            curl \
             autoconf \
             automake \
             bison \
@@ -83,6 +82,7 @@ RUN apt update && apt upgrade -y && \
     python3 -m pip install grpcio grpcio-tools && \
     python2 -m pip install 'exabgp<4.0.0'
 
+
 RUN groupadd -r -g 92 frr && \
       groupadd -r -g 85 frrvty && \
       adduser --system --ingroup frr --home /home/frr \
@@ -93,6 +93,11 @@ RUN groupadd -r -g 92 frr && \
       mkdir -p /home/frr && chown frr.frr /home/frr
 
 USER frr:frr
+
+#download mininet, build and install mininet
+RUN cd && pwd && ls -al && git clone https://github.com/mininet/mininet && \
+    cd /home/frr/mininet && \
+    sudo util/install.sh -nfv
 
 # build and install libyang2
 RUN cd && pwd && ls -al && \
@@ -107,11 +112,15 @@ RUN cd && pwd && ls -al && \
 
 ARG commit
 ARG build_mode="interested"
+
+#download frr source code
 RUN cd && pwd && ls -al && git clone https://github.com/FRRouting/frr.git
 
+#checkout frr to interested commit
 RUN cd /home/frr/frr && \
     git checkout -f ${commit}
 
+#build and install frr to /usr/lib/frr
 RUN if [ "$build_mode" = "full" ]; then \
     echo "Building full project..." && \
     cd /home/frr/frr && \
@@ -151,21 +160,20 @@ RUN if [ "$build_mode" = "full" ]; then \
        --enable-snmp=agentx \
        --enable-scripting \
        --enable-address-sanitizer \
---disable-doc \
---disable-ripd \
---disable-ripngd \
---disable-ldpd \
---disable-nhrpd \
---disable-eigrpd \
---disable-babeld \
---disable-pimd \
---disable-pim6d \
---disable-pbrd \
---enable-sharpd \
---disable-staticd \
---disable-fabricd \
---disable-vrrpd \
---disable-pathd \
+       --disable-doc \
+       --disable-ripd \
+       --disable-ripngd \
+       --disable-ldpd \
+       --disable-nhrpd \
+       --disable-eigrpd \
+       --disable-babeld \
+       --disable-pimd \
+       --disable-pim6d \
+       --disable-pbrd \
+       --disable-staticd \
+        --disable-fabricd \
+        --disable-vrrpd \
+        --disable-pathd \
        --with-pkg-extra-version=-my-manual-build && \
     make -j $(nproc) && \
     sudo make install ; \
@@ -179,6 +187,11 @@ else \
 fi 
 
 
-COPY docker-start /usr/sbin/docker-start
+
+#copy topo-fuzz to /home/frr/topo-fuzz
+COPY . /home/frr/topo-fuzz/
+
+#copy docker-start
+COPY docker/docker-start /usr/sbin/docker-start
 
 CMD ["/usr/sbin/docker-start"]
