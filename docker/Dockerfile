@@ -188,11 +188,11 @@ else \
     cd /home/frr/frr && make clean;\
 fi 
 
-
 #copy docker-start
 COPY docker/docker-start /usr/sbin/docker-start
 
 CMD ["/usr/sbin/docker-start"]
 
-
+COPY docker/requirements.txt /home/frr/py/requirements.txt
+RUN pip3 install -r /home/frr/py/requirements.txt
 
