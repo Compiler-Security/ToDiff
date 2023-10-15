@@ -13,8 +13,16 @@ services:
     init: true
     privileged: true
     user: frr
-    working_dir: /home/frr/topo-fuzz
+    working_dir: /home/frr/
+    ports:
+      - "7100:33"
     volumes: 
     - type: bind
       source: /lib/modules
       target: /lib/modules
+    - topo-fuzz-data:/home/frr
+    #- type: bind
+      #source: /home/shuibing/topo-fuzz
+      #target: /home/frr/topo-fuzz
+volumes:
+  topo-fuzz-data:

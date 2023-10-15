@@ -92,6 +92,8 @@ RUN groupadd -r -g 92 frr && \
       echo 'frr ALL = NOPASSWD: ALL' | tee /etc/sudoers.d/frr && \
       mkdir -p /home/frr && chown frr.frr /home/frr
 
+RUN echo 'frr:frr' | chpasswd
+
 USER frr:frr
 
 #download mininet, build and install mininet
@@ -188,8 +190,10 @@ fi
 
 
 
-#copy topo-fuzz to /home/frr/topo-fuzz
-COPY . /home/frr/topo-fuzz/
+#start ssh
+RUN sudo apt-get install ssh
+COPY docker/sshd_config /etc/ssh/sshd_config
+
 
 #copy docker-start
 COPY docker/docker-start /usr/sbin/docker-start
