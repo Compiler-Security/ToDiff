@@ -93,10 +93,14 @@ def simpleTest():
     net.nameToNode["r3"].load_frr(daemons=["zebra", "ospfd"], conf_dir=WORK_DIR)
     try:
         net.start()
-        sleep(30)
+        sleep(20)
         net.nameToNode["r1"].daemon_multicmd(["show ip ospf route"])
-        while(1):
-            pass
+        net.delLinkBetween(net.nameToNode["r1"],  net.nameToNode["r2"])
+        sleep(15)
+        net.nameToNode["r1"].daemon_multicmd(["show ip ospf route"])
+        net.stop()
+        # while(1):
+        #     pass
     except BaseException as e:
         log.error(f"{e}\n")
         net.stop()
