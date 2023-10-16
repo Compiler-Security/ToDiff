@@ -70,21 +70,6 @@ class FrrNode(Node):
         res = self.pexec(["vtysh", "-d", daemon_name])
         _ = res
 
-
-
-class FrrTopo(Topo):
-    def build(self, n=2):
-        switch = self.addSwitch('s1')
-        for h in range(n):
-            r_name = f"r{h + 1}"
-            host = self.addHost(r_name, cls=FrrNode, daemons=["zebra", "ospfd"], work_dir=WORK_DIR)
-            self.addLink(host, switch)
-
-
-
-
-
-
 def simpleTest():
     topo = Topo()
     r1 = topo.addHost("r1", cls=FrrNode)
