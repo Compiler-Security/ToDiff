@@ -1,6 +1,6 @@
 version: '3'
 services:
-  topo-fuzz:  # Web应用程序服务
+  topo-fuzz: 
     platform: linux/amd64
     build:
       context: ../
@@ -18,3 +18,56 @@ services:
     - type: bind
       source: /lib/modules
       target: /lib/modules
+
+    - type: bind
+      source: ../
+      target: /home/frr/topo-fuzz
+
+  topo-fuzz-dev:
+      platform: linux/amd64
+      build:
+        context: ../
+        dockerfile: ./docker/Dockerfile.dev
+        args:
+        - build_mode=interested
+        - frr_check=false
+        - nproc=16
+        - proxy=114.212.85.76:9981
+      init: true
+      privileged: true
+      user: root
+      working_dir: /home/frr/
+      ports:
+        - "7100:33"
+      volumes: 
+        - type: bind
+          source: /lib/modules
+          target: /lib/modules
+        - topo-fuzz-data:/home/frr
+
+
+#  topo-fuzz-dev-root:
+#      platform: linux/amd64
+#      build:
+#        context: ../
+#        dockerfile: ./docker/Dockerfile.root.dev
+#        args:
+#        - build_mode=interested
+#        - frr_check=false
+#        - nproc=16
+#        - proxy=114.212.85.76:9981
+#      init: true
+#      privileged: true
+#      user: root
+#      working_dir: /home/frr/
+#      ports:
+#        - "7100:33"
+#      volumes:
+#        - type: bind
+#          source: /lib/modules
+#          target: /lib/modules
+#        - topo-fuzz-data-root:/home/frr
+
+volumes:
+  topo-fuzz-data:
+  topo-fuzz-data-root:
