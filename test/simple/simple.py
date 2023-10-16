@@ -26,10 +26,6 @@ def kill_pid(pid:int):
 
 class FrrNode(Node):
     def load_frr(self, daemons, work_dir):
-        #set corret interface ip from
-        # for intf_name, ip in intfs.items():
-        #     self.intf(intf_name).setIP(ip)
-
         self.daemon_dict = {}
         for daemon in daemons:
             self._load_daemon(daemon, work_dir)
@@ -98,10 +94,9 @@ def simpleTest():
     topo.addLink(r2, r3)
     #build network
     net = Mininet(topo)
-
-    net.nameToNode["r1"].load_frr(daemons=["zebra", "ospfd"], work_dir=WORK_DIR, intfs = {"r1-eth0":"10.0.0.1/24"})
-    net.nameToNode["r2"].load_frr(daemons=["zebra", "ospfd"], work_dir=WORK_DIR, intfs = {"r2-eth0":"10.0.0.2/24", "r2-eth1":"10.0.1.1/24"})
-    net.nameToNode["r3"].load_frr(daemons=["zebra", "ospfd"], work_dir=WORK_DIR, intfs = {"r3-eth0":"10.0.1.2/24"})
+    net.nameToNode["r1"].load_frr(daemons=["zebra", "ospfd"], work_dir=WORK_DIR)
+    net.nameToNode["r2"].load_frr(daemons=["zebra", "ospfd"], work_dir=WORK_DIR)
+    net.nameToNode["r3"].load_frr(daemons=["zebra", "ospfd"], work_dir=WORK_DIR)
     try:
         net.start()
         CLI(net)
