@@ -7,6 +7,7 @@ import os
 from mininet import log
 from os import path
 import signal
+from mininet.cli import CLI
 
 BIN_DIR="/usr/lib/frr"
 WORK_DIR = path.join(path.dirname(path.abspath(__file__)), "frr_conf")
@@ -24,27 +25,21 @@ def kill_pid(pid:int):
 
 
 class FrrNode(Node):
-    def __init__(self, name, **params):
-        #daemons:list, work_dir: str
-        super().__init__(name, **params)
-        self.daemon_dict = {}
-        if "daemons" not in params or "work_dir" not in params:
-            exit()
-        for daemon in params["daemons"]:
-            self.load_daemon(daemon, params["work_dir"])
+    def load_frr(self, daemons, work_dir):
+        #set corret interface ip from
+        # for intf_name, ip in intfs.items():
+        #     self.intf(intf_name).setIP(ip)
 
-    def load_daemon(self, daemon_name, work_dir: str):
+        self.daemon_dict = {}
+        for daemon in daemons:
+            self._load_daemon(daemon, work_dir)
+
+    def _load_daemon(self, daemon_name, work_dir: str):
         pid_path = path.join("/tmp", f"{self.name}-{daemon_name}.pid")
         log_path = path.join("/tmp", f"{self.name}-{daemon_name}.log")
         conf_path = path.join(work_dir, f"{self.name}.conf")
         self.daemon_dict[daemon_name] = {"pid_path":pid_path, "log_path":log_path, "conf_path":conf_path}
-        cmd_str = f"{BIN_DIR}/{daemon_name}" \
-        f" -f {conf_path}" \
-        " -d" \
-        f" -i {pid_path}" \
-        f" > {log_path} 2>&1"
-        #log.info(f"load daemon command {cmd_str}\n")
-        self.cmd_error(cmd_str)
+        self.cmd_error([f"{BIN_DIR}/{daemon_name}", "-f", conf_path, "-d", "-i", pid_path, ">", log_path, "2>&1"])
         with open(pid_path, "r") as file:
             daemon_pid = int(file.read())
             self.daemon_dict[daemon_name]["daemon_pid"] = daemon_pid
@@ -55,11 +50,17 @@ class FrrNode(Node):
             os.remove(v["pid_path"])
         super().terminate()
 
-    def cmd_error(self, cmd_str, *args, **kwargs):
+    def cmd_frr_error(self, cmds):
+        cmds = ["sudo", "-u", "frr"] + cmds
+        self.cmd_error(cmds)
+
+    def cmd_frr_frrvty_error(self, cmds):
+        cmds = ["sudo", "-u", "frr", "-g", "frr"] + cmds
+        self.cmd_error(cmds)
+    def cmd_error(self, cmds):
         try:
-            #log.info(f"cmd: {cmd_str}\n")
+            cmd_str = " ".join(cmds)
             res = self.cmd(cmd_str, verbose=True, printPid=True)
-            #log.warn(f"cmd res: {res}\n")
         except Exception as e:
             log.error(f"error: {e}")
             exit()
@@ -89,14 +90,21 @@ class FrrTopo(Topo):
 
 
 def simpleTest():
-    topo = FrrTopo(n=2)
+    topo = Topo()
+    r1 = topo.addHost("r1", cls=FrrNode)
+    r2 = topo.addHost("r2", cls=FrrNode)
+    r3 = topo.addHost("r3", cls=FrrNode)
+    topo.addLink(r1, r2)
+    topo.addLink(r2, r3)
+    #build network
     net = Mininet(topo)
+
+    net.nameToNode["r1"].load_frr(daemons=["zebra", "ospfd"], work_dir=WORK_DIR, intfs = {"r1-eth0":"10.0.0.1/24"})
+    net.nameToNode["r2"].load_frr(daemons=["zebra", "ospfd"], work_dir=WORK_DIR, intfs = {"r2-eth0":"10.0.0.2/24", "r2-eth1":"10.0.1.1/24"})
+    net.nameToNode["r3"].load_frr(daemons=["zebra", "ospfd"], work_dir=WORK_DIR, intfs = {"r3-eth0":"10.0.1.2/24"})
     try:
         net.start()
-        r1, r2 = net.hosts[0], net.hosts[1]
-        r1.daemon_multicmd("ospfd", ["show ip ospf"])
-        while(1):
-            pass
+        CLI(net)
     except:
         net.stop()
 
@@ -104,12 +112,3 @@ def simpleTest():
 if __name__ == "__main__":
     setLogLevel('info')
     simpleTest()
-
-# from mininet.topolib import LinearTopo
-# tree4 = TreeTopo(depth=2,fanout=2)
-# net = Mininet(topo=tree4)
-# net.start()
-# h1, h4  = net.hosts[0], net.hosts[3]
-# h1.cmd('sudo /home/frr/frr/ospfd/ospfd -f /home/mininet/frr.conf -i /tmp/frr_h1.pid > /tmp/h1.out 2>&1')
-# h4.cmd('sudo /home/frr/frr/ospfd/ospfd -f /home/mininet/frr.conf -i /tmp/frr_h2.pid > /tmp/h2.out 2>&1')
-# net.stop()
