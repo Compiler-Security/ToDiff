@@ -210,7 +210,8 @@ RUN pip3 install -r /home/frr/py/requirements.txt
 USER root
 
 RUN echo 'root:frr' | chpasswd
-
+RUN usermod -a -G frrvty root
+RUN usermod -a -G frr root && chown :frr /home/frr
 
 
 
