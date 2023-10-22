@@ -98,11 +98,11 @@ def simpleTest():
         sleep(1)
         print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         sleep(20)
-        net.nameToNode["r1"].daemon_multicmd(["show ip ospf route"])
+        net.nameToNode["r1"].daemon_cmds(["show ip ospf route"])
         print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         net.delLinkBetween(net.nameToNode["r1"],  net.nameToNode["r2"])
         sleep(15)
-        net.nameToNode["r1"].daemon_multicmd(["show ip ospf route"])
+        net.nameToNode["r1"].daemon_cmds(["show ip ospf route"])
         net.stop()
         # while(1):
         #     pass

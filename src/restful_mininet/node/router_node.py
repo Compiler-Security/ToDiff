@@ -32,7 +32,7 @@ def kill_pid(pid: int):
 
 class FrrNode(Node):
     def __init__(self, name, inNamespace=True, **params):
-        super().__init__(name, **params)
+        super().__init__(name, privateDirs=["/var/run/frr"], **params)
         self.daemon_dict = {}
         self.log_path = None
 
@@ -88,7 +88,13 @@ class FrrNode(Node):
             raise Exception((cmds, e))
         return res
 
-    def daemon_multicmd(self, cmds, daemon_name=None):
+    def daemon_cmd(self, cmd:str, daemon_name=None):
+        cmds_list = ["vtysh"]
+        if daemon_name is not None:
+            cmds_list = cmds_list + ["-d", daemon_name]
+        cmds_list = cmds_list + [f'-c "{cmd}"']
+        return self.cmds(cmds_list)
+    def daemon_cmds(self, cmds:list, daemon_name=None):
         cmds_list = ["vtysh"]
         if daemon_name is not None:
             cmds_list = cmds_list + ["-d", daemon_name]
@@ -102,10 +108,10 @@ if __name__ == "__main__":
                          "simple", "frr_conf")
     assert (WORK_DIR == "/home/frr/topo-fuzz/test/simple/frr_conf"), WORK_DIR
     topo = Topo()
-    frr = functools.partial(FrrNode, privateDirs=["/var/run/frr"])
-    r1 = topo.addHost("r1", cls=frr)
-    r2 = topo.addHost("r2", cls=frr)
-    r3 = topo.addHost("r3", cls=frr)
+    #frr = functools.partial(FrrNode, privateDirs=["/var/run/frr"])
+    r1 = topo.addHost("r1", cls=FrrNode)
+    r2 = topo.addHost("r2", cls=FrrNode)
+    r3 = topo.addHost("r3", cls=FrrNode)
     topo.addLink(r1, r2)
     topo.addLink(r2, r3)
     # build network
@@ -118,7 +124,7 @@ if __name__ == "__main__":
         sleep(1)
         # print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         # sleep(20)
-        infoaln("r1 ospf route", net.nameToNode["r1"].daemon_multicmd(["show ip ospf route"]))
+        infoaln("r1 ospf route", net.nameToNode["r1"].daemon_cmd("show ip ospf route"))
         # print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         # net.delLinkBetween(net.nameToNode["r1"],  net.nameToNode["r2"])
         # sleep(15)
