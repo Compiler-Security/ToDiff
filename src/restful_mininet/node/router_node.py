@@ -37,6 +37,7 @@ class FrrNode(Node):
         self.log_path = None
 
     def load_frr(self, daemons, conf_dir):
+        self.log_path = path.join("/home/frr/log", self.name)
         for daemon in daemons:
             self._load_daemon(daemon, conf_dir)
 
@@ -45,12 +46,12 @@ class FrrNode(Node):
 
     def log_load_frr(self):
         infoaln("daemon_dict", self.daemon_dict)
-        infoaln("zebra_log", self.cmd_error(["cat", self.daemon_dict["zebra"]["log_path"]]))
-        infoaln("ospf_log", self.cmd_error(["cat", self.daemon_dict["ospfd"]["log_path"]]))
-        infoaln("ls log/route", self.cmd_error(["ls", self.log_path]))
+        infoaln("zebra_log", self.cmds(["cat", self.daemon_dict["zebra"]["log_path"]]))
+        infoaln("ospf_log", self.cmds(["cat", self.daemon_dict["ospfd"]["log_path"]]))
+        infoaln("ls log/route", self.cmds(["ls", self.log_path]))
+        infoaln("ls run", self.cmds(["ls", "/run/frr"]))
 
     def _load_daemon(self, daemon_name, work_dir: str):
-        self.log_path = path.join("/home/frr/log", self.name)
         if path.exists(self.log_path):
             shutil.rmtree(self.log_path)
         assert (not path.exists(self.log_path))
@@ -62,7 +63,7 @@ class FrrNode(Node):
         log_path = path.join(self.log_path, f"{self.name}.log")
         conf_path = path.join(work_dir, f"{self.name}_{daemon_name}.conf")
         self.daemon_dict[daemon_name] = {"pid_path": pid_path, "log_path": log_path, "conf_path": conf_path}
-        self.cmd_error(
+        self.cmds(
             [f"{BIN_DIR}/{daemon_name}", "-u", "root", "-f", conf_path, "-d", "-i", pid_path, "--log-level", "debug",
              "--log", f"file:{log_path}"])
         with open(pid_path, "r") as file:
@@ -72,32 +73,27 @@ class FrrNode(Node):
     def terminate(self):
         for v in self.daemon_dict.values():
             kill_pid(v["daemon_pid"])
+        self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
         log.info("cleaned\n")
         super().terminate()
 
-    def cmd_frr_error(self, cmds):
-        cmds = ["sudo", "-u", "frr"] + cmds
-        self.cmd_error(cmds)
+    def cmds(self, cmds, verbose=False):
+        cmd_str = " ".join(cmds)
+        res = self.cmd(cmd_str, verbose=verbose, printPid=True)
+        return res
 
-    def cmd_frr_frrvty_error(self, cmds):
-        cmds = ["sudo", "-u", "frr", "-g", "frr"] + cmds
-        self.cmd_error(cmds)
-
-    def cmd_error(self, cmds, verbose=False):
-        try:
-            cmd_str = " ".join(cmds)
-            res = self.cmd(cmd_str, verbose=verbose, printPid=True)
-            return res
-        except Exception as e:
-            error(f"error: {e}")
-            halt()
+    def cmds_error(self, cmds, verbose=False):
+        res, e, c = self.pexec(cmds)
+        if c != 0:
+            raise Exception((cmds, e))
+        return res
 
     def daemon_multicmd(self, cmds, daemon_name=None):
         cmds_list = ["vtysh"]
         if daemon_name is not None:
             cmds_list = cmds_list + ["-d", daemon_name]
         cmds_list = cmds_list + [f'-c "{cmd}"' for cmd in cmds]
-        return self.cmd_error(cmds_list)
+        return self.cmds(cmds_list)
 
 
 if __name__ == "__main__":
@@ -131,5 +127,5 @@ if __name__ == "__main__":
         # while(1):
         #     pass
     except BaseException as e:
-        log.error(f"{e}\n")
+        error(f"\033[31merror\033[0m [{e}]\n")
         net.stop()
