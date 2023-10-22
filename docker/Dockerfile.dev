@@ -204,11 +204,12 @@ COPY docker/docker-start /usr/sbin/docker-start
 CMD ["/usr/sbin/docker-start"]
 
 COPY docker/requirements.txt /home/frr/py/requirements.txt
-RUN pip3 install -r /home/frr/py/requirements.txt
+
 
 #for dev
 USER root
 
+RUN pip3 install -r /home/frr/py/requirements.txt
 RUN echo 'root:frr' | chpasswd
 RUN usermod -a -G frrvty root
 RUN usermod -a -G frr root && chown :frr /home/frr
