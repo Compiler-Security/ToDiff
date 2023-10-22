@@ -83,7 +83,7 @@ RUN apt update && apt upgrade -y && \
     python2 -m pip install 'exabgp<4.0.0'
 
 
-RUN groupadd -r -g 92 frr && \
+RUN   groupadd -r -g 92 frr && \
       groupadd -r -g 85 frrvty && \
       adduser --system --ingroup frr --home /home/frr \
               --gecos "FRR suite" --shell /bin/bash frr && \

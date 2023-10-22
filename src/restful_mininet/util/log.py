@@ -1,0 +1,13 @@
+from mininet.log import  setLogLevel, info, debug, warn, error
+
+def infoln(msg, *args, **kwargs):
+    info(msg, *args, **kwargs)
+    info("\n")
+
+def infoaln(attri, msg, *args, **kwargs):
+    infoln("*** \033[1;34m" + attri + "\033[0m")
+    infoln(msg)
+
+def debugln(msg, *args, **kwargs):
+    debug(msg + "\n", *args, **kwargs)
+
