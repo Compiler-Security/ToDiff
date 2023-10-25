@@ -70,11 +70,14 @@ class FrrNode(Node):
             daemon_pid = int(file.read())
             self.daemon_dict[daemon_name]["daemon_pid"] = daemon_pid
 
-    def terminate(self):
+    def stop_frr(self):
         for v in self.daemon_dict.values():
             kill_pid(v["daemon_pid"])
         self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
         log.info("cleaned\n")
+
+    def terminate(self):
+        self.stop_frr()
         super().terminate()
 
     def cmds(self, cmds, verbose=False):

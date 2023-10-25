@@ -8,7 +8,7 @@ from os import path
 import os
 class TestNet:
     def __init__(self):
-        self.net = None
+        self.net = Mininet(Topo())
         self.router_nodes = []
         self.host_nodes = []
         self.switch_nodes = []
