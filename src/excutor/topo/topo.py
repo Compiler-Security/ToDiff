@@ -252,7 +252,7 @@ class TopoGen:
     def restart_ospf(self, rname):
         assert(rname in self.routers)
 
-    def start_
+#    def start_
 
     
 
