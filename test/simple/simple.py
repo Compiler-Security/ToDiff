@@ -29,11 +29,11 @@ class FrrNode(Node):
     def load_frr(self, daemons, conf_dir):
         mkdir_cmds = ["mkdir", "-p", f"/home/frr/vtysh"]
         self.cmd_frr_error(mkdir_cmds)
-        self.vtysh_dir = f"/home/frr/vtysh/{self.name}/"
-        mkdir_cmds = ["mkdir", "-p", self.vtysh_dir]
+        self.vtysh_dir = f"/home/frr/vtysh/{self.name}"
+        #mkdir_cmds = ["mkdir", "-p", self.vtysh_dir]
         #FIXME: ospf.db zebra.db zserv.api is not handle correctly
 
-        self.cmd_frr_error(mkdir_cmds)
+        #self.cmd(mkdir_cmds)
         self.daemon_dict = {}
         for daemon in daemons:
             self._load_daemon(daemon, conf_dir)
@@ -43,7 +43,7 @@ class FrrNode(Node):
         log_path = path.join("/tmp", f"{self.name}-{daemon_name}.log")
         conf_path = path.join(work_dir, f"{self.name}.conf")
         self.daemon_dict[daemon_name] = {"pid_path":pid_path, "log_path":log_path, "conf_path":conf_path}
-        self.cmd_error([f"{BIN_DIR}/{daemon_name}", "-f", conf_path, "-d", "-i", pid_path, "--vty_socket", self.vtysh_dir, ">", log_path, "2>&1"])
+        self.cmd_error([f"{BIN_DIR}/{daemon_name}", "-u", "root", "-f", conf_path, "-d", "-i", pid_path, "--log-level", "debug", "--log", f"file:{log_path}"])
         with open(pid_path, "r") as file:
             daemon_pid = int(file.read())
             self.daemon_dict[daemon_name]["daemon_pid"] = daemon_pid
@@ -73,17 +73,19 @@ class FrrNode(Node):
             exit()
 
     def daemon_multicmd(self,  cmds, daemon_name = None):
-        cmds_list = ["vtysh", "--vty_socket", self.vtysh_dir]
+        cmds_list = ["vtysh"]
         if daemon_name is not None:
             cmds_list = cmds_list + ["-d", daemon_name]
         cmds_list = cmds_list + [f'-c "{cmd}"' for cmd in cmds]
         return self.cmd_error(cmds_list)
 
+import functools
 def simpleTest():
     topo = Topo()
-    r1 = topo.addHost("r1", cls=FrrNode)
-    r2 = topo.addHost("r2", cls=FrrNode)
-    r3 = topo.addHost("r3", cls=FrrNode)
+    frr = functools.partial(FrrNode, privateDirs = ["/var/run/frr"])
+    r1 = topo.addHost("r1", cls=frr)
+    r2 = topo.addHost("r2", cls=frr)
+    r3 = topo.addHost("r3", cls=frr)
     topo.addLink(r1, r2)
     topo.addLink(r2, r3)
     #build network
@@ -93,11 +95,14 @@ def simpleTest():
     net.nameToNode["r3"].load_frr(daemons=["zebra", "ospfd"], conf_dir=WORK_DIR)
     try:
         net.start()
+        sleep(1)
+        print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         sleep(20)
-        net.nameToNode["r1"].daemon_multicmd(["show ip ospf route"])
+        net.nameToNode["r1"].daemon_cmds(["show ip ospf route"])
+        print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         net.delLinkBetween(net.nameToNode["r1"],  net.nameToNode["r2"])
         sleep(15)
-        net.nameToNode["r1"].daemon_multicmd(["show ip ospf route"])
+        net.nameToNode["r1"].daemon_cmds(["show ip ospf route"])
         net.stop()
         # while(1):
         #     pass
