@@ -50,6 +50,8 @@
 //        }
 //    }
 //};
+
+//FIXME 我们可以将对象之间的关系单独拆成一张图进行处理，而不必要通过数据结构的嵌套实现
 class PhyEncoder{
 public:
     unordered_map<Target*, OpertaionGroup> opgs;
