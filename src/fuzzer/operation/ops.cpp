@@ -3,61 +3,26 @@
 //
 
 #include "ops.h"
-enum OpTarget{
-    physic,
-    ospf
-};
 
-enum PHYOp{
 
-};
 
-enum OSPFOp{
+int BaseOperation::id_count = 0;
 
-};
-
-class BaseOperation{
-
-};
-
-class PHYOperation:BaseOperation{
-
-};
-
-class PNodeAdd:PHYOperation{
-
-};
-
-class PNodeDel:PHYOperation{
-
-};
-
-class PNodeSet:PHYOperation{
-
-};
-
-class PIntfUp:PHYOperation{
-
-};
-
-class PIntfDown:PHYOperation{
-
-};
-
-class PIntfSet:PHYOperation{
-
-};
-
-class PLinkUp:PHYOperation{
-
-};
-
-class PLinkDown:PHYOperation{
-
-};
-
-class PLinkRemove:PHYOperation{
-    
-};
-
+//class POp:public BaseOperation{};
+//
+//class PNodeOp:public POp{
+//
+//protected:
+//    Node* target;
+//};
+//class PIntfOp:public POp{
+//
+//protected:
+//    Intf* target;
+//};
+//class PLinkOp:public POp{
+//
+//protected:
+//    Link* link;
+//};
 

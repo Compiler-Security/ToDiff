@@ -9,7 +9,9 @@
 #include<memory>
 #include <utility>
 #include<fmt/format.h>
+#include"util.h"
 using namespace std;
+
 
 
 
@@ -22,27 +24,39 @@ enum NodeType{
     Switch
 };
 
-class Name{
+class NameObj{
 public:
-    virtual string getName() const = 0;
+    virtual string getName() const{
+        return name;
+    }
+
+    bool is_exist(){
+        return exist;
+    }
+
+    void add(){
+        exist = true;
+    }
+
+    void del(){
+        exist = false;
+    }
+
+protected:
+    bool exist;
+    int id;
+    string name;
 };
 
 
 class Intf;
-class Node: public Name{
+class Node: public NameObj{
 public:
-    string name;
-    unordered_map<string, unique_ptr<Intf>> intfs;
-
-    
+    NumSet<Intf> intfs;
     NodeType getType(){
         return typ;
     }
-
-    string getName() const override{
-        return name;
-    }
-
+    Node(){}
     Node(int _id, NodeType _typ){
         id = _id;
         typ = _typ;
@@ -57,9 +71,14 @@ public:
             default:
                 assert(false && "name type error");
         }
+        add();
     }
+
+    int getId(){
+        return id;
+    }
+
 private:
-    int id;
     NodeType typ;
 };
 
@@ -82,45 +101,60 @@ public:
 class OSPFIntf;
 class Link;
 
-class Intf:public Name{
+class Intf:public NameObj{
 public:
     bool up;
     OSPFIntf* ospf_intf;
 
-    string getName() const override{
-        return name;
-    }
-
     Node* getNode(){
         return node;
     }
-
+    Intf(){}
     Intf(Node* _node, int _id){
         node = _node;
         id = _id;
         name = fmt::format("{}-eth{}", node->getName(), id);
+        add();
         up = true;
         ospf_intf = nullptr;
-        link = nullptr;
+        pair_intf = nullptr;
     }
 
-    void setLink(Link* _link){
-        link = _link;
+    void reset(){
+        up = false;
+        ospf_intf = nullptr;
+        pair_intf = nullptr;
     }
 
-    void unsetLink(){
-        link == nullptr;
+    bool has_pair(){
+        return pair_intf != nullptr;
     }
 
+    Intf* pair(){
+        return pair_intf;
+    }
+
+    int getId(){
+        return id;
+    }
+
+//    void setLink(shared_ptr<Link> _link){
+//        unsetLink();
+//        link = std::move(_link);
+//    }
+//
+//    void unsetLink(){
+//        link.reset();
+//    }
+    Intf* pair_intf;
 private:
     Node* node;
-    int id;
-    string name;
-    Link* link;
+
+//    shared_ptr<Link> link;
 };
 
 
-class Link:public Name{
+class Link{
 public:
     static string get_link_name(Intf* intf1, Intf* intf2){
         if (intf1->getNode()->getType() > intf2->getNode()->getType()) swap(intf1, intf2);
@@ -131,10 +165,10 @@ public:
         if (intf1->getNode()->getType() > intf2->getNode()->getType()) swap(intf1, intf2);
         intfl = intf1;
         intfr = intf2;
-        name = get_link_name(intf1, intf2);
+        name = get_link_name(intfl, intfr);
     }
 
-    string getName() const override{
+    string getName() const{
         return name;
     }
 
@@ -144,11 +178,6 @@ public:
 
     Intf* getRIntf(){
         return intfr;
-    }
-
-    void del_link(){
-        intfl->unsetLink();
-        intfr->unsetLink();
     }
 
 private:
@@ -171,7 +200,7 @@ class Area{
     AType typ;
 };
 
-class OSPFIntf:public Name{
+class OSPFIntf:public NameObj{
 public:
     Intf* intf;
 
@@ -188,13 +217,6 @@ public:
         cost = 0;
     }
 
-    string getName() const override{
-        return name;
-    }
-
-private:
-    int id;
-    string name;
 };
 
 enum OSPF_Status{
@@ -203,29 +225,31 @@ enum OSPF_Status{
     Restart,
 };
 
-class OSPF:public Name{
+class OSPF:public NameObj{
 public:
-    IP id;
+    IP ospf_id;
     OSPF_Status status;
     unordered_map<string, unique_ptr<OSPFIntf>> ospf_intfs;
-    unordered_map<string, Area*> ospf_areas;
+    unordered_map<string, shared_ptr<Area>> ospf_areas;
 
     OSPF(RNode* rnode, IP _id){
         router = rnode;
         name = rnode->getName();
-        id = _id;
+        ospf_id = _id;
         status = OSPF_Status::Up;
         ospf_intfs.clear();
         ospf_areas.clear();
     }
 
-    string getName() const override{
-        return name;
-    }
-
 private:
-    string name;
     RNode* router;
 };
+
+//===========Graph===========
+class Topo{
+public:
+    NumSet<Node> nodes;
+};
+
 
 #endif //FUZZER_TOPO_H
