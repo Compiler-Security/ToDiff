@@ -6,9 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhyNode extends TopoNode {
-    public PhyNode() {
-        this.intfs = new ArrayList<>();
-    }
 
     public enum NodeType{
         Router,
@@ -27,14 +24,4 @@ public class PhyNode extends TopoNode {
 
     private NodeType nodeType;
 
-
-    public List<Intf> getIntfs() {
-        return intfs;
-    }
-
-    public void addIntf(Intf intf) {
-        this.intfs.add(intf);
-    }
-
-    List<Intf> intfs;
 }

@@ -10,28 +10,12 @@ public class OSPFIntf extends TopoNode {
         setId(id);
     }
 
-    public Intf getIntf() {
-        return intf;
-    }
-
-    public void setIntf(Intf intf) {
-        this.intf = intf;
-    }
-
     public int getVrf() {
         return vrf;
     }
 
     public void setVrf(int vrf) {
         this.vrf = vrf;
-    }
-
-    public OSPFArea getArea() {
-        return area;
-    }
-
-    public void setArea(OSPFArea area) {
-        this.area = area;
     }
 
     public long getCost() {
@@ -42,8 +26,6 @@ public class OSPFIntf extends TopoNode {
         this.cost = cost;
     }
 
-    Intf intf;
     int vrf;
-    OSPFArea area;
     long cost;
 }
