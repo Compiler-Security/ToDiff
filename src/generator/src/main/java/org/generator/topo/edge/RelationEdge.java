@@ -10,7 +10,7 @@ import org.generator.topo.node.phy.PhyNode;
 import org.generator.util.graph.AbstractEdge;
 
 public class RelationEdge extends AbstractEdge<TopoNode> {
-    protected RelationEdge(TopoNode src, TopoNode dst) {
+    public RelationEdge(TopoNode src, TopoNode dst) {
         super(src, dst);
         generateType();
     }
