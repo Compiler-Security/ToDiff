@@ -1,4 +1,5 @@
 package org.generator.topo;
 
-public class Topo {
+public interface Topo {
+
 }
