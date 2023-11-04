@@ -5,11 +5,19 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This is the simple implementation for operation.
+ * The operation format is like area {AREA} range {RANGE}.
+ * The operation support [], however, we should not use it.
+ */
 public class DynamicOp implements operation{
-    public  OpType type;
-    public  String template;
-    public  String re;
 
+    public DynamicOp(String template, OpType type){
+        this.template = template;
+        this.fields = new HashMap<>();
+        this.type = type;
+        init();
+    }
     private  void init(){
         String st = template;
         re = template;
@@ -20,13 +28,6 @@ public class DynamicOp implements operation{
         } while (!st.equals(re));
         re = re.replaceAll("\s+", "\\\\s+");
     }
-    public DynamicOp(String template, OpType type){
-        this.template = template;
-        this.fields = new HashMap<>();
-        this.type = type;
-        init();
-    }
-
     @Override
     public boolean decode(String st) {
         Pattern pattern = Pattern.compile(re);
@@ -41,6 +42,7 @@ public class DynamicOp implements operation{
 
     @Override
     public void encode(StringBuilder buf) {
+        //{}
         Pattern pattern = Pattern.compile("\\{([^{}]+)\\}");
         Matcher matcher = pattern.matcher(template);
         while(matcher.find()){
@@ -68,38 +70,8 @@ public class DynamicOp implements operation{
         return fields;
     }
 
-
+    public  OpType type;
+    public  String template;
+    public  String re;
     public Map<String, String> fields;
-
-//    private void init1(){
-//        Pattern pattern = Pattern.compile("\\{([^{}]+)\\}");
-//        Matcher matcher = pattern.matcher(template);
-//        StringBuilder result = new StringBuilder();
-//        while (matcher.find()){
-//            String matchedText = matcher.group(1);
-//            String newText = String.format("(?<%s>.*?)", matchedText);
-//            matcher.appendReplacement(result, newText);
-//        }
-//        matcher.appendTail(result);
-//
-//        pattern = Pattern.compile("(\\[.*\\])");
-//        re = result.toString();
-//        while (true) {
-//            matcher = pattern.matcher(re);
-//            result.setLength(0);
-//            while (matcher.find()) {
-//                String matchedText = matcher.group(1);
-//                matchedText = matchedText.substring(1, matchedText.length() - 1);
-//                String newText = String.format("(?:%s)?", matchedText);
-//                matcher.appendReplacement(result, newText);
-//            }
-//            matcher.appendTail(result);
-//            if (re.equals(result.toString())){
-//                break;
-//            }else{
-//                re = result.toString();
-//            }
-//        }
-//        re = re.replaceAll("\s+", "\\\\s+");
-//    }
 }
