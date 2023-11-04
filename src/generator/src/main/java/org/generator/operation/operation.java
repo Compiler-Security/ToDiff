@@ -1,5 +1,7 @@
 package org.generator.operation;
 
+import org.generator.util.net.IPV4;
+
 import java.util.Map;
 
 public interface operation {
@@ -19,15 +21,23 @@ public interface operation {
         setArg(field_name, String.valueOf(val));
     }
 
-    default String getArgs(String field_name){
+    default void setIpArg(String field_name, IPV4 ip){
+        setArg(field_name, ip.toString());
+    }
+
+    default String getArg(String field_name){
         return getArgs().get(field_name);
     }
 
     default int getIntArg(String field_name){
-        return Integer.parseInt(getArgs(field_name));
+        return Integer.parseInt(getArg(field_name));
     }
 
     default double getDoubleArg(String field_name){
         return Double.parseDouble(field_name);
+    }
+
+    default IPV4 getIPArg(String field_name){
+        return new IPV4(field_name);
     }
 }

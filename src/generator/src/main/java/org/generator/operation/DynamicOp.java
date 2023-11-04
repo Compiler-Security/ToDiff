@@ -80,8 +80,8 @@ public class DynamicOp implements operation{
         args.put(field_name, val);
     }
 
-    public  OpType type;
-    public  String template;
-    public  String re;
-    public Map<String, String> args;
+    protected   OpType type;
+    protected   String template;
+    protected   String re;
+    protected Map<String, String> args;
 }
