@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
  * The operation format is like area {AREA} range {RANGE}.
  * The operation support [], however, we should not use it.
  */
-public class DynamicOp implements operation{
+public abstract class AbstractOperation implements op {
 
-    public DynamicOp(String template, OpType type){
+    public AbstractOperation(String template, OpType type){
         this.template = template;
         this.args = new HashMap<>();
         this.type = type;
@@ -61,22 +61,23 @@ public class DynamicOp implements operation{
     }
 
     @Override
-    public OpType getType() {
+    public OpType Type() {
         return type;
     }
 
     @Override
-    public Map<String, String> getArgs() {
+    public Map<String, String> Args() {
         return args;
     }
 
     @Override
-    public void setArgs(Map<String, String> args) {
+    public void putArgs(Map<String, String> args) {
         this.args = args;
     }
 
     @Override
-    public void setArg(String field_name, String val) {
+    public void putArg(String field_name, String val) {
+        assert val != null;
         args.put(field_name, val);
     }
 
@@ -84,4 +85,12 @@ public class DynamicOp implements operation{
     protected   String template;
     protected   String re;
     protected Map<String, String> args;
+
+    @Override
+    public String toString() {
+        if (Type() == OpType.INVALID){
+            return "INVALID";
+        }
+        return encode_to_str();
+    }
 }

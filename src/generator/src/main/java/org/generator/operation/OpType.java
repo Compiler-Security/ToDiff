@@ -1,7 +1,6 @@
 package org.generator.operation;
 
 public enum OpType {
-    EMPTY(0, ""),
     NODEADD(1, "node {NAME} add"),
     NODEDEL(2, "node {NAME} del"),
     NODESETOSPF(3, "node {NAME} set OSPF {DETAIL}"),
@@ -9,8 +8,8 @@ public enum OpType {
     INTFDOWN(5, "intf {NAME} down"),
     LINKUP(6, "link {NAME} {NAME2} up"),
     LINKDOWN(7, "link {NAME} {NAME2} down"),
-    LINKREMOVE(8, "link {NAME} {NAME2} remove");
-
+    LINKREMOVE(8, "link {NAME} {NAME2} remove"),
+    INVALID(0, ".*");
     private final int num;
 
     public String template() {

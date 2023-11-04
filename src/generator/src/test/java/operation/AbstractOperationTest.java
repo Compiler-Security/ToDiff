@@ -1,14 +1,14 @@
 package operation;
 
 import org.generator.operation.OpType;
+import org.generator.operation.Operation;
 import org.junit.Test;
-import org.generator.operation.DynamicOp;
 
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class DynamicOpTest {
+public class AbstractOperationTest {
     @Test
     public void replaceAllTest(){
         String st = "area {AREA} range {RANGE} [advertise [cost {COST}]]";
@@ -17,9 +17,9 @@ public class DynamicOpTest {
     }
     @Test
     public void regTest(){
-        var d = new DynamicOp("area {AREA} range {RANGE} advertise cost {COST}", OpType.EMPTY);
+        var d = new Operation("area {AREA} range {RANGE} advertise cost {COST}", OpType.INVALID);
         System.out.println(d.decode("area 10 range 10.0.0.0/32 advertise cost 100"));
-        System.out.println(d.getIntArg("AREA"));
+        System.out.println(d.IntArg("AREA"));
         System.out.println(d.encode_to_str());
     }
 
