@@ -70,6 +70,11 @@ public class DynamicOp implements operation{
         return fields;
     }
 
+    @Override
+    public void setField(String field_name, String val) {
+        fields.put(field_name, val);
+    }
+
     public  OpType type;
     public  String template;
     public  String re;
