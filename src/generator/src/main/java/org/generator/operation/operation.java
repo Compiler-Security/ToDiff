@@ -7,27 +7,27 @@ public interface operation {
     void encode(StringBuilder buf);
     String encode_to_str();
     OpType getType();
-    Map<String, String> getFields();
+    Map<String, String> getArgs();
+    void setArgs(Map<String, String> args);
+    void setArg(String field_name, String val);
 
-    void setField(String field_name, String val);
-
-    default void setIntField(String field_name, int val){
-        setField(field_name, String.valueOf(val));
+    default void setIntArg(String field_name, int val){
+        setArg(field_name, String.valueOf(val));
     }
 
-    default void setDoubleField(String field_name, double val){
-        setField(field_name, String.valueOf(val));
+    default void setDoubleArg(String field_name, double val){
+        setArg(field_name, String.valueOf(val));
     }
 
-    default String getField(String field_name){
-        return getFields().get(field_name);
+    default String getArgs(String field_name){
+        return getArgs().get(field_name);
     }
 
-    default int getIntField(String field_name){
-        return Integer.parseInt(getField(field_name));
+    default int getIntArg(String field_name){
+        return Integer.parseInt(getArgs(field_name));
     }
 
-    default double getDoubleField(String field_name){
+    default double getDoubleArg(String field_name){
         return Double.parseDouble(field_name);
     }
 }

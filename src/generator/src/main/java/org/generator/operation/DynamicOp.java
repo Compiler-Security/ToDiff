@@ -14,7 +14,7 @@ public class DynamicOp implements operation{
 
     public DynamicOp(String template, OpType type){
         this.template = template;
-        this.fields = new HashMap<>();
+        this.args = new HashMap<>();
         this.type = type;
         init();
     }
@@ -34,7 +34,7 @@ public class DynamicOp implements operation{
         Matcher matcher = pattern.matcher(st);
         if (matcher.matches()){
             for(String groupName: pattern.namedGroups().keySet()){
-                fields.put(groupName, matcher.group(groupName));
+                args.put(groupName, matcher.group(groupName));
             }
             return true;
         }else return false;
@@ -46,7 +46,7 @@ public class DynamicOp implements operation{
         Pattern pattern = Pattern.compile("\\{([^{}]+)\\}");
         Matcher matcher = pattern.matcher(template);
         while(matcher.find()){
-            String rep = fields.get(matcher.group(1));
+            String rep = args.get(matcher.group(1));
             assert  rep != null;
             matcher.appendReplacement(buf, rep);
         }
@@ -66,17 +66,22 @@ public class DynamicOp implements operation{
     }
 
     @Override
-    public Map<String, String> getFields() {
-        return fields;
+    public Map<String, String> getArgs() {
+        return args;
     }
 
     @Override
-    public void setField(String field_name, String val) {
-        fields.put(field_name, val);
+    public void setArgs(Map<String, String> args) {
+        this.args = args;
+    }
+
+    @Override
+    public void setArg(String field_name, String val) {
+        args.put(field_name, val);
     }
 
     public  OpType type;
     public  String template;
     public  String re;
-    public Map<String, String> fields;
+    public Map<String, String> args;
 }

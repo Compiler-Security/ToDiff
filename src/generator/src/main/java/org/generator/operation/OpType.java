@@ -1,5 +1,7 @@
 package org.generator.operation;
 
 public enum OpType {
-    AREA
+    EMPTY,
+    NODEADD,
+    NODEDEL,
 }
