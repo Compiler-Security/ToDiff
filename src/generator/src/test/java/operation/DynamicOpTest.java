@@ -17,7 +17,7 @@ public class DynamicOpTest {
     }
     @Test
     public void regTest(){
-        var d = new DynamicOp("area {AREA} range {RANGE} advertise cost {COST}", OpType.AREA);
+        var d = new DynamicOp("area {AREA} range {RANGE} advertise cost {COST}", OpType.EMPTY);
         System.out.println(d.decode("area 10 range 10.0.0.0/32 advertise cost 100"));
         System.out.println(d.getIntArg("AREA"));
         System.out.println(d.encode_to_str());
