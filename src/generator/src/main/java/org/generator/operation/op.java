@@ -1,0 +1,50 @@
+package org.generator.operation;
+
+import org.generator.util.net.IPV4;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Map;
+
+public interface op {
+    boolean decode(String st);
+    void encode(StringBuilder buf);
+    String encode_to_str();
+    OpType Type();
+    Map<String, String> Args();
+    void putArgs(Map<String, String> args);
+    void putArg(String field_name, String val);
+
+    default void putIntArg(String field_name, Integer val){
+        assert (val != null);
+        putArg(field_name, String.valueOf(val));
+    }
+
+    default void putDoubleArg(String field_name, Double val){
+        assert val != null;
+        putArg(field_name, String.valueOf(val));
+    }
+
+    default void putIpArg(String field_name, IPV4 ip){
+        assert ip != null;
+        putArg(field_name, ip.toString());
+    }
+
+    default String Arg(String field_name){
+        assert Args().get(field_name) != null;
+        return Args().get(field_name);
+    }
+
+    default int IntArg(String field_name){
+        return Integer.parseInt(Arg(field_name));
+    }
+
+    default double DoubleArg(String field_name){
+        return Double.parseDouble(field_name);
+    }
+
+    default IPV4 IPArg(String field_name){
+        return new IPV4(field_name);
+    }
+    @Override
+    String toString();
+}
