@@ -1,13 +1,10 @@
 package org.generator.topo.node.ospf;
 
-import org.generator.topo.node.ospf.OSPF;
-import org.generator.topo.node.ospf.OSPFArea;
-import org.generator.topo.node.phy.Intf;
 import org.generator.topo.node.TopoNode;
 
 public class OSPFIntf extends TopoNode {
-    public OSPFIntf(int id, OSPF ospf){
-        setId(id);
+    public OSPFIntf(String name){
+        setName(name);
     }
 
     public int getVrf() {

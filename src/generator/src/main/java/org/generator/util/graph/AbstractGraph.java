@@ -6,6 +6,11 @@ public class AbstractGraph<N, E extends Edge<N>> implements Graph<N, E>{
     Map<N, Map<N, E>> preds;
     Map<N, Map<N, E>> nexts;
 
+    public AbstractGraph(){
+        preds = new HashMap<>();
+        nexts = new HashMap<>();
+    }
+
     @Override
     public boolean hasNode(N node) {
         return preds.containsKey(node);
@@ -49,10 +54,10 @@ public class AbstractGraph<N, E extends Edge<N>> implements Graph<N, E>{
     }
 
     @Override
-    public void addNode(N node) {
+    public void addnode(N node) {
         assert !hasNode(node);
-        preds.put(node, null);
-        nexts.put(node, null);
+        preds.put(node, new HashMap<>());
+        nexts.put(node, new HashMap<>());
     }
 
     @Override
@@ -63,7 +68,7 @@ public class AbstractGraph<N, E extends Edge<N>> implements Graph<N, E>{
     }
 
     @Override
-    public void delNode(N node) {
+    public void delnode(N node) {
         for (var nex: getSuccsOf(node)){
             delEdge(node, nex);
         }

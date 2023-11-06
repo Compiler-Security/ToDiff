@@ -1,7 +1,7 @@
 package operation;
 
-import org.generator.operation.OpType;
-import org.generator.operation.Operation;
+import org.generator.operation.op.OpType;
+import org.generator.operation.op.Operation;
 import org.junit.Test;
 
 import java.util.HashMap;

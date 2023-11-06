@@ -4,19 +4,13 @@ import org.generator.topo.edge.RelationEdge;
 import org.generator.topo.node.TopoNode;
 import org.generator.topo.node.phy.Intf;
 import org.generator.topo.node.phy.PhyNode;
-import org.generator.topo.node.phy.Router;
-import org.generator.topo.node.phy.Switch;
 import org.generator.util.graph.AbstractGraph;
-import org.generator.util.graph.Edge;
-
-import java.util.Collection;
-import java.util.Set;
 
 public class RelationGraph{
     AbstractGraph<TopoNode, RelationEdge>rlg;
     public void addPhyNode(PhyNode node){
         assert !rlg.hasNode(node);
-        rlg.addNode(node);
+        rlg.addnode(node);
     }
 
     public boolean hasPhyNode(PhyNode node){

@@ -100,11 +100,11 @@ public interface Graph<N, E extends Edge<N>> extends Iterable<N> {
         return getNodes().iterator();
     }
 
-    void addNode(N node);
+    void addnode(N node);
 
     void addEdge(E edge);
 
-    void delNode(N node);
+    void delnode(N node);
 
     void delEdge(N srcNode, N dstNode);
 }

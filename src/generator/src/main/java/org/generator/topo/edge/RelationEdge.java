@@ -8,11 +8,17 @@ import org.generator.topo.node.ospf.OSPFNetwork;
 import org.generator.topo.node.phy.Intf;
 import org.generator.topo.node.phy.PhyNode;
 import org.generator.util.graph.AbstractEdge;
+import org.generator.util.graph.Edge;
 
 public class RelationEdge extends AbstractEdge<TopoNode> {
     public RelationEdge(TopoNode src, TopoNode dst) {
         super(src, dst);
         generateType();
+    }
+
+    public RelationEdge(TopoNode src, TopoNode dst, EdgeType type){
+        super(src, dst);
+        this.type = type;
     }
 
     public enum EdgeType {
@@ -46,6 +52,11 @@ public class RelationEdge extends AbstractEdge<TopoNode> {
 
     public void setType(EdgeType type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%s has %s %s", src.toString(), getType().toString(), dst.toString());
     }
 
     EdgeType type;

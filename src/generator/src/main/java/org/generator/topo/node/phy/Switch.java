@@ -1,12 +1,10 @@
 package org.generator.topo.node.phy;
 
-import org.generator.topo.node.TopoNode;
-
 public class Switch extends PhyNode {
 
-    public Switch(int id) {
+    public Switch(String name) {
         super();
-        setId(id);
+        setName(name);
         setNodeType(NodeType.Switch);
     }
 }
