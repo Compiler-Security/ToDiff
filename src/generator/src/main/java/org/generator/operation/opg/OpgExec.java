@@ -5,6 +5,7 @@ import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
 import org.generator.topo.Topo;
 import org.generator.topo.edge.RelationEdge;
+import org.generator.topo.node.TopoNode;
 import org.generator.topo.node.TopoNodeGen;
 import org.generator.topo.node.ospf.OSPF;
 import org.generator.topo.node.phy.Intf;
@@ -90,12 +91,21 @@ public class OpgExec {
                 var intf2_name = op.getNAME2();
 
                 //link one end should always be a switch
+                var node1_name = TopoNodeGen.getPhyNodeNameFromIntfName(intf1_name);
                 var node2_name = TopoNodeGen.getPhyNodeNameFromIntfName(intf2_name);
                 assert TopoNodeGen.getPhyNodeTypeByName(node2_name) == PhyNode.NodeType.Switch : String.format("link operation %s not right", op.toString());
 
                 //check condition
+                if (!topo.containsNode(node1_name) || !topo.containsNode(node2_name)) return ExecStat.MISS;
                 if (topo.containsEdge(intf1_name, intf2_name, RelationEdge.EdgeType.LINK) && topo.containsEdge(intf2_name, intf1_name, RelationEdge.EdgeType.LINK)) return ExecStat.MISS;
+                if (topo.containsNode(intf1_name) || topo.containsNode(intf2_name)) return ExecStat.MISS;
 
+                Intf intf1 = TopoNodeGen.new_Intf(intf1_name);
+                Intf intf2 = TopoNodeGen.new_Intf(intf2_name);
+                topo.addNode(intf1);
+                topo.addNode(intf2);
+                topo.addEdge(node1_name, intf1_name, RelationEdge.EdgeType.INTF);
+                topo.addEdge(intf1_name, node1_name, RelationEdge.EdgeType.PhyNODE);
 
                 //add edges in both directions
                 topo.addEdge(intf1_name, intf2_name, RelationEdge.EdgeType.LINK);
@@ -135,10 +145,10 @@ public class OpgExec {
         }
         return ExecStat.MISS;
     }
-    static void ExecOpGroup(OpGroup opg, Topo topo){
+    public static void ExecOpGroup(OpGroup opg, Topo topo){
         for (var op: opg.getOps()){
             if (OpType.inPhy(op.Type())){
-
+                execPhyOp(op, topo);
             }else{
                 new Unimplemented();
             }

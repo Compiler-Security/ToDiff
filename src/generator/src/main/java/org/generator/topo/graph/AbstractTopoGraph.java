@@ -6,11 +6,15 @@ import org.generator.topo.node.TopoNode;
 import org.generator.util.exec.ExecStat;
 import org.generator.util.graph.AbstractGraph;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 //FIXME AbstractGraph is non-multi-edge graph
 public class AbstractTopoGraph extends AbstractGraph<TopoNode, RelationEdge> implements Topo {
+    public AbstractTopoGraph(){
+        name_to_nodes = new HashMap<>();
+    }
     @Override
     public ExecStat addNode(TopoNode node) {
         if (super.hasNode(node)) return ExecStat.MISS;
@@ -61,6 +65,19 @@ public class AbstractTopoGraph extends AbstractGraph<TopoNode, RelationEdge> imp
         //FIXME API not 100% good
         super.delEdge(name_to_nodes.get(src_name), name_to_nodes.get(dst_name));
         return ExecStat.SUCC;
+    }
+
+    @Override
+    public String toString() {
+        //StringBuilder buf = new StringBuilder();
+        var nodes_str = String.format("nodes: %s", getNodes().toString());
+        StringBuilder edge_str = new StringBuilder();
+        for(var node: getNodes()){
+            for (var e: getOutEdgesOf(node)){
+                edge_str.append(String.format("%s\n", e.toString()));
+            }
+        }
+        return nodes_str + "\n" + edge_str;
     }
 
     private Map<String, TopoNode> name_to_nodes;

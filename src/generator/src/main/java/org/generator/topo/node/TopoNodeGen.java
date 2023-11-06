@@ -1,6 +1,7 @@
 package org.generator.topo.node;
 
 import org.generator.topo.node.ospf.OSPF;
+import org.generator.topo.node.phy.Intf;
 import org.generator.topo.node.phy.PhyNode;
 import org.generator.topo.node.phy.Router;
 import org.generator.topo.node.phy.Switch;
@@ -52,5 +53,7 @@ public class TopoNodeGen {
     public static OSPF new_OSPF(String name){
         return new OSPF(name);
     }
+
+    public static Intf new_Intf(String name) {return new Intf(name);}
 
 }

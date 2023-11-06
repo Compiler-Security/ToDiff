@@ -3,8 +3,8 @@ package org.generator.operation.op;
 public enum OpType {
     NODEADD( "node {NAME} add"),
     NODEDEL("node {NAME} del"),
-    NODESETOSPFUP( "node {NAME} set OSPF up"),
-    NODESETOSPFRE("node {NAME} set OSPF restart"),
+    NODESETOSPFUP( "node {NAME} set ospf up"),
+    NODESETOSPFRE("node {NAME} set ospf restart"),
     INTFUP( "intf {NAME} up"),
     INTFDOWN( "intf {NAME} down"),
     LINKUP("link {NAME} {NAME2} up"),

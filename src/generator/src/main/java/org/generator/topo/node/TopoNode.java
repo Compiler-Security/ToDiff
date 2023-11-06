@@ -11,4 +11,9 @@ public abstract class TopoNode {
     }
 
     private String name;
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

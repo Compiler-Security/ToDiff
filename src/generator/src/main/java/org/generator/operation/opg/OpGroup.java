@@ -7,4 +7,6 @@ import java.util.List;
 public interface OpGroup {
     List<Operation> getOps();
     void addOp(Operation op);
+
+    void addOps(List<Operation> ops);
 }

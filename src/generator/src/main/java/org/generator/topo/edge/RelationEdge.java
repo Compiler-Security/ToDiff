@@ -54,5 +54,10 @@ public class RelationEdge extends AbstractEdge<TopoNode> {
         this.type = type;
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s has %s %s", src.toString(), getType().toString(), dst.toString());
+    }
+
     EdgeType type;
 }
