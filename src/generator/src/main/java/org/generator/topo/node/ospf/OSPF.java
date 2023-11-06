@@ -1,12 +1,10 @@
 package org.generator.topo.node.ospf;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.generator.util.net.IPV4;
 import org.generator.topo.node.TopoNode;
 public class OSPF extends TopoNode {
-    public OSPF(int id){
-        setId(id);
+    public OSPF(String name){
+        setName(name);
     }
     public enum OSPF_STATUS{
         UP,

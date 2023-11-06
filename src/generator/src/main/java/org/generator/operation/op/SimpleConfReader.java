@@ -1,4 +1,4 @@
-package org.generator.operation;
+package org.generator.operation.op;
 
 import org.jetbrains.annotations.Nullable;
 

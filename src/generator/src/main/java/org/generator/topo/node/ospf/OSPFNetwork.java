@@ -4,8 +4,8 @@ import org.generator.topo.node.TopoNode;
 import org.generator.util.net.IPV4;
 
 public class OSPFNetwork extends TopoNode {
-    public OSPFNetwork(int id) {
-        setId(id);
+    public OSPFNetwork(String name) {
+        setName(name);
     }
 
     public IPV4 getIp() {

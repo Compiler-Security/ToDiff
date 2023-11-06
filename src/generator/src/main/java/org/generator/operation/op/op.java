@@ -1,7 +1,6 @@
-package org.generator.operation;
+package org.generator.operation.op;
 
 import org.generator.util.net.IPV4;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 

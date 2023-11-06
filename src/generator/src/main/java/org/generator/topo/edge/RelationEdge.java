@@ -8,11 +8,17 @@ import org.generator.topo.node.ospf.OSPFNetwork;
 import org.generator.topo.node.phy.Intf;
 import org.generator.topo.node.phy.PhyNode;
 import org.generator.util.graph.AbstractEdge;
+import org.generator.util.graph.Edge;
 
 public class RelationEdge extends AbstractEdge<TopoNode> {
     public RelationEdge(TopoNode src, TopoNode dst) {
         super(src, dst);
         generateType();
+    }
+
+    public RelationEdge(TopoNode src, TopoNode dst, EdgeType type){
+        super(src, dst);
+        this.type = type;
     }
 
     public enum EdgeType {

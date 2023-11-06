@@ -49,7 +49,7 @@ public class AbstractGraph<N, E extends Edge<N>> implements Graph<N, E>{
     }
 
     @Override
-    public void addNode(N node) {
+    public void addnode(N node) {
         assert !hasNode(node);
         preds.put(node, null);
         nexts.put(node, null);
@@ -63,7 +63,7 @@ public class AbstractGraph<N, E extends Edge<N>> implements Graph<N, E>{
     }
 
     @Override
-    public void delNode(N node) {
+    public void delnode(N node) {
         for (var nex: getSuccsOf(node)){
             delEdge(node, nex);
         }
