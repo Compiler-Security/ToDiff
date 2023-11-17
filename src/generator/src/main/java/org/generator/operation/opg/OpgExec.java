@@ -5,18 +5,31 @@ import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
 import org.generator.topo.Topo;
 import org.generator.topo.edge.RelationEdge;
-import org.generator.topo.node.TopoNode;
+import org.generator.topo.graph.TopoGen;
 import org.generator.topo.node.TopoNodeGen;
+import org.generator.topo.node.TopoNodeType;
 import org.generator.topo.node.ospf.OSPF;
+import org.generator.topo.node.ospf.OSPFArea;
+import org.generator.topo.node.ospf.OSPFIntf;
 import org.generator.topo.node.phy.Intf;
 import org.generator.topo.node.phy.PhyNode;
+import org.generator.topo.node.phy.Router;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.exec.ExecStat;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public class OpgExec {
 
 
-    static private ExecStat execPhyOp(Operation op, Topo topo){
+    public OpgExec(){
+        cur_intf = Optional.empty();
+        cur_ospf = Optional.empty();
+        cur_ospf_intf = Optional.empty();
+        cur_router = Optional.empty();
+    }
+    private ExecStat execPhyOp(Operation op, Topo topo){
         switch (op.Type()){
             case NODEADD -> {
                 switch (TopoNodeGen.getPhyNodeTypeByName(op.getNAME())){
@@ -145,13 +158,108 @@ public class OpgExec {
         }
         return ExecStat.MISS;
     }
-    public static void ExecOpGroup(OpGroup opg, Topo topo){
+
+    private ExecStat execOSPFRouterWithTopo(@NotNull Operation op, @NotNull  Topo topo){
+        switch (op.Type()){
+            case ROSPF -> {
+                if (cur_router.isEmpty()){
+                    return ExecStat.MISS;
+                }
+                var routerName = cur_router.get().getName();
+                var ospfNodeName = TopoNodeGen.getOSPFName(cur_router.get().getName());
+                if (topo.containsNode(ospfNodeName)){
+                    //FIXME if router ospf double, what should we do
+                    cur_ospf = Optional.of((OSPF) topo.getNode(ospfNodeName).get());
+                    return  ExecStat.MISS;
+                }
+                var OSPFNode = TopoNodeGen.new_OSPF(ospfNodeName);
+                cur_ospf = Optional.of(OSPFNode);
+                topo.addNode(OSPFNode);
+                topo.addEdge(routerName, ospfNodeName, RelationEdge.EdgeType.OSPF);
+                topo.addEdge(ospfNodeName, routerName, RelationEdge.EdgeType.PhyNODE);
+                OSPFNode.setStatus(OSPF.OSPF_STATUS.UP);
+            }
+//            case ROSPFNUM -> {}
+//            case ROSPFVRF -> {}
+            case RID -> {
+                if (cur_ospf.isEmpty()){
+                    return ExecStat.MISS;
+                }
+                cur_ospf.get().setRouterId(op.getID());
+                return ExecStat.SUCC;
+            }
+            case RABRTYPE -> {
+                if (cur_ospf.isEmpty()){
+                    return ExecStat.MISS;
+                }
+                var typ = op.getNAME();
+                for (var abr_type : OSPF.ABR_TYPE.values()){
+                    if (abr_type.match(typ)){
+                        cur_ospf.get().setAbrType(abr_type);
+                        return ExecStat.SUCC;
+                    }
+                }
+            }
+            case NETAREAID -> {
+                //FIXME we should to know how long the conf last
+                if (cur_ospf.isEmpty() || cur_router.isEmpty()){
+                    return ExecStat.MISS;
+                }
+                var router = cur_router.get();
+                var ospf = cur_ospf.get();
+                var ip = op.getIP();
+                var area = op.getID();
+                for (var e: topo.getEdgesByType(router.getName(), RelationEdge.EdgeType.INTF)){
+                    if (e.getDst() instanceof Intf intf){
+                        if (ip.hasSubNet(intf.getIp())){
+                            var ospf_intf_name = TopoNodeGen.getOSPFIntfName(intf.getName());
+                            var res = TopoGen.getOrCrateNode(ospf_intf_name, TopoNodeType.OSPFIntf, topo);
+                            OSPFIntf ospfintf = (OSPFIntf) res.first();
+                            if (!res.second()){
+                                TopoGen.addOSPFIntfRelation(ospf_intf_name, intf.getName(), ospf.getName(), topo);
+                            }
+                            //TODO
+                        }
+                    }else{
+                        assert false: "intf relation dst should be intf";
+                    }
+                }
+            }
+            case NETAREAIDNUM -> {}
+        }
+        return ExecStat.MISS;
+    }
+
+    private ExecStat execOSPFOp(@NotNull Operation op, Topo topo){
+        if (OpType.inOSPFRouterWithTopo(op.Type())){
+            return execOSPFRouterWithTopo(op, topo);
+        }
+        return ExecStat.MISS;
+    }
+
+    public void ExecOpGroup(OpGroup opg, Topo topo, Optional<PhyNode> target){
+        if (target.isPresent()){
+            if (target.get() instanceof Router r){
+                cur_router = Optional.of(r);
+            }
+        }
         for (var op: opg.getOps()){
             if (OpType.inPhy(op.Type())){
                 execPhyOp(op, topo);
+            }else if (OpType.inOSPF(op.Type())){
+                execOSPFOp(op, topo);
             }else{
                 new Unimplemented();
             }
         }
     }
+
+
+    //Context
+    Optional<OSPF> cur_ospf;
+
+    Optional<Intf> cur_intf;
+    Optional<OSPFIntf> cur_ospf_intf;
+
+    Optional<Router> cur_router;
 }

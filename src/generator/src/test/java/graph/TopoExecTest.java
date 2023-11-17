@@ -8,6 +8,8 @@ import org.generator.topo.Topo;
 import org.generator.topo.graph.AbstractTopoGraph;
 import org.junit.Test;
 
+import java.util.Optional;
+
 public class TopoExecTest {
     @Test
     public void phyExecSimpleTest(){
@@ -23,7 +25,8 @@ public class TopoExecTest {
         var opg = new SimpleOpGroup(ops);
         System.out.println(opg);
         Topo topo = new AbstractTopoGraph();
-        OpgExec.ExecOpGroup(opg, topo);
+        var opgexec = new OpgExec();
+        opgexec.ExecOpGroup(opg, topo, Optional.empty());
         System.out.println(topo);
     }
 }

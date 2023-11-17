@@ -7,5 +7,13 @@ public class OSPFArea extends TopoNode {
         setName(name);
     }
 
+    public IPV4 getArea() {
+        return area;
+    }
+
+    public void setArea(IPV4 area) {
+        this.area = area;
+    }
+
     IPV4 area;
 }

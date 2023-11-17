@@ -1,6 +1,8 @@
 package org.generator.topo.node;
 
+import org.generator.topo.Topo;
 import org.generator.topo.node.ospf.OSPF;
+import org.generator.topo.node.ospf.OSPFIntf;
 import org.generator.topo.node.phy.Intf;
 import org.generator.topo.node.phy.PhyNode;
 import org.generator.topo.node.phy.Router;
@@ -42,6 +44,10 @@ public class TopoNodeGen {
         return String.format("%s-eth%d", r_name, port);
     }
 
+    static public String getOSPFIntfName(String intf_name){
+        return String.format("%s-ospf",intf_name);
+    }
+
     public static Router new_Router(String name){
         return new Router(name);
     }
@@ -56,4 +62,5 @@ public class TopoNodeGen {
 
     public static Intf new_Intf(String name) {return new Intf(name);}
 
+    public static OSPFIntf new_OSPF_Intf(String name) {return new OSPFIntf(name);}
 }
