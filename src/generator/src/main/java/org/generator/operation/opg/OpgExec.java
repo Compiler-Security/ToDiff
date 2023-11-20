@@ -16,6 +16,7 @@ import org.generator.topo.node.phy.PhyNode;
 import org.generator.topo.node.phy.Router;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.exec.ExecStat;
+import org.generator.util.net.IPV4;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -218,6 +219,12 @@ public class OpgExec {
                             if (!res.second()){
                                 TopoGen.addOSPFIntfRelation(ospf_intf_name, intf.getName(), ospf.getName(), topo);
                             }
+
+                            var res1 = TopoGen.getOrCrateNode(TopoNodeGen.getAreaName(area), TopoNodeType.OSPFArea, topo);
+                            OSPFArea ospfarea = (OSPFArea) res.first();
+                            if (!res.second()){
+                                TopoGen.addOSPFAreaRelation(ospfarea.getName(), ospf_intf_name, topo);
+                            }
                             //TODO
                         }
                     }else{
@@ -225,7 +232,12 @@ public class OpgExec {
                     }
                 }
             }
-            case NETAREAIDNUM -> {}
+            case NETAREAIDNUM -> {
+                var num = op.getNUM();
+                var op_new = new Operation(OpType.NETAREAIDNUM.template(), OpType.NETAREAIDNUM);
+                op_new.setIP(IPV4.Of(num));
+                return execOSPFRouterWithTopo(op_new, topo);
+            }
         }
         return ExecStat.MISS;
     }

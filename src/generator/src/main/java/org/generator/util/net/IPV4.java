@@ -12,4 +12,14 @@ public class IPV4 {
         new Unimplemented();
         return false;
     }
+
+    static public IPV4 Of(int num){
+        new Unimplemented();
+        return new IPV4("");
+    }
+    @Override
+    public String toString() {
+        new Unimplemented();
+        return super.toString();
+    }
 }

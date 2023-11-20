@@ -7,6 +7,7 @@ import org.generator.topo.node.phy.Intf;
 import org.generator.topo.node.phy.PhyNode;
 import org.generator.topo.node.phy.Router;
 import org.generator.topo.node.phy.Switch;
+import org.generator.util.net.IPV4;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +45,9 @@ public class TopoNodeGen {
         return String.format("%s-eth%d", r_name, port);
     }
 
+    static public String getAreaName(IPV4 area){
+        return String.format("area-%s", area.toString());
+    }
     static public String getOSPFIntfName(String intf_name){
         return String.format("%s-ospf",intf_name);
     }

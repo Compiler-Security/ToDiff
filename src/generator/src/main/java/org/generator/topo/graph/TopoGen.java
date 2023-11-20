@@ -10,6 +10,7 @@ import org.generator.topo.node.phy.Host;
 import org.generator.util.collections.Pair;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.exec.ExecStat;
+import org.jetbrains.annotations.NotNull;
 
 public class TopoGen {
     private  static Pair<TopoNode, Boolean> addNode(TopoNode node, Topo topo){
@@ -47,5 +48,10 @@ public class TopoGen {
         topo.addEdge(intf_name, ospf_intf_name, RelationEdge.EdgeType.INTF);
         topo.addEdge(ospf_name, ospf_intf_name, RelationEdge.EdgeType.OSPFINTF);
         topo.addEdge(ospf_intf_name, ospf_name, RelationEdge.EdgeType.OSPF);
+    }
+
+    public static void addOSPFAreaRelation(String area_name, String intf_name, @NotNull Topo topo){
+        topo.addEdge(area_name, intf_name, RelationEdge.EdgeType.OSPFAREA);
+        topo.addEdge(intf_name, area_name, RelationEdge.EdgeType.OSPFINTF);
     }
 }
