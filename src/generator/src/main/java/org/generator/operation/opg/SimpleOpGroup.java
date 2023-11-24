@@ -1,16 +1,19 @@
 package org.generator.operation.opg;
 
 import org.generator.operation.op.Operation;
+import org.generator.topo.node.AbstractNode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SimpleOpGroup implements OpGroup{
     public SimpleOpGroup(){
         opgroup = new ArrayList<>();
     }
-    public SimpleOpGroup(List<Operation> ops){
+    public SimpleOpGroup(List<Operation> ops, Optional<String> target){
         opgroup = new ArrayList<>();
+        this.target = target;
         addOps(ops);
     }
     @Override
@@ -34,4 +37,14 @@ public class SimpleOpGroup implements OpGroup{
     }
 
     private List<Operation> opgroup;
+
+    public Optional<String> getTarget() {
+        return target;
+    }
+
+    public void setTarget(Optional<String> target) {
+        this.target = target;
+    }
+
+    private Optional<String> target;
 }

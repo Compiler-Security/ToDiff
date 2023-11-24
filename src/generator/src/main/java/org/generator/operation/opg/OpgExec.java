@@ -5,7 +5,6 @@ import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
 import org.generator.topo.edge.RelationEdge;
 import org.generator.topo.graph.RelationGraph;
-import org.generator.topo.node.AbstractNode;
 import org.generator.topo.node.NodeGen;
 import org.generator.topo.node.NodeType;
 import org.generator.topo.node.ospf.OSPF;
@@ -222,7 +221,7 @@ public class OpgExec {
                 var area = op.getID();
                 for (var e : topo.getEdgesByType(router.getName(), RelationEdge.EdgeType.INTF)) {
                     var intf = (Intf) e.getDst();
-                    if (ip.hasSubNet(intf.getIp())) {
+                    if (ip.contains(intf.getIp())) {
                         var ospf_intf_name = NodeGen.getOSPFIntfName(intf.getName());
                         var res = topo.getOrCrateNode(ospf_intf_name, NodeType.OSPFIntf);
                         //set OSPFIntf
@@ -258,11 +257,18 @@ public class OpgExec {
         return ExecStat.MISS;
     }
 
-    public void ExecOpGroup(OpGroup opg, RelationGraph topo, @NotNull Optional<AbstractNode> target) {
+    public void ExecOpGroup(OpGroup opg, RelationGraph topo) {
+        var target = opg.getTarget();
         if (target.isPresent()) {
-            if (target.get() instanceof Router r) {
-                cur_router = Optional.of(r);
+            String target_st = target.get();
+            if (topo.containsNode(target_st)){
+                if (topo.getNode(target_st).get() instanceof Router r) {
+                    cur_router = Optional.of(r);
+                }
+            }else{
+                assert false:String.format("target %s not exist!", target_st);
             }
+
         }
         for (var op : opg.getOps()) {
             if (OpType.inPhy(op.Type())) {

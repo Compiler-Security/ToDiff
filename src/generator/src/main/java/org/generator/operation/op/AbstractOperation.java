@@ -23,8 +23,8 @@ public abstract class AbstractOperation implements op {
         re = template;
         do {
             re = st;
-            st = st.replaceAll("\\{([^{}]+)\\}", "(?<$1>.*?)");
-            st = st.replaceAll("\\[(.*)\\]", "(?:$1)?");
+            st = st.replaceAll("\\{([^{}]+)\\}", "(?<$1>[0-9a-zA-Z.-]+)");
+            //st = st.replaceAll("\\[(.*)\\]", "(?:$1)?");
         } while (!st.equals(re));
         re = re.replaceAll("\s+", "\\\\s+");
     }

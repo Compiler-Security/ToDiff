@@ -18,8 +18,8 @@ public class Operation extends AbstractOperation {
         if (m.containsKey("NAME")) NAME = super.Arg("NAME");
         if (m.containsKey("NAME2")) NAME2 = super.Arg("NAME2");
         if (m.containsKey("DETAIL")) DETAIL = super.Arg("DETAIL");
-        if (m.containsKey("IP")) IP = super.IPArg("IP");
-        if (m.containsKey("ID")) ID = super.IPArg("ID");
+        if (m.containsKey("IP")) IP = new IPV4(super.Arg("IP"));
+        if (m.containsKey("ID")) ID = new IPV4(super.Arg("ID"));
         if (m.containsKey("IDNUM")) IDNUM = super.IntArg("IDNUM");
         if (m.containsKey("NUM")) NUM = super.IntArg("NUM");
     }

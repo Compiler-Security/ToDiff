@@ -14,10 +14,10 @@ public enum OpType {
     //FIXME current we don't support multiple instance/VRF
 //    ROSPFNUM("router ospf [NUM]"),
 //    ROSPFVRF("router ospf vrf [NAME]"),
-    RID("ospf router-id [ID]"),
-    RABRTYPE("ospf abr-type [NAME]"),
-    NETAREAID("network [IP] area [ID]"),
-    NETAREAIDNUM("network [IP] area [IDNUM]"),
+    RID("ospf router-id {ID}"),
+    RABRTYPE("ospf abr-type {NAME}"),
+    NETAREAID("network {IP} area {ID}"),
+    NETAREAIDNUM("network {IP} area {IDNUM}"),
     INVALID( ".*");
 
     public static boolean inPhy(OpType typ){
