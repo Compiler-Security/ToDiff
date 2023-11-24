@@ -1,21 +1,19 @@
 package org.generator.topo.graph;
 
-import org.generator.topo.Topo;
 import org.generator.topo.edge.RelationEdge;
-import org.generator.topo.node.TopoNode;
-import org.generator.topo.node.TopoNodeType;
+import org.generator.topo.node.AbstractNode;
 import org.generator.util.exec.ExecStat;
 import org.generator.util.graph.AbstractGraph;
 
 import java.util.*;
 
 //FIXME AbstractGraph is non-multi-edge graph
-public class AbstractTopoGraph extends AbstractGraph<TopoNode, RelationEdge> implements Topo {
-    public AbstractTopoGraph(){
+public abstract class AbstractRelationGraph extends AbstractGraph<AbstractNode, RelationEdge> implements RelationGraphIntf {
+    public AbstractRelationGraph(){
         name_to_nodes = new HashMap<>();
     }
     @Override
-    public ExecStat addNode(TopoNode node) {
+    public ExecStat addNode(AbstractNode node) {
         if(name_to_nodes.containsKey(node.getName())) return ExecStat.MISS;
         if (super.hasNode(node)) return ExecStat.MISS;
         super.addnode(node);
@@ -24,7 +22,7 @@ public class AbstractTopoGraph extends AbstractGraph<TopoNode, RelationEdge> imp
     }
 
     @Override
-    public ExecStat delNode(TopoNode node) {
+    public ExecStat delNode(AbstractNode node) {
         if (!super.hasNode(node)) return ExecStat.MISS;
         super.delnode(node);
         name_to_nodes.remove(node.getName());
@@ -32,7 +30,7 @@ public class AbstractTopoGraph extends AbstractGraph<TopoNode, RelationEdge> imp
     }
 
     @Override
-    public Optional<TopoNode> getNode(String name) {
+    public Optional<AbstractNode> getNode(String name) {
         if (!name_to_nodes.containsKey(name)){
             return Optional.empty();
         }else{
@@ -95,5 +93,5 @@ public class AbstractTopoGraph extends AbstractGraph<TopoNode, RelationEdge> imp
         return nodes_str + "\n" + edge_str;
     }
 
-    private Map<String, TopoNode> name_to_nodes;
+    private Map<String, AbstractNode> name_to_nodes;
 }

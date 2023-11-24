@@ -1,10 +1,10 @@
 package org.generator.topo.node.ospf;
 
-import org.generator.topo.node.TopoNode;
+import org.generator.topo.node.AbstractNode;
 import org.generator.util.net.IPV4;
 
-public class OSPFNetwork extends TopoNode {
-    public OSPFNetwork(String name) {
+public class OSPFNet extends AbstractNode {
+    public OSPFNet(String name) {
         setName(name);
     }
 

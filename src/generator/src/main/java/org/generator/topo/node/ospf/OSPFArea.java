@@ -1,8 +1,8 @@
 package org.generator.topo.node.ospf;
 
 import org.generator.util.net.IPV4;
-import org.generator.topo.node.TopoNode;
-public class OSPFArea extends TopoNode {
+import org.generator.topo.node.AbstractNode;
+public class OSPFArea extends AbstractNode {
     public OSPFArea(String name) {
         setName(name);
     }

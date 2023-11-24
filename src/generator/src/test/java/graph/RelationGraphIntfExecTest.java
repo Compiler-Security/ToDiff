@@ -1,16 +1,14 @@
 package graph;
 
-import org.generator.operation.op.OpType;
 import org.generator.operation.op.SimpleConfReader;
 import org.generator.operation.opg.OpgExec;
 import org.generator.operation.opg.SimpleOpGroup;
-import org.generator.topo.Topo;
-import org.generator.topo.graph.AbstractTopoGraph;
+import org.generator.topo.graph.RelationGraph;
 import org.junit.Test;
 
 import java.util.Optional;
 
-public class TopoExecTest {
+public class RelationGraphIntfExecTest {
     @Test
     public void phyExecSimpleTest(){
         var reader = new SimpleConfReader();
@@ -24,7 +22,7 @@ public class TopoExecTest {
         //ops.forEach(op -> {assert op.Type() != OpType.INVALID : String.format("stmt error %s", op.toString());});
         var opg = new SimpleOpGroup(ops);
         System.out.println(opg);
-        Topo topo = new AbstractTopoGraph();
+        RelationGraph topo = new RelationGraph();
         var opgexec = new OpgExec();
         opgexec.ExecOpGroup(opg, topo, Optional.empty());
         System.out.println(topo);

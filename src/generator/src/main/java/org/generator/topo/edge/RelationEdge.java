@@ -1,22 +1,16 @@
 package org.generator.topo.edge;
 
-import org.generator.topo.node.TopoNode;
-import org.generator.topo.node.ospf.OSPF;
-import org.generator.topo.node.ospf.OSPFArea;
-import org.generator.topo.node.ospf.OSPFIntf;
-import org.generator.topo.node.ospf.OSPFNetwork;
-import org.generator.topo.node.phy.Intf;
-import org.generator.topo.node.phy.PhyNode;
+import org.generator.topo.node.AbstractNode;
+import org.generator.topo.node.NodeType;
 import org.generator.util.graph.AbstractEdge;
-import org.generator.util.graph.Edge;
 
-public class RelationEdge extends AbstractEdge<TopoNode> {
-    public RelationEdge(TopoNode src, TopoNode dst) {
+public class RelationEdge extends AbstractEdge<AbstractNode> {
+    public RelationEdge(AbstractNode src, AbstractNode dst) {
         super(src, dst);
         generateType();
     }
 
-    public RelationEdge(TopoNode src, TopoNode dst, EdgeType type){
+    public RelationEdge(AbstractNode src, AbstractNode dst, EdgeType type){
         super(src, dst);
         this.type = type;
     }
@@ -32,17 +26,17 @@ public class RelationEdge extends AbstractEdge<TopoNode> {
     }
 
     protected void generateType(){
-        if (src instanceof Intf && dst instanceof  Intf){
+        if (src.getNodeType() == NodeType.Intf && dst.getNodeType() == NodeType.Intf){
             setType(EdgeType.LINK);
             return;
         }
-        switch (dst){
-            case Intf ignored -> setType(EdgeType.INTF);
-            case PhyNode ignored -> setType(EdgeType.PhyNODE);
-            case OSPF ignored -> setType(EdgeType.OSPF);
-            case OSPFIntf ignored -> setType(EdgeType.OSPFINTF);
-            case OSPFArea ignored -> setType(EdgeType.OSPFAREA);
-            case OSPFNetwork ignored -> setType(EdgeType.OSPFNetwork);
+        switch (dst.getNodeType()){
+            case Intf -> setType(EdgeType.INTF);
+            case Router, Host, Switch -> setType(EdgeType.PhyNODE);
+            case OSPF-> setType(EdgeType.OSPF);
+            case OSPFIntf  -> setType(EdgeType.OSPFINTF);
+            case OSPFArea -> setType(EdgeType.OSPFAREA);
+            case OSPFNet -> setType(EdgeType.OSPFNetwork);
             default -> throw new IllegalStateException("Unexpected value: " + dst);
         }
     }

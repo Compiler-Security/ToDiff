@@ -1,9 +1,8 @@
 package org.generator.topo.node.phy;
 
-import org.generator.util.exception.Unimplemented;
 import org.generator.util.net.IPV4;
-import org.generator.topo.node.TopoNode;
-public class Intf extends TopoNode {
+import org.generator.topo.node.AbstractNode;
+public class Intf extends AbstractNode {
     public Intf(String name){
         setName(name);
     }

@@ -3,8 +3,8 @@ package org.generator.topo.node.ospf;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
 import org.generator.util.net.IPV4;
-import org.generator.topo.node.TopoNode;
-public class OSPF extends TopoNode {
+import org.generator.topo.node.AbstractNode;
+public class OSPF extends AbstractNode {
     public OSPF(String name){
         setName(name);
     }

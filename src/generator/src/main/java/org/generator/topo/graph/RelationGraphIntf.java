@@ -1,16 +1,16 @@
-package org.generator.topo;
+package org.generator.topo.graph;
 
 import org.generator.topo.edge.RelationEdge;
-import org.generator.topo.node.TopoNode;
+import org.generator.topo.node.AbstractNode;
 import org.generator.util.exec.ExecStat;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface Topo {
-    ExecStat addNode(TopoNode node);
-    ExecStat delNode(TopoNode node);
-    Optional<TopoNode> getNode(String name);
+public interface RelationGraphIntf {
+    ExecStat addNode(AbstractNode node);
+    ExecStat delNode(AbstractNode node);
+    Optional<AbstractNode> getNode(String name);
 
     ExecStat addEdge(String src_name, String dst_name, RelationEdge.EdgeType etyp);
     default boolean containsNode(String name){

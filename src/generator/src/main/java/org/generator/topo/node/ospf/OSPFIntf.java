@@ -1,8 +1,8 @@
 package org.generator.topo.node.ospf;
 
-import org.generator.topo.node.TopoNode;
+import org.generator.topo.node.AbstractNode;
 
-public class OSPFIntf extends TopoNode {
+public class OSPFIntf extends AbstractNode {
     public OSPFIntf(String name){
         setName(name);
     }
