@@ -12,22 +12,23 @@ import java.util.regex.Pattern;
  */
 public abstract class AbstractOperation implements op {
 
-    public AbstractOperation(String template, OpType type){
-        this.template = template;
+    public AbstractOperation(OpType type){
+        this.template = type.template();
         this.args = new HashMap<>();
         this.type = type;
-        init();
+        this.re = type.Re();
+        //init();
     }
-    private  void init(){
-        String st = template;
-        re = template;
-        do {
-            re = st;
-            st = st.replaceAll("\\{([^{}]+)\\}", "(?<$1>[0-9a-zA-Z.-]+)");
-            //st = st.replaceAll("\\[(.*)\\]", "(?:$1)?");
-        } while (!st.equals(re));
-        re = re.replaceAll("\s+", "\\\\s+");
-    }
+//    private  void init(){
+//        String st = template;
+//        re = template;
+//        do {
+//            re = st;
+//            st = st.replaceAll("\\{([^{}]+)\\}", "(?<$1>[0-9a-zA-Z.-]+)");
+//            //st = st.replaceAll("\\[(.*)\\]", "(?:$1)?");
+//        } while (!st.equals(re));
+//        re = re.replaceAll("\s+", "\\\\s+");
+//    }
     @Override
     public boolean decode(String st) {
         Pattern pattern = Pattern.compile(re);

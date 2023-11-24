@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 
 public class Operation extends AbstractOperation {
-    public Operation(String template, OpType type) {
-        super(template, type);
+    public Operation(OpType type) {
+        super(type);
     }
 
     public AbstractOperation AbstractOp(){

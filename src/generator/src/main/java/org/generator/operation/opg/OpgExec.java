@@ -242,7 +242,7 @@ public class OpgExec {
             case NETAREAIDNUM -> {
                 //we change this to NETAREAID
                 var num = op.getNUM();
-                var op_new = new Operation(OpType.NETAREAIDNUM.template(), OpType.NETAREAIDNUM);
+                var op_new = new Operation( OpType.NETAREAIDNUM);
                 op_new.setIP(IPV4.Of(num));
                 return execOSPFRouterWithTopo(op_new, topo);
             }

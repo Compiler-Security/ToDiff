@@ -1,5 +1,8 @@
 package org.generator.operation.op;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public enum OpType {
     NODEADD( "node {NAME} add"),
     NODEDEL("node {NAME} del"),
@@ -35,8 +38,27 @@ public enum OpType {
         return template;
     }
 
+    public String Re(){
+        return reMap.get(this);
+    }
+
     private final String template;
     OpType(String template){
         this.template = template;
+    }
+
+    private static Map<OpType, String> reMap = new HashMap<>();
+    static {
+        for (OpType typ : OpType.values()){
+            String st = typ.template;
+            String re = st;
+            do {
+                re = st;
+                st = st.replaceAll("\\{([^{}]+)\\}", "(?<$1>[0-9a-zA-Z.-]+)");
+                //st = st.replaceAll("\\[(.*)\\]", "(?:$1)?");
+            } while (!st.equals(re));
+            re = re.replaceAll("\s+", "\\\\s+");
+            reMap.put(typ, re);
+        }
     }
 }
