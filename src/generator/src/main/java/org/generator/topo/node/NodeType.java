@@ -17,4 +17,5 @@ public enum NodeType {
     public boolean isOSPFNode(){
         return !isPhyNode();
     }
+
 }

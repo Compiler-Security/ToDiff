@@ -1,5 +1,6 @@
 package org.generator.util.net;
 
+
 import org.generator.util.exception.Unimplemented;
 
 public class IPV4 {
@@ -21,5 +22,10 @@ public class IPV4 {
     public String toString() {
         new Unimplemented();
         return super.toString();
+    }
+
+    public long toInt(){
+        new Unimplemented();
+        return 0;
     }
 }

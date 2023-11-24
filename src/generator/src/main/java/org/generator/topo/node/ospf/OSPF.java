@@ -1,16 +1,20 @@
 package org.generator.topo.node.ospf;
 
+import org.generator.topo.node.NodeType;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
 import org.generator.util.net.IPV4;
 import org.generator.topo.node.AbstractNode;
+
 public class OSPF extends AbstractNode {
     public OSPF(String name){
         setName(name);
+        setNodeType(NodeType.OSPF);
     }
     public enum OSPF_STATUS{
-        UP,
+        INIT,
         Restart,
+        UP,
     }
 
     public enum ABR_TYPE implements StringEnum{
@@ -57,5 +61,14 @@ public class OSPF extends AbstractNode {
     }
 
     ABR_TYPE abrType;
+
+    @Override
+    public String getNodeAtrriStr() {
+        String router_id_str = "UNK";
+        if (getRouterId() != null){
+            router_id_str = String.format("%d", getRouterId().toInt());
+        }
+        return String.format("{type:%s, router_id:%s, status:%s, abr_type:%s}", getNodeType(), router_id_str, getStatus(), getAbrType());
+    }
 
 }

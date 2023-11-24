@@ -22,6 +22,7 @@ public abstract class AbstractNode {
 
     private NodeType nodeType;
 
+    public abstract String getNodeAtrriStr();
 
     @Override
     public String toString() {

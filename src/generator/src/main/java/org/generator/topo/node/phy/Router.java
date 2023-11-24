@@ -13,4 +13,9 @@ public class Router extends AbstractNode {
     private String calcName(int id){
         return String.format("s%d", id);
     }
+
+    @Override
+    public String getNodeAtrriStr() {
+        return String.format("{type:%s}", getNodeType());
+    }
 }

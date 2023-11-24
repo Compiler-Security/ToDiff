@@ -10,4 +10,9 @@ public class Switch extends AbstractNode {
         setName(name);
         setNodeType(NodeType.Switch);
     }
+
+    @Override
+    public String getNodeAtrriStr() {
+        return String.format("{type:%s}", getNodeType());
+    }
 }

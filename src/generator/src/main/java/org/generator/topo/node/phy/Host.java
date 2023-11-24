@@ -8,4 +8,9 @@ public class Host extends AbstractNode {
         setName(name);
         setNodeType(NodeType.Host);
     }
+
+    @Override
+    public String getNodeAtrriStr() {
+        return String.format("{type:%s}", getNodeType());
+    }
 }

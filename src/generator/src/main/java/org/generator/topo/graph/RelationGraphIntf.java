@@ -21,4 +21,6 @@ public interface RelationGraphIntf {
     Optional<RelationEdge> getEdge(String src_name, String dst_name, RelationEdge.EdgeType etyp);
     ExecStat delEdge(String src_name, String dst_name, RelationEdge.EdgeType etyp);
     default boolean containsEdge(String src_name, String dst_name, RelationEdge.EdgeType etyp){ return getEdge(src_name, dst_name, etyp).isPresent();}
+
+    String toDot(boolean verbose);
 }

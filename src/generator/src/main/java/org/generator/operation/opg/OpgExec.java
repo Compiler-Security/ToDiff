@@ -65,12 +65,11 @@ public class OpgExec {
 
                 //new ospf
                 OSPF ospf = NodeGen.new_OSPF(ospf_name);
-                ospf.setStatus(OSPF.OSPF_STATUS.UP);
+                ospf.setStatus(OSPF.OSPF_STATUS.INIT);
                 topo.addNode(ospf);
 
                 // new relation edge
-                topo.addEdge(r_name, ospf_name, RelationEdge.EdgeType.OSPF);
-                return topo.addEdge(ospf_name, r_name, RelationEdge.EdgeType.PhyNODE);
+                return topo.addOSPFRelation(ospf_name, r_name);
             }
             case NODESETOSPFRE -> {
                 var r_name = op.getNAME();
@@ -127,6 +126,8 @@ public class OpgExec {
                 topo.addNode(intf2);
                 topo.addEdge(node1_name, intf1_name, RelationEdge.EdgeType.INTF);
                 topo.addEdge(intf1_name, node1_name, RelationEdge.EdgeType.PhyNODE);
+                topo.addEdge(node2_name, intf2_name, RelationEdge.EdgeType.INTF);
+                topo.addEdge(intf2_name, node2_name, RelationEdge.EdgeType.PhyNODE);
 
                 //add edges in both directions
                 topo.addEdge(intf1_name, intf2_name, RelationEdge.EdgeType.LINK);
@@ -182,11 +183,11 @@ public class OpgExec {
                 cur_ospf = Optional.of((OSPF) res.first());
                 if (res.second()) {
                     //FIXME if router ospf double, what should we do
-                    return ExecStat.MISS;
-                } else {
-                    topo.addOSPFRelation(ospfNodeName, routerName);
                     var OSPFNode = (OSPF) res.first();
                     OSPFNode.setStatus(OSPF.OSPF_STATUS.UP);
+                    return ExecStat.SUCC;
+                } else {
+                    return ExecStat.MISS;
                 }
             }
 //            case ROSPFNUM -> {}
@@ -237,6 +238,7 @@ public class OpgExec {
                         }
                     }
                 }
+                return ExecStat.SUCC;
             }
             case NETAREAIDNUM -> {
                 //we change this to NETAREAID
