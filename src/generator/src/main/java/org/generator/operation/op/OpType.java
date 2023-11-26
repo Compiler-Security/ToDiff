@@ -14,16 +14,18 @@ public enum OpType {
     LINKDOWN("link {NAME} {NAME2} down", "", ""),
     LINKREMOVE("link {NAME} {NAME2} remove", "", ""),
 
-    //===========OSPF ROUTER=============
+    //=================OSPF ROUTER==================
     ROSPF("router ospf",
 
             """
-                    SET ospf enable
+                    ADD ospf
+                    ADD ospfdaemon
                     """,
             "router ospf"),
-    //FIXME current we don't support multiple instance/VRF
-//    ROSPFNUM("router ospf [NUM]"),
-//    ROSPFVRF("router ospf vrf [NAME]"),
+
+    //TODO ROSPFNUM("router ospf [NUM]"),
+    //TODO ROSPFVRF("router ospf vrf [NAME]"),
+
     RID("ospf router-id {ID}",
             """
                     SET ospf.router-id {ID}
@@ -39,22 +41,120 @@ public enum OpType {
     //FIXME consistency?
     NETAREAID("network {IP} area {ID}",
             """
-                    FOR (ANY intf, ospfintf WHERE intf->ospfintf && intf.ip in {IP})
-                        IF ospfintf.enable == true
-                            SET ospfintf.area {ID}
-                        ELSE
-                            SET ospfintf.enable true
-                            SET ospfintf.area {ID}
+                    FOR (ANY intf WHERE intf.ip in {IP})
+                        IF !(HAS ospfintf WHERE intf->ospfintf)
+                            ADD ospfintf
+                        SET ospfintf.area {ID}
                     """,
             "network A.B.C.D/M area A.B.C.D"),
     NETAREAIDNUM("network {IP} area {IDNUM}",
             """
+                    LET {ID} = IPV4({IDNUM})
                     SAME AS ABOVE
                     """,
             "network A.B.C.D/M area (0-4294967295)"),
 
+    //FIXME consistency?
+    PASSIVEINTFDEFUALT("passive-interface default",
+            """
+                        FOR (ANY ospfintf)
+                            SET ospfintf.passive true
+                    """,
+            "passive-interface default"
+            ),
+
+    TIMERSTHROTTLESPF("timers throttle spf {NUM} {NUM1} {NUM2}",
+            """
+                        MEET 0<=NUM<=600000, 0<=NUM1<=600000, 0<=NUM2<=600000
+                        SET ospf.initdelay NUM
+                        SET ospf.initholdtime NUM1
+                        SET ospf.maxholdtime NUM2
+                    """,
+            "timers throttle spf (0-600000) (0-600000) (0-600000)"),
+    //TODO max-metric...
+    //TODO auto-cost it's hard to eqaul
+
+    //=============OSPFDAEMON===================
+    //TODO proactive-arp
 
 
+    //FIXME this instruction is not full
+    CLEARIPOSPFPROCESS("clear ip ospf process", "EMPTY", "clear ip ospf process"),
+    CLEARIPOSPFNEIGHBOR("clear ip ospf neighbor", "EMPTY", "clear ip ospf neighbor"),
+
+    MAXIMUMPATHS("maximum-paths {NUM}", """
+                MEET 1<=NUM<=64
+                SET ospfdaemon.maxpaths {NUM}
+            """,
+            "maximum-paths (1-64)"),
+    WRITEMULTIPLIER("write-multiplier {NUM}", """
+                MEET 1<=NUM<=100
+                SET ospfdaemon.writemulti {NUM}
+            """,
+            "write-multiplier (1-100)"),
+    SOCKETBUFFERSEND("socket buffer send {NUM}", """
+                MEET 1<=NUM<=4000000000
+                SET ospfdaemon.buffersend {NUM}
+            """,
+            "socket buffer send (1-4000000000)"),
+    SOCKETBUFFERRECV("socket buffer recv {NUM}", """
+                MEET 1<=NUM<=4000000000
+                SET ospfdaemon.bufferrecv {NUM}
+            """,
+            "socket buffer recv (1-4000000000)"),
+    SOCKETBUFFERALL("socket buffer all {NUM}", """
+                MEET 1<=NUM<=4000000000
+                SET ospfdaemon.buffersend {NUM}
+                SET ospfdaemon.bufferrecv {NUM}
+            """,
+            "socket buffer all (1-4000000000)"),
+    NOSOCKETPERINTERFACE("no socket-per-interface", """
+                SET ospfdaemon.socket-per-interface False
+            """,
+            "no socket-per-interface"),
+
+    //===================OSPF AREA=====================
+    //FIXME what if we already have the same area range
+    //FIXME consistency?
+
+    AREARANGE("area {ID} range {IP}", """
+                MEET HAS ospfintf WHERE ospfintf.area == 0
+                IF (HAS  ospfnet WHERE ospfnet.area == {ID} && ospfnet.ip in {IP})
+                    IF !(HAS areaSum WHERE areaSum.area == {ID})
+                        ADD areaSum LINK ospf
+                    IF !(HAS areaSumEntry WHERE areaSumEntry in areaSum && areaSumEntry.range=={IP})
+                        ADD areaSumEntry TO areaSum
+                        SET areaSumEntry.range {IP}
+                    SET areaSumEntry.net GROUP (ANY ospfnet WHERE ospfnet.area == {ID} && ospfnet.ip in {IP})
+            """,
+            "area A.B.C.D range A.B.C.D/M"),
+    AREARANGEADVERTISE("area {ID} range {IP} advertise", """
+                #AREARANGE
+                SET areaSumEntry.advertise True
+            """,
+            "area A.B.C.D range A.B.C.D/M advertise"),
+    AREARANGEADVERTISECOST("area {ID} range {IP} advertise cost {NUM}", """
+                MEET 0<=NUM<=16777215
+                #AREARANGEADVERTISE
+                SET areaSumEntry.cost {NUM}
+            """,
+            "area A.B.C.D range A.B.C.D/M advertise cost (0-16777215)"),
+    AREARANGENOADVERTISE("area {ID} range {IP} not-advertise", """
+                #AREARANGE
+                SET areaSumEntry.advertise False
+            """,
+            "area A.B.C.D range A.B.C.D/M not-advertise"),
+    AREARANGESUBSTITUTE("area {ID} range {IP} substitute {IP2}", """
+                #AREARANGE
+                SET areaSumEntry.substitute {IP2}
+            """,
+            "area A.B.C.D range A.B.C.D/M substitute A.B.C.D/M"),
+    AREARANGECOST("area {ID} range {IP} cost {NUM}", """
+                MEET 0<=NUM <=16777215
+                #AREARANGE
+                SET areaSumEntry.cost {NUM}
+            """,
+            "area A.B.C.D range A.B.C.D/M cost (0-16777215)"),
 
     INVALID(".*", "", "");
 
@@ -62,7 +162,7 @@ public enum OpType {
         return typ.ordinal() >= NODEADD.ordinal() && typ.ordinal() <= LINKREMOVE.ordinal();
     }
 
-    public static boolean inOSPF(OpType typ) {
+    public static boolean inOSPF(OpType typ) { 
         return typ.ordinal() >= ROSPF.ordinal() && typ.ordinal() <= NETAREAIDNUM.ordinal();
     }
 
