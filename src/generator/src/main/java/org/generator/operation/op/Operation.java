@@ -19,9 +19,12 @@ public class Operation extends AbstractOperation {
         if (m.containsKey("NAME2")) NAME2 = super.Arg("NAME2");
         if (m.containsKey("DETAIL")) DETAIL = super.Arg("DETAIL");
         if (m.containsKey("IP")) IP = new IPV4(super.Arg("IP"));
+        if (m.containsKey("IP2")) IP = new IPV4(super.Arg("IP2"));
         if (m.containsKey("ID")) ID = new IPV4(super.Arg("ID"));
         if (m.containsKey("IDNUM")) IDNUM = super.IntArg("IDNUM");
         if (m.containsKey("NUM")) NUM = super.IntArg("NUM");
+        if (m.containsKey("NUM2")) NUM2 = super.IntArg("NUM2");
+        if (m.containsKey("NUM3")) NUM3 = super.IntArg("NUM3");
     }
     @Override
     public boolean decode(String st) {
@@ -37,9 +40,12 @@ public class Operation extends AbstractOperation {
         if (NAME2 != null) super.putArg("NAME2", NAME2);
         if (DETAIL != null) super.putArg("DETAIL", DETAIL);
         if (IP != null) super.putIpArg("IP", IP);
+        if (IP2 != null) super.putIpArg("IP2", IP2);
         if (ID != null) super.putIpArg("ID", ID);
         if (IDNUM != null) super.putIntArg("IDNUM", IDNUM);
         if (NUM != null) super.putIntArg("NUM", NUM);
+        if (NUM2 != null) super.putIntArg("NUM2", NUM2);
+        if (NUM3 != null) super.putIntArg("NUM3", NUM3);
     }
     @Override
     public void encode(StringBuilder buf) {
@@ -159,6 +165,37 @@ public class Operation extends AbstractOperation {
 
     protected String NAME, NAME2;
     protected String DETAIL;
-    protected IPV4 IP, ID;
-    protected Integer IDNUM, NUM;
+    protected IPV4 IP;
+    protected IPV4 ID;
+
+    public IPV4 getIP2() {
+        return IP2;
+    }
+
+    public void setIP2(IPV4 IP2) {
+        this.IP2 = IP2;
+    }
+
+    protected IPV4 IP2;
+    protected Integer IDNUM;
+    protected Integer NUM;
+
+    public Integer getNUM2() {
+        return NUM2;
+    }
+
+    public void setNUM2(Integer NUM2) {
+        this.NUM2 = NUM2;
+    }
+
+    public Integer getNUM3() {
+        return NUM3;
+    }
+
+    public void setNUM3(Integer NUM3) {
+        this.NUM3 = NUM3;
+    }
+
+    protected Integer NUM2;
+    protected Integer NUM3;
 }
