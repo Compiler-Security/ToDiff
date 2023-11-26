@@ -1,9 +1,6 @@
 package org.generator.topo.node;
 
-import org.generator.topo.node.ospf.OSPF;
-import org.generator.topo.node.ospf.OSPFArea;
-import org.generator.topo.node.ospf.OSPFIntf;
-import org.generator.topo.node.ospf.OSPFNet;
+import org.generator.topo.node.ospf.*;
 import org.generator.topo.node.phy.Intf;
 import org.generator.topo.node.phy.Router;
 import org.generator.topo.node.phy.Switch;
@@ -40,10 +37,19 @@ public class NodeGen {
         return "";
     }
 
-
+    static public String getOSPFDaemonName(String ospf_name){
+        return String.format("%s-daemon", ospf_name);
+    }
     static public String getIntfName(String r_name, int port){
         getPhyNodeTypeByName(r_name);
         return String.format("%s-eth%d", r_name, port);
+    }
+
+    static  public String getOSPFAreaName(IPV4 area){
+        return String.format("area%d", area.toInt());
+    }
+    static public String getOSPFAreaSumName(String ospf_name, String area_name){
+        return String.format("%s-%s", ospf_name, area_name);
     }
 
     static public String getAreaName(IPV4 area){
@@ -73,6 +79,9 @@ public class NodeGen {
 
     public static OSPFNet new_OSPF_Net(String name){return new OSPFNet(name);}
 
+    public static <T extends  AbstractNode> T newNode(String name, NodeType type){
+        return (T)new_node(name, type);
+    }
     public static AbstractNode new_node(String name, NodeType type){
         switch (type){
             case Host -> {
@@ -98,6 +107,12 @@ public class NodeGen {
             }
             case OSPFNet -> {
                 return new_OSPF_Net(name);
+            }
+            case OSPFDaemon -> {
+                return new OSPFDaemon(name);
+            }
+            case OSPFAreaSum -> {
+                return new OSPFAreaSum(name);
             }
             case null, default -> {
                 new Unimplemented();

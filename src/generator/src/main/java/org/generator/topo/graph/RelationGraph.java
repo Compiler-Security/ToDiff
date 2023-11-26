@@ -4,7 +4,11 @@ import org.generator.topo.edge.RelationEdge;
 import org.generator.topo.node.AbstractNode;
 import org.generator.topo.node.NodeGen;
 import org.generator.topo.node.NodeType;
+import org.generator.topo.node.ospf.OSPFArea;
+import org.generator.topo.node.ospf.OSPFAreaSum;
 import org.generator.topo.node.ospf.OSPFIntf;
+import org.generator.topo.node.ospf.OSPFNet;
+import org.generator.topo.node.phy.Intf;
 import org.generator.util.collections.Pair;
 import org.generator.util.exec.ExecStat;
 import org.graphstream.graph.Graph;
@@ -13,7 +17,9 @@ import org.graphstream.stream.file.FileSinkDOT;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class RelationGraph extends AbstractRelationGraph {
     private Pair<AbstractNode, Boolean> createNode(AbstractNode node){
@@ -29,7 +35,43 @@ public class RelationGraph extends AbstractRelationGraph {
         }
     }
 
+    public <T extends AbstractNode> Pair<T, Boolean> getOrCreateNode(String node_name, NodeType nodeType){
+        if (containsNode(node_name)){
+            return new Pair<>((T)getNode(node_name).get(), true);
+        }else{
+            return new Pair<>(NodeGen.<T>newNode(node_name, nodeType), false);
+        }
+    }
 
+    public <T extends  AbstractNode> T getNodeNotNull(String node_name){
+        return (T) getNode(node_name).get();
+    }
+
+     public <T> Set<T> getDstsByType(String nodes, RelationEdge.EdgeType typ){
+        return getEdgesByType(nodes, typ).stream().map(s->(T) s.getDst()).collect(Collectors.toSet());
+     }
+
+     public Set<Intf> getIntfOfRouter(String r_name){
+        return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF);
+     }
+     public Set<OSPFIntf> getOSPFIntfOfRouter(String r_name){
+        return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF).stream().map(x->this.<OSPFIntf>getDstsByType(x.getName(), RelationEdge.EdgeType.OSPFINTF)).flatMap(Collection::stream).collect(Collectors.toSet());
+     }
+
+     public boolean hasOSPFIntfOfArea(String ospf_intf_name){
+        return !this.<OSPFArea> getDstsByType(ospf_intf_name, RelationEdge.EdgeType.OSPFAREA).isEmpty();
+     }
+     public OSPFArea getOSPFIntfOfArea(String ospf_intf_name){
+        return this.<OSPFArea> getDstsByType(ospf_intf_name, RelationEdge.EdgeType.OSPFAREA).iterator().next();
+     }
+
+     public Set<OSPFNet> getOSPFNetOfOSPFArea(String ospf_area_name){
+        return this.<OSPFNet> getDstsByType(ospf_area_name, RelationEdge.EdgeType.OSPFNetwork);
+     }
+
+     public Set<OSPFAreaSum> getOSPFAreaSumOfOSPF(String ospf_name){
+        return this.<OSPFAreaSum> getDstsByType(ospf_name, RelationEdge.EdgeType.OSPFAREASUM);
+     }
     public OSPFIntf getOSPFIntf(String nodeName) {
         return (OSPFIntf) getNode(nodeName).get();
     }
@@ -52,6 +94,20 @@ public class RelationGraph extends AbstractRelationGraph {
     public ExecStat addOSPFAreaRelation(String area_name, String intf_name){
         var res1 = addEdge(area_name, intf_name, RelationEdge.EdgeType.INTF);
         var res2 = addEdge(intf_name, area_name, RelationEdge.EdgeType.OSPFAREA);
+        assert res1.join(res2) == ExecStat.SUCC;
+        return ExecStat.SUCC;
+    }
+
+    public ExecStat addOSPFAreaSumRelation(String areaSum_name, String ospf_name){
+        var res1 = addEdge(areaSum_name, ospf_name, RelationEdge.EdgeType.OSPF);
+        var res2 = addEdge(ospf_name, areaSum_name, RelationEdge.EdgeType.OSPFAREASUM);
+        assert res1.join(res2) == ExecStat.SUCC;
+        return ExecStat.SUCC;
+    }
+
+    public ExecStat addOSPFDaemonRelation(String ospf_name, String ospf_daemon_name){
+        var res1 = addEdge(ospf_name, ospf_daemon_name, RelationEdge.EdgeType.OSPFDAEMON);
+        var res2 = addEdge(ospf_daemon_name, ospf_name, RelationEdge.EdgeType.OSPF);
         assert res1.join(res2) == ExecStat.SUCC;
         return ExecStat.SUCC;
     }

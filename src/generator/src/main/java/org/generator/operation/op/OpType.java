@@ -19,7 +19,7 @@ public enum OpType {
 
             """
                     ADD ospf
-                    ADD ospfdaemon
+                    ADD ospfdaemon LINK ospf
                     """,
             "router ospf"),
 
@@ -65,6 +65,7 @@ public enum OpType {
 
     TIMERSTHROTTLESPF("timers throttle spf {NUM} {NUM1} {NUM2}",
             """
+                        MEET has ospf
                         MEET 0<={NUM}<=600000, 0<={NUM1}<=600000, 0<={NUM2}<=600000
                         SET ospf.initdelay NUM
                         SET ospf.initholdtime NUM1
@@ -77,50 +78,59 @@ public enum OpType {
     //=============OSPFDAEMON===================
     //TODO proactive-arp
 
-
+    OSPFDAEMONGROUPBEGIN("", "", ""),
     //FIXME this instruction is not full
     CLEARIPOSPFPROCESS("clear ip ospf process", "EMPTY", "clear ip ospf process"),
     CLEARIPOSPFNEIGHBOR("clear ip ospf neighbor", "EMPTY", "clear ip ospf neighbor"),
 
     MAXIMUMPATHS("maximum-paths {NUM}", """
+                MEET has ospfdaemon
                 MEET 1<={NUM}<=64
                 SET ospfdaemon.maxpaths {NUM}
             """,
             "maximum-paths (1-64)"),
     WRITEMULTIPLIER("write-multiplier {NUM}", """
+                MEET has ospfdaemon
                 MEET 1<={NUM}<=100
                 SET ospfdaemon.writemulti {NUM}
             """,
             "write-multiplier (1-100)"),
     SOCKETBUFFERSEND("socket buffer send {NUM}", """
+                MEET has ospfdaemon
                 MEET 1<={NUM}<=4000000000
                 SET ospfdaemon.buffersend {NUM}
             """,
             "socket buffer send (1-4000000000)"),
     SOCKETBUFFERRECV("socket buffer recv {NUM}", """
+                MEET has ospfdaemon
                 MEET 1<={NUM}<=4000000000
                 SET ospfdaemon.bufferrecv {NUM}
             """,
             "socket buffer recv (1-4000000000)"),
     SOCKETBUFFERALL("socket buffer all {NUM}", """
+                MEET has ospfdaemon
                 MEET 1<={NUM}<=4000000000
                 SET ospfdaemon.buffersend {NUM}
                 SET ospfdaemon.bufferrecv {NUM}
             """,
             "socket buffer all (1-4000000000)"),
     NOSOCKETPERINTERFACE("no socket-per-interface", """
-                SET ospfdaemon.socket-per-interface False
+                MEET has ospfdaemon
+                SET ospfdaemon.socketPerInterface False
             """,
             "no socket-per-interface"),
 
+    OSPFDAEMONGROUPEND("", "", ""),
     //===================OSPF AREA=====================
     //FIXME what if we already have the same area range
     //FIXME consistency?
 
-    AREARANGE("area {ID} range {IP}", """
+    OSPFAREAGROUPBEGIN("", "", ""),
+    AreaRange("area {ID} range {IP}", """
                 MEET HAS ospfintf WHERE ospfintf.area == 0
+                MEET HAS ospf
                 IF (HAS  ospfnet WHERE ospfnet.area == {ID} && ospfnet.ip in {IP})
-                    IF !(HAS areaSum WHERE areaSum.area == {ID})
+                    IF !(HAS areaSum WHERE ospf->areaSum && areaSum.area == {ID})
                         ADD areaSum LINK ospf
                     IF !(HAS areaSumEntry WHERE areaSumEntry in areaSum && areaSumEntry.range=={IP})
                         ADD areaSumEntry TO areaSum
@@ -128,101 +138,108 @@ public enum OpType {
                     SET areaSumEntry.net GROUP (ANY ospfnet WHERE ospfnet.area == {ID} && ospfnet.ip in {IP})
             """,
             "area A.B.C.D range A.B.C.D/M"),
-    AREARANGEADVERTISE("area {ID} range {IP} advertise", """
+    AreaRangeAd("area {ID} range {IP} advertise", """
                 #AREARANGE
                 SET areaSumEntry.advertise True
             """,
             "area A.B.C.D range A.B.C.D/M advertise"),
-    AREARANGEADVERTISECOST("area {ID} range {IP} advertise cost {NUM}", """
+    AreaRangeAdCost("area {ID} range {IP} advertise cost {NUM}", """
                 MEET 0<={NUM}<=16777215
                 #AREARANGEADVERTISE
+                SET areaSumEntry.advertise True
                 SET areaSumEntry.cost {NUM}
             """,
             "area A.B.C.D range A.B.C.D/M advertise cost (0-16777215)"),
-    AREARANGENOADVERTISE("area {ID} range {IP} not-advertise", """
+    AreaRangeNoAd("area {ID} range {IP} not-advertise", """
                 #AREARANGE
                 SET areaSumEntry.advertise False
             """,
             "area A.B.C.D range A.B.C.D/M not-advertise"),
-    AREARANGESUBSTITUTE("area {ID} range {IP} substitute {IP2}", """
+    AreaRangeSub("area {ID} range {IP} substitute {IP2}", """
                 #AREARANGE
                 SET areaSumEntry.substitute {IP2}
             """,
             "area A.B.C.D range A.B.C.D/M substitute A.B.C.D/M"),
-    AREARANGECOST("area {ID} range {IP} cost {NUM}", """
+    AreaRangeCost("area {ID} range {IP} cost {NUM}", """
                 MEET 0<={NUM}<=16777215
                 #AREARANGE
                 SET areaSumEntry.cost {NUM}
             """,
             "area A.B.C.D range A.B.C.D/M cost (0-16777215)"),
-    AREARANGEINT("area {NUM} range {IP}", """
+    AreaRangeINT("area {NUM} range {IP}", """
                 MEET 0<={NUM}<=16777215
                 let {ID} = ID({NUM})
                 #AREARANGE
             """,
             "area (0-4294967295) range A.B.C.D/M"),
-    AREARANGEADVERTISEINT("area {NUM} range {IP} advertise", """
+    AreaRangeAdINT("area {NUM} range {IP} advertise", """
                 MEET 0<={NUM}<=16777215
                 let {ID} = ID({NUM})
                 #AREARANGEADVERTISE
             """,
             "area (0-4294967295) range A.B.C.D/M advertise"),
-    AREARANGEADVERTISECOSTINT("area {NUM} range {IP} advertise cost {NUM}", """
-                MEET 0<={NUM}<=16777215
-                let {ID} = ID({NUM})
+    AreaRangeAdCostINT("area {NUM} range {IP} advertise cost {NUM2}", """
+                MEET 0<={NUM2}<=16777215
+                let {ID} = ID({NUM2})
                 #AREARANGEADVERTISECOST
             """,
             "area (0-4294967295) range A.B.C.D/M advertise cost (0-16777215)"),
-    AREARANGENOADVERTISEINT("area {NUM} range {IP} not-advertise", """
+    AreaRangeNoAdINT("area {NUM} range {IP} not-advertise", """
                 MEET 0<={NUM}<=16777215
                 let {ID} = ID({NUM})
                 #AREARANGENOADVERTISE
             """,
             "area (0-4294967295) range A.B.C.D/M not-advertise"),
-    AREARANGESUBSTITUTEINT("area {NUM} range {IP} substitute {IP2}", """
+    AreaRangeSubINT("area {NUM} range {IP} substitute {IP2}", """
                 MEET 0<={NUM}<=16777215
                 let {ID} = ID({NUM})
                 #AREARANGESUBSTITUTE
             """,
             "area A.B.C.D range A.B.C.D/M substitute A.B.C.D/M"),
-    AREARANGECOSTINT("area {NUM2} range {IP} cost {NUM}", """
+    AreaRangeCostINT("area {NUM2} range {IP} cost {NUM}", """
                 MEET 0<={NUM2}<=16777215
                 let {ID} = ID({NUM2})
                 #AREARANGECOST
             """,
             "area (0-4294967295) range A.B.C.D/M cost (0-16777215)"),
-    AREAVIRTUALLINK("area {ID} virtual-link {ID2}", """
+    AreaVLink("area {ID} virtual-link {ID2}", """
+                MEET HAS ospf
                 IF !(HAS areaSum WHERE areaSum.area == {ID})
                     ADD areaSum LINK ospf
-                SET areaSum.virtual-link {ID2}
+                SET areaSum.virtualLink {ID2}
             """,
             "area A.B.C.D virtual-link A.B.C.D"),
-    AREASHORTCUT("area {ID} shortcut", """
+    AreaShortcut("area {ID} shortcut", """
+                MEET HAS ospf
                 IF !(HAS areaSum WHERE areaSum.area == {ID})
                     ADD areaSum LINK ospf
                 SET areaSum.shortcut True
             """,
             "area A.B.C.D shortcut"),
-    AREASTUB("area {ID} stub", """
+    AreaStub("area {ID} stub", """
+                MEET HAS ospf
                 IF !(HAS areaSum WHERE areaSum.area == {ID})
                     ADD areaSum LINK ospf
                 SET areaSum.stub True
             """,
             "area A.B.C.D stub"),
-    AREASTUBTOTAL("area {ID} stub no-summary", """
+    AreaStubTotal("area {ID} stub no-summary", """
+                MEET HAS ospf
                 IF !(HAS areaSum WHERE areaSum.area == {ID})
                     ADD areaSum LINK ospf
                 SET areaSum.stub True
                 SET areaSum.nosummary True
             """,
             "area A.B.C.D stub no-summary"),
-    AREANSSA("area {ID} nssa", """
+    AreaNSSA("area {ID} nssa", """
+                MEET HAS ospf
                 IF !(HAS areaSum WHERE areaSum.area == {ID})
                     ADD areaSum LINK ospf
                 SET areaSum.nssa True
             """,
             "area A.B.C.D nssa"),
 
+    OSPFAREAGROUPEND("", "", ""),
     INVALID(".*", "", "");
 
     public static boolean inPhy(OpType typ) {
@@ -235,6 +252,14 @@ public enum OpType {
 
     public static boolean inOSPFRouterWithTopo(OpType typ) {
         return typ.ordinal() >= ROSPF.ordinal() && typ.ordinal() <= NETAREAIDNUM.ordinal();
+    }
+
+    public static boolean inOSPFDAEMON(OpType typ){
+        return typ.ordinal() > OSPFDAEMONGROUPBEGIN.ordinal() && typ.ordinal() < OSPFDAEMONGROUPEND.ordinal();
+    }
+
+    public static boolean inOSPFAREA(OpType typ){
+        return typ.ordinal() > OSPFAREAGROUPBEGIN.ordinal() && typ.ordinal() < OSPFAREAGROUPEND.ordinal();
     }
 
     public String template() {

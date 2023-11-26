@@ -62,6 +62,34 @@ public class OSPF extends AbstractNode {
 
     ABR_TYPE abrType;
 
+    public int getInitDelay() {
+        return initDelay;
+    }
+
+    public void setInitDelay(int initDelay) {
+        this.initDelay = initDelay;
+    }
+
+    public int getInitHoldTime() {
+        return initHoldTime;
+    }
+
+    public void setInitHoldTime(int initHoldTime) {
+        this.initHoldTime = initHoldTime;
+    }
+
+    public int getMaxHoldTime() {
+        return maxHoldTime;
+    }
+
+    public void setMaxHoldTime(int maxHoldTime) {
+        this.maxHoldTime = maxHoldTime;
+    }
+
+    int initDelay;
+    int initHoldTime;
+    int maxHoldTime;
+
     @Override
     public String getNodeAtrriStr() {
         String router_id_str = "UNK";
