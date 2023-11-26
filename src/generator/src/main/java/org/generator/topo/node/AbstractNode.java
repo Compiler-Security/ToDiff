@@ -1,6 +1,6 @@
 package org.generator.topo.node;
 
-public abstract class TopoNode {
+public abstract class AbstractNode {
 
     public String getName(){
         return this.name;
@@ -11,6 +11,18 @@ public abstract class TopoNode {
     }
 
     private String name;
+
+    public NodeType getNodeType() {
+        return nodeType;
+    }
+
+    public void setNodeType(NodeType nodeType) {
+        this.nodeType = nodeType;
+    }
+
+    private NodeType nodeType;
+
+    public abstract String getNodeAtrriStr();
 
     @Override
     public String toString() {

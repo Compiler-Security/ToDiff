@@ -1,8 +1,16 @@
 package org.generator.topo.node.phy;
 
-public class Host extends PhyNode{
+import org.generator.topo.node.AbstractNode;
+import org.generator.topo.node.NodeType;
+
+public class Host extends AbstractNode {
     Host(String name){
         setName(name);
         setNodeType(NodeType.Host);
+    }
+
+    @Override
+    public String getNodeAtrriStr() {
+        return String.format("{type:%s}", getNodeType());
     }
 }

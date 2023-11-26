@@ -17,7 +17,7 @@ public class AbstractOperationTest {
     }
     @Test
     public void regTest(){
-        var d = new Operation("area {AREA} range {RANGE} advertise cost {COST}", OpType.INVALID);
+        var d = new Operation(OpType.INVALID);
         System.out.println(d.decode("area 10 range 10.0.0.0/32 advertise cost 100"));
         System.out.println(d.IntArg("AREA"));
         System.out.println(d.encode_to_str());
