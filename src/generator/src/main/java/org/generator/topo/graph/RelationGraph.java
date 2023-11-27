@@ -39,7 +39,9 @@ public class RelationGraph extends AbstractRelationGraph {
         if (containsNode(node_name)){
             return new Pair<>((T)getNode(node_name).get(), true);
         }else{
-            return new Pair<>(NodeGen.<T>newNode(node_name, nodeType), false);
+            var node = NodeGen.<T>newNode(node_name, nodeType);
+            addNode(node);
+            return new Pair<>(node, false);
         }
     }
 
