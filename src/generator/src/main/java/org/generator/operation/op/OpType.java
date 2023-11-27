@@ -42,7 +42,7 @@ public enum OpType {
     NETAREAID("network {IP} area {ID}",
             """
                     FOR (ANY intf WHERE intf.ip in {IP})
-                        IF !(HAS ospfintf WHERE intf->ospfintf)
+                        IF !(HAS ospfintf WHERE intf->ospfintf && !(HAS #IpOspfArea in ospfintf))
                             ADD ospfintf
                         SET ospfintf.area {ID}
                     """,
@@ -50,7 +50,7 @@ public enum OpType {
     NETAREAIDNUM("network {IP} area {IDNUM}",
             """
                     LET {ID} = IPV4({IDNUM})
-                    SAME AS ABOVE
+                    #NETAREAID
                     """,
             "network A.B.C.D/M area (0-4294967295)"),
 
@@ -129,7 +129,7 @@ public enum OpType {
     AreaRange("area {ID} range {IP}", """
                 MEET HAS ospfintf WHERE ospfintf.area == 0
                 MEET HAS ospf
-                IF (HAS  ospfnet WHERE ospfnet.area == {ID} && ospfnet.ip in {IP})
+                IF (HAS  ospfnet WHERE ospfnet.area == {ID} && ospfnet.ip in {IP} &&ospfnet.hide == False)
                     IF !(HAS areaSum WHERE ospf->areaSum && areaSum.area == {ID})
                         ADD areaSum LINK ospf
                     IF !(HAS areaSumEntry WHERE areaSumEntry in areaSum && areaSumEntry.range=={IP})
@@ -239,7 +239,119 @@ public enum OpType {
             """,
             "area A.B.C.D nssa"),
 
+    //TODO AREA LEFT
+
     OSPFAREAGROUPEND("", "", ""),
+
+    OSPFIntfGroupBEGIN("", "", ""),
+    //FIXME syntax right?
+    IntfName("interface {NAME}", """
+            MEET HAS intf WHERE intf.name == {NAME}
+            ADD ospfintf LINK intf WHERE intf.name == {NAME}
+            SET _curIntf intf
+            SET _curOIntf ospfintf
+            """,
+            ""),
+    //FIXME this commands is to zebra
+    IPAddr("ip address {IP}", """
+            MEET HAS _curIntf
+            SET _curIntf.ip {IP}
+            """,
+            "ip address ADDRESS/PREFIX"),
+    //FIXME syntax right?
+    IpOspfAreaAddr("ip opsf area {ID} {IP}", """
+            MEET HAS _curOIntf
+            MEET HAS _curIntf
+            SET _curOIntf.area {ID}
+            SET _curIntf.ip {IP}
+            if (!HAS ospfnet where ospfnet.ip == {IP} && ospfnet.area == {ID})
+                ADD ospfnet
+                SET ospfnet.ip {IP}
+                SET ospfnet.area {ID}
+            """,
+            "ip ospf area AREA ADDR"),
+    //NOT CONSIDER ip ospf authentication-key AUTH_KEY
+    //NOT Consider ip ospf authentication message-digest
+    //NOT consider ip ospf message-digest-key KEYID md5 KEY
+    //NOT consider ip ospf authentication key-chain KEYCHAIN
+
+    //FIXME if we use this, network area command will not work
+    //FIXME what if curIntf don't have ip
+    IpOspfArea("ip ospf area {ID}", """
+            MEET HAS _curOIntf
+            MEET HAS _curIntf
+            SET _curOIntf.area {ID}
+            if (!HAS ospfnet where ospfnet.ip == _curIntf.ip && ospfnet.area == {ID})
+                ADD ospfnet
+                SET ospfnet.ip _curIntf.ip
+                SET ospfnet.area {ID}
+            """,
+            "ip ospf area AREA"),
+    IpOspfAreaINT("ip ospf area {NUM}", """
+            MEET 0 <= {NUM} && {NUM} <= 4294967295
+            LET {ID} = ID(NUM)
+            #IpOspfArea
+            """,
+            "ip ospf area (0-4294967295)"),
+    IpOspfCost("ip ospf cost {NUM}", """
+            MEET HAS _curOIntf
+            MEET 1 <= {NUM} && {NUM} <= 655535
+            SET _curOIntf.cost {NUM}
+            """,
+            "ip ospf cost (1-65535)"),
+    //FIXME default value?
+    IpOspfDeadInter("ip ospf dead-interval {NUM}", """
+            MEET HAS _curOIntf
+            MEET 1<= {NUM} <= 65535
+            SET _curOIntf.deadInterval {NUM}
+            """,
+            "ip ospf dead-interval (1-65535)"),
+    IpOspfDeadInterMulti("ip ospf dead-interval minimal hello-multiplier {NUM}", """
+            MEET HAS _curOIntf
+            MEET 2 <= {NUM} <= 20           
+            SET _curOIntf.helloPerSec {NUM}
+            SET _curOIntf.helloInterval 0
+            """,
+            "ip ospf dead-interval minimal hello-multiplier (2-20)"),
+    //FIXME this will not work if we set IpOspfDeadInterMulti, should we consider which is in the front?
+    IpOspfHelloInter("ip ospf hello-interval {NUM}", """
+            MEET HAS _curOIntf
+            MEET 1 <= {NUM} <= 65535
+            MEET !(has #IpOspfDeadInterMulti in _curOIntf)
+            SET _curOIntf.helloInterval {NUM}
+            """,
+            "ip ospf hello-interval (1-65535)"),
+    IpOspfGRHelloDelay("ip ospf graceful-restart hello-delay {NUM}", """
+            MEET HAS _curOIntf
+            MEET 1<= {NUM} <= 1800
+            SET _curOIntf.GRHelloDelay {NUM}
+            """,
+            "ip ospf graceful-restart hello-delay (1-1800)"),
+    //FIXME what is nonbroadcast?
+    IpOspfNet("ip ospf network {NAME}", """
+            MEET {NAME} == broadcast || {NAME} == non-broadcast
+            SET _curOIntf.netType {NAME}
+            """,
+            "ip ospf network (broadcast|non-broadcast| point-to-point)"),
+    IpOspfPriority("", """
+            MEET {0} <= {NUM} && {NUM} <= 255
+            SET _curOIntf.priority {NUM}
+            """,
+            "ip ospf priority (0-255)"),
+    IpOspfRetransInter("", """
+            """,
+            "ip ospf retransmit-interval (1-65535)"),
+    IpOspfTransDealy("", """
+            """,
+            "ip ospf transmit-delay (1-65535) [A.B.C.D]"),
+    IpOspfPassive("", """
+            """,
+            "ip ospf passive [A.B.C.D]"),
+    IpOspfPrefixSupp("", """
+            """,
+            "ip ospf prefix-suppression [A.B.C.D]"),
+
+    OSPFIntfGroupEND("", "", ""),
     INVALID(".*", "", "");
 
     public static boolean inPhy(OpType typ) {

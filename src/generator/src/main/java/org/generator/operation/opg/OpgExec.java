@@ -351,7 +351,7 @@ public class OpgExec {
         if (!meet) return Optional.empty();
         Set<OSPFNet> ospfnets= new HashSet<>();
         for (var ospfnet: topo.getOSPFNetOfOSPFArea(NodeGen.getAreaName(op.getID()))){
-            if (op.getIP().contains(ospfnet.getIp())){
+            if (!ospfnet.isHide() && op.getIP().contains(ospfnet.getIp())){
                 ospfnets.add(ospfnet);
             }
         }
