@@ -22,7 +22,9 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
         OSPFINTF,
         OSPFAREA,
         OSPFNetwork,
-        LINK
+        LINK,
+        OSPFDAEMON,
+        OSPFAREASUM,
     }
 
     protected void generateType(){

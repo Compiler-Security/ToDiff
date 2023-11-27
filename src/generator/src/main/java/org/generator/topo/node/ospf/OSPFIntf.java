@@ -7,6 +7,8 @@ public class OSPFIntf extends AbstractNode {
     public OSPFIntf(String name){
         setName(name);
         setNodeType(NodeType.OSPFIntf);
+
+        passive = false;
     }
 
     public int getVrf() {
@@ -25,8 +27,20 @@ public class OSPFIntf extends AbstractNode {
         this.cost = cost;
     }
 
+
+
+    public boolean isPassive() {
+        return passive;
+    }
+
+    public void setPassive(boolean passive) {
+        this.passive = passive;
+    }
+
+    boolean passive;
     int vrf;
     long cost;
+
 
     @Override
     public String getNodeAtrriStr() {
