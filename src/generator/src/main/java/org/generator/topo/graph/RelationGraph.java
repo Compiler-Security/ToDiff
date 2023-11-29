@@ -78,6 +78,10 @@ public class RelationGraph extends AbstractRelationGraph {
         return (OSPFIntf) getNode(nodeName).get();
     }
 
+    public Intf getIntf(String nodeName){
+        return (Intf) getNode(nodeName).get();
+    }
+
     public ExecStat addOSPFRelation(String ospf_name, String phynode_name){
         var res1 = addEdge(phynode_name, ospf_name, RelationEdge.EdgeType.OSPF);
         var res2 =  addEdge(ospf_name, phynode_name, RelationEdge.EdgeType.PhyNODE);
@@ -90,6 +94,12 @@ public class RelationGraph extends AbstractRelationGraph {
         var res3 = addEdge(ospf_name, ospf_intf_name, RelationEdge.EdgeType.OSPFINTF);
         var res4 = addEdge(ospf_intf_name, ospf_name, RelationEdge.EdgeType.OSPF);
         assert res1.join(res2).join(res3).join(res4) == ExecStat.SUCC;
+        return ExecStat.SUCC;
+    }
+
+    public ExecStat addIntfRelation(String intfName, String routerName){
+        addEdge(intfName, routerName, RelationEdge.EdgeType.PhyNODE);
+        addEdge(routerName, intfName, RelationEdge.EdgeType.PhyNODE);
         return ExecStat.SUCC;
     }
 

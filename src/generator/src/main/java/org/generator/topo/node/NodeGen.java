@@ -79,7 +79,7 @@ public class NodeGen {
 
     public static OSPFNet new_OSPF_Net(String name){return new OSPFNet(name);}
 
-    public static <T extends  AbstractNode> T newNode(String name, NodeType type){
+    public static <T extends  AbstractNode> T newNode(String name, NodeType type){;
         return (T)new_node(name, type);
     }
     public static AbstractNode new_node(String name, NodeType type){

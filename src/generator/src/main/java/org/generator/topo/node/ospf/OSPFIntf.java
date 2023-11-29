@@ -2,6 +2,7 @@ package org.generator.topo.node.ospf;
 
 import org.generator.topo.node.AbstractNode;
 import org.generator.topo.node.NodeType;
+import org.generator.util.net.IPV4;
 
 public class OSPFIntf extends AbstractNode {
     public OSPFIntf(String name){
@@ -40,6 +41,16 @@ public class OSPFIntf extends AbstractNode {
     boolean passive;
     int vrf;
     long cost;
+
+    public IPV4 getArea() {
+        return area;
+    }
+
+    public void setArea(IPV4 area) {
+        this.area = area;
+    }
+
+    IPV4 area;
 
 
     @Override

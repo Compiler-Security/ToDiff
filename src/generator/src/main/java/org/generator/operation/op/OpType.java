@@ -14,6 +14,8 @@ public enum OpType {
     LINKDOWN("link {NAME} {NAME2} down", "", ""),
     LINKREMOVE("link {NAME} {NAME2} remove", "", ""),
 
+    OSPFROUTERBEGIN("", "", ""),
+
     //=================OSPF ROUTER==================
     ROSPF("router ospf",
 
@@ -75,6 +77,7 @@ public enum OpType {
     //TODO max-metric...
     //TODO auto-cost it's hard to eqaul
 
+    OSPFROUTEREND("","",""),
     //=============OSPFDAEMON===================
     //TODO proactive-arp
 
@@ -246,8 +249,11 @@ public enum OpType {
     OSPFIntfGroupBEGIN("", "", ""),
     //FIXME syntax right?
     IntfName("interface {NAME}", """
-            MEET HAS intf WHERE intf.name == {NAME}
-            ADD ospfintf LINK intf WHERE intf.name == {NAME}
+            MEET HAS _curRouter
+            if  !HAS intf WHERE intf.name == {NAME}
+                ADD intf LINK _curRouter
+                SET intf.name {NAME}
+                ADD ospfintf LINK intf WHERE intf.name == {NAME}
             SET _curIntf intf
             SET _curOIntf ospfintf
             """,
@@ -265,7 +271,7 @@ public enum OpType {
             SET _curOIntf.area {ID}
             SET _curIntf.ip {IP}
             if (!HAS ospfnet where ospfnet.ip == {IP} && ospfnet.area == {ID})
-                ADD ospfnet
+                ADD ospfnet LINK _curOSPF
                 SET ospfnet.ip {IP}
                 SET ospfnet.area {ID}
             """,
@@ -359,7 +365,7 @@ public enum OpType {
     }
 
     public static boolean inOSPF(OpType typ) { 
-        return typ.ordinal() >= ROSPF.ordinal() && typ.ordinal() <= NETAREAIDNUM.ordinal();
+        return typ.ordinal() >= OSPFROUTERBEGIN.ordinal() && typ.ordinal() <= OSPFIntfGroupEND.ordinal();
     }
 
     public static boolean inOSPFRouterWithTopo(OpType typ) {
@@ -374,6 +380,9 @@ public enum OpType {
         return typ.ordinal() > OSPFAREAGROUPBEGIN.ordinal() && typ.ordinal() < OSPFAREAGROUPEND.ordinal();
     }
 
+    public static boolean inOSPFINTF(OpType typ){
+        return typ.ordinal() > OSPFIntfGroupBEGIN.ordinal() && typ.ordinal() < OSPFIntfGroupEND.ordinal();
+    }
     public String template() {
         return template;
     }

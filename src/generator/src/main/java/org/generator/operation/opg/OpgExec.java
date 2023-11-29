@@ -546,6 +546,51 @@ public class OpgExec {
         }
         return ExecStat.MISS;
     }
+
+    private ExecStat execOSPFINTF(@NotNull Operation op, @NotNull RelationGraph topo){
+        if (cur_router.isEmpty()){
+            return ExecStat.MISS;
+        }
+        var _curRouter = cur_router.get();
+        switch (op.Type()){
+            case IntfName -> {
+                Intf intf = null;
+                OSPFIntf ospfintf = null;
+                if (!topo.containsNode(op.getNAME())){
+                    var res = topo.<Intf>getOrCreateNode(op.getNAME(), NodeType.Intf);
+                    assert !res.second();
+                    intf = res.first();
+                    topo.addIntfRelation(intf.getName(), cur_rname);
+                    intf.setName(op.getNAME());
+                    var ospfintf_name =  NodeGen.getOSPFIntfName(intf.getName());
+                    assert !topo.containsNode(ospfintf_name);
+                    var res1 = topo.<OSPFIntf>getOrCreateNode(ospfintf_name, NodeType.OSPFIntf);
+                    assert !res1.second();
+                    ospfintf = res1.first();
+                    topo.addOSPFIntfRelation(ospfintf_name, intf.getName(), cur_rname);
+                }else{
+                    intf = topo.getIntf(op.getNAME());
+                    ospfintf = topo.getOSPFIntf(NodeGen.getOSPFIntfName(intf.getName()));
+                }
+                setCur_intf(intf);
+                setCur_ospf_intf(ospfintf);
+                return ExecStat.SUCC;
+            }
+            case IPAddr -> {
+                if (cur_intf.isEmpty()) return ExecStat.MISS;
+                getCur_intf().setIp(op.getIP());
+                return ExecStat.SUCC;
+            }
+            case IpOspfAreaAddr -> {
+                if (cur_ospf_intf.isEmpty() || cur_intf.isEmpty()) return ExecStat.MISS;
+                getCur_ospf_intf().setArea(op.getID());
+
+                //FIXME
+                return ExecStat.SUCC;
+            }
+
+        }
+    }
     private ExecStat execOSPFOp(@NotNull Operation op, RelationGraph topo) {
         if (OpType.inOSPFRouterWithTopo(op.Type())) {
             return execOSPFRouterWithTopo(op, topo);
@@ -596,6 +641,7 @@ public class OpgExec {
     }
 
     public void setCur_intf(Intf cur_intf) {
+        assert  cur_intf != null;
         this.cur_intf = Optional.ofNullable(cur_intf);
         cur_intfname = getCur_intf().getName();
         cur_ospfintfname = NodeGen.getOSPFIntfName(cur_intfname);
@@ -606,7 +652,9 @@ public class OpgExec {
     }
 
     public void setCur_ospf_intf(OSPFIntf cur_ospf_intf) {
+        assert  cur_ospf_intf != null;
         this.cur_ospf_intf = Optional.of(cur_ospf_intf);
+        cur_ospfname = cur_ospf_intf.getName();
     }
 
     public Router getCur_router() {
