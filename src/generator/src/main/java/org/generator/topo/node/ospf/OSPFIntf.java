@@ -12,6 +12,7 @@ public class OSPFIntf extends AbstractNode {
         passive = false;
     }
 
+//    public enum NetType()
     public int getVrf() {
         return vrf;
     }
@@ -52,6 +53,44 @@ public class OSPFIntf extends AbstractNode {
 
     IPV4 area;
 
+    public int getDeadInterval() {
+        return deadInterval;
+    }
+
+    public void setDeadInterval(int deadInterval) {
+        this.deadInterval = deadInterval;
+    }
+
+    int deadInterval;
+    int helloPerSec;
+
+    public int getGRHelloDelay() {
+        return GRHelloDelay;
+    }
+
+    public void setGRHelloDelay(int GRHelloDelay) {
+        this.GRHelloDelay = GRHelloDelay;
+    }
+
+    int GRHelloDelay;
+
+    public int getHelloPerSec() {
+        return helloPerSec;
+    }
+
+    public void setHelloPerSec(int helloPerSec) {
+        this.helloPerSec = helloPerSec;
+    }
+
+    public int getHelloInterval() {
+        return helloInterval;
+    }
+
+    public void setHelloInterval(int helloInterval) {
+        this.helloInterval = helloInterval;
+    }
+
+    int helloInterval;
 
     @Override
     public String getNodeAtrriStr() {

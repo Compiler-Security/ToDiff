@@ -22,6 +22,8 @@ public abstract class AbstractNode {
 
     private NodeType nodeType;
 
+    abstract public void initFiled();
+
     public abstract String getNodeAtrriStr();
 
     @Override

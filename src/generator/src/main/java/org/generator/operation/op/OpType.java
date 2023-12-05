@@ -20,8 +20,10 @@ public enum OpType {
     ROSPF("router ospf",
 
             """
-                    ADD ospf
-                    ADD ospfdaemon LINK ospf
+                    IF !cur_router->ospf
+                        ADD ospf
+                        ADD ospfdaemon LINK ospf
+                    SET cur_ospf ospf
                     """,
             "router ospf"),
 
@@ -30,6 +32,7 @@ public enum OpType {
 
     RID("ospf router-id {ID}",
             """
+                    MEET cur_ospf
                     SET ospf.router-id {ID}
                     """,
             "ospf router-id A.B.C.D"),
@@ -75,7 +78,7 @@ public enum OpType {
                     """,
             "timers throttle spf (0-600000) (0-600000) (0-600000)"),
     //TODO max-metric...
-    //TODO auto-cost it's hard to eqaul
+    //TODO auto-cost it's hard to equal
 
     OSPFROUTEREND("","",""),
     //=============OSPFDAEMON===================
@@ -288,7 +291,7 @@ public enum OpType {
             MEET HAS _curIntf
             SET _curOIntf.area {ID}
             if (!HAS ospfnet where ospfnet.ip == _curIntf.ip && ospfnet.area == {ID})
-                ADD ospfnet
+                ADD ospfnet LINK _curTopo
                 SET ospfnet.ip _curIntf.ip
                 SET ospfnet.area {ID}
             """,

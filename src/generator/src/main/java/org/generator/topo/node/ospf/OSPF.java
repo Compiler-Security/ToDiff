@@ -10,6 +10,7 @@ public class OSPF extends AbstractNode {
     public OSPF(String name){
         setName(name);
         setNodeType(NodeType.OSPF);
+        initFiled();
     }
     public enum OSPF_STATUS{
         INIT,
@@ -89,6 +90,17 @@ public class OSPF extends AbstractNode {
     int initDelay;
     int initHoldTime;
     int maxHoldTime;
+
+    @Override
+    public void initFiled() {
+        status = OSPF_STATUS.UP;
+        abrType = ABR_TYPE.Normal;
+        routerId = IPV4.Of(0);
+        //TODO
+        initDelay = 10;
+        initHoldTime = 10;
+        maxHoldTime = 10;
+    }
 
     @Override
     public String getNodeAtrriStr() {
