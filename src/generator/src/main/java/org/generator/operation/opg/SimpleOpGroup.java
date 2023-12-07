@@ -14,6 +14,7 @@ public class SimpleOpGroup implements OpGroup{
     public SimpleOpGroup(List<Operation> ops, Optional<String> target){
         opgroup = new ArrayList<>();
         this.target = target;
+        ctx = new OpgExec.Ctx();
         addOps(ops);
     }
     @Override
@@ -42,9 +43,16 @@ public class SimpleOpGroup implements OpGroup{
         return target;
     }
 
+    @Override
+    public OpgExec.Ctx getCtx() {
+        return ctx;
+    }
+
     public void setTarget(Optional<String> target) {
         this.target = target;
     }
 
     private Optional<String> target;
+
+    private OpgExec.Ctx ctx;
 }

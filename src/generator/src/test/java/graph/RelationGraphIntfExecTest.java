@@ -1,6 +1,6 @@
 package graph;
 
-import org.generator.operation.op.SimpleConfReader;
+import org.generator.operation.conf.SimpleConfReader;
 import org.generator.operation.opg.OSPFOpgExec;
 import org.generator.operation.opg.SimpleOpGroup;
 import org.generator.topo.graph.RelationGraph;

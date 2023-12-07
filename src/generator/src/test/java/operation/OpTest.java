@@ -2,7 +2,7 @@ package operation;
 
 import org.generator.operation.op.OpGen;
 import org.generator.operation.op.OpType;
-import org.generator.operation.op.SimpleConfReader;
+import org.generator.operation.conf.SimpleConfReader;
 import org.junit.Test;
 
 public class OpTest {

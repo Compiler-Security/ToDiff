@@ -1,5 +1,9 @@
-package org.generator.operation.op;
+package org.generator.operation.conf;
 
+import org.generator.operation.conf.ConfR;
+import org.generator.operation.op.OpGen;
+import org.generator.operation.op.OpType;
+import org.generator.operation.op.Operation;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -7,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class SimpleConfReader implements ConfR{
+public class SimpleConfReader implements ConfR {
     @Nullable
     private Operation getOperation(String op_st){
-        for (var v:OpType.values()){
+        for (var v: OpType.values()){
             var op = OpGen.GenOperation(v);
             if (op.decode(op_st)){
                 return op;

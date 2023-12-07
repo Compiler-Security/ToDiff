@@ -13,4 +13,15 @@ public interface OpGroup {
     void addOps(List<Operation> ops);
 
     Optional<String> getTarget();
+
+    OpgExec.Ctx getCtx();
+
+    enum OpGType{
+        Phy,
+        ALLCONF,
+        Intf,
+        OSPF,
+        OSPFIntf,
+        Attri
+    }
 }
