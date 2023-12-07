@@ -7,11 +7,17 @@ public class Router extends AbstractNode {
           super();
           setName(name);
           setNodeType(NodeType.Router);
+          initFiled();
     }
 
 
     private String calcName(int id){
         return String.format("s%d", id);
+    }
+
+    @Override
+    public void initFiled() {
+
     }
 
     @Override

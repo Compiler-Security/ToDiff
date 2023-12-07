@@ -202,7 +202,7 @@ public enum OpType {
                 #AREARANGESUBSTITUTE
             """,
             "area A.B.C.D range A.B.C.D/M substitute A.B.C.D/M"),
-    AreaRangeCostINT("area {NUM2} range {IP} cost {NUM}", """
+    AreaRangeCostINT("area {NUM} range {IP} cost {NUM2}", """
                 MEET 0<={NUM2}<=16777215
                 let {ID} = ID({NUM2})
                 #AREARANGECOST
@@ -342,23 +342,30 @@ public enum OpType {
             SET _curOIntf.netType {NAME}
             """,
             "ip ospf network (broadcast|non-broadcast| point-to-point)"),
-    IpOspfPriority("", """
+    IpOspfPriority("ip ospf priority {NUM}", """
             MEET {0} <= {NUM} && {NUM} <= 255
             SET _curOIntf.priority {NUM}
             """,
             "ip ospf priority (0-255)"),
-    IpOspfRetransInter("", """
+    IpOspfRetransInter("ip ospf retransmit-interval {NUM}", """
+            MEET 1 <= NUM && NUM <= 65535
+            SET _curOIntf.retransmit-interval {NUM}
             """,
             "ip ospf retransmit-interval (1-65535)"),
-    IpOspfTransDealy("", """
+    IpOspfTransDealy("ip ospf transmit-dealy {NUM}", """
+                MEET 1 <= NUM && NUM <= 65535
+                SET _curOIntf.transmit-delay {NUM}
             """,
-            "ip ospf transmit-delay (1-65535) [A.B.C.D]"),
-    IpOspfPassive("", """
+            "ip ospf transmit-delay (1-65535)"),
+    IpOspfPassive("ip ospf passive", """
+                SET _curOIntf.passive true
             """,
-            "ip ospf passive [A.B.C.D]"),
-    IpOspfPrefixSupp("", """
-            """,
-            "ip ospf prefix-suppression [A.B.C.D]"),
+            "ip ospf passive"),
+
+//    IpOspfPrefixSupp("ip ospf prefix-suppression {ID}", """
+//
+//            """,
+//            "ip ospf prefix-suppression [A.B.C.D]"),
 
     OSPFIntfGroupEND("", "", ""),
     INVALID(".*", "", "");

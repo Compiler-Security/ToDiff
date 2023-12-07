@@ -27,6 +27,7 @@ public class IPV4 {
     public boolean equals(IPV4 ip){
         return contains(ip) && ip.contains(this);
     }
+
     private static String convertToCIDR(int ipAddress, int subnetMask) {
         StringBuilder sb = new StringBuilder();
 

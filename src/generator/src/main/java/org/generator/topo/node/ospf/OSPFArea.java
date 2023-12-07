@@ -7,6 +7,7 @@ public class OSPFArea extends AbstractNode {
     public OSPFArea(String name) {
         setName(name);
         setNodeType(NodeType.OSPFArea);
+        initFiled();
     }
 
     public IPV4 getArea() {
@@ -18,6 +19,11 @@ public class OSPFArea extends AbstractNode {
     }
 
     IPV4 area;
+
+    @Override
+    public void initFiled() {
+        //TODO
+    }
 
     @Override
     public String getNodeAtrriStr() {

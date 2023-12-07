@@ -6,6 +6,10 @@ import org.generator.util.collections.StringEnum;
 import org.generator.util.net.IPV4;
 import org.generator.topo.node.AbstractNode;
 
+import javax.swing.text.html.Option;
+import java.util.Arrays;
+import java.util.Optional;
+
 public class OSPF extends AbstractNode {
     public OSPF(String name){
         setName(name);
@@ -31,6 +35,11 @@ public class OSPF extends AbstractNode {
         @Override
         public boolean match(String st) {
             return new AbstractStringEnum(template).match(st);
+        }
+        static public Optional<ABR_TYPE> of(String st){
+            return Arrays.stream(ABR_TYPE.values())
+                    .filter(x -> x.match(st))
+                    .findFirst();
         }
     }
 

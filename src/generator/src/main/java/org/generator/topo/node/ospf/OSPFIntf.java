@@ -2,7 +2,12 @@ package org.generator.topo.node.ospf;
 
 import org.generator.topo.node.AbstractNode;
 import org.generator.topo.node.NodeType;
+import org.generator.util.collections.AbstractStringEnum;
+import org.generator.util.collections.StringEnum;
 import org.generator.util.net.IPV4;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 public class OSPFIntf extends AbstractNode {
     public OSPFIntf(String name){
@@ -91,6 +96,71 @@ public class OSPFIntf extends AbstractNode {
     }
 
     int helloInterval;
+
+
+    public enum OSPFNetType implements StringEnum {
+        BROADCAST("broadcast"),
+        NONBROADCAST("non-broadcast");
+
+
+        private final String template;
+        OSPFNetType(String template){this.template = template;}
+
+        @Override
+        public boolean match(String st) {
+            return new AbstractStringEnum(template).match(st);
+        }
+
+        static public Optional<OSPFNetType> of(String st){
+            return Arrays.stream(OSPFNetType.values())
+                    .filter(x -> x.match(st))
+                    .findFirst();
+        }
+    }
+
+    public OSPFNetType getNetType() {
+        return netType;
+    }
+
+    public void setNetType(OSPFNetType netType) {
+        this.netType = netType;
+    }
+
+    OSPFNetType netType;
+    @Override
+    public void initFiled() {
+        //TODO
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    int priority;
+
+    public int getRetansInter() {
+        return retansInter;
+    }
+
+    public void setRetansInter(int retansInter) {
+        this.retansInter = retansInter;
+    }
+
+    int retansInter;
+
+    public int getTransDelay() {
+        return transDelay;
+    }
+
+    public void setTransDelay(int transDelay) {
+        this.transDelay = transDelay;
+    }
+
+    int transDelay;
 
     @Override
     public String getNodeAtrriStr() {

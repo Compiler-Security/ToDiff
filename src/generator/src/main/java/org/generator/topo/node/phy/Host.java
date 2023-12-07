@@ -7,6 +7,12 @@ public class Host extends AbstractNode {
     Host(String name){
         setName(name);
         setNodeType(NodeType.Host);
+        initFiled();
+    }
+
+    @Override
+    public void initFiled() {
+
     }
 
     @Override

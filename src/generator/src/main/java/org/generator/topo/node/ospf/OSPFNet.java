@@ -11,6 +11,7 @@ public class OSPFNet extends AbstractNode {
         setNodeType(NodeType.OSPFNet);
         hide = false;
         ip = null;
+        initFiled();
     }
 
     public IPV4 getIp() {
@@ -32,6 +33,11 @@ public class OSPFNet extends AbstractNode {
     }
 
     boolean hide;
+
+    @Override
+    public void initFiled() {
+
+    }
 
     @Override
     public String getNodeAtrriStr() {

@@ -7,6 +7,7 @@ public class Intf extends AbstractNode {
     public Intf(String name){
         setName(name);
         setNodeType(NodeType.Intf);
+        initFiled();
     }
 
     public boolean isUp() {
@@ -27,6 +28,11 @@ public class Intf extends AbstractNode {
 
     boolean up;
     IPV4 ip;
+
+    @Override
+    public void initFiled() {
+
+    }
 
     @Override
     public String getNodeAtrriStr() {

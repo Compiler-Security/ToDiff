@@ -12,6 +12,11 @@ public class Switch extends AbstractNode {
     }
 
     @Override
+    public void initFiled() {
+        initFiled();
+    }
+
+    @Override
     public String getNodeAtrriStr() {
         return String.format("{type:%s}", getNodeType());
     }
