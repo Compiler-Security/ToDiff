@@ -47,50 +47,6 @@ public class OspfConfParser {
         opg.getOps().stream().filter(x -> x.Type() != OpType.INVALID && x.getCtxOp() != null).forEach(totalOpg::addOp);
         opg.setOpgroup(totalOpg.getOps());
     }
-
-    //    private static HashMap<Operation, SimpleOpGroup> mergeIntfGroup(SimpleOpGroup opg){
-//        var h = new HashMap<Operation, SimpleOpGroup>();
-//        Operation intfOp = null;
-//        for (var op: opg.getOps()){
-//            if (op.Type() == OpType.IntfName){
-//                intfOp = op;
-//                if (!h.containsKey(intfOp)){
-//                    var sog = new SimpleOpGroup();
-//                    sog.setCtxOp(intfOp);
-//                    h.put(intfOp, sog);
-//                }
-//            }else if (op.Type() == OpType.ROSPF){
-//                intfOp = null;
-//            }else if (OpType.inOSPFINTF(op.Type())){
-//                if (intfOp == null) continue;
-//                h.get(intfOp).addOp(op);
-//            }
-//        }
-//        return h;
-//    }
-//
-//    private static @Nullable SimpleOpGroup mergeOspfGroup(SimpleOpGroup opg){
-//        boolean has_ospf = false;
-//        for (var op: opg.getOps()){
-//            if (op.Type() == OpType.ROSPF){
-//                has_ospf = !op.isUnset();
-//            }
-//        }
-//        if (!has_ospf) return null;
-//        boolean ospf_router = false;
-//        SimpleOpGroup sg = new SimpleOpGroup();
-//        sg.setCtxOp(new Operation(OpType.ROSPF));
-//        for(var op: opg.getOps()){
-//            if (op.Type() == OpType.ROSPF){
-//                ospf_router = !op.isUnset();
-//            }else if (op.Type() == OpType.IntfName){
-//                ospf_router = false;
-//            }else if (ospf_router && !OpType.inOSPFINTF(op.Type())){
-//                sg.addOp(op);
-//            }
-//        }
-//        return sg;
-//    }
     private static boolean matchUnset(Operation unsetOp, Operation target) {
         //TODO consider unsetOp filed == target field && unsetOp.getCtxOp == target.getCtxOp
         return false;
