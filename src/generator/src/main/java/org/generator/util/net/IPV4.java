@@ -51,5 +51,9 @@ public class IPV4 {
         return utils.getInfo().asInteger(utils.getInfo().getNetworkAddress());
     }
 
+    @Override
+    public IPV4 clone(){
+        return new IPV4(toString());
+    }
     private SubnetUtils utils;
 }

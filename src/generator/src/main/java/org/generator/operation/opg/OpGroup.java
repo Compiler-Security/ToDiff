@@ -14,14 +14,4 @@ public interface OpGroup {
 
     Optional<String> getTarget();
 
-    OpgExec.Ctx getCtx();
-
-    enum OpGType{
-        Phy,
-        ALLCONF,
-        Intf,
-        OSPF,
-        OSPFIntf,
-        Attri
-    }
 }

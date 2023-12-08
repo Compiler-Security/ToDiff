@@ -1,7 +1,6 @@
 package graph;
 
 import org.generator.operation.conf.SimpleConfReader;
-import org.generator.operation.opg.OSPFOpgExec;
 import org.generator.operation.opg.SimpleOpGroup;
 import org.generator.topo.graph.RelationGraph;
 import org.jetbrains.annotations.NotNull;
@@ -26,7 +25,7 @@ public class RelationGraphIntfExecTest {
         var opg = new SimpleOpGroup(ops, Optional.empty());
         System.out.println(opg);
         RelationGraph topo = new RelationGraph();
-        var opgexec = new OSPFOpgExec();
+        var opgexec = new OSPFOpgExecBack();
         opgexec.ExecOpGroup(opg, topo);
         System.out.println(topo);
     }
@@ -45,7 +44,7 @@ public class RelationGraphIntfExecTest {
         var opg = new SimpleOpGroup(ops, Optional.empty());
         System.out.println(opg);
         RelationGraph topo = new RelationGraph();
-        var opgexec = new OSPFOpgExec();
+        var opgexec = new OSPFOpgExecBack();
         opgexec.ExecOpGroup(opg, topo);
         System.out.println(topo);
         System.out.println(topo.toDot(true));
@@ -57,7 +56,7 @@ public class RelationGraphIntfExecTest {
         var ops = reader.read(cmd).get();
         //ops.forEach(op -> {assert op.Type() != OpType.INVALID : String.format("stmt error %s", op.toString());});
         var opg = new SimpleOpGroup(ops, target);
-        var opgexec = new OSPFOpgExec();
+        var opgexec = new OSPFOpgExecBack();
         opgexec.ExecOpGroup(opg, topo);
     }
 

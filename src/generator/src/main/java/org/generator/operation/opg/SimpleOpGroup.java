@@ -1,7 +1,7 @@
 package org.generator.operation.opg;
 
+import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
-import org.generator.topo.node.AbstractNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,7 @@ public class SimpleOpGroup implements OpGroup{
     public SimpleOpGroup(List<Operation> ops, Optional<String> target){
         opgroup = new ArrayList<>();
         this.target = target;
-        ctx = new OpgExec.Ctx();
+        setCtxOp(null);
         addOps(ops);
     }
     @Override
@@ -37,16 +37,16 @@ public class SimpleOpGroup implements OpGroup{
         return opgroup.toString();
     }
 
+    public void setOpgroup(List<Operation> opgroup) {
+        this.opgroup = opgroup;
+    }
+
     private List<Operation> opgroup;
 
     public Optional<String> getTarget() {
         return target;
     }
 
-    @Override
-    public OpgExec.Ctx getCtx() {
-        return ctx;
-    }
 
     public void setTarget(Optional<String> target) {
         this.target = target;
@@ -54,5 +54,44 @@ public class SimpleOpGroup implements OpGroup{
 
     private Optional<String> target;
 
-    private OpgExec.Ctx ctx;
+
+    public Operation getCtxOp() {
+        return CtxOp;
+    }
+
+    public void setCtxOp(Operation ctxOp) {
+        CtxOp = ctxOp;
+    }
+
+    private Operation CtxOp;
+
+    public enum OpGType{
+        Phy,
+        ALLCONF,
+        Intf,
+        OSPF,
+        OSPFIntf,
+        Attri
+    }
+
+    public OpGType getTyp() {
+        return typ;
+    }
+
+    public void setTyp(OpGType typ) {
+        this.typ = typ;
+    }
+
+    private OpGType typ;
+
+    public List<Operation> getOpsOfType(OpType typ){
+        return getOps().stream().filter(x -> x.Type() == typ).toList();
+    }
+
+    public List<Operation> popOpsOfType(OpType typ){
+        var res = getOpsOfType(typ);
+        setOpgroup(getOps().stream().filter(x -> x.Type() != typ).toList());
+        return res;
+    }
+
 }

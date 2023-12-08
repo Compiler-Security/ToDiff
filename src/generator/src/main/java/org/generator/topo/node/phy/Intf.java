@@ -29,6 +29,15 @@ public class Intf extends AbstractNode {
     boolean up;
     IPV4 ip;
 
+    public boolean isPersudo() {
+        return persudo;
+    }
+
+    public void setPersudo(boolean persudo) {
+        this.persudo = persudo;
+    }
+
+    boolean persudo;
     @Override
     public void initFiled() {
 

@@ -8,10 +8,58 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 public class SimpleConfReader implements ConfR {
+
+
+    private  Operation changeIDNumToID(Operation op, OpType target_type){
+        if (0 <= op.getIDNUM() && op.getIDNUM() <= 4294967295L){
+            var new_op = op.cloneOfType(target_type);
+            return new_op;
+        }else{
+            return new Operation(OpType.INVALID);
+        }
+    }
+    private Operation checkOperation(Operation op){
+        switch (op.Type()){
+            case RABRTYPE -> {
+                String[] type = {"standard", "Cisco", "IBM", "shortcut"};
+                var name = op.getNAME();
+                if (!Arrays.stream(type).anyMatch(x -> x.equals(name))){
+                    return new Operation(OpType.INVALID);
+                }
+            }
+            case NETAREAIDNUM -> {
+                return checkOperation(changeIDNumToID(op, OpType.NETAREAID));
+            }
+            case TIMERSTHROTTLESPF -> {
+                int[] array = {op.getNUM(), op.getNUM2(), op.getNUM3()};
+                var mx = Arrays.stream(array).max().getAsInt();
+                var mi = Arrays.stream(array).min().getAsInt();
+                if (mi < 0 || mx > 600000){
+                    return new Operation(OpType.INVALID);
+                }
+            }
+            case MAXIMUMPATHS -> {
+                if (op.getNUM() < 1 || op.getNUM() > 64){
+                    return new Operation(OpType.INVALID);
+                }
+            }
+            case WRITEMULTIPLIER -> {
+                if (op.getNUM() < 1 || op.getNUM() > 100){
+                    return new Operation(OpType.INVALID);
+                }
+            }
+            case AreaRangeINT -> {
+                return checkOperation(changeIDNumToID(op, OpType.AreaRange));
+            }
+            //TODO
+        };
+        return op;
+    }
     @Nullable
     private Operation getOperation(String op_st){
         for (var v: OpType.values()){

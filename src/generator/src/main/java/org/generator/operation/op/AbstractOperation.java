@@ -17,6 +17,7 @@ public abstract class AbstractOperation implements op {
         this.args = new HashMap<>();
         this.type = type;
         this.re = type.Re();
+        this.unset = false;
         //init();
     }
 //    private  void init(){
@@ -31,6 +32,7 @@ public abstract class AbstractOperation implements op {
 //    }
     @Override
     public boolean decode(String st) {
+        //TODO we should add no to parse unset
         Pattern pattern = Pattern.compile(re);
         Matcher matcher = pattern.matcher(st);
         if (matcher.matches()){
@@ -61,6 +63,11 @@ public abstract class AbstractOperation implements op {
         return buf.toString();
     }
 
+
+    public void setType(OpType type) {
+        this.type = type;
+    }
+
     @Override
     public OpType Type() {
         return type;
@@ -86,6 +93,16 @@ public abstract class AbstractOperation implements op {
     protected   String template;
     protected   String re;
     protected Map<String, String> args;
+
+    public boolean isUnset() {
+        return unset;
+    }
+
+    public void setUnset(boolean unset) {
+        this.unset = unset;
+    }
+
+    protected boolean unset;
 
     @Override
     public String toString() {

@@ -28,6 +28,10 @@ public interface op {
         putArg(field_name, ip.toString());
     }
 
+    default  void putLongArg(String field_name, Long val){
+        putArg(field_name, String.valueOf(val));
+    }
+
     default String Arg(String field_name){
         assert Args().get(field_name) != null;
         return Args().get(field_name);
@@ -35,6 +39,10 @@ public interface op {
 
     default int IntArg(String field_name){
         return Integer.parseInt(Arg(field_name));
+    }
+
+    default long LongArg(String field_name){
+        return Long.parseLong(Arg(field_name));
     }
 
     default double DoubleArg(String field_name){

@@ -7,11 +7,42 @@ import java.util.Map;
 public class Operation extends AbstractOperation {
     public Operation(OpType type) {
         super(type);
+        setCtxOp(null);
     }
 
     public AbstractOperation AbstractOp(){
         store_to_dynamic();
         return (AbstractOperation) this;
+    }
+
+
+    @Override
+    public boolean equals(Object op) {
+        if (op == null) return false;
+        if (op == this) return true;
+        if (op.getClass() != this.getClass()) return false;
+        Operation op1 = (Operation) op;
+        //FIXME we can do it better
+        return encode_to_str().equals(op1.encode_to_str());
+    }
+
+    public Operation cloneOfType(OpType typ){
+        var op = new Operation(typ);
+        op.NAME = NAME;
+        op.NAME2 = NAME2;
+        op.DETAIL = DETAIL;
+        if (IP != null) op.IP = IP.clone();
+        else op.IP = null;
+        if (IP2 != null) op.IP2 = IP2.clone();
+        else op.IP2 = null;
+        if (ID != null) op.ID = ID.clone();
+        else op.ID = null;
+        op.IDNUM = IDNUM;
+        op.NUM = NUM;
+        op.NUM2 = NUM2;
+        op.NUM3 = NUM3;
+        op.ctxOp = ctxOp;
+        return op;
     }
     private void load_from_dynamic(){
         var m = super.Args();
@@ -21,7 +52,7 @@ public class Operation extends AbstractOperation {
         if (m.containsKey("IP")) IP = new IPV4(super.Arg("IP"));
         if (m.containsKey("IP2")) IP = new IPV4(super.Arg("IP2"));
         if (m.containsKey("ID")) ID = new IPV4(super.Arg("ID"));
-        if (m.containsKey("IDNUM")) IDNUM = super.IntArg("IDNUM");
+        if (m.containsKey("IDNUM")) IDNUM = super.LongArg("IDNUM");
         if (m.containsKey("NUM")) NUM = super.IntArg("NUM");
         if (m.containsKey("NUM2")) NUM2 = super.IntArg("NUM2");
         if (m.containsKey("NUM3")) NUM3 = super.IntArg("NUM3");
@@ -42,7 +73,7 @@ public class Operation extends AbstractOperation {
         if (IP != null) super.putIpArg("IP", IP);
         if (IP2 != null) super.putIpArg("IP2", IP2);
         if (ID != null) super.putIpArg("ID", ID);
-        if (IDNUM != null) super.putIntArg("IDNUM", IDNUM);
+        if (IDNUM != null) super.putLongArg("IDNUM", IDNUM);
         if (NUM != null) super.putIntArg("NUM", NUM);
         if (NUM2 != null) super.putIntArg("NUM2", NUM2);
         if (NUM3 != null) super.putIntArg("NUM3", NUM3);
@@ -147,11 +178,11 @@ public class Operation extends AbstractOperation {
         this.ID = ID;
     }
 
-    public Integer getIDNUM() {
+    public Long getIDNUM() {
         return IDNUM;
     }
 
-    public void setIDNUM(Integer IDNUM) {
+    public void setIDNUM(Long IDNUM) {
         this.IDNUM = IDNUM;
     }
 
@@ -177,7 +208,7 @@ public class Operation extends AbstractOperation {
     }
 
     protected IPV4 IP2;
-    protected Integer IDNUM;
+    protected Long IDNUM;
     protected Integer NUM;
 
     public Integer getNUM2() {
@@ -198,4 +229,14 @@ public class Operation extends AbstractOperation {
 
     protected Integer NUM2;
     protected Integer NUM3;
+
+    public Operation getCtxOp() {
+        return ctxOp;
+    }
+
+    public void setCtxOp(Operation ctxOp) {
+        this.ctxOp = ctxOp;
+    }
+
+    Operation ctxOp;
 }

@@ -5,10 +5,8 @@ import org.generator.operation.op.Operation;
 import org.generator.topo.graph.RelationGraph;
 import org.generator.topo.node.NodeGen;
 import org.generator.topo.node.NodeType;
-import org.generator.topo.node.ospf.*;
-import org.generator.topo.node.phy.Intf;
-import org.generator.topo.node.phy.Router;
-import org.generator.util.exception.Unimplemented;
+import org.generator.topo.node.ospf.OSPF;
+import org.generator.topo.node.ospf.OSPFAreaSum;
 import org.generator.util.exec.ExecStat;
 import org.generator.util.net.IPV4;
 import org.jetbrains.annotations.NotNull;
@@ -16,19 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-
-public class OSPFOpgExecBack {
-
-
-    public OSPFOpgExecBack() {
-        cur_intf = null;
-        cur_ospf = null;
-        cur_ospf_intf = null;
-        cur_router = null;
-    }
-
-
-
+public class OspfOpgExec extends OpgExec{
     public ExecStat execOSPFAttriCmds(@NotNull Operation op, @NotNull RelationGraph topo) {
         if (op.Type() != OpType.ROSPF && (cur_router ==null || cur_ospf == null)){
             return ExecStat.FAIL;
@@ -185,7 +171,6 @@ public class OSPFOpgExecBack {
         }
     }
 
-
     private ExecStat execOSPFOp(@NotNull Operation op, RelationGraph topo) {
         if (OpType.inOSPFRouterWithTopo(op.Type())) {
             return execOSPFAttriCmds(op, topo);
@@ -196,79 +181,8 @@ public class OSPFOpgExecBack {
         }
         return ExecStat.MISS;
     }
-
-    public void ExecOpGroup(OpGroup opg, RelationGraph topo) {
-        var target = opg.getTarget();
-        if (target.isPresent()) {
-            String target_st = target.get();
-            if (topo.containsNode(target_st)){
-                if (topo.getNode(target_st).get() instanceof Router r) {
-                    cur_router = r;
-                }
-            }else{
-                assert false:String.format("target %s not exist!", target_st);
-            }
-
-        }
-        for (var op : opg.getOps()) {
-            if (OpType.inPhy(op.Type())) {
-
-            } else if (OpType.inOSPF(op.Type())) {
-                execOSPFOp(op, topo);
-            } else {
-                new Unimplemented();
-            }
-        }
+    @Override
+    ExecStat execOp(Operation op, RelationGraph topo) {
+        return execOSPFOp(op, topo);
     }
-
-
-
-
-    //context
-    public OSPF getCur_ospf() {
-        return cur_ospf;
-    }
-
-    public void setCur_ospf(OSPF cur_ospf) {
-        this.cur_ospf = cur_ospf;
-    }
-
-    public OSPFDaemon getCur_ospf_daemon() {
-        return cur_ospf_daemon;
-    }
-
-    public void setCur_ospf_daemon(OSPFDaemon cur_ospf_daemon) {
-        this.cur_ospf_daemon = cur_ospf_daemon;
-    }
-
-    public Router getCur_router() {
-        return cur_router;
-    }
-
-    public void setCur_router(Router cur_router) {
-        this.cur_router = cur_router;
-    }
-
-    public Intf getCur_intf() {
-        return cur_intf;
-    }
-
-    public void setCur_intf(Intf cur_intf) {
-        this.cur_intf = cur_intf;
-    }
-
-    public OSPFIntf getCur_ospf_intf() {
-        return cur_ospf_intf;
-    }
-
-    public void setCur_ospf_intf(OSPFIntf cur_ospf_intf) {
-        this.cur_ospf_intf = cur_ospf_intf;
-    }
-
-    OSPF cur_ospf;
-    OSPFDaemon cur_ospf_daemon;
-    Router cur_router;
-    Intf cur_intf;
-    OSPFIntf cur_ospf_intf;
-
 }

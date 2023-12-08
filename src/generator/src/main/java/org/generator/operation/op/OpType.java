@@ -14,6 +14,7 @@ public enum OpType {
     LINKDOWN("link {NAME} {NAME2} down", "", ""),
     LINKREMOVE("link {NAME} {NAME2} remove", "", ""),
 
+    OSPFCONF("ospfconf", "", ""),
     OSPFROUTERBEGIN("", "", ""),
 
     //=================OSPF ROUTER==================
@@ -172,37 +173,37 @@ public enum OpType {
                 SET areaSumEntry.cost {NUM}
             """,
             "area A.B.C.D range A.B.C.D/M cost (0-16777215)"),
-    AreaRangeINT("area {NUM} range {IP}", """
+    AreaRangeINT("area {IDNUM} range {IP}", """
                 MEET 0<={NUM}<=16777215
                 let {ID} = ID({NUM})
                 #AREARANGE
             """,
             "area (0-4294967295) range A.B.C.D/M"),
-    AreaRangeAdINT("area {NUM} range {IP} advertise", """
+    AreaRangeAdINT("area {IDNUM} range {IP} advertise", """
                 MEET 0<={NUM}<=16777215
                 let {ID} = ID({NUM})
                 #AREARANGEADVERTISE
             """,
             "area (0-4294967295) range A.B.C.D/M advertise"),
-    AreaRangeAdCostINT("area {NUM} range {IP} advertise cost {NUM2}", """
+    AreaRangeAdCostINT("area {IDNUM} range {IP} advertise cost {NUM2}", """
                 MEET 0<={NUM2}<=16777215
                 let {ID} = ID({NUM2})
                 #AREARANGEADVERTISECOST
             """,
             "area (0-4294967295) range A.B.C.D/M advertise cost (0-16777215)"),
-    AreaRangeNoAdINT("area {NUM} range {IP} not-advertise", """
+    AreaRangeNoAdINT("area {IDNUM} range {IP} not-advertise", """
                 MEET 0<={NUM}<=16777215
                 let {ID} = ID({NUM})
                 #AREARANGENOADVERTISE
             """,
             "area (0-4294967295) range A.B.C.D/M not-advertise"),
-    AreaRangeSubINT("area {NUM} range {IP} substitute {IP2}", """
+    AreaRangeSubINT("area {IDNUM} range {IP} substitute {IP2}", """
                 MEET 0<={NUM}<=16777215
                 let {ID} = ID({NUM})
                 #AREARANGESUBSTITUTE
             """,
             "area A.B.C.D range A.B.C.D/M substitute A.B.C.D/M"),
-    AreaRangeCostINT("area {NUM} range {IP} cost {NUM2}", """
+    AreaRangeCostINT("area {IDNUM} range {IP} cost {NUM2}", """
                 MEET 0<={NUM2}<=16777215
                 let {ID} = ID({NUM2})
                 #AREARANGECOST
@@ -267,18 +268,7 @@ public enum OpType {
             SET _curIntf.ip {IP}
             """,
             "ip address ADDRESS/PREFIX"),
-    //FIXME syntax right?
-    IpOspfAreaAddr("ip opsf area {ID} {IP}", """
-            MEET HAS _curOIntf
-            MEET HAS _curIntf
-            SET _curOIntf.area {ID}
-            SET _curIntf.ip {IP}
-            if (!HAS ospfnet where ospfnet.ip == {IP} && ospfnet.area == {ID})
-                ADD ospfnet LINK _curOSPF
-                SET ospfnet.ip {IP}
-                SET ospfnet.area {ID}
-            """,
-            "ip ospf area AREA ADDR"),
+
     //NOT CONSIDER ip ospf authentication-key AUTH_KEY
     //NOT Consider ip ospf authentication message-digest
     //NOT consider ip ospf message-digest-key KEYID md5 KEY
@@ -296,7 +286,7 @@ public enum OpType {
                 SET ospfnet.area {ID}
             """,
             "ip ospf area AREA"),
-    IpOspfAreaINT("ip ospf area {NUM}", """
+    IpOspfAreaINT("ip ospf area {IDNUM}", """
             MEET 0 <= {NUM} && {NUM} <= 4294967295
             LET {ID} = ID(NUM)
             #IpOspfArea
