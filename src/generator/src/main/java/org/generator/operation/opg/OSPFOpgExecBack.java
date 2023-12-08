@@ -1,9 +1,7 @@
 package org.generator.operation.opg;
 
-import org.generator.operation.op.OpGen;
 import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
-import org.generator.topo.edge.RelationEdge;
 import org.generator.topo.graph.RelationGraph;
 import org.generator.topo.node.NodeGen;
 import org.generator.topo.node.NodeType;
@@ -19,10 +17,10 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 
-public class OSPFOpgExec {
+public class OSPFOpgExecBack {
 
 
-    public OSPFOpgExec() {
+    public OSPFOpgExecBack() {
         cur_intf = null;
         cur_ospf = null;
         cur_ospf_intf = null;
@@ -141,22 +139,22 @@ public class OSPFOpgExec {
             var areaSum = getAreaSum(op.getID(), topo);
             var areaSumEntry = getAreaSumEntry(areaSum, op.getIP());
             switch (op.Type()) {
-                case AreaRange, AreaRangeINT -> {
+                case AreaRange -> {
                 }
-                case AreaRangeAd, AreaRangeAdINT -> {
+                case AreaRangeAd -> {
                     areaSumEntry.setAdvertise(true);
                 }
-                case AreaRangeCost, AreaRangeCostINT -> {
+                case AreaRangeCost -> {
                     areaSumEntry.setCost(op.getNUM());
                 }
-                case AreaRangeAdCost, AreaRangeAdCostINT -> {
+                case AreaRangeAdCost -> {
                     areaSumEntry.setAdvertise(true);
                     areaSumEntry.setCost(op.getNUM());
                 }
-                case AreaRangeNoAd, AreaRangeNoAdINT -> {
+                case AreaRangeNoAd -> {
                     areaSumEntry.setAdvertise(false);
                 }
-                case AreaRangeSub, AreaRangeSubINT -> {
+                case AreaRangeSub -> {
                     areaSumEntry.setSubstitute(op.getIP2());
                 }
             }
@@ -187,47 +185,7 @@ public class OSPFOpgExec {
         }
     }
 
-    private ExecStat execOSPFIntfCmds(@NotNull Operation op, @NotNull RelationGraph topo){
-        if (cur_ospf_intf == null){
-            return ExecStat.MISS;
-        }
-        switch (op.Type()){
-            case IpOspfCost -> {
-                cur_ospf_intf.setCost(op.getNUM());
-            }
-            case IpOspfDeadInter -> {
-                cur_ospf_intf.setDeadInterval(op.getNUM());
-            }
-            case IpOspfDeadInterMulti -> {
-                cur_ospf_intf.setHelloPerSec(op.getNUM());
-                cur_ospf_intf.setHelloInterval(0);
-            }
-            case IpOspfHelloInter -> {
-                cur_ospf_intf.setHelloInterval(op.getNUM());
-            }
-            case IpOspfGRHelloDelay -> {
-                cur_ospf_intf.setGRHelloDelay(op.getNUM());
-            }
-            case IpOspfNet -> {
-                return OSPFIntf.OSPFNetType.of(op.getNAME())
-                        .map(x -> {cur_ospf_intf.setNetType(x); return ExecStat.SUCC;})
-                        .orElse(ExecStat.MISS);
-            }
-            case IpOspfPriority -> {
-                cur_ospf_intf.setPriority(op.getNUM());
-            }
-            case IpOspfRetransInter -> {
-                cur_ospf_intf.setRetansInter(op.getNUM());
-            }
-            case IpOspfTransDealy -> {
-                cur_ospf_intf.setTransDelay(op.getNUM());
-            }
-            case IpOspfPassive -> {
-                cur_ospf_intf.setPassive(true);
-            }
-        }
-        return ExecStat.SUCC;
-    }
+
     private ExecStat execOSPFOp(@NotNull Operation op, RelationGraph topo) {
         if (OpType.inOSPFRouterWithTopo(op.Type())) {
             return execOSPFAttriCmds(op, topo);
