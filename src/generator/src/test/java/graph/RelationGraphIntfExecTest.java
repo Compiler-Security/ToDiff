@@ -82,6 +82,7 @@ public class RelationGraphIntfExecTest {
                 network 10.0.0.0/10 area 0.0.0.2
                 interface r1-eth0
                 ip ospf area 0.0.0.3
+                no ip ospf area
                 ip address 10.0.0.0/10
                 ip ospf cost 100
                 interface r1-eth0

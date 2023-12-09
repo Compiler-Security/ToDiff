@@ -58,7 +58,7 @@ public class ConfReader implements ConfR {
             case AreaRangeINT -> {
                 return checkOperation(changeIDNumToID(op, OpType.AreaRange));
             }
-            //TODO
+            //TODO add all num check and int to ID
         };
         return op;
     }

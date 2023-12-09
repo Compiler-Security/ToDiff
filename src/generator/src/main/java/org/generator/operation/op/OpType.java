@@ -15,6 +15,7 @@ public enum OpType {
     LINKDOWN("link {NAME} {NAME2} down", "", ""),
     LINKREMOVE("link {NAME} {NAME2} remove", "", ""),
 
+    //TODO add all no operations
     OSPFCONF("ospfconf", "", ""),
     OSPFROUTERBEGIN("", "", ""),
 
@@ -282,7 +283,9 @@ public enum OpType {
 
     //FIXME if we use this, network area command will not work
     //FIXME what if curIntf don't have ip
-    IpOspfArea("ip ospf area {ID}", """
+    IpOspfArea("ip ospf area {ID}",
+            "no ip ospf area | no ip ospf area {ID}",
+            """
             MEET HAS _curOIntf
             MEET HAS _curIntf
             SET _curOIntf.area {ID}
