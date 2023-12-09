@@ -46,7 +46,7 @@ public class NodeGen {
     }
 
     static  public String getOSPFAreaName(IPV4 area){
-        return String.format("area%d", area.toInt());
+        return String.format("area%d", area.IDtoInt());
     }
     static public String getOSPFAreaSumName(String ospf_name, String area_name){
         return String.format("%s-%s", ospf_name, area_name);

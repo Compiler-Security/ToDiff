@@ -1,5 +1,6 @@
 package org.generator.operation.op;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +20,7 @@ public enum OpType {
 
     //=================OSPF ROUTER==================
     ROSPF("router ospf",
-
+            "no router ospf",
             """
                     IF !cur_router->ospf
                         ADD ospf
@@ -32,6 +33,7 @@ public enum OpType {
     //TODO ROSPFVRF("router ospf vrf [NAME]"),
 
     RID("ospf router-id {ID}",
+            "no ospf router-id | no ospf router-id {ID}",
             """
                     MEET cur_ospf
                     SET ospf.router-id {ID}
@@ -391,30 +393,55 @@ public enum OpType {
         return reMap.get(this);
     }
 
+    public String[] UnsetRe(){
+        return unsetReMap.get(this);
+    }
     private final String template;
     private final String syntax;
 
     private final String raw;
 
-    OpType(String template, String syntax, String raw) {
+    private final int noNum;
+
+    public String[] getUnsetTemplate() {
+        return unsetTemplate;
+    }
+
+    private  final String[] unsetTemplate;
+
+    OpType(String template, String unset, String syntax, String raw) {
         this.template = template;
         this.syntax = syntax;
         this.raw = raw;
+        this.unsetTemplate = Arrays.stream(unset.split("\\|")).map(String::strip).toArray(String[]::new);
+        this.noNum = this.unsetTemplate.length;
+    }
+
+    OpType(String template, String syntax, String raw){
+        this.template = template;
+        this.syntax = syntax;
+        this.raw = raw;
+        this.unsetTemplate = new String[]{};
+        this.noNum = 0;
     }
 
     private static Map<OpType, String> reMap = new HashMap<>();
+    private static Map<OpType, String[]> unsetReMap = new HashMap<>();
 
+    private static String changeToRe(String st){
+        String re = st;
+        do {
+            re = st;
+            st = st.replaceAll("\\{([^{}]+)\\}", "(?<$1>[0-9a-zA-Z.-/]+)");
+            //st = st.replaceAll("\\[(.*)\\]", "(?:$1)?");
+        } while (!st.equals(re));
+        re = re.replaceAll("\s+", "\\\\s+");
+        return re;
+    }
     static {
         for (OpType typ : OpType.values()) {
-            String st = typ.template;
-            String re = st;
-            do {
-                re = st;
-                st = st.replaceAll("\\{([^{}]+)\\}", "(?<$1>[0-9a-zA-Z.-]+)");
-                //st = st.replaceAll("\\[(.*)\\]", "(?:$1)?");
-            } while (!st.equals(re));
-            re = re.replaceAll("\s+", "\\\\s+");
-            reMap.put(typ, re);
+            reMap.put(typ, changeToRe(typ.template));
+            unsetReMap.put(typ, Arrays.stream(typ.unsetTemplate).map(OpType::changeToRe).toArray(String[]::new));
         }
     }
 }

@@ -116,12 +116,12 @@ public class OspfOpgExec extends OpgExec{
         //FIXME num range should be deal before this
         var cur_rname = cur_router.getName();
         Boolean is_ABR = topo.getOSPFIntfOfRouter(cur_rname)
-                .stream().anyMatch(x -> x.getArea().toInt() == 0);
+                .stream().anyMatch(x -> x.getArea().IDtoInt() == 0);
         if (op.Type().ordinal() >= OpType.AreaRange.ordinal() && op.Type().ordinal() <= OpType.AreaRangeCostINT.ordinal()) {
             if (!is_ABR) {
                 return ExecStat.MISS;
             }
-            if (op.getID() == null) op.setID(IPV4.Of(op.getNUM()));
+            if (op.getID() == null) op.setID(IPV4.IDOf(op.getNUM()));
             var areaSum = getAreaSum(op.getID(), topo);
             var areaSumEntry = getAreaSumEntry(areaSum, op.getIP());
             switch (op.Type()) {
@@ -147,7 +147,7 @@ public class OspfOpgExec extends OpgExec{
             return ExecStat.SUCC;
         }else{
             //FIXME Is these commands should be used only in ABR?
-            if (op.getID() == null) op.setID(IPV4.Of(op.getNUM()));
+            if (op.getID() == null) op.setID(IPV4.IDOf(op.getNUM()));
             var areaSum = getAreaSum(op.getID(), topo);
             switch (op.Type()){
                 case AreaVLink -> {

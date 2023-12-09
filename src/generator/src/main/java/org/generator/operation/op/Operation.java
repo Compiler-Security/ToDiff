@@ -40,24 +40,41 @@ public class Operation extends StrOperation {
         return OpGen.GenOperation(typ, this.args);
     }
 
-    private void load_from_dynamic(){
+    private boolean load_from_dynamic(){
         var m = super.Args();
         if (m.containsKey("NAME")) NAME = super.Arg("NAME"); else NAME = null;
         if (m.containsKey("NAME2")) NAME2 = super.Arg("NAME2"); else NAME2 = null;
         if (m.containsKey("DETAIL")) DETAIL = super.Arg("DETAIL"); else DETAIL = null;
-        if (m.containsKey("IP")) IP = new IPV4(super.Arg("IP")); else IP = null;
-        if (m.containsKey("IP2")) IP2 = new IPV4(super.Arg("IP2")); else IP2 = null;
-        if (m.containsKey("ID")) ID = new IPV4(super.Arg("ID")); else ID = null;
-        if (m.containsKey("IDNUM")) IDNUM = super.LongArg("IDNUM"); else IDNUM = null;
-        if (m.containsKey("NUM")) NUM = super.IntArg("NUM"); else NUM = null;
-        if (m.containsKey("NUM2")) NUM2 = super.IntArg("NUM2"); else NUM2 = null;
-        if (m.containsKey("NUM3")) NUM3 = super.IntArg("NUM3"); else NUM3 = null;
+        if (m.containsKey("IP")){
+            IP = super.IPArg(super.Arg("IP"));
+            if (IP == null) return false;
+        }else IP = null;
+        if (m.containsKey("IP2")){
+            IP2 = super.IPArg(super.Arg("IP2"));
+            if (IP2 == null) return false;
+        } else IP2 = null;
+        if (m.containsKey("ID")){ ID = super.IDArg(super.Arg("ID"));
+            if (ID == null) return false;
+        }
+        else ID = null;
+        try {
+            if (m.containsKey("IDNUM")) IDNUM = super.LongArg("IDNUM");
+            else IDNUM = null;
+            if (m.containsKey("NUM")) NUM = super.IntArg("NUM");
+            else NUM = null;
+            if (m.containsKey("NUM2")) NUM2 = super.IntArg("NUM2");
+            else NUM2 = null;
+            if (m.containsKey("NUM3")) NUM3 = super.IntArg("NUM3");
+            else NUM3 = null;
+        }catch (NumberFormatException e){
+            return false;
+        }
+        return true;
     }
     @Override
     public boolean decode(String st) {
         if (super.decode(st)){
-            load_from_dynamic();
-            return true;
+            return load_from_dynamic();
         }
         return false;
     }
@@ -109,29 +126,29 @@ public class Operation extends StrOperation {
         super.putIpArg(field_name, ip);
         load_from_dynamic();
     }
-    @Override
-    public String Arg(String field_name) {
-        store_to_dynamic();
-        return super.Arg(field_name);
-    }
-
-    @Override
-    public int IntArg(String field_name) {
-        store_to_dynamic();
-        return super.IntArg(field_name);
-    }
-
-    @Override
-    public double DoubleArg(String field_name) {
-        store_to_dynamic();
-        return super.DoubleArg(field_name);
-    }
-
-    @Override
-    public IPV4 IPArg(String field_name) {
-        store_to_dynamic();
-        return super.IPArg(field_name);
-    }
+//    @Override
+//    public String Arg(String field_name) {
+//        store_to_dynamic();
+//        return super.Arg(field_name);
+//    }
+//
+//    @Override
+//    public int IntArg(String field_name) {
+//        store_to_dynamic();
+//        return super.IntArg(field_name);
+//    }
+//
+//    @Override
+//    public double DoubleArg(String field_name) {
+//        store_to_dynamic();
+//        return super.DoubleArg(field_name);
+//    }
+//
+//    @Override
+//    public IPV4 IPArg(String field_name) {
+//        store_to_dynamic();
+//        return super.IPArg(field_name);
+//    }
 
 
     public String getNAME() {

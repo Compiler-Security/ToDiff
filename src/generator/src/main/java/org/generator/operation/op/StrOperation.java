@@ -1,5 +1,6 @@
 package org.generator.operation.op;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -17,12 +18,12 @@ public class StrOperation implements op {
         this.args = new HashMap<>();
         this.type = type;
         this.re = type.Re();
+        this.unsetRe = type.UnsetRe();
+        this.unsetTemplate = type.getUnsetTemplate();
         this.unset = false;
     }
 
-    @Override
-    public boolean decode(String st) {
-        //TODO we should add no to parse unset
+    private boolean decode_by_re(String st, String re){
         Pattern pattern = Pattern.compile(re);
         Matcher matcher = pattern.matcher(st);
         if (matcher.matches()){
@@ -34,8 +35,25 @@ public class StrOperation implements op {
     }
 
     @Override
-    public void encode(StringBuilder buf) {
-        //{}
+    public boolean decode(String st) {
+        unsetIndex = -1;
+        if (decode_by_re(st, re)){
+            setUnset(false);
+            return true;
+        }else {
+            for(int i = 0; i < unsetRe.length; i++){
+                if (decode_by_re(st, unsetRe[i])){
+                    setUnset(true);
+                    unsetIndex = i;
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+
+    public void encode_by_template(StringBuilder buf, String template){
         Pattern pattern = Pattern.compile("\\{([^{}]+)\\}");
         Matcher matcher = pattern.matcher(template);
         while(matcher.find()){
@@ -46,10 +64,26 @@ public class StrOperation implements op {
         matcher.appendTail(buf);
     }
 
+    public void encode(StringBuilder buf, int index){
+        if (!unset) {
+            encode_by_template(buf, template);
+        }else{
+            encode_by_template(buf, this.unsetTemplate[index]);
+        }
+    }
+    @Override
+    public void encode(StringBuilder buf) {
+        encode(buf, 0);
+    }
+
     @Override
     public String encode_to_str() {
+        return encode_to_str(unsetIndex);
+    }
+
+    public String encode_to_str(int index){
         StringBuilder buf = new StringBuilder();
-        encode(buf);
+        encode(buf, index);
         return buf.toString();
     }
 
@@ -81,7 +115,11 @@ public class StrOperation implements op {
 
     protected   OpType type;
     protected   String template;
+
+    protected String[] unsetTemplate;
     protected   String re;
+
+    protected String[] unsetRe;
     protected Map<String, String> args;
 
     public boolean isUnset() {
@@ -94,11 +132,28 @@ public class StrOperation implements op {
 
     protected boolean unset;
 
+    public int getUnsetIndex() {
+        return unsetIndex;
+    }
+
+    public void setUnsetIndex(int unsetIndex) {
+        this.unsetIndex = unsetIndex;
+    }
+
+    protected int unsetIndex;
+
     @Override
     public String toString() {
         if (Type() == OpType.INVALID){
             return "INVALID";
         }
         return encode_to_str();
+    }
+
+    public String toString(int index){
+        if (Type() == OpType.INVALID){
+            return "INVALID";
+        }
+        return encode_to_str(index);
     }
 }

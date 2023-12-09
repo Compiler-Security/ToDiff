@@ -1,34 +1,68 @@
 package org.generator.util.net;
 
 
-import org.generator.util.exception.Unimplemented;
 import org.apache.commons.net.util.SubnetUtils;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.Objects;
+
+
 public class IPV4 {
     public IPV4(){}
-    public IPV4(@NotNull String ip_st){
-        if (!ip_st.contains("/")){
-            ip_st = ip_st + "/32";
+
+    public static IPV4 IDOf(String id_st){
+        var ip = new IPV4();
+        if (ip.fromStr(id_st, true)){
+            ip.setIsId(true);
+            return ip;
+        }else return null;
+    }
+
+    public static IPV4 IPOf(String ip_st){
+        var ip = new IPV4();
+        if (ip.fromStr(ip_st, false)){
+            ip.setIsId(false);
+            return ip;
+        }else return null;
+    }
+
+    static public IPV4 IDOf(int num){
+        return IDOf(convertToCIDR(num, 32));
+    }
+
+    static  public IPV4 IPOf(int num, int prefix){
+        return IPOf(convertToCIDR(num, prefix));
+    }
+
+    private boolean fromStr(@NotNull String ip_st, boolean id){
+        if (id) {
+            if (!ip_st.contains("/")) {
+                ip_st = ip_st + "/32";
+            }else{
+                return false;
+            }
         }
         try {
-             utils = new SubnetUtils(ip_st);
+            utils = new SubnetUtils(ip_st);
         }catch (IllegalArgumentException e){
-            e.printStackTrace();
+            return false;
         }
         utils.setInclusiveHostCount(true);
+        return true;
     }
 
 
-    public boolean contains(IPV4 ip){
-        return utils.getInfo().isInRange(ip.toString());
-    }
+//    public boolean contains(IPV4 ip){
+//        return utils.getInfo().isInRange(ip.toString());
+//    }
+//
+//    public boolean equals(IPV4 ip){
+//        return contains(ip) && ip.contains(this);
+//    }
 
-    public boolean equals(IPV4 ip){
-        return contains(ip) && ip.contains(this);
-    }
-
-    private static String convertToCIDR(int ipAddress, int subnetMask) {
+    private static String convertToCIDR(long ipAddress, int subnetMask) {
+        if (ipAddress < 0 || ipAddress > 4294967295L) return "";
         StringBuilder sb = new StringBuilder();
 
         sb.append((ipAddress >> 24) & 255).append(".");
@@ -39,21 +73,59 @@ public class IPV4 {
 
         return sb.toString();
     }
-    static public IPV4 Of(int num){
-        return new IPV4(convertToCIDR(num, 32));
-    }
+
     @Override
     public String toString() {
-        return utils.getInfo().getCidrSignature();
+        String st = utils.getInfo().getCidrSignature();
+        if (isId){
+            return Arrays.stream(st.split("/")).toList().get(0);
+        }else {
+            return st;
+        }
     }
 
-    public int toInt(){
+    public int IDtoInt(){
+        assert isId;
         return utils.getInfo().asInteger(utils.getInfo().getNetworkAddress());
+    }
+
+    public IPV4 getIDOfIp(){
+        assert !isId;
+        return IDOf(utils.getInfo().getNetworkAddress());
+    }
+
+    public int getMaskOfIp(){
+        assert  !isId;
+        return utils.getInfo().asInteger(utils.getInfo().getNetmask());
+    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        IPV4 ipv4 = (IPV4) o;
+        return isId == ipv4.isId && toString().equals(ipv4.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(toString());
     }
 
     @Override
     public IPV4 clone(){
-        return new IPV4(toString());
+        if (isId){
+            return IDOf(toString());
+        }else return IPOf(toString());
     }
     private SubnetUtils utils;
+
+    public boolean isId() {
+        return isId;
+    }
+
+    public void setIsId(boolean id) {
+        isId = id;
+    }
+
+    private boolean isId;
 }

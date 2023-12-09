@@ -6,7 +6,6 @@ import org.generator.util.collections.StringEnum;
 import org.generator.util.net.IPV4;
 import org.generator.topo.node.AbstractNode;
 
-import javax.swing.text.html.Option;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -104,7 +103,7 @@ public class OSPF extends AbstractNode {
     public void initFiled() {
         status = OSPF_STATUS.UP;
         abrType = ABR_TYPE.Normal;
-        routerId = IPV4.Of(0);
+        routerId = IPV4.IDOf(0);
         //TODO
         initDelay = 10;
         initHoldTime = 10;
@@ -115,7 +114,7 @@ public class OSPF extends AbstractNode {
     public String getNodeAtrriStr() {
         String router_id_str = "UNK";
         if (getRouterId() != null){
-            router_id_str = String.format("%d", getRouterId().toInt());
+            router_id_str = String.format("%d", getRouterId().IDtoInt());
         }
         return String.format("{type:%s, router_id:%s, status:%s, abr_type:%s}", getNodeType(), router_id_str, getStatus(), getAbrType());
     }

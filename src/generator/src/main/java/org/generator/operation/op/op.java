@@ -28,6 +28,7 @@ public interface op {
         putArg(field_name, ip.toString());
     }
 
+
     default  void putLongArg(String field_name, Long val){
         putArg(field_name, String.valueOf(val));
     }
@@ -50,7 +51,11 @@ public interface op {
     }
 
     default IPV4 IPArg(String field_name){
-        return new IPV4(field_name);
+        return IPV4.IPOf(field_name);
+    }
+
+    default IPV4 IDArg(String field_name){
+        return IPV4.IDOf(field_name);
     }
     @Override
     String toString();

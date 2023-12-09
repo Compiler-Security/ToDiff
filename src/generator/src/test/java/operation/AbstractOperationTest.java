@@ -4,6 +4,7 @@ import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -77,5 +78,19 @@ public class AbstractOperationTest {
 
         String replacedText = result.toString();
         System.out.println(replacedText);
+    }
+
+    @Test
+    public void noTest(){
+
+//        var a = Arrays.stream("123".split("\\|")).map(String::strip).toList();
+//        System.out.println(a);
+//        //System.out.println((String[]) Arrays.stream("123".split("\\|")).map(String::strip).toArray());
+        var op = new Operation(OpType.RID);
+        var c = op.decode("no ospf router-id 5.5.5.5");
+        System.out.println(c);
+        if (c) {
+            System.out.println(op.toString());
+        }
     }
 }
