@@ -26,7 +26,6 @@ public abstract class OpgExec {
     abstract ExecStat execOp(Operation op, RelationGraph topo);
     public List<Pair<Operation, ExecStat>> execOps(OpGroup opg, RelationGraph topo){
         List<Pair<Operation, ExecStat>> l = new ArrayList<>();
-        assert opg.getOps().stream().allMatch(x -> OpType.inPhy(x.Type())) : "there is op not in phyOpGroup";
         for(var op: opg.getOps()){
             var res = execOp(op, topo);
             l.add(new Pair<>(op, res));

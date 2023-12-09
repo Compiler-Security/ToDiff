@@ -195,7 +195,7 @@ public class OspfConfParser {
             var cur_intf_name = intf_opg.getCtxOp().getNAME();
             var cur_ospf_intf_name = NodeGen.getOSPFIntfName(cur_intf_name);
             if (topo.containsNode(cur_ospf_intf_name)){
-                exec.setCur_ospf_intf(topo.getOSPFIntf(cur_intf_name));
+                exec.setCur_ospf_intf(topo.getOSPFIntf(cur_ospf_intf_name));
             }
             exec.execOps(intf_opg, topo);
         }

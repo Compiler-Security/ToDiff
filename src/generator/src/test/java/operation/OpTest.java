@@ -19,7 +19,7 @@ public class OpTest {
         var conf = """
                 node  r1   add
                 node r2     add
-                link r1-eth0   r2-eth0    up    
+                link r1-eth0   r2-eth0    up   
                 """;
         var res = new ConfReader().read(conf);
         System.out.println(res);

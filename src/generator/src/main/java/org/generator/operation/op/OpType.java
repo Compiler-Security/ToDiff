@@ -436,7 +436,7 @@ public enum OpType {
         String re = st;
         do {
             re = st;
-            st = st.replaceAll("\\{([^{}]+)\\}", "(?<$1>[0-9a-zA-Z.-/]+)");
+            st = st.replaceAll("\\{([^{}]+)\\}", "(?<$1>[0-9a-zA-Z./-]+)");
             //st = st.replaceAll("\\[(.*)\\]", "(?:$1)?");
         } while (!st.equals(re));
         re = re.replaceAll("\s+", "\\\\s+");

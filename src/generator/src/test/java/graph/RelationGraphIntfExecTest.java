@@ -67,7 +67,6 @@ public class RelationGraphIntfExecTest {
         String test_st = """
                 node r1 add
                 node s1 add
-                node r1 set ospf up
                 link r1-eth0 s1-eth0 up
                 """;
         RelationGraph topo = new RelationGraph();
@@ -79,6 +78,9 @@ public class RelationGraphIntfExecTest {
         String test_st = """
                 router ospf
                 ospf router-id 0.0.0.1
+                interface r1-eth0
+                ip ospf area 0.0.0.0
+                ip address 10.0.0.0/10
                 """;
         var topo = getBaseTopo();
         run_cmd_str(false, test_st, topo, Optional.of("r1"));

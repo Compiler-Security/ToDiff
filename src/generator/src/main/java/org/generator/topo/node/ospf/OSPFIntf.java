@@ -164,6 +164,6 @@ public class OSPFIntf extends AbstractNode {
 
     @Override
     public String getNodeAtrriStr() {
-        return String.format("{type:%s, vrf:%d, cost:%d}", getNodeType(), getVrf(), getCost());
+        return String.format("{type:%s, area: %s, vrf:%d, cost:%d}",  getNodeType(), getArea(), getVrf(), getCost());
     }
 }
