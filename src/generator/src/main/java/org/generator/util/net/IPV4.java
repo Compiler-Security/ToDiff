@@ -53,9 +53,16 @@ public class IPV4 {
     }
 
 
-//    public boolean contains(IPV4 ip){
-//        return utils.getInfo().isInRange(ip.toString());
-//    }
+    public boolean containsId(IPV4 id){
+        assert id.isId : "should contain id not subnet";
+        return utils.getInfo().isInRange(id.toString());
+    }
+
+    public boolean containsIp(IPV4 ip){
+        assert !isId() : "should contain ip";
+        //FIXME we don't check subnet(mask)
+        return utils.getInfo().isInRange(ip.getAddressOfIp().toString());
+    }
 //
 //    public boolean equals(IPV4 ip){
 //        return contains(ip) && ip.contains(this);
@@ -92,12 +99,25 @@ public class IPV4 {
         }
     }
 
+    public String toNetString(){
+        if (isId){
+            return toString();
+        }else{
+            return String.format("%s/%d", getNetAddressOfIp(), getMaskOfIp());
+        }
+    }
+
     public int IDtoInt(){
         assert isId;
         return utils.getInfo().asInteger(utils.getInfo().getNetworkAddress());
     }
 
-    public IPV4 getIDOfIp(){
+    public IPV4 getAddressOfIp(){
+        assert !isId;
+        return IDOf(utils.getInfo().getAddress());
+    }
+
+    public IPV4 getNetAddressOfIp(){
         assert !isId;
         return IDOf(utils.getInfo().getNetworkAddress());
     }
@@ -121,12 +141,13 @@ public class IPV4 {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         IPV4 ipv4 = (IPV4) o;
-        return isId == ipv4.isId && toString().equals(ipv4.toString());
+        if (isId != ipv4.isId) return false;
+        return toNetString().equals(ipv4.toNetString());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(toString());
+        return Objects.hash(toNetString());
     }
 
     @Override

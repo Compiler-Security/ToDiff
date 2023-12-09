@@ -17,8 +17,12 @@ import org.generator.util.collections.Pair;
 import org.generator.util.net.IPV4;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static java.lang.Integer.max;
 
 public class OspfConfParser {
 
@@ -46,15 +50,22 @@ public class OspfConfParser {
         opg.getOps().stream().filter(x -> x.Type() != OpType.INVALID && x.getCtxOp() != null).forEach(totalOpg::addOp);
         opg.setOpgroup(totalOpg.getOps());
     }
+
     private static boolean matchUnset(Operation unsetOp, Operation target) {
-        //TODO consider unsetOp filed == target field && unsetOp.getCtxOp == target.getCtxOp
-        return false;
+        assert unsetOp.isUnset() && !target.isUnset() : "match unset unset is not right";
+        unsetOp = unsetOp.getMinimalUnsetOp();
+        if (!unsetOp.getCtxOp().equals(target.getCtxOp())){
+            return false;
+        }
+        if (unsetOp.Type() != target.Type()) return false;
+        return unsetOp.equals(target.getMinimalUnsetOp());
     }
 
     private static void unsetOp(@NotNull ParserOpGroup opg) {
         var op_list = opg.getOps();
         if (op_list.isEmpty()) return;
         boolean[] remain = new boolean[op_list.size()];
+        Arrays.fill(remain, true);
         for (int i = op_list.size() - 1; i >= 0; i--) {
             if (op_list.get(i).isUnset()) {
                 var op_unset = op_list.get(i);
@@ -118,14 +129,21 @@ public class OspfConfParser {
     public static void parse(ParserOpGroup opg, RelationGraph topo, String r_name) {
         //deduce conf, remove invalid operation, and unset accroding no operations
         parseOpCtx(opg);
+        //remove inst not in intf/router ospf
         removeInvalidOp(opg);
+        //unset op, include intf, router ospf
         unsetOp(opg);
+        //remove this op be unset
+        removeInvalidOp(opg);
         parseOpCtx(opg);
+        //remove inst not in intf/router ospf
         removeInvalidOp(opg);
 
         //remove invalid ip area  network area
         boolean is_ip_ospf_area = IPNetworkInvalid(opg);
         removeInvalidOp(opg);
+
+        System.out.println(opg.toString());
 
 
         var opgs = mergeOps(opg);
@@ -173,7 +191,28 @@ public class OspfConfParser {
                 }
             }
             for (var intf: topo.getIntfsOfRouter(r_name)){
-                //TODO match the most small net, and set area
+                if (intf.getIp() == null) continue;
+                int mask_len = -1;
+                Map.Entry<IPV4, IPV4> mxEntry = null;
+                //find the most small subnetwork
+                for (var entry: netToArea.entrySet()){
+                    if (entry.getKey().containsIp(intf.getIp())){
+                        if (entry.getKey().getMaskOfIp() > mask_len) {
+                            mask_len = entry.getKey().getMaskOfIp();
+                            mxEntry = entry;
+                        }
+                    }
+                }
+                if (mxEntry != null){
+                    //add ospf Intf
+                    var intf_name = intf.getName();
+                    if (!intf.isPersudo()){
+                        var res = topo.<OSPFIntf>getOrCreateNode(NodeGen.getOSPFIntfName(intf_name), NodeType.OSPFIntf);
+                        assert  !res.second();
+                        res.first().setArea(mxEntry.getValue());
+                        topo.addOSPFIntfRelation(res.first().getName(), intf_name);
+                    }
+                }
             }
         }
 

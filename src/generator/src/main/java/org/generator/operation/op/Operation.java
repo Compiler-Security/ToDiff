@@ -3,6 +3,7 @@ import org.generator.util.net.IPV4;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.Objects;
 
 public class Operation extends StrOperation {
     public Operation(OpType type) {
@@ -24,17 +25,41 @@ public class Operation extends StrOperation {
         return (StrOperation) this;
     }
 
-
-    @Override
-    public boolean equals(Object op) {
-        if (op == null) return false;
-        if (op == this) return true;
-        if (op.getClass() != this.getClass()) return false;
-        Operation op1 = (Operation) op;
-        //FIXME we can do it better
-        return encode_to_str().equals(op1.encode_to_str());
+    public Operation getMinimalUnsetOp(){
+        var ori_index = getUnsetIndex();
+        var ori_unset = unset;
+        setUnsetIndex(0);
+        setUnset(true);
+        var mini = new Operation(Type());
+        mini.decode(toString());
+        mini.setCtxOp(getCtxOp());
+        setUnsetIndex(ori_index);
+        setUnset(ori_unset);
+        return mini;
     }
 
+    @Override
+    /* equals we don't compare ctx!*/
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Operation operation = (Operation) o;
+        if (this.isUnset() != operation.isUnset()) return false;
+        if (!this.isUnset()){
+            return this.toString().equals(operation.toString());
+        }else{
+            return this.getMinimalUnsetOp().toString().equals(operation.getMinimalUnsetOp().toString());
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        if (!this.isUnset()){
+            return Objects.hash(this.toString());
+        }else{
+            return Objects.hash(this.getMinimalUnsetOp().toString());
+        }
+    }
 
     public Operation cloneOfType(OpType typ){
         var op = new Operation(typ);

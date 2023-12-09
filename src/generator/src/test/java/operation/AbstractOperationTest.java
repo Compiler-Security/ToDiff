@@ -6,7 +6,6 @@ import org.generator.operation.op.Operation;
 import org.generator.util.net.IPV4;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -90,10 +89,10 @@ public class AbstractOperationTest {
 //        //System.out.println((String[]) Arrays.stream("123".split("\\|")).map(String::strip).toArray());
         var op = new Operation(OpType.AreaRangeINT);
         //var c = op.decode("no ospf router-id 5.5.5.5");
-        var c = op.decode("no area 1000000000000 range 5.5.5.5/32");
+        var c = op.decode("no area 10000 range 5.5.5.5/32");
         if (c) {
             var r = new ConfReader();
-            System.out.println(op.getIP().getIDOfIp());
+            System.out.println(op.getIP().getAddressOfIp());
             System.out.println(op.getIP().getMaskOfIp());
             var op1 = r.changeIDNumToID(op, OpType.AreaRange);
             System.out.println(op1.toString());
@@ -105,5 +104,19 @@ public class AbstractOperationTest {
 //        if (c) {
 //            System.out.println(op.toString());
 //        }
+    }
+    @Test
+    public void IPTest(){
+        var ip = IPV4.IPOf("5.5.5.5/24");
+        var ip1 = IPV4.IPOf("5.5.5.6/24");
+        var ip2 = IPV4.IDOf("5.5.5.5");
+        System.out.println(ip.getAddressOfIp());
+        System.out.println(ip.getNetAddressOfIp());
+        System.out.println(ip1.toString());
+        System.out.println(ip2.toString());
+        assert ip.containsId(ip2) : "ip should contains ip2";
+        assert ip.containsIp(ip1): " ip should contains ip1";
+        assert ip.equals(ip1): "ip not equal";
+        assert ip.hashCode() == ip1.hashCode(): "hash code not equal";
     }
 }

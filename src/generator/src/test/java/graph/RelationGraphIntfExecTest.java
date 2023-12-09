@@ -78,9 +78,15 @@ public class RelationGraphIntfExecTest {
         String test_st = """
                 router ospf
                 ospf router-id 0.0.0.1
+                network 10.0.0.5/30 area 0.0.0.1
+                network 10.0.0.0/10 area 0.0.0.2
                 interface r1-eth0
-                ip ospf area 0.0.0.0
+                ip ospf area 0.0.0.3
                 ip address 10.0.0.0/10
+                ip ospf cost 100
+                interface r1-eth0
+                ip ospf cost 200
+                no router ospf
                 """;
         var topo = getBaseTopo();
         run_cmd_str(false, test_st, topo, Optional.of("r1"));
