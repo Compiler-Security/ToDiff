@@ -104,7 +104,17 @@ public class IPV4 {
 
     public int getMaskOfIp(){
         assert  !isId;
-        return utils.getInfo().asInteger(utils.getInfo().getNetmask());
+        String[] parts = utils.getInfo().getNetmask().split("\\.");
+
+        int netmaskLength = 0;
+        for (String part : parts) {
+            int octet = Integer.parseInt(part);
+            while (octet > 0) {
+                netmaskLength++;
+                octet = octet << 1 & 0xFF;
+            }
+        }
+        return netmaskLength;
     }
     @Override
     public boolean equals(Object o) {

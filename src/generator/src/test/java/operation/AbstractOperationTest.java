@@ -90,9 +90,11 @@ public class AbstractOperationTest {
 //        //System.out.println((String[]) Arrays.stream("123".split("\\|")).map(String::strip).toArray());
         var op = new Operation(OpType.AreaRangeINT);
         //var c = op.decode("no ospf router-id 5.5.5.5");
-        var c = op.decode("no area 1000000000000 range 5.5.5.5/10");
+        var c = op.decode("no area 1000000000000 range 5.5.5.5/32");
         if (c) {
             var r = new ConfReader();
+            System.out.println(op.getIP().getIDOfIp());
+            System.out.println(op.getIP().getMaskOfIp());
             var op1 = r.changeIDNumToID(op, OpType.AreaRange);
             System.out.println(op1.toString());
         }else{
