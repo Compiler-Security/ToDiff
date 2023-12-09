@@ -2,8 +2,8 @@ package graph;
 
 import org.generator.operation.conf.OspfConfParser;
 import org.generator.operation.conf.PhyConfParser;
-import org.generator.operation.conf.SimpleConfReader;
-import org.generator.operation.opg.SimpleOpGroup;
+import org.generator.operation.conf.ConfReader;
+import org.generator.operation.opg.ParserOpGroup;
 import org.generator.topo.graph.RelationGraph;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -15,7 +15,7 @@ public class RelationGraphIntfExecTest {
 
     @Test
     public void phyExecSimpleTest(){
-        var reader = new SimpleConfReader();
+        var reader = new ConfReader();
         String test_st = """
                 node r1 add
                 node s1 add
@@ -24,7 +24,7 @@ public class RelationGraphIntfExecTest {
                 """;
         var ops = reader.read(test_st).get();
         //ops.forEach(op -> {assert op.Type() != OpType.INVALID : String.format("stmt error %s", op.toString());});
-        var opg = new SimpleOpGroup(ops, Optional.empty());
+        var opg = new ParserOpGroup(ops, Optional.empty());
         System.out.println(opg);
         RelationGraph topo = new RelationGraph();
         PhyConfParser.parse(opg, topo);
@@ -33,7 +33,7 @@ public class RelationGraphIntfExecTest {
 
     @Test
     public void dotTest(){
-        var reader = new SimpleConfReader();
+        var reader = new ConfReader();
         String test_st = """
                 node r1 add
                 node s1 add
@@ -42,7 +42,7 @@ public class RelationGraphIntfExecTest {
                 """;
         var ops = reader.read(test_st).get();
         //ops.forEach(op -> {assert op.Type() != OpType.INVALID : String.format("stmt error %s", op.toString());});
-        var opg = new SimpleOpGroup(ops, Optional.empty());
+        var opg = new ParserOpGroup(ops, Optional.empty());
         System.out.println(opg);
         RelationGraph topo = new RelationGraph();
         PhyConfParser.parse(opg, topo);
@@ -52,10 +52,10 @@ public class RelationGraphIntfExecTest {
 
 
     private void run_cmd_str(boolean isPhy, String cmd, RelationGraph topo, @NotNull Optional<String> target){
-        var reader = new SimpleConfReader();
+        var reader = new ConfReader();
         var ops = reader.read(cmd).get();
         //ops.forEach(op -> {assert op.Type() != OpType.INVALID : String.format("stmt error %s", op.toString());});
-        var opg = new SimpleOpGroup(ops, target);
+        var opg = new ParserOpGroup(ops, target);
         if (isPhy){
             PhyConfParser.parse(opg, topo);
         }else {

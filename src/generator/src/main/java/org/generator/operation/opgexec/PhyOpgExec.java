@@ -1,4 +1,4 @@
-package org.generator.operation.opg;
+package org.generator.operation.opgexec;
 
 import org.generator.operation.op.OpGen;
 import org.generator.operation.op.OpType;
@@ -9,12 +9,8 @@ import org.generator.topo.node.NodeGen;
 import org.generator.topo.node.NodeType;
 import org.generator.topo.node.ospf.OSPF;
 import org.generator.topo.node.phy.Intf;
-import org.generator.util.collections.Pair;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.exec.ExecStat;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PhyOpgExec extends OpgExec {
     ExecStat execOp(Operation op, RelationGraph topo) {

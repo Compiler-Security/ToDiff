@@ -1,6 +1,5 @@
 package org.generator.operation.conf;
 
-import org.generator.operation.conf.ConfR;
 import org.generator.operation.op.OpGen;
 import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
@@ -12,7 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class SimpleConfReader implements ConfR {
+public class ConfReader implements ConfR {
 
 
     private  Operation changeIDNumToID(Operation op, OpType target_type){

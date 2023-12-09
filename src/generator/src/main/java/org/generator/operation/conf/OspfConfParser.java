@@ -2,10 +2,10 @@ package org.generator.operation.conf;
 
 import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
-import org.generator.operation.opg.IntfOpgExec;
+import org.generator.operation.opgexec.IntfOpgExec;
 import org.generator.operation.opg.OpGroup;
-import org.generator.operation.opg.OspfOpgExec;
-import org.generator.operation.opg.SimpleOpGroup;
+import org.generator.operation.opgexec.OspfOpgExec;
+import org.generator.operation.opg.ParserOpGroup;
 import org.generator.topo.graph.RelationGraph;
 import org.generator.topo.node.NodeGen;
 import org.generator.topo.node.NodeType;
@@ -13,7 +13,6 @@ import org.generator.topo.node.ospf.OSPF;
 import org.generator.topo.node.ospf.OSPFDaemon;
 import org.generator.topo.node.ospf.OSPFIntf;
 import org.generator.topo.node.phy.Intf;
-import org.generator.topo.node.phy.Router;
 import org.generator.util.collections.Pair;
 import org.generator.util.net.IPV4;
 import org.jetbrains.annotations.NotNull;
@@ -42,8 +41,8 @@ public class OspfConfParser {
         }
     }
 
-    private static void removeInvalidOp(SimpleOpGroup opg) {
-        SimpleOpGroup totalOpg = new SimpleOpGroup();
+    private static void removeInvalidOp(ParserOpGroup opg) {
+        ParserOpGroup totalOpg = new ParserOpGroup();
         opg.getOps().stream().filter(x -> x.Type() != OpType.INVALID && x.getCtxOp() != null).forEach(totalOpg::addOp);
         opg.setOpgroup(totalOpg.getOps());
     }
@@ -52,7 +51,7 @@ public class OspfConfParser {
         return false;
     }
 
-    private static void unsetOp(@NotNull SimpleOpGroup opg) {
+    private static void unsetOp(@NotNull ParserOpGroup opg) {
         var op_list = opg.getOps();
         if (op_list.isEmpty()) return;
         boolean[] remain = new boolean[op_list.size()];
@@ -75,25 +74,25 @@ public class OspfConfParser {
         }
     }
 
-    private static Pair<List<SimpleOpGroup>, SimpleOpGroup> mergeOps(SimpleOpGroup opg) {
-        var h = new HashMap<Operation, SimpleOpGroup>();
+    private static Pair<List<ParserOpGroup>, ParserOpGroup> mergeOps(ParserOpGroup opg) {
+        var h = new HashMap<Operation, ParserOpGroup>();
         for (var op : opg.getOps()) {
             if (op.Type() == OpType.IntfName || op.Type() == OpType.ROSPF) {
                 if (!h.containsKey(op)) {
-                    var opg_new = new SimpleOpGroup();
+                    var opg_new = new ParserOpGroup();
                     opg_new.setCtxOp(op);
                     h.put(op, opg_new);
-                    if (op.Type() == OpType.IntfName) opg_new.setTyp(SimpleOpGroup.OpGType.Intf);
-                    else opg_new.setTyp(SimpleOpGroup.OpGType.OSPF);
+                    if (op.Type() == OpType.IntfName) opg_new.setTyp(ParserOpGroup.OpGType.Intf);
+                    else opg_new.setTyp(ParserOpGroup.OpGType.OSPF);
                 }
             } else {
                 h.get(op.getCtxOp()).addOp(op);
             }
         }
-        return new Pair<>(h.values().stream().filter(x -> x.getTyp() == SimpleOpGroup.OpGType.Intf).toList(), h.values().stream().filter(x -> x.getTyp() == SimpleOpGroup.OpGType.OSPF).findFirst().orElse(null));
+        return new Pair<>(h.values().stream().filter(x -> x.getTyp() == ParserOpGroup.OpGType.Intf).toList(), h.values().stream().filter(x -> x.getTyp() == ParserOpGroup.OpGType.OSPF).findFirst().orElse(null));
     }
 
-    private static boolean IPNetworkInvalid(SimpleOpGroup opg) {
+    private static boolean IPNetworkInvalid(ParserOpGroup opg) {
         boolean ip_ospf_area = false, network_area = false;
         for (var op : opg.getOps()) {
             if (op.Type() == OpType.IpOspfArea) {
@@ -116,7 +115,7 @@ public class OspfConfParser {
         return ip_ospf_area;
     }
 
-    public static void parse(SimpleOpGroup opg, RelationGraph topo, String r_name) {
+    public static void parse(ParserOpGroup opg, RelationGraph topo, String r_name) {
         //deduce conf, remove invalid operation, and unset accroding no operations
         parseOpCtx(opg);
         removeInvalidOp(opg);
@@ -135,7 +134,7 @@ public class OspfConfParser {
 
         //set intf ip || add intf
         for (var intf_opg : intf_opgs) {
-            assert intf_opg.getTyp() == SimpleOpGroup.OpGType.Intf;
+            assert intf_opg.getTyp() == ParserOpGroup.OpGType.Intf;
             //add persudo intf accroding to int r1-eth0
             var intf_name = intf_opg.getCtxOp().getNAME();
             var res = topo.<Intf>getOrCreateNode(intf_name, NodeType.Intf);

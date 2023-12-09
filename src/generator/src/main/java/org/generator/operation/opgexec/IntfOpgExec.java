@@ -1,4 +1,4 @@
-package org.generator.operation.opg;
+package org.generator.operation.opgexec;
 
 import org.generator.operation.op.Operation;
 import org.generator.topo.graph.RelationGraph;

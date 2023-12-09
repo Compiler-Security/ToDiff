@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class SimpleOpGroup implements OpGroup{
-    public SimpleOpGroup(){
+public class ParserOpGroup implements OpGroup{
+    public ParserOpGroup(){
         opgroup = new ArrayList<>();
     }
-    public SimpleOpGroup(List<Operation> ops, Optional<String> target){
+    public ParserOpGroup(List<Operation> ops, Optional<String> target){
         opgroup = new ArrayList<>();
         this.target = target;
         setCtxOp(null);

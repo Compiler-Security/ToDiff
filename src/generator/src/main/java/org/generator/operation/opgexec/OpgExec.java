@@ -1,7 +1,8 @@
-package org.generator.operation.opg;
+package org.generator.operation.opgexec;
 
 import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
+import org.generator.operation.opg.OpGroup;
 import org.generator.topo.graph.RelationGraph;
 import org.generator.topo.node.ospf.OSPF;
 import org.generator.topo.node.ospf.OSPFDaemon;
