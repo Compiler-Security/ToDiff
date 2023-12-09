@@ -1,7 +1,9 @@
 package operation;
 
+import org.generator.operation.conf.ConfReader;
 import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
+import org.generator.util.net.IPV4;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -86,11 +88,20 @@ public class AbstractOperationTest {
 //        var a = Arrays.stream("123".split("\\|")).map(String::strip).toList();
 //        System.out.println(a);
 //        //System.out.println((String[]) Arrays.stream("123".split("\\|")).map(String::strip).toArray());
-        var op = new Operation(OpType.RID);
-        var c = op.decode("no ospf router-id 5.5.5.5");
-        System.out.println(c);
+        var op = new Operation(OpType.AreaRangeINT);
+        //var c = op.decode("no ospf router-id 5.5.5.5");
+        var c = op.decode("no area 1000000000000 range 5.5.5.5/10");
         if (c) {
-            System.out.println(op.toString());
+            var r = new ConfReader();
+            var op1 = r.changeIDNumToID(op, OpType.AreaRange);
+            System.out.println(op1.toString());
+        }else{
+            System.out.println(false);
         }
+//        op = r.changeIDNumToID(op, OpType.AreaRange);
+//        System.out.println(c);
+//        if (c) {
+//            System.out.println(op.toString());
+//        }
     }
 }

@@ -1,6 +1,5 @@
 package org.generator.operation.op;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -21,6 +20,7 @@ public class StrOperation implements op {
         this.unsetRe = type.UnsetRe();
         this.unsetTemplate = type.getUnsetTemplate();
         this.unset = false;
+        this.unsetIndex = -1;
     }
 
     private boolean decode_by_re(String st, String re){
@@ -53,27 +53,31 @@ public class StrOperation implements op {
     }
 
 
-    public void encode_by_template(StringBuilder buf, String template){
+    public boolean encode_by_template(StringBuilder buf, String template){
         Pattern pattern = Pattern.compile("\\{([^{}]+)\\}");
         Matcher matcher = pattern.matcher(template);
         while(matcher.find()){
             String rep = args.get(matcher.group(1));
-            assert  rep != null;
+            if (rep == null) return false;
             matcher.appendReplacement(buf, rep);
         }
         matcher.appendTail(buf);
+        return true;
     }
 
-    public void encode(StringBuilder buf, int index){
+    public boolean encode(StringBuilder buf, int index){
         if (!unset) {
-            encode_by_template(buf, template);
+            return encode_by_template(buf, template);
         }else{
-            encode_by_template(buf, this.unsetTemplate[index]);
+            if (index >= this.unsetTemplate.length){
+                return false;
+            }
+            return encode_by_template(buf, this.unsetTemplate[index]);
         }
     }
     @Override
-    public void encode(StringBuilder buf) {
-        encode(buf, 0);
+    public boolean encode(StringBuilder buf) {
+        return encode(buf, 0);
     }
 
     @Override
@@ -114,13 +118,13 @@ public class StrOperation implements op {
     }
 
     protected   OpType type;
-    protected   String template;
+    private   String template;
 
-    protected String[] unsetTemplate;
-    protected   String re;
+    private String[] unsetTemplate;
+    private   String re;
 
-    protected String[] unsetRe;
-    protected Map<String, String> args;
+    private String[] unsetRe;
+    private Map<String, String> args;
 
     public boolean isUnset() {
         return unset;

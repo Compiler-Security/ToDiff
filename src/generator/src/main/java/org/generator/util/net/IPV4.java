@@ -27,11 +27,11 @@ public class IPV4 {
         }else return null;
     }
 
-    static public IPV4 IDOf(int num){
-        return IDOf(convertToCIDR(num, 32));
+    static public IPV4 IDOf(long num){
+        return IDOf(coverToStrId(num));
     }
 
-    static  public IPV4 IPOf(int num, int prefix){
+    static  public IPV4 IPOf(long num, int prefix){
         return IPOf(convertToCIDR(num, prefix));
     }
 
@@ -72,6 +72,14 @@ public class IPV4 {
         sb.append("/").append(subnetMask);
 
         return sb.toString();
+    }
+
+    private static String coverToStrId(long ipAddress){
+        if (ipAddress < 0 || ipAddress > 4294967295L) return "";
+        return ((ipAddress >> 24) & 255) + "." +
+                ((ipAddress >> 16) & 255) + "." +
+                ((ipAddress >> 8) & 255) + "." +
+                (ipAddress & 255);
     }
 
     @Override

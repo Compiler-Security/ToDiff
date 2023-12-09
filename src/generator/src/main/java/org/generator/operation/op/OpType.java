@@ -135,7 +135,9 @@ public enum OpType {
     //FIXME consistency?
 
     OSPFAREAGROUPBEGIN("", "", ""),
-    AreaRange("area {ID} range {IP}", """
+    AreaRange("area {ID} range {IP}",
+                "no area {ID} range | no area {ID} range {IP}",
+                """
                 MEET HAS ospfintf WHERE ospfintf.area == 0
                 MEET HAS ospf
                 IF (HAS  ospfnet WHERE ospfnet.area == {ID} && ospfnet.ip in {IP} &&ospfnet.hide == False)
@@ -175,7 +177,9 @@ public enum OpType {
                 SET areaSumEntry.cost {NUM}
             """,
             "area A.B.C.D range A.B.C.D/M cost (0-16777215)"),
-    AreaRangeINT("area {IDNUM} range {IP}", """
+    AreaRangeINT("area {IDNUM} range {IP}",
+                "no area {IDNUM} range | no area {IDNUM} range {IP}",
+                """
                 MEET 0<={NUM}<=16777215
                 let {ID} = ID({NUM})
                 #AREARANGE

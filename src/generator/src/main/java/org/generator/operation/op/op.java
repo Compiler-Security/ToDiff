@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface op {
     boolean decode(String st);
-    void encode(StringBuilder buf);
+    boolean encode(StringBuilder buf);
     String encode_to_str();
     OpType Type();
     Map<String, String> Args();

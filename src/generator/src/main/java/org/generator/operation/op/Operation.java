@@ -35,9 +35,27 @@ public class Operation extends StrOperation {
         return encode_to_str().equals(op1.encode_to_str());
     }
 
+
     public Operation cloneOfType(OpType typ){
-        store_to_dynamic();
-        return OpGen.GenOperation(typ, this.args);
+        var op = new Operation(typ);
+        op.NAME = NAME;
+        op.NAME2 = NAME2;
+        op.DETAIL = DETAIL;
+        if (IP != null) op.IP = IP.clone();
+        else op.IP = null;
+        if (IP2 != null) op.IP2 = IP2.clone();
+        else op.IP2 = null;
+        if (ID != null) op.ID = ID.clone();
+        else op.ID = null;
+        op.IDNUM = IDNUM;
+        op.NUM = NUM;
+        op.NUM2 = NUM2;
+        op.NUM3 = NUM3;
+        op.unset = unset;
+        op.unsetIndex = unsetIndex;
+        op.store_to_dynamic();
+        //FIXME we don't clone ctxOp
+        return op;
     }
 
     private boolean load_from_dynamic(){
@@ -92,9 +110,9 @@ public class Operation extends StrOperation {
         if (NUM3 != null) super.putIntArg("NUM3", NUM3);
     }
     @Override
-    public void encode(StringBuilder buf) {
+    public boolean encode(StringBuilder buf) {
         store_to_dynamic();
-        super.encode(buf);
+        return super.encode(buf);
     }
 
     @Override
@@ -157,6 +175,7 @@ public class Operation extends StrOperation {
 
     public void setNAME(String NAME) {
         this.NAME = NAME;
+        store_to_dynamic();
     }
 
     public String getNAME2() {
@@ -165,6 +184,7 @@ public class Operation extends StrOperation {
 
     public void setNAME2(String NAME2) {
         this.NAME2 = NAME2;
+        store_to_dynamic();
     }
 
     public String getDETAIL() {
@@ -173,6 +193,7 @@ public class Operation extends StrOperation {
 
     public void setDETAIL(String DETAIL) {
         this.DETAIL = DETAIL;
+        store_to_dynamic();
     }
 
     public IPV4 getIP() {
@@ -181,6 +202,7 @@ public class Operation extends StrOperation {
 
     public void setIP(IPV4 IP) {
         this.IP = IP;
+        store_to_dynamic();
     }
 
     public IPV4 getID() {
@@ -189,6 +211,7 @@ public class Operation extends StrOperation {
 
     public void setID(IPV4 ID) {
         this.ID = ID;
+        store_to_dynamic();
     }
 
     public Long getIDNUM() {
@@ -197,6 +220,7 @@ public class Operation extends StrOperation {
 
     public void setIDNUM(Long IDNUM) {
         this.IDNUM = IDNUM;
+        store_to_dynamic();
     }
 
     public Integer getNUM() {
@@ -205,6 +229,7 @@ public class Operation extends StrOperation {
 
     public void setNUM(Integer NUM) {
         this.NUM = NUM;
+        store_to_dynamic();
     }
 
     protected String NAME, NAME2;
@@ -218,6 +243,7 @@ public class Operation extends StrOperation {
 
     public void setIP2(IPV4 IP2) {
         this.IP2 = IP2;
+        store_to_dynamic();
     }
 
     protected IPV4 IP2;
@@ -230,6 +256,7 @@ public class Operation extends StrOperation {
 
     public void setNUM2(Integer NUM2) {
         this.NUM2 = NUM2;
+        store_to_dynamic();
     }
 
     public Integer getNUM3() {
@@ -238,6 +265,7 @@ public class Operation extends StrOperation {
 
     public void setNUM3(Integer NUM3) {
         this.NUM3 = NUM3;
+        store_to_dynamic();
     }
 
     protected Integer NUM2;
@@ -253,4 +281,16 @@ public class Operation extends StrOperation {
     }
 
     Operation ctxOp;
+
+    @Override
+    public String toString() {
+        store_to_dynamic();
+        return super.toString();
+    }
+
+    @Override
+    public String toString(int index){
+        store_to_dynamic();
+        return super.toString(index);
+    }
 }

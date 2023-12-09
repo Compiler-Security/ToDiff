@@ -3,6 +3,7 @@ package org.generator.operation.conf;
 import org.generator.operation.op.OpGen;
 import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
+import org.generator.util.net.IPV4;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -14,9 +15,11 @@ import java.util.Optional;
 public class ConfReader implements ConfR {
 
 
-    private  Operation changeIDNumToID(Operation op, OpType target_type){
+    public  Operation changeIDNumToID(Operation op, OpType target_type){
         if (0 <= op.getIDNUM() && op.getIDNUM() <= 4294967295L){
             var new_op = op.cloneOfType(target_type);
+            new_op.setID(IPV4.IDOf(op.getIDNUM()));
+            assert new_op.getID() != null : "id should not be null";
             return new_op;
         }else{
             return new Operation(OpType.INVALID);
