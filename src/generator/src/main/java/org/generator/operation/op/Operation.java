@@ -4,15 +4,24 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
-public class Operation extends AbstractOperation {
+public class Operation extends StrOperation {
     public Operation(OpType type) {
         super(type);
+        this.IP = null;
+        this.IP2 = null;
+        this.ID = null;
+        this.NAME = null;
+        this.NAME2 = null;
+        this.NUM = null;
+        this.NUM2 = null;
+        this.NUM3 = null;
+        this.IDNUM = null;
         setCtxOp(null);
     }
 
-    public AbstractOperation AbstractOp(){
+    public StrOperation AbstractOp(){
         store_to_dynamic();
-        return (AbstractOperation) this;
+        return (StrOperation) this;
     }
 
 
@@ -33,16 +42,16 @@ public class Operation extends AbstractOperation {
 
     private void load_from_dynamic(){
         var m = super.Args();
-        if (m.containsKey("NAME")) NAME = super.Arg("NAME");
-        if (m.containsKey("NAME2")) NAME2 = super.Arg("NAME2");
-        if (m.containsKey("DETAIL")) DETAIL = super.Arg("DETAIL");
-        if (m.containsKey("IP")) IP = new IPV4(super.Arg("IP"));
-        if (m.containsKey("IP2")) IP = new IPV4(super.Arg("IP2"));
-        if (m.containsKey("ID")) ID = new IPV4(super.Arg("ID"));
-        if (m.containsKey("IDNUM")) IDNUM = super.LongArg("IDNUM");
-        if (m.containsKey("NUM")) NUM = super.IntArg("NUM");
-        if (m.containsKey("NUM2")) NUM2 = super.IntArg("NUM2");
-        if (m.containsKey("NUM3")) NUM3 = super.IntArg("NUM3");
+        if (m.containsKey("NAME")) NAME = super.Arg("NAME"); else NAME = null;
+        if (m.containsKey("NAME2")) NAME2 = super.Arg("NAME2"); else NAME2 = null;
+        if (m.containsKey("DETAIL")) DETAIL = super.Arg("DETAIL"); else DETAIL = null;
+        if (m.containsKey("IP")) IP = new IPV4(super.Arg("IP")); else IP = null;
+        if (m.containsKey("IP2")) IP2 = new IPV4(super.Arg("IP2")); else IP2 = null;
+        if (m.containsKey("ID")) ID = new IPV4(super.Arg("ID")); else ID = null;
+        if (m.containsKey("IDNUM")) IDNUM = super.LongArg("IDNUM"); else IDNUM = null;
+        if (m.containsKey("NUM")) NUM = super.IntArg("NUM"); else NUM = null;
+        if (m.containsKey("NUM2")) NUM2 = super.IntArg("NUM2"); else NUM2 = null;
+        if (m.containsKey("NUM3")) NUM3 = super.IntArg("NUM3"); else NUM3 = null;
     }
     @Override
     public boolean decode(String st) {
@@ -217,6 +226,7 @@ public class Operation extends AbstractOperation {
     protected Integer NUM2;
     protected Integer NUM3;
 
+    //FIXME we should move this to operationCtx instead of use it in operation
     public Operation getCtxOp() {
         return ctxOp;
     }

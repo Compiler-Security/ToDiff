@@ -10,9 +10,9 @@ import java.util.regex.Pattern;
  * The operation format is like area {AREA} range {RANGE}.
  * The operation support [], however, we should not use it.
  */
-public abstract class AbstractOperation implements op {
+public class StrOperation implements op {
 
-    public AbstractOperation(OpType type){
+    public StrOperation(OpType type){
         this.template = type.template();
         this.args = new HashMap<>();
         this.type = type;

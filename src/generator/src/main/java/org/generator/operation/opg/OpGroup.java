@@ -1,7 +1,6 @@
 package org.generator.operation.opg;
 
 import org.generator.operation.op.Operation;
-import org.generator.topo.node.AbstractNode;
 
 import java.util.List;
 import java.util.Optional;
