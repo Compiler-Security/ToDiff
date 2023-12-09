@@ -18,18 +18,8 @@ public abstract class AbstractOperation implements op {
         this.type = type;
         this.re = type.Re();
         this.unset = false;
-        //init();
     }
-//    private  void init(){
-//        String st = template;
-//        re = template;
-//        do {
-//            re = st;
-//            st = st.replaceAll("\\{([^{}]+)\\}", "(?<$1>[0-9a-zA-Z.-]+)");
-//            //st = st.replaceAll("\\[(.*)\\]", "(?:$1)?");
-//        } while (!st.equals(re));
-//        re = re.replaceAll("\s+", "\\\\s+");
-//    }
+
     @Override
     public boolean decode(String st) {
         //TODO we should add no to parse unset

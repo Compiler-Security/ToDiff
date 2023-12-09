@@ -27,23 +27,10 @@ public class Operation extends AbstractOperation {
     }
 
     public Operation cloneOfType(OpType typ){
-        var op = new Operation(typ);
-        op.NAME = NAME;
-        op.NAME2 = NAME2;
-        op.DETAIL = DETAIL;
-        if (IP != null) op.IP = IP.clone();
-        else op.IP = null;
-        if (IP2 != null) op.IP2 = IP2.clone();
-        else op.IP2 = null;
-        if (ID != null) op.ID = ID.clone();
-        else op.ID = null;
-        op.IDNUM = IDNUM;
-        op.NUM = NUM;
-        op.NUM2 = NUM2;
-        op.NUM3 = NUM3;
-        op.ctxOp = ctxOp;
-        return op;
+        store_to_dynamic();
+        return OpGen.GenOperation(typ, this.args);
     }
+
     private void load_from_dynamic(){
         var m = super.Args();
         if (m.containsKey("NAME")) NAME = super.Arg("NAME");
