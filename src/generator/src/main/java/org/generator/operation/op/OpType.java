@@ -1,8 +1,6 @@
 package org.generator.operation.op;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public enum OpType {
     NODEADD("node {NAME} add", "", ""),
@@ -16,8 +14,8 @@ public enum OpType {
     LINKREMOVE("link {NAME} {NAME2} remove", "", ""),
 
     //TODO add all no operations
-    OSPFCONF("ospfconf", "", ""),
-    OSPFROUTERBEGIN("", "", ""),
+    OSPFCONF,
+    OSPFROUTERBEGIN,
 
     //=================OSPF ROUTER==================
     ROSPF("router ospf",
@@ -86,11 +84,11 @@ public enum OpType {
     //TODO max-metric...
     //TODO auto-cost it's hard to equal
 
-    OSPFROUTEREND("","",""),
+    OSPFROUTEREND,
     //=============OSPFDAEMON===================
     //TODO proactive-arp
 
-    OSPFDAEMONGROUPBEGIN("", "", ""),
+    OSPFDAEMONGROUPBEGIN,
     //FIXME this instruction is not full
     CLEARIPOSPFPROCESS("clear ip ospf process", "EMPTY", "clear ip ospf process"),
     CLEARIPOSPFNEIGHBOR("clear ip ospf neighbor", "EMPTY", "clear ip ospf neighbor"),
@@ -144,12 +142,12 @@ public enum OpType {
             """,
             "no socket-per-interface"),
 
-    OSPFDAEMONGROUPEND("", "", ""),
+    OSPFDAEMONGROUPEND,
     //===================OSPF AREA=====================
     //FIXME what if we already have the same area range
     //FIXME consistency?
 
-    OSPFAREAGROUPBEGIN("", "", ""),
+    OSPFAREAGROUPBEGIN,
     AreaRange("area {ID} range {IP}",
                 //FIXME is this no op right?
                 "no area {ID} range | no area {ID} range {IP}",
@@ -302,9 +300,9 @@ public enum OpType {
 
     //TODO AREA LEFT
 
-    OSPFAREAGROUPEND("", "", ""),
+    OSPFAREAGROUPEND,
 
-    OSPFIntfGroupBEGIN("", "", ""),
+    OSPFIntfGroupBEGIN,
     //FIXME syntax right?
     IntfName("interface {NAME}",
             """
@@ -438,8 +436,8 @@ public enum OpType {
 //            """,
 //            "ip ospf prefix-suppression [A.B.C.D]"),
 
-    OSPFIntfGroupEND("", "", ""),
-    INVALID(".*", "", "");
+    OSPFIntfGroupEND,
+    INVALID(".+", "", "");
 
     public static boolean inPhy(OpType typ) {
         return typ.ordinal() >= NODEADD.ordinal() && typ.ordinal() <= LINKREMOVE.ordinal();
@@ -482,13 +480,29 @@ public enum OpType {
 
     private final int noNum;
 
+    public boolean isToMatch() {
+        return toMatch;
+    }
+
+    private final boolean toMatch;
+
     public String[] getUnsetTemplate() {
         return unsetTemplate;
     }
 
     private  final String[] unsetTemplate;
 
+    OpType(){
+        toMatch = false;
+        unsetTemplate = null;
+        template = null;
+        syntax = null;
+        raw = null;
+        noNum = 0;
+    }
+
     OpType(String template, String unset, String syntax, String raw) {
+        toMatch = !template.isEmpty();
         this.template = template;
         this.syntax = syntax;
         this.raw = raw;
@@ -497,6 +511,7 @@ public enum OpType {
     }
 
     OpType(String template, String syntax, String raw){
+        toMatch = !template.isEmpty();
         this.template = template;
         this.syntax = syntax;
         this.raw = raw;
@@ -507,6 +522,11 @@ public enum OpType {
     private static Map<OpType, String> reMap = new HashMap<>();
     private static Map<OpType, String[]> unsetReMap = new HashMap<>();
 
+    private static List<OpType> matchOps = new ArrayList<>();
+
+    public static List<OpType> getMatchOps(){
+        return matchOps;
+    }
     private static String changeToRe(String st){
         String re = st;
         do {
@@ -519,6 +539,7 @@ public enum OpType {
     }
     static {
         for (OpType typ : OpType.values()) {
+            if (typ.isToMatch()) matchOps.add(typ); else continue;
             reMap.put(typ, changeToRe(typ.template));
             unsetReMap.put(typ, Arrays.stream(typ.unsetTemplate).map(OpType::changeToRe).toArray(String[]::new));
         }

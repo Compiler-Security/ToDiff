@@ -69,6 +69,7 @@ public class RelationGraphIntfExecTest {
                 node r1 add
                 node s1 add
                 link r1-eth0 s1-eth0 up
+                link r1-eth1 s1-eth1 up
                 """;
         RelationGraph topo = new RelationGraph();
         run_cmd_str(true, test_st, topo, Optional.empty());
@@ -79,15 +80,18 @@ public class RelationGraphIntfExecTest {
         String test_st = """
                 router ospf
                 ospf router-id 0.0.0.1
-                network 10.0.0.0/30 area 1
+                network 10.0.0.5/30 area 0
                 network 10.0.0.0/10 area 2
-                area 2 range 9.0.0.0/20
+                area 2 range 9.0.0.0/20              
+                
                 interface r1-eth0
                 ip ospf area 3
                 no ip ospf area
                 ip address 10.0.0.0/10
-                ip ospf cost 100
-                interface r1-eth0
+                ip ospf cost 100             
+               
+                interface r1-eth1
+                ip address 10.0.0.5/30
                 ip ospf cost 200
                 """;
         var topo = getBaseTopo();

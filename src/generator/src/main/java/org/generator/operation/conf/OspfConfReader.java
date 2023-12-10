@@ -121,12 +121,12 @@ public class OspfConfReader implements ConfR {
                 return op;
             }
         };
-        assert false: String.format("no check rule for %s", op);
+        assert false: String.format("no check rule for %s", op.toString());
         return  null;
     }
     @Nullable
     private Operation getOperation(String op_st){
-        for (var v: OpType.values()){
+        for (var v: OpType.getMatchOps()){
             var op = OpGen.GenOperation(v);
             if (op.decode(op_st)){
                 return checkOperation(op);
@@ -141,6 +141,7 @@ public class OspfConfReader implements ConfR {
             String line;
             while ((line = buf.readLine()) != null) {
                 line = line.strip();
+                if (line.isEmpty()) continue;
                 var op = getOperation(line);
                 if (op == null){
                     return Optional.empty();

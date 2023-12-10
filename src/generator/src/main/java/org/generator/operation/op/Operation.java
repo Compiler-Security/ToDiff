@@ -117,6 +117,7 @@ public class Operation extends StrOperation {
     }
     @Override
     public boolean decode(String st) {
+        if (!Type().isToMatch()) return false;
         if (super.decode(st)){
             return load_from_dynamic();
         }
