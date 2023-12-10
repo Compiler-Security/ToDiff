@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Optional;
+import java.util.StringJoiner;
 
 public class RelationGraphIntfExecTest {
 
@@ -61,6 +62,10 @@ public class RelationGraphIntfExecTest {
             PhyConfParser.parse(opg, topo);
         }else {
             OspfConfParser.parse(opg, topo, target.get());
+            StringJoiner joiner = new StringJoiner("\n");
+            opg.getOps().forEach(x -> joiner.add(x.toString()));
+            System.out.println("=====deduced conf=====");
+            System.out.println(joiner.toString());
         }
     }
 
@@ -96,8 +101,11 @@ public class RelationGraphIntfExecTest {
                 """;
         var topo = getBaseTopo();
         run_cmd_str(false, test_st, topo, Optional.of("r1"));
-        System.out.println(topo);
-        System.out.println(topo.toDot(true));
+        //System.out.println(topo);
+        System.out.println("=====OSPF config=====");
+        topo.dumpOfRouter("r1");
+        System.out.println("=====relation graph=====");
+        System.out.println(topo.toDot(false));
     }
 
     @Test

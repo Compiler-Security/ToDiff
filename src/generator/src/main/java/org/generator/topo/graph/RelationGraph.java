@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class RelationGraph extends AbstractRelationGraph {
@@ -153,5 +154,22 @@ public class RelationGraph extends AbstractRelationGraph {
             e.printStackTrace();
         }
         return stringWriter.toString();
+    }
+
+    private void dfsNode(AbstractNode node, Map<String, String> m, HashSet<AbstractNode> visited, Predicate<AbstractNode> filter){
+        if (visited.contains(node)) return;
+        visited.add(node);
+        if (!filter.test(node)) return;
+        m.put(node.getName(), node.getNodeAtrriStr());
+        getSuccsOf(node).forEach(x -> dfsNode(x, m, visited, filter));
+    }
+    public void dumpOfRouter(String r_name){
+        assert containsNode(r_name);
+        Map<String, String> m = new TreeMap<>();
+        HashSet<AbstractNode> visited = new HashSet<>();
+        dfsNode(getNode(r_name).get(), m, visited, x -> x.getName().contains(r_name));
+        for (var entry: m.entrySet()){
+            System.out.println(String.format("%s : %s", entry.getKey(), entry.getValue()));
+        }
     }
 }

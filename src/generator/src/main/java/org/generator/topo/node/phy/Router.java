@@ -1,5 +1,6 @@
 package org.generator.topo.node.phy;
 
+import org.generator.topo.graph.RelationGraph;
 import org.generator.topo.node.AbstractNode;
 import org.generator.topo.node.NodeType;
 public class Router extends AbstractNode {
@@ -19,6 +20,7 @@ public class Router extends AbstractNode {
     public void initFiled() {
 
     }
+
 
 //    @Override
 //    public String getNodeAtrriStr() {

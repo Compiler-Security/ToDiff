@@ -17,10 +17,7 @@ import org.generator.util.collections.Pair;
 import org.generator.util.net.IPV4;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static java.lang.Integer.max;
 
@@ -142,8 +139,6 @@ public class OspfConfParser {
         //remove invalid ip area  network area
         boolean is_ip_ospf_area = IPNetworkInvalid(opg);
         removeInvalidOp(opg);
-
-        System.out.println(opg.toString());
 
 
         var opgs = mergeOps(opg);
