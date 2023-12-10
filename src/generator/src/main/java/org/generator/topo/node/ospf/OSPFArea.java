@@ -25,12 +25,12 @@ public class OSPFArea extends AbstractNode {
         //TODO
     }
 
-    @Override
-    public String getNodeAtrriStr() {
-        String area_str = "UNK";
-        if (getArea() != null){
-            area_str = String.format("%d", getArea().IDtoInt());
-        }
-        return String.format("{type:%s, area:%s}", getNodeType(), area_str);
-    }
+//    @Override
+//    public String getNodeAtrriStr() {
+//        String area_str = "UNK";
+//        if (getArea() != null){
+//            area_str = String.format("%d", getArea().IDtoInt());
+//        }
+//        return String.format("{type:%s, area:%s}", getNodeType(), area_str);
+//    }
 }

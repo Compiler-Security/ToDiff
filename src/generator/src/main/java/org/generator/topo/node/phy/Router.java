@@ -20,8 +20,8 @@ public class Router extends AbstractNode {
 
     }
 
-    @Override
-    public String getNodeAtrriStr() {
-        return String.format("{type:%s}", getNodeType());
-    }
+//    @Override
+//    public String getNodeAtrriStr() {
+//        return String.format("{type:%s}", getNodeType());
+//    }
 }

@@ -162,8 +162,8 @@ public class OSPFIntf extends AbstractNode {
 
     int transDelay;
 
-    @Override
-    public String getNodeAtrriStr() {
-        return String.format("{type:%s, area: %s, vrf:%d, cost:%d}",  getNodeType(), getArea(), getVrf(), getCost());
-    }
+//    @Override
+//    public String getNodeAtrriStr() {
+//        return String.format("{type:%s, area: %s, vrf:%d, cost:%d}",  getNodeType(), getArea(), getVrf(), getCost());
+//    }
 }

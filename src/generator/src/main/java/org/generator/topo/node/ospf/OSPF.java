@@ -1,5 +1,8 @@
 package org.generator.topo.node.ospf;
 
+
+import java.lang.reflect.Field;
+
 import org.generator.topo.node.NodeType;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
@@ -110,13 +113,5 @@ public class OSPF extends AbstractNode {
         maxHoldTime = 10;
     }
 
-    @Override
-    public String getNodeAtrriStr() {
-        String router_id_str = "UNK";
-        if (getRouterId() != null){
-            router_id_str = String.format("%d", getRouterId().IDtoInt());
-        }
-        return String.format("{type:%s, router_id:%s, status:%s, abr_type:%s}", getNodeType(), router_id_str, getStatus(), getAbrType());
-    }
 
 }

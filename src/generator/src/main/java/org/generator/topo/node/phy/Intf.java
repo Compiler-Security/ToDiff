@@ -43,12 +43,12 @@ public class Intf extends AbstractNode {
 
     }
 
-    @Override
-    public String getNodeAtrriStr() {
-        String ip_str = "UNK";
-        if (getIp() != null){
-            ip_str = getIp().toString();
-        }
-        return String.format("{type:%s, up:%b, ip:%s}", getNodeType(), isUp(), ip_str);
-    }
+//    @Override
+//    public String getNodeAtrriStr() {
+//        String ip_str = "UNK";
+//        if (getIp() != null){
+//            ip_str = getIp().toString();
+//        }
+//        return String.format("{type:%s, up:%b, ip:%s}", getNodeType(), isUp(), ip_str);
+//    }
 }

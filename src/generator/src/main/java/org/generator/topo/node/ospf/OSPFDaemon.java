@@ -63,8 +63,8 @@ public class OSPFDaemon extends AbstractNode {
 
     }
 
-    @Override
-    public String getNodeAtrriStr() {
-        return "";
-    }
+//    @Override
+//    public String getNodeAtrriStr() {
+//        return "";
+//    }
 }

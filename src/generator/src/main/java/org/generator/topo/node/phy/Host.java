@@ -15,8 +15,8 @@ public class Host extends AbstractNode {
 
     }
 
-    @Override
-    public String getNodeAtrriStr() {
-        return String.format("{type:%s}", getNodeType());
-    }
+//    @Override
+//    public String getNodeAtrriStr() {
+//        return String.format("{type:%s}", getNodeType());
+//    }
 }

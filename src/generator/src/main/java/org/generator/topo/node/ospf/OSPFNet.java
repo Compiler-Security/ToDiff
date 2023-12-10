@@ -39,12 +39,12 @@ public class OSPFNet extends AbstractNode {
 
     }
 
-    @Override
-    public String getNodeAtrriStr() {
-        String ip_str = "UNK";
-        if (getIp() != null){
-            ip_str = getIp().toString();
-        }
-        return String.format("{type:%s, ip:%s}", getNodeType(), ip_str);
-    }
+//    @Override
+//    public String getNodeAtrriStr() {
+//        String ip_str = "UNK";
+//        if (getIp() != null){
+//            ip_str = getIp().toString();
+//        }
+//        return String.format("{type:%s, ip:%s}", getNodeType(), ip_str);
+//    }
 }

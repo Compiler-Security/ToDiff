@@ -5,6 +5,7 @@ import org.generator.operation.conf.PhyConfParser;
 import org.generator.operation.conf.OspfConfReader;
 import org.generator.operation.opg.ParserOpGroup;
 import org.generator.topo.graph.RelationGraph;
+import org.generator.topo.node.ospf.OSPF;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -80,6 +81,7 @@ public class RelationGraphIntfExecTest {
                 ospf router-id 0.0.0.1
                 network 10.0.0.0/30 area 1
                 network 10.0.0.0/10 area 2
+                area 2 range 9.0.0.0/20
                 interface r1-eth0
                 ip ospf area 3
                 no ip ospf area
@@ -92,5 +94,11 @@ public class RelationGraphIntfExecTest {
         run_cmd_str(false, test_st, topo, Optional.of("r1"));
         System.out.println(topo);
         System.out.println(topo.toDot(true));
+    }
+
+    @Test
+    public void testNodeAttrStr(){
+        var ospf = new OSPF("r1");
+        System.out.println(ospf.getNodeAtrriStr());
     }
 }

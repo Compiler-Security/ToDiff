@@ -134,9 +134,9 @@ public class OSPFAreaSum extends AbstractNode {
         //TODO
     }
 
-    @Override
-    public String getNodeAtrriStr() {
-        new Unimplemented();
-        return "";
-    }
+//    @Override
+//    public String getNodeAtrriStr() {
+//        new Unimplemented();
+//        return "";
+//    }
 }
