@@ -6,7 +6,7 @@ import java.util.Map;
 
 public interface op {
     boolean decode(String st);
-    void encode(StringBuilder buf);
+    boolean encode(StringBuilder buf);
     String encode_to_str();
     OpType Type();
     Map<String, String> Args();
@@ -28,6 +28,11 @@ public interface op {
         putArg(field_name, ip.toString());
     }
 
+
+    default  void putLongArg(String field_name, Long val){
+        putArg(field_name, String.valueOf(val));
+    }
+
     default String Arg(String field_name){
         assert Args().get(field_name) != null;
         return Args().get(field_name);
@@ -37,12 +42,20 @@ public interface op {
         return Integer.parseInt(Arg(field_name));
     }
 
+    default long LongArg(String field_name){
+        return Long.parseLong(Arg(field_name));
+    }
+
     default double DoubleArg(String field_name){
         return Double.parseDouble(field_name);
     }
 
     default IPV4 IPArg(String field_name){
-        return new IPV4(field_name);
+        return IPV4.IPOf(field_name);
+    }
+
+    default IPV4 IDArg(String field_name){
+        return IPV4.IDOf(field_name);
     }
     @Override
     String toString();

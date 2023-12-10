@@ -1,15 +1,22 @@
 package org.generator.topo.node.ospf;
 
+
+import java.lang.reflect.Field;
+
 import org.generator.topo.node.NodeType;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
 import org.generator.util.net.IPV4;
 import org.generator.topo.node.AbstractNode;
 
+import java.util.Arrays;
+import java.util.Optional;
+
 public class OSPF extends AbstractNode {
     public OSPF(String name){
         setName(name);
         setNodeType(NodeType.OSPF);
+        initFiled();
     }
     public enum OSPF_STATUS{
         INIT,
@@ -30,6 +37,11 @@ public class OSPF extends AbstractNode {
         @Override
         public boolean match(String st) {
             return new AbstractStringEnum(template).match(st);
+        }
+        static public Optional<ABR_TYPE> of(String st){
+            return Arrays.stream(ABR_TYPE.values())
+                    .filter(x -> x.match(st))
+                    .findFirst();
         }
     }
 
@@ -91,12 +103,15 @@ public class OSPF extends AbstractNode {
     int maxHoldTime;
 
     @Override
-    public String getNodeAtrriStr() {
-        String router_id_str = "UNK";
-        if (getRouterId() != null){
-            router_id_str = String.format("%d", getRouterId().toInt());
-        }
-        return String.format("{type:%s, router_id:%s, status:%s, abr_type:%s}", getNodeType(), router_id_str, getStatus(), getAbrType());
+    public void initFiled() {
+        status = OSPF_STATUS.UP;
+        abrType = ABR_TYPE.Normal;
+        routerId = IPV4.IDOf(0);
+        //TODO
+        initDelay = 10;
+        initHoldTime = 10;
+        maxHoldTime = 10;
     }
+
 
 }

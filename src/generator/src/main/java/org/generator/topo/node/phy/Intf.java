@@ -7,6 +7,7 @@ public class Intf extends AbstractNode {
     public Intf(String name){
         setName(name);
         setNodeType(NodeType.Intf);
+        initFiled();
     }
 
     public boolean isUp() {
@@ -28,12 +29,26 @@ public class Intf extends AbstractNode {
     boolean up;
     IPV4 ip;
 
-    @Override
-    public String getNodeAtrriStr() {
-        String ip_str = "UNK";
-        if (getIp() != null){
-            ip_str = getIp().toString();
-        }
-        return String.format("{type:%s, up:%b, ip:%s}", getNodeType(), isUp(), ip_str);
+    public boolean isPersudo() {
+        return persudo;
     }
+
+    public void setPersudo(boolean persudo) {
+        this.persudo = persudo;
+    }
+
+    boolean persudo;
+    @Override
+    public void initFiled() {
+
+    }
+
+//    @Override
+//    public String getNodeAtrriStr() {
+//        String ip_str = "UNK";
+//        if (getIp() != null){
+//            ip_str = getIp().toString();
+//        }
+//        return String.format("{type:%s, up:%b, ip:%s}", getNodeType(), isUp(), ip_str);
+//    }
 }

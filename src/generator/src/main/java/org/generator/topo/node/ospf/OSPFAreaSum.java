@@ -6,6 +6,7 @@ import org.generator.util.exception.Unimplemented;
 import org.generator.util.net.IPV4;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -15,6 +16,7 @@ public class OSPFAreaSum extends AbstractNode {
         setName(name);
         setNodeType(NodeType.OSPFAreaSum);
         sumEntries = new HashMap<>();
+        initFiled();
     }
 
     public static class OSPFAreaSumEntry{
@@ -65,11 +67,11 @@ public class OSPFAreaSum extends AbstractNode {
         IPV4 substitute;
     }
 
-    public Map<Integer, OSPFAreaSumEntry> getSumEntries() {
+    public Map<String, OSPFAreaSumEntry> getSumEntries() {
         return sumEntries;
     }
 
-    Map<Integer, OSPFAreaSumEntry> sumEntries;
+    Map<String, OSPFAreaSumEntry> sumEntries;
 
     public IPV4 getVirtualLink() {
         return virtualLink;
@@ -126,9 +128,15 @@ public class OSPFAreaSum extends AbstractNode {
     }
 
     IPV4 area;
+
     @Override
-    public String getNodeAtrriStr() {
-        new Unimplemented();
-        return "";
+    public void initFiled() {
+        //TODO
     }
+
+//    @Override
+//    public String getNodeAtrriStr() {
+//        new Unimplemented();
+//        return "";
+//    }
 }

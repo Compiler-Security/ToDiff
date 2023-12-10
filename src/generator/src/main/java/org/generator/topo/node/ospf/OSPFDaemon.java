@@ -8,6 +8,7 @@ public class OSPFDaemon extends AbstractNode {
         setName(name);
         setNodeType(NodeType.OSPFDaemon);
         socketPerInterface = true;
+        initFiled();
     }
 
     public int getMaxPaths() {
@@ -56,8 +57,14 @@ public class OSPFDaemon extends AbstractNode {
     }
 
     boolean socketPerInterface;
+
     @Override
-    public String getNodeAtrriStr() {
-        return "";
+    public void initFiled() {
+
     }
+
+//    @Override
+//    public String getNodeAtrriStr() {
+//        return "";
+//    }
 }

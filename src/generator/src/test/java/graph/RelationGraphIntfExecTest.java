@@ -1,21 +1,23 @@
 package graph;
 
-import org.generator.operation.op.SimpleConfReader;
-import org.generator.operation.opg.OpgExec;
-import org.generator.operation.opg.SimpleOpGroup;
+import org.generator.operation.conf.OspfConfParser;
+import org.generator.operation.conf.PhyConfParser;
+import org.generator.operation.conf.OspfConfReader;
+import org.generator.operation.opg.ParserOpGroup;
 import org.generator.topo.graph.RelationGraph;
-import org.generator.topo.node.AbstractNode;
+import org.generator.topo.node.ospf.OSPF;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
 import java.util.Optional;
+import java.util.StringJoiner;
 
 public class RelationGraphIntfExecTest {
 
 
     @Test
     public void phyExecSimpleTest(){
-        var reader = new SimpleConfReader();
+        var reader = new OspfConfReader();
         String test_st = """
                 node r1 add
                 node s1 add
@@ -24,17 +26,16 @@ public class RelationGraphIntfExecTest {
                 """;
         var ops = reader.read(test_st).get();
         //ops.forEach(op -> {assert op.Type() != OpType.INVALID : String.format("stmt error %s", op.toString());});
-        var opg = new SimpleOpGroup(ops, Optional.empty());
+        var opg = new ParserOpGroup(ops, Optional.empty());
         System.out.println(opg);
         RelationGraph topo = new RelationGraph();
-        var opgexec = new OpgExec();
-        opgexec.ExecOpGroup(opg, topo);
+        PhyConfParser.parse(opg, topo);
         System.out.println(topo);
     }
 
     @Test
     public void dotTest(){
-        var reader = new SimpleConfReader();
+        var reader = new OspfConfReader();
         String test_st = """
                 node r1 add
                 node s1 add
@@ -43,34 +44,40 @@ public class RelationGraphIntfExecTest {
                 """;
         var ops = reader.read(test_st).get();
         //ops.forEach(op -> {assert op.Type() != OpType.INVALID : String.format("stmt error %s", op.toString());});
-        var opg = new SimpleOpGroup(ops, Optional.empty());
+        var opg = new ParserOpGroup(ops, Optional.empty());
         System.out.println(opg);
         RelationGraph topo = new RelationGraph();
-        var opgexec = new OpgExec();
-        opgexec.ExecOpGroup(opg, topo);
+        PhyConfParser.parse(opg, topo);
         System.out.println(topo);
         System.out.println(topo.toDot(true));
     }
 
 
-    private void run_cmd_str(String cmd, RelationGraph topo, @NotNull Optional<String> target){
-        var reader = new SimpleConfReader();
+    private void run_cmd_str(boolean isPhy, String cmd, RelationGraph topo, @NotNull Optional<String> target){
+        var reader = new OspfConfReader();
         var ops = reader.read(cmd).get();
         //ops.forEach(op -> {assert op.Type() != OpType.INVALID : String.format("stmt error %s", op.toString());});
-        var opg = new SimpleOpGroup(ops, target);
-        var opgexec = new OpgExec();
-        opgexec.ExecOpGroup(opg, topo);
+        var opg = new ParserOpGroup(ops, target);
+        if (isPhy){
+            PhyConfParser.parse(opg, topo);
+        }else {
+            OspfConfParser.parse(opg, topo, target.get());
+            StringJoiner joiner = new StringJoiner("\n");
+            opg.getOps().forEach(x -> joiner.add(x.toString()));
+            System.out.println("=====deduced conf=====");
+            System.out.println(joiner.toString());
+        }
     }
 
     private RelationGraph getBaseTopo(){
         String test_st = """
                 node r1 add
                 node s1 add
-                node r1 set ospf up
                 link r1-eth0 s1-eth0 up
+                link r1-eth1 s1-eth1 up
                 """;
         RelationGraph topo = new RelationGraph();
-        run_cmd_str(test_st, topo, Optional.empty());
+        run_cmd_str(true, test_st, topo, Optional.empty());
         return topo;
     }
     @Test
@@ -78,10 +85,32 @@ public class RelationGraphIntfExecTest {
         String test_st = """
                 router ospf
                 ospf router-id 0.0.0.1
+                network 10.0.0.5/30 area 0
+                network 10.0.0.0/10 area 2
+                area 2 range 9.0.0.0/20              
+                
+                interface r1-eth0
+                ip ospf area 3
+                no ip ospf area
+                ip address 10.0.0.0/10
+                ip ospf cost 100             
+               
+                interface r1-eth1
+                ip address 10.0.0.5/30
+                ip ospf cost 200
                 """;
         var topo = getBaseTopo();
-        run_cmd_str(test_st, topo, Optional.of("r1"));
-        System.out.println(topo);
-        System.out.println(topo.toDot(true));
+        run_cmd_str(false, test_st, topo, Optional.of("r1"));
+        //System.out.println(topo);
+        System.out.println("=====OSPF config=====");
+        topo.dumpOfRouter("r1");
+        System.out.println("=====relation graph=====");
+        System.out.println(topo.toDot(false));
+    }
+
+    @Test
+    public void testNodeAttrStr(){
+        var ospf = new OSPF("r1");
+        System.out.println(ospf.getNodeAtrriStr());
     }
 }

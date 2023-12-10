@@ -46,7 +46,7 @@ public class NodeGen {
     }
 
     static  public String getOSPFAreaName(IPV4 area){
-        return String.format("area%d", area.toInt());
+        return String.format("area%d", area.IDtoInt());
     }
     static public String getOSPFAreaSumName(String ospf_name, String area_name){
         return String.format("%s-%s", ospf_name, area_name);
@@ -79,7 +79,7 @@ public class NodeGen {
 
     public static OSPFNet new_OSPF_Net(String name){return new OSPFNet(name);}
 
-    public static <T extends  AbstractNode> T newNode(String name, NodeType type){
+    public static <T extends  AbstractNode> T newNode(String name, NodeType type){;
         return (T)new_node(name, type);
     }
     public static AbstractNode new_node(String name, NodeType type){

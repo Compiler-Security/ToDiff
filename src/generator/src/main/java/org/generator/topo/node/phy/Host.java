@@ -7,10 +7,16 @@ public class Host extends AbstractNode {
     Host(String name){
         setName(name);
         setNodeType(NodeType.Host);
+        initFiled();
     }
 
     @Override
-    public String getNodeAtrriStr() {
-        return String.format("{type:%s}", getNodeType());
+    public void initFiled() {
+
     }
+
+//    @Override
+//    public String getNodeAtrriStr() {
+//        return String.format("{type:%s}", getNodeType());
+//    }
 }

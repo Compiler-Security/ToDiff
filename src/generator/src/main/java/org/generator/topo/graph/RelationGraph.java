@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class RelationGraph extends AbstractRelationGraph {
@@ -53,7 +54,7 @@ public class RelationGraph extends AbstractRelationGraph {
         return getEdgesByType(nodes, typ).stream().map(s->(T) s.getDst()).collect(Collectors.toSet());
      }
 
-     public Set<Intf> getIntfOfRouter(String r_name){
+     public Set<Intf> getIntfsOfRouter(String r_name){
         return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF);
      }
      public Set<OSPFIntf> getOSPFIntfOfRouter(String r_name){
@@ -78,18 +79,25 @@ public class RelationGraph extends AbstractRelationGraph {
         return (OSPFIntf) getNode(nodeName).get();
     }
 
+    public Intf getIntf(String nodeName){
+        return (Intf) getNode(nodeName).get();
+    }
+
     public ExecStat addOSPFRelation(String ospf_name, String phynode_name){
         var res1 = addEdge(phynode_name, ospf_name, RelationEdge.EdgeType.OSPF);
         var res2 =  addEdge(ospf_name, phynode_name, RelationEdge.EdgeType.PhyNODE);
         assert res1.join(res2) == ExecStat.SUCC;
         return ExecStat.SUCC;
     }
-    public ExecStat addOSPFIntfRelation(String ospf_intf_name, String intf_name, String ospf_name){
+    public ExecStat addOSPFIntfRelation(String ospf_intf_name, String intf_name){
         var res1 = addEdge(ospf_intf_name, intf_name, RelationEdge.EdgeType.INTF);
         var res2 = addEdge(intf_name, ospf_intf_name, RelationEdge.EdgeType.OSPFINTF);
-        var res3 = addEdge(ospf_name, ospf_intf_name, RelationEdge.EdgeType.OSPFINTF);
-        var res4 = addEdge(ospf_intf_name, ospf_name, RelationEdge.EdgeType.OSPF);
-        assert res1.join(res2).join(res3).join(res4) == ExecStat.SUCC;
+        return ExecStat.SUCC;
+    }
+
+    public ExecStat addIntfRelation(String intfName, String routerName){
+        addEdge(intfName, routerName, RelationEdge.EdgeType.PhyNODE);
+        addEdge(routerName, intfName, RelationEdge.EdgeType.PhyNODE);
         return ExecStat.SUCC;
     }
 
@@ -146,5 +154,22 @@ public class RelationGraph extends AbstractRelationGraph {
             e.printStackTrace();
         }
         return stringWriter.toString();
+    }
+
+    private void dfsNode(AbstractNode node, Map<String, String> m, HashSet<AbstractNode> visited, Predicate<AbstractNode> filter){
+        if (visited.contains(node)) return;
+        visited.add(node);
+        if (!filter.test(node)) return;
+        m.put(node.getName(), node.getNodeAtrriStr());
+        getSuccsOf(node).forEach(x -> dfsNode(x, m, visited, filter));
+    }
+    public void dumpOfRouter(String r_name){
+        assert containsNode(r_name);
+        Map<String, String> m = new TreeMap<>();
+        HashSet<AbstractNode> visited = new HashSet<>();
+        dfsNode(getNode(r_name).get(), m, visited, x -> x.getName().contains(r_name));
+        for (var entry: m.entrySet()){
+            System.out.println(String.format("%s : %s", entry.getKey(), entry.getValue()));
+        }
     }
 }

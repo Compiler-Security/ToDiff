@@ -1,5 +1,6 @@
-package org.generator.operation.op;
+package org.generator.operation.conf;
 
+import org.generator.operation.op.Operation;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedReader;
