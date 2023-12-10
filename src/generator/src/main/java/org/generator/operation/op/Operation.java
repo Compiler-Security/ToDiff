@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 public class Operation extends StrOperation {
     public Operation(OpType type) {
@@ -317,5 +318,13 @@ public class Operation extends StrOperation {
     public String toString(int index){
         store_to_dynamic();
         return super.toString(index);
+    }
+
+    @SafeVarargs
+    public final Operation checkOrInvalid(Predicate<Operation>... predicates){
+        for(var predicate: predicates){
+            if (!predicate.test(this)) return new Operation(OpType.INVALID);
+        }
+        return this;
     }
 }

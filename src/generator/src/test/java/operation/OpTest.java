@@ -2,7 +2,7 @@ package operation;
 
 import org.generator.operation.op.OpGen;
 import org.generator.operation.op.OpType;
-import org.generator.operation.conf.ConfReader;
+import org.generator.operation.conf.OspfConfReader;
 import org.junit.Test;
 
 public class OpTest {
@@ -21,7 +21,7 @@ public class OpTest {
                 node r2     add
                 link r1-eth0   r2-eth0    up   
                 """;
-        var res = new ConfReader().read(conf);
+        var res = new OspfConfReader().read(conf);
         System.out.println(res);
     }
 

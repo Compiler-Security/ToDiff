@@ -1,6 +1,6 @@
 package operation;
 
-import org.generator.operation.conf.ConfReader;
+import org.generator.operation.conf.OspfConfReader;
 import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
 import org.generator.util.net.IPV4;
@@ -91,7 +91,7 @@ public class AbstractOperationTest {
         //var c = op.decode("no ospf router-id 5.5.5.5");
         var c = op.decode("no area 10000 range 5.5.5.5/32");
         if (c) {
-            var r = new ConfReader();
+            var r = new OspfConfReader();
             System.out.println(op.getIP().getAddressOfIp());
             System.out.println(op.getIP().getMaskOfIp());
             var op1 = r.changeIDNumToID(op, OpType.AreaRange);

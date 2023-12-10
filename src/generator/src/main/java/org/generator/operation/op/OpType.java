@@ -192,7 +192,7 @@ public enum OpType {
                 #AREARANGEADVERTISE
             """,
             "area (0-4294967295) range A.B.C.D/M advertise"),
-    AreaRangeAdCostINT("area {IDNUM} range {IP} advertise cost {NUM2}", """
+    AreaRangeAdCostINT("area {IDNUM} range {IP} advertise cost {NUM}", """
                 MEET 0<={NUM2}<=16777215
                 let {ID} = ID({NUM2})
                 #AREARANGEADVERTISECOST

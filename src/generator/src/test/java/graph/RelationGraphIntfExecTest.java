@@ -2,7 +2,7 @@ package graph;
 
 import org.generator.operation.conf.OspfConfParser;
 import org.generator.operation.conf.PhyConfParser;
-import org.generator.operation.conf.ConfReader;
+import org.generator.operation.conf.OspfConfReader;
 import org.generator.operation.opg.ParserOpGroup;
 import org.generator.topo.graph.RelationGraph;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +15,7 @@ public class RelationGraphIntfExecTest {
 
     @Test
     public void phyExecSimpleTest(){
-        var reader = new ConfReader();
+        var reader = new OspfConfReader();
         String test_st = """
                 node r1 add
                 node s1 add
@@ -33,7 +33,7 @@ public class RelationGraphIntfExecTest {
 
     @Test
     public void dotTest(){
-        var reader = new ConfReader();
+        var reader = new OspfConfReader();
         String test_st = """
                 node r1 add
                 node s1 add
@@ -52,7 +52,7 @@ public class RelationGraphIntfExecTest {
 
 
     private void run_cmd_str(boolean isPhy, String cmd, RelationGraph topo, @NotNull Optional<String> target){
-        var reader = new ConfReader();
+        var reader = new OspfConfReader();
         var ops = reader.read(cmd).get();
         //ops.forEach(op -> {assert op.Type() != OpType.INVALID : String.format("stmt error %s", op.toString());});
         var opg = new ParserOpGroup(ops, target);
@@ -78,16 +78,15 @@ public class RelationGraphIntfExecTest {
         String test_st = """
                 router ospf
                 ospf router-id 0.0.0.1
-                network 10.0.0.5/30 area 0.0.0.1
-                network 10.0.0.0/10 area 0.0.0.2
+                network 10.0.0.0/30 area 1
+                network 10.0.0.0/10 area 2
                 interface r1-eth0
-                ip ospf area 0.0.0.3
+                ip ospf area 3
                 no ip ospf area
                 ip address 10.0.0.0/10
                 ip ospf cost 100
                 interface r1-eth0
                 ip ospf cost 200
-                no router ospf
                 """;
         var topo = getBaseTopo();
         run_cmd_str(false, test_st, topo, Optional.of("r1"));

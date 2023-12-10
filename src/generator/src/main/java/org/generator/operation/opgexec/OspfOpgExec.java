@@ -115,7 +115,7 @@ public class OspfOpgExec extends OpgExec{
         if (cur_router == null || cur_ospf == null) return ExecStat.MISS;
         //FIXME num range should be deal before this
         var cur_rname = cur_router.getName();
-        Boolean is_ABR = topo.getOSPFIntfOfRouter(cur_rname)
+        boolean is_ABR = topo.getOSPFIntfOfRouter(cur_rname)
                 .stream().anyMatch(x -> x.getArea().IDtoInt() == 0);
         if (op.Type().ordinal() >= OpType.AreaRange.ordinal() && op.Type().ordinal() <= OpType.AreaRangeCostINT.ordinal()) {
             if (!is_ABR) {
@@ -152,6 +152,7 @@ public class OspfOpgExec extends OpgExec{
             switch (op.Type()){
                 case AreaVLink -> {
                     //TODO
+                    assert false : "AreaVlink not implemented";
                 }
                 case AreaShortcut -> {
                     areaSum.setShortcut(true);
