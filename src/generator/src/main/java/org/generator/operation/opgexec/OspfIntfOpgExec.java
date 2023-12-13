@@ -20,7 +20,7 @@ public class OspfIntfOpgExec extends OpgExec{
                 cur_ospf_intf.setDeadInterval(op.getNUM());
             }
             case IpOspfDeadInterMulti -> {
-                cur_ospf_intf.setHelloPerSec(op.getNUM());
+                cur_ospf_intf.setHelloMulti(op.getNUM());
                 cur_ospf_intf.setHelloInterval(0);
             }
             case IpOspfHelloInter -> {

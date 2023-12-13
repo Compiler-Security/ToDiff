@@ -131,7 +131,13 @@ public class OSPFAreaSum extends AbstractNode {
 
     @Override
     public void initFiled() {
-        //TODO
+        shortcut = false;
+        stub = false;
+        nosummary = false;
+        nssa = false;
+        virtualLink = null;
+        sumEntries = new HashMap<>();
+        area = null;
     }
 
 //    @Override

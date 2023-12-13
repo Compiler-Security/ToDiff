@@ -1,8 +1,6 @@
 package org.generator.topo.node.ospf;
 
 
-import java.lang.reflect.Field;
-
 import org.generator.topo.node.NodeType;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
@@ -82,12 +80,12 @@ public class OSPF extends AbstractNode {
         this.initDelay = initDelay;
     }
 
-    public int getInitHoldTime() {
-        return initHoldTime;
+    public int getMinHoldTime() {
+        return minHoldTime;
     }
 
-    public void setInitHoldTime(int initHoldTime) {
-        this.initHoldTime = initHoldTime;
+    public void setMinHoldTime(int minHoldTime) {
+        this.minHoldTime = minHoldTime;
     }
 
     public int getMaxHoldTime() {
@@ -99,18 +97,18 @@ public class OSPF extends AbstractNode {
     }
 
     int initDelay;
-    int initHoldTime;
+    int minHoldTime;
     int maxHoldTime;
 
     @Override
     public void initFiled() {
         status = OSPF_STATUS.UP;
-        abrType = ABR_TYPE.Normal;
+        abrType = null; //abrType if it's not ABR, this field is null
+        //TODO we should set this in init
         routerId = IPV4.IDOf(0);
-        //TODO
-        initDelay = 10;
-        initHoldTime = 10;
-        maxHoldTime = 10;
+        initDelay = 0; //spfScheduleDelayMsecs
+        minHoldTime = 50; //holdtimeMinMsecs
+        maxHoldTime = 5000; //holdtimeMaxMsecs
     }
 
 

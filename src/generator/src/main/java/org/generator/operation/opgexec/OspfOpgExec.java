@@ -43,7 +43,7 @@ public class OspfOpgExec extends OpgExec{
             case TIMERSTHROTTLESPF -> {
                 int max_number = Stream.of(op.getNUM(), op.getNUM2(), op.getNUM3()).max(Integer::compareTo).get();
                 cur_ospf.setInitDelay(op.getNUM());
-                cur_ospf.setInitHoldTime(op.getNUM2());
+                cur_ospf.setMinHoldTime(op.getNUM2());
                 cur_ospf.setMaxHoldTime(op.getNUM3());
                 return ExecStat.SUCC;
             }

@@ -148,6 +148,8 @@ public class OspfConfParser {
         var intf_opgs = opgs.first();
         var ospf_opg = opgs.second();
 
+        //int name
+        //ip address XXX.XXX.XXX.XXX
         //set intf ip || add intf
         for (var intf_opg : intf_opgs) {
             assert intf_opg.getTyp() == ParserOpGroup.OpGType.Intf;
@@ -156,6 +158,7 @@ public class OspfConfParser {
             var res = topo.<Intf>getOrCreateNode(intf_name, NodeType.Intf);
             if (!res.second()) {
                 res.first().setPersudo(true);
+                res.first().setUp(false);
                 topo.addIntfRelation(intf_name, r_name);
             }
             //parse ip address ...
@@ -164,6 +167,8 @@ public class OspfConfParser {
             }
         }
 
+        //network XXX.XXX.XXX.XXX area XXX
+        //ip ospf area XXX
         //set area & add ospfintf
         if (is_ip_ospf_area) {
             for(var intf_opg: intf_opgs){
@@ -214,6 +219,8 @@ public class OspfConfParser {
             }
         }
 
+
+        //router ospf
         //add ospf && ospf daemon
         if (ospf_opg != null){
             var ospf_name = NodeGen.getOSPFName(r_name);
@@ -224,8 +231,11 @@ public class OspfConfParser {
             var ospf_daemon = topo.<OSPFDaemon>getOrCreateNode(ospf_daemon_name, NodeType.OSPFDaemon);
             assert !ospf.second();
             topo.addOSPFDaemonRelation(ospf_name, ospf_daemon_name);
+
+            //
         }
 
+        //ospf intf commands
         //execute other intfs ops
         for (var intf_opg: intf_opgs){
             var exec = new OspfIntfOpgExec();
@@ -236,6 +246,8 @@ public class OspfConfParser {
             }
             exec.execOps(intf_opg, topo);
         }
+
+        //ospf other commands
         //execute other ospf ops
         if (ospf_opg != null){
             var exec = new OspfOpgExec();

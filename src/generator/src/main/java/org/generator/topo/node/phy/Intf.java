@@ -40,7 +40,9 @@ public class Intf extends AbstractNode {
     boolean persudo;
     @Override
     public void initFiled() {
-
+        up = true;
+        ip = null;
+        persudo = false;
     }
 
 //    @Override

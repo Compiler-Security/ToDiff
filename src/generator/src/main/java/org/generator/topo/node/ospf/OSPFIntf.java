@@ -13,7 +13,7 @@ public class OSPFIntf extends AbstractNode {
     public OSPFIntf(String name){
         setName(name);
         setNodeType(NodeType.OSPFIntf);
-
+        initFiled();
         passive = false;
     }
 
@@ -67,7 +67,7 @@ public class OSPFIntf extends AbstractNode {
     }
 
     int deadInterval;
-    int helloPerSec;
+    int helloMulti;
 
     public int getGRHelloDelay() {
         return GRHelloDelay;
@@ -79,12 +79,12 @@ public class OSPFIntf extends AbstractNode {
 
     int GRHelloDelay;
 
-    public int getHelloPerSec() {
-        return helloPerSec;
+    public int getHelloMulti() {
+        return helloMulti;
     }
 
-    public void setHelloPerSec(int helloPerSec) {
-        this.helloPerSec = helloPerSec;
+    public void setHelloMulti(int helloMulti) {
+        this.helloMulti = helloMulti;
     }
 
     public int getHelloInterval() {
@@ -129,7 +129,20 @@ public class OSPFIntf extends AbstractNode {
     OSPFNetType netType;
     @Override
     public void initFiled() {
-        //TODO
+        passive = false;
+        vrf = 0;
+        cost = 10;
+        area = null;
+        helloInterval = 10;  //timerHelloInMsecs
+        deadInterval = 40; //timerDeadSecs
+        retansInter = 5; //timerRetransmitSecs
+        transDelay = 1; //transmitDelaySecs
+
+        helloMulti = 760; 
+        GRHelloDelay = 10; //grHelloDelaySecs
+        netType = OSPFNetType.BROADCAST;
+        priority = 1; //priority
+
     }
 
     public int getPriority() {

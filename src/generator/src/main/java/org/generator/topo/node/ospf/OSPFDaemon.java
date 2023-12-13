@@ -60,7 +60,11 @@ public class OSPFDaemon extends AbstractNode {
 
     @Override
     public void initFiled() {
-
+        maxPaths = 64;
+        writemulti = 20;
+        socketPerInterface = true;
+        buffersend = 8 * 1024 * 1024;
+        bufferrecv = 8 * 1024 * 1024;
     }
 
 //    @Override
