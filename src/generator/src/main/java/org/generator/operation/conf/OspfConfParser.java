@@ -53,7 +53,6 @@ public class OspfConfParser {
 
     private static boolean matchUnset(Operation unsetOp, Operation target) {
         assert unsetOp.isUnset() && !target.isUnset() : "match unset unset is not right";
-        if (unsetOp.Type() == OpType.ROSPF && target.Type().inOSPFINTF()){return true;}
         unsetOp = unsetOp.getMinimalUnsetOp();
         if (!unsetOp.getCtxOp().equals(target.getCtxOp())){
             return false;
@@ -248,6 +247,13 @@ public class OspfConfParser {
                 exec.setCur_ospf_daemon(topo.getNodeNotNull(ospf_daemon_name));
             }
             exec.execOps(ospf_opg, topo);
+        }
+
+        //remove OSPF interface if OSPF daemon not running
+        if (!topo.containsOSPFOfRouter(r_name)){
+            for(var ospfintf : topo.getOSPFIntfOfRouter(r_name)){
+                topo.delNode(ospfintf);
+            }
         }
     }
 }
