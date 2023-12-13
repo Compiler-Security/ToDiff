@@ -98,6 +98,8 @@ public class RelationGraphIntfExecTest {
                 interface r1-eth1
                 ip address 10.0.0.5/30
                 ip ospf cost 200
+                
+                no router ospf
                 """;
         var topo = getBaseTopo();
         run_cmd_str(false, test_st, topo, Optional.of("r1"));
@@ -105,7 +107,7 @@ public class RelationGraphIntfExecTest {
         System.out.println("=====OSPF config=====");
         topo.dumpOfRouter("r1");
         System.out.println("=====relation graph=====");
-        System.out.println(topo.toDot(false));
+        System.out.println(topo.toDot(true));
     }
 
     @Test

@@ -13,9 +13,8 @@ public enum OpType {
     LINKDOWN("link {NAME} {NAME2} down", "", ""),
     LINKREMOVE("link {NAME} {NAME2} remove", "", ""),
 
-    //TODO add all no operations
-    OSPFCONF,
-    OSPFROUTERBEGIN,
+    //Don't change this!
+    OSPFCONF("ROSPFCONF", "", ""),
 
     //=================OSPF ROUTER==================
     ROSPF("router ospf",
@@ -31,6 +30,7 @@ public enum OpType {
     //TODO ROSPFNUM("router ospf [NUM]"),
     //TODO ROSPFVRF("router ospf vrf [NAME]"),
 
+    OSPFROUTERBEGIN,
     RID("ospf router-id {ID}",
             "no ospf router-id | no ospf router-id {ID}",
             """
@@ -302,8 +302,7 @@ public enum OpType {
 
     OSPFAREAGROUPEND,
 
-    OSPFIntfGroupBEGIN,
-    //FIXME syntax right?
+
     IntfName("interface {NAME}",
             """
             MEET HAS _curRouter
@@ -324,6 +323,7 @@ public enum OpType {
             """,
             "ip address ADDRESS/PREFIX"),
 
+    OSPFIntfGroupBEGIN,
     //NOT CONSIDER ip ospf authentication-key AUTH_KEY
     //NOT Consider ip ospf authentication message-digest
     //NOT consider ip ospf message-digest-key KEYID md5 KEY
@@ -443,24 +443,24 @@ public enum OpType {
         return typ.ordinal() >= NODEADD.ordinal() && typ.ordinal() <= LINKREMOVE.ordinal();
     }
 
-    public static boolean inOSPF(OpType typ) { 
+    public static boolean inOSPF(OpType typ) {
         return typ.ordinal() >= OSPFROUTERBEGIN.ordinal() && typ.ordinal() <= OSPFIntfGroupEND.ordinal();
     }
 
-    public static boolean inOSPFRouterWithTopo(OpType typ) {
-        return typ.ordinal() >= ROSPF.ordinal() && typ.ordinal() <= NETAREAIDNUM.ordinal();
+    public  boolean inOSPFRouterWithTopo() {
+        return this.ordinal() >= OSPFROUTERBEGIN.ordinal() && this.ordinal() <= OSPFROUTEREND.ordinal();
     }
 
-    public static boolean inOSPFDAEMON(OpType typ){
-        return typ.ordinal() > OSPFDAEMONGROUPBEGIN.ordinal() && typ.ordinal() < OSPFDAEMONGROUPEND.ordinal();
+    public boolean inOSPFDAEMON(){
+        return this.ordinal() > OSPFDAEMONGROUPBEGIN.ordinal() && this.ordinal() < OSPFDAEMONGROUPEND.ordinal();
     }
 
-    public static boolean inOSPFAREA(OpType typ){
-        return typ.ordinal() > OSPFAREAGROUPBEGIN.ordinal() && typ.ordinal() < OSPFAREAGROUPEND.ordinal();
+    public  boolean inOSPFAREA(){
+        return this.ordinal() > OSPFAREAGROUPBEGIN.ordinal() && this.ordinal() < OSPFAREAGROUPEND.ordinal();
     }
 
-    public static boolean inOSPFINTF(OpType typ){
-        return typ.ordinal() > OSPFIntfGroupBEGIN.ordinal() && typ.ordinal() < OSPFIntfGroupEND.ordinal();
+    public  boolean inOSPFINTF(){
+        return this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal();
     }
     public String template() {
         return template;

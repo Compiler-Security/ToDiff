@@ -173,11 +173,11 @@ public class OspfOpgExec extends OpgExec{
     }
 
     private ExecStat execOSPFOp(@NotNull Operation op, RelationGraph topo) {
-        if (OpType.inOSPFRouterWithTopo(op.Type())) {
+        if (op.Type().inOSPFRouterWithTopo()) {
             return execOSPFAttriCmds(op, topo);
-        }else if (OpType.inOSPFDAEMON(op.Type())){
+        }else if (op.Type().inOSPFDAEMON()){
             return execOspfDaemonAttriCmds(op, topo);
-        }else if (OpType.inOSPFAREA(op.Type())){
+        }else if (op.Type().inOSPFAREA()){
             return execOSPFAreaCmds(op, topo);
         }
         return ExecStat.MISS;

@@ -2,7 +2,7 @@ package org.generator.operation.conf;
 
 import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
-import org.generator.operation.opgexec.IntfOpgExec;
+import org.generator.operation.opgexec.OspfIntfOpgExec;
 import org.generator.operation.opg.OpGroup;
 import org.generator.operation.opgexec.OspfOpgExec;
 import org.generator.operation.opg.ParserOpGroup;
@@ -19,8 +19,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static java.lang.Integer.max;
-
 public class OspfConfParser {
 
     private static void parseOpCtx(OpGroup opg) {
@@ -34,10 +32,15 @@ public class OspfConfParser {
                 set_ospf = null;
                 set_intf = op.isUnset() ? null : op;
                 op.setCtxOp(new Operation(OpType.OSPFCONF));
-            } else if (OpType.inOSPFINTF(op.Type())) {
+            } else if (op.Type() == OpType.IPAddr){
                 op.setCtxOp(set_intf);
-            } else {
+            }
+            else if (op.Type().inOSPFINTF()) {
+                op.setCtxOp(set_intf);
+            } else if (op.Type().inOSPFDAEMON() || op.Type().inOSPFAREA() || op.Type().inOSPFRouterWithTopo()){
                 op.setCtxOp(set_ospf);
+            } else{
+                op.setCtxOp(new Operation(OpType.OSPFCONF));
             }
         }
     }
@@ -50,6 +53,7 @@ public class OspfConfParser {
 
     private static boolean matchUnset(Operation unsetOp, Operation target) {
         assert unsetOp.isUnset() && !target.isUnset() : "match unset unset is not right";
+        if (unsetOp.Type() == OpType.ROSPF && target.Type().inOSPFINTF()){return true;}
         unsetOp = unsetOp.getMinimalUnsetOp();
         if (!unsetOp.getCtxOp().equals(target.getCtxOp())){
             return false;
@@ -225,7 +229,7 @@ public class OspfConfParser {
 
         //execute other intfs ops
         for (var intf_opg: intf_opgs){
-            var exec = new IntfOpgExec();
+            var exec = new OspfIntfOpgExec();
             var cur_intf_name = intf_opg.getCtxOp().getNAME();
             var cur_ospf_intf_name = NodeGen.getOSPFIntfName(cur_intf_name);
             if (topo.containsNode(cur_ospf_intf_name)){
