@@ -2,6 +2,7 @@ package org.generator.operation.op;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,7 +66,25 @@ public class StrOperation implements op {
         return true;
     }
 
+    static String generateRandomString(int length) {
+        String alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder();
+        Random random = new Random();
+
+        for(int i = 0; i < length; i++) {
+            int index = random.nextInt(alphabet.length());
+            char randomChar = alphabet.charAt(index);
+            sb.append(randomChar);
+        }
+
+        return sb.toString();
+    }
     public boolean encode(StringBuilder buf, int index){
+        if (this.type == OpType.OSPFCONF){
+            var ran = new Random();
+            buf.append(generateRandomString(ran.nextInt(20) + 1));
+            return true;
+        }
         if (!unset) {
             return encode_by_template(buf, template);
         }else{

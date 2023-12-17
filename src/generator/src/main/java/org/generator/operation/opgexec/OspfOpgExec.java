@@ -66,20 +66,20 @@ public class OspfOpgExec extends OpgExec{
             case WRITEMULTIPLIER -> {
                 var num = op.getNUM();
                 ospf_daemon.setWritemulti(num);
+                return ExecStat.SUCC;
             }
             case  SOCKETBUFFERSEND -> {
-                //FIXME num should be long!
-                var num = op.getNUM();
+                var num = op.getIDNUM();
                 ospf_daemon.setBuffersend(num);
                 return ExecStat.SUCC;
             }
             case SOCKETBUFFERRECV -> {
-                var num = op.getNUM();
+                var num = op.getIDNUM();
                 ospf_daemon.setBufferrecv(num);
                 return ExecStat.SUCC;
             }
             case SOCKETBUFFERALL -> {
-                var num = op.getNUM();
+                var num = op.getIDNUM();
                 ospf_daemon.setBuffersend(num);
                 ospf_daemon.setBufferrecv(num);
                 return ExecStat.SUCC;
@@ -88,8 +88,11 @@ public class OspfOpgExec extends OpgExec{
                 ospf_daemon.setSocketPerInterface(false);
                 return ExecStat.SUCC;
             }
+            case CLEARIPOSPFNEIGHBOR, CLEARIPOSPFPROCESS ->{
+                return ExecStat.SUCC;
+            }
         }
-        assert false:"should not go to here";
+        assert false:String.format("should not go to here %s", op.toString());
         return ExecStat.FAIL;
     }
 

@@ -6,6 +6,8 @@ import org.generator.operation.opg.ParserOpGroup;
 import org.generator.topo.node.NodeGen;
 import org.generator.util.collections.Pair;
 import org.generator.util.exception.Unimplemented;
+import org.generator.util.net.IPV4;
+
 import java.util.Random;
 import javax.swing.text.html.parser.Parser;
 import java.util.*;
@@ -14,27 +16,161 @@ public class RandomGen {
 
     private Stack<ParserOpGroup> opgs;
 
-    public List<Operation> getOpsOfCtx(Operation ctx){
+    public List<Operation> getOpsOfCtx(Operation ctx) {
         List<Operation> res = new ArrayList<>();
-        for(var opg: opgs){
-            if (opg.getCtxOp().equals(ctx)){
+        for (var opg : opgs) {
+            if (opg.getCtxOp().equals(ctx)) {
                 res.addAll(opg.getOps());
             }
         }
-        return  res;
+        return res;
     }
 
-    Operation genOp(boolean onlyIntf, boolean onlyOSPF){
-        if (onlyIntf){
-            var op = new Operation(OpType.IpOspfCost);
-            op.setNUM(10);
-            return op;
-        }else if (onlyOSPF){
-            return new Operation(OpType.RID);
-        }else {
-            return new Operation(OpType.PASSIVEINTFDEFUALT);
+
+    private long genRanIDNUM() {
+        return ran.nextLong(4294967296L);
+    }
+
+    private IPV4 genRanID() {
+        if (ran.nextInt(10) < 8)
+            return IPV4.IDOf(genRanIDNUM());
+        else{
+            var i = new IPV4();
+            i.setIsId(true);
+            i.setWrong(true);
+            return i;
         }
     }
+
+    private IPV4 genRanIP() {
+        if (ran.nextInt(10) < 8) {
+            return IPV4.IPOf(genRanIDNUM(), ran.nextInt(32) + 1);
+        }else {
+            var i = new IPV4();
+            i.setIsId(false);
+            i.setWrong(true);
+            return i;
+        }
+    }
+
+    private int genRanInt(int l, int r) {
+        if (ran.nextInt(10) <= 2) {
+            switch (ran.nextInt(4)) {
+                case 0 -> {
+                    return l - 1;
+                }
+                case 1 -> {
+                    return r + 1;
+                }
+                case 2 -> {
+                    return 210000000;
+                }
+                case 3 -> {
+                    return -20000000;
+                }
+            }
+            return -1;
+        } else {
+            return ran.nextInt(r - l + 1) + l;
+        }
+    }
+
+    private Long genRanLong(long l, long r) {
+        if (ran.nextLong(10) <= 3) {
+            switch (ran.nextInt(4)) {
+                case 0 -> {
+                    return l - 1;
+                }
+                case 1 -> {
+                    return r + 1;
+                }
+                case 2 -> {
+                    return 2100000000000L;
+                }
+                case 3 -> {
+                    return -2000000000000L;
+                }
+            }
+            return -1L;
+        } else {
+            return ran.nextLong(r - l + 1) + l;
+        }
+    }
+
+    void setOpFiled(Operation op) {
+        op.setDETAIL("123");
+        op.setIP2(genRanIP());
+        op.setIP(genRanIP());
+        op.setIDNUM(genRanIDNUM());
+        op.setID(genRanID());
+        switch (op.Type()) {
+            case RABRTYPE -> {
+                String[] type = {"standard", "Cisco", "IBM", "shortcut", "XXXXX"};
+                op.setNAME(type[ran.nextInt(5)]);
+            }
+            case TIMERSTHROTTLESPF -> {
+                op.setNUM(genRanInt(0, 600000));
+                op.setNUM2(genRanInt(0, 600000));
+                op.setNUM3(genRanInt(0, 600000));
+            }
+            case MAXIMUMPATHS -> {
+                op.setNUM(genRanInt(1, 64));
+            }
+            case WRITEMULTIPLIER -> {
+                op.setNUM(genRanInt(1, 100));
+            }
+            case SOCKETBUFFERSEND, SOCKETBUFFERALL, SOCKETBUFFERRECV -> {
+                op.setIDNUM(genRanLong(1, 4000000000L));
+            }
+            case IpOspfCost, IpOspfDeadInter, IpOspfHelloInter, IpOspfRetransInter -> {
+                op.setNUM(genRanInt(1, 65535));
+            }
+            case IpOspfDeadInterMulti -> {
+                op.setNUM(genRanInt(2, 20));
+            }
+            case IpOspfGRHelloDelay -> {
+                op.setNUM(genRanInt(1, 1800));
+            }
+            case IpOspfPriority -> {
+                op.setNUM(genRanInt(0, 255));
+            }
+            case IpOspfNet -> {
+                String[] type = {"broadcast", "non-broadcast", "XXEEDDDFED"};
+                op.setNAME(type[ran.nextInt(3)]);
+            }
+        }
+        if (op.Type().ordinal() >= OpType.AreaRange.ordinal() && op.Type().ordinal() <= OpType.AreaRangeCostINT.ordinal()) {
+            op.setNUM(genRanInt(0, 16777215));
+        }
+    }
+
+    private static final List<OpType> intfOp, OspfOp, allOp;
+    static {
+        intfOp = new ArrayList<>();
+        OspfOp = new ArrayList<>();
+        allOp = new ArrayList<>();
+        for (var op_type: OpType.values()){
+            if (op_type.inOSPFINTF()){intfOp.add(op_type); allOp.add(op_type);}
+            else if (op_type.inOSPFAREA() || op_type.inOSPFDAEMON() || op_type.inOSPFRouterWithTopo()){
+                OspfOp.add(op_type);
+                allOp.add(op_type);
+            }
+        }
+    }
+    Operation genOp(boolean onlyIntf, boolean onlyOSPF){
+        OpType op_type;
+        if (onlyIntf){
+            op_type = intfOp.get(ran.nextInt(intfOp.size()));
+        }else if (onlyOSPF){
+            op_type = OspfOp.get(ran.nextInt(OspfOp.size()));
+        }else {
+            op_type = allOp.get(ran.nextInt(allOp.size()));
+        }
+        var op = new Operation(op_type);
+        setOpFiled(op);
+        return op;
+    }
+
     void addOp(ParserOpGroup opg){
         if (opg.getCtxOp().Type() == OpType.IntfName){
             opg.addOp(genOp(true, false));
@@ -119,7 +255,7 @@ public class RandomGen {
         for(var opg:opgs){
             res.addOp(opg.getCtxOp());
             res.addOps(opg.getOps());
-            System.out.printf("%s %d\n", opg.getCtxOp(), opg.getOps().size());
+            //System.out.printf("%s %d\n", opg.getCtxOp(), opg.getOps().size());
         }
         return res;
     }

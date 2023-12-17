@@ -14,7 +14,7 @@ public enum OpType {
     LINKREMOVE("link {NAME} {NAME2} remove", "", ""),
 
     //Don't change this!
-    OSPFCONF("ROSPFCONF", "", ""),
+    OSPFCONF("ROSPFCONF", "", "", ""),
 
     //=================OSPF ROUTER==================
     ROSPF("router ospf",
@@ -109,7 +109,7 @@ public enum OpType {
                 SET ospfdaemon.writemulti {NUM}
             """,
             "write-multiplier (1-100)"),
-    SOCKETBUFFERSEND("socket buffer send {NUM}",
+    SOCKETBUFFERSEND("socket buffer send {IDNUM}",
                 "no socket buffer send | no socket buffer send {NUM}",
                 """
                 MEET has ospfdaemon
@@ -117,7 +117,7 @@ public enum OpType {
                 SET ospfdaemon.buffersend {NUM}
             """,
             "socket buffer send (1-4000000000)"),
-    SOCKETBUFFERRECV("socket buffer recv {NUM}",
+    SOCKETBUFFERRECV("socket buffer recv {IDNUM}",
                 "no socket buffer recv | no socket buffer recv {NUM}",
                 """
                 MEET has ospfdaemon
@@ -125,7 +125,7 @@ public enum OpType {
                 SET ospfdaemon.bufferrecv {NUM}
             """,
             "socket buffer recv (1-4000000000)"),
-    SOCKETBUFFERALL("socket buffer all {NUM}",
+    SOCKETBUFFERALL("socket buffer all {IDNUM}",
                 "no socket buffer all | no socket buffer all {NUM}",
                 """
                 MEET has ospfdaemon
@@ -444,11 +444,11 @@ public enum OpType {
     }
 
     public static boolean inOSPF(OpType typ) {
-        return typ.ordinal() >= OSPFROUTERBEGIN.ordinal() && typ.ordinal() <= OSPFIntfGroupEND.ordinal();
+        return typ.ordinal() > OSPFROUTERBEGIN.ordinal() && typ.ordinal() < OSPFIntfGroupEND.ordinal();
     }
 
     public  boolean inOSPFRouterWithTopo() {
-        return this.ordinal() >= OSPFROUTERBEGIN.ordinal() && this.ordinal() <= OSPFROUTEREND.ordinal();
+        return this.ordinal() > OSPFROUTERBEGIN.ordinal() && this.ordinal() < OSPFROUTEREND.ordinal();
     }
 
     public boolean inOSPFDAEMON(){

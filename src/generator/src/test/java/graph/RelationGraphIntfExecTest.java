@@ -1,11 +1,13 @@
 package graph;
 
+import org.generator.gen.RandomGen;
 import org.generator.operation.conf.OspfConfParser;
 import org.generator.operation.conf.PhyConfParser;
 import org.generator.operation.conf.OspfConfReader;
 import org.generator.operation.opg.ParserOpGroup;
 import org.generator.topo.graph.RelationGraph;
 import org.generator.topo.node.ospf.OSPF;
+import org.generator.topo.node.phy.Router;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -87,18 +89,19 @@ public class RelationGraphIntfExecTest {
                 ospf router-id 0.0.0.1
                 network 10.0.0.5/30 area 0
                 network 10.0.0.0/10 area 2
-                area 2 range 9.0.0.0/20              
-                
+                area 2 range 9.0.0.0/20
+                write-multiplier 95
+
                 interface r1-eth0
                 ip ospf area 3
                 no ip ospf area
                 ip address 10.0.0.0/10
-                ip ospf cost 100             
-               
+                ip ospf cost 100
+
                 interface r1-eth1
                 ip address 10.0.0.5/30
                 ip ospf cost 200
-                
+
                 no router ospf
                 """;
         var topo = getBaseTopo();
@@ -114,5 +117,30 @@ public class RelationGraphIntfExecTest {
     public void testNodeAttrStr(){
         var ospf = new OSPF("r1");
         System.out.println(ospf.getNodeAtrriStr());
+    }
+
+    private RelationGraph getBaseTopo1(){
+        String test_st = """
+                node r1 add
+                node s1 add
+                link r1-eth0 s1-eth0 up
+                link r1-eth1 s1-eth1 up
+                link r1-eth2 s1-eth2 up
+                """;
+        RelationGraph topo = new RelationGraph();
+        run_cmd_str(true, test_st, topo, Optional.empty());
+        return topo;
+    }
+    @Test
+    public void testGenerator(){
+        for(int i = 0; i < 1; i++) {
+            var gen = new RandomGen();
+            var ls = gen.genRandom(100, 0.5, 0.3, 5, 0, 0.9, "r1");
+            StringJoiner joiner = new StringJoiner("\n");
+            //System.out.println(ls);
+            ls.getOps().forEach(x -> joiner.add(x.toString()));
+            //System.out.println(joiner.toString());
+            run_cmd_str(false, joiner.toString(), getBaseTopo1(), Optional.of("r1"));
+        }
     }
 }
