@@ -158,7 +158,15 @@ public class OspfOpgExec extends OpgExec{
                     assert false : "AreaVlink not implemented";
                 }
                 case AreaShortcut -> {
-                    areaSum.setShortcut(true);
+                    if (op.getNAME().equals("enable")) {
+                        areaSum.setShortcut(OSPFAreaSum.shortCutType.Enable);
+                    }
+                    if (op.getNAME().equals("disable")){
+                        areaSum.setShortcut(OSPFAreaSum.shortCutType.Disable);
+                    }
+                    if (op.getNAME().equals("default")){
+                        areaSum.setShortcut(OSPFAreaSum.shortCutType.Default);
+                    }
                 }
                 case AreaStub -> {
                     areaSum.setStub(true);

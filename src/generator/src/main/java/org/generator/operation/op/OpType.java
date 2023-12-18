@@ -261,10 +261,11 @@ public enum OpType {
             """,
             "area A.B.C.D virtual-link A.B.C.D"),
     //FIXME shortcut command is enable disable default
-    AreaShortcut("area {ID} shortcut",
-                "no area {ID} shortcut",
+    AreaShortcut("area {ID} shortcut {NAME}",
+                "no area {ID} shortcut | no area {ID} shortcut {NAME}",
                 """
                 MEET HAS ospf
+                MEET NAME == enable || NAME == disable || NAME == default
                 IF !(HAS areaSum WHERE areaSum.area == {ID})
                     ADD areaSum LINK ospf
                 SET areaSum.shortcut True

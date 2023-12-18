@@ -138,6 +138,10 @@ public class RandomGen {
                 String[] type = {"broadcast", "non-broadcast", "XXEEDDDFED"};
                 op.setNAME(type[ran.nextInt(3)]);
             }
+            case AreaShortcut -> {
+                String[] type = {"enable", "disable", "default"};
+                op.setNAME(type[ran.nextInt(3)]);
+            }
         }
         if (op.Type().ordinal() >= OpType.AreaRange.ordinal() && op.Type().ordinal() <= OpType.AreaRangeCostINT.ordinal()) {
             op.setNUM(genRanInt(0, 16777215));

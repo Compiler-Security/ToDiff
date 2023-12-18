@@ -96,7 +96,15 @@ public class OspfConfReader implements ConfR {
                 //FIXME areavlink don't implement
                 assert false: "area vlink don't implement";
             }
-            case AreaShortcut, AreaStub, AreaStubTotal, AreaNSSA -> {return op;}
+            case AreaShortcut -> {
+                String[] type = {"enable", "disable", "default"};
+                var name = op.getNAME();
+                if (!Arrays.stream(type).anyMatch(x -> x.equals(name))){
+                    return invalid();
+                }
+                return op;
+            }
+            case AreaStub, AreaStubTotal, AreaNSSA -> {return op;}
             case IntfName,IPAddr,IpOspfArea -> {return op;}
             case IpOspfAreaINT -> {
                 return checkOperation(changeIDNumToID(op, OpType.IpOspfArea));

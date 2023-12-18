@@ -81,11 +81,8 @@ public class OSPFAreaSum extends AbstractNode {
         this.virtualLink = virtualLink;
     }
 
-    public boolean isShortcut() {
-        return shortcut;
-    }
 
-    public void setShortcut(boolean shortcut) {
+    public void setShortcut(shortCutType shortcut) {
         this.shortcut = shortcut;
     }
 
@@ -113,8 +110,18 @@ public class OSPFAreaSum extends AbstractNode {
         this.nssa = nssa;
     }
 
+    public enum shortCutType{
+        Enable,
+        Disable,
+        Default
+    };
     IPV4 virtualLink;
-    boolean shortcut;
+
+    public shortCutType getShortcut() {
+        return shortcut;
+    }
+
+    shortCutType shortcut;
     boolean stub;
     boolean nosummary;
     boolean nssa;
@@ -131,7 +138,7 @@ public class OSPFAreaSum extends AbstractNode {
 
     @Override
     public void initFiled() {
-        shortcut = false;
+        shortcut = shortCutType.Default;
         stub = false;
         nosummary = false;
         nssa = false;
