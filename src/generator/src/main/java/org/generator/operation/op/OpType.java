@@ -13,9 +13,8 @@ public enum OpType {
     LINKDOWN("link {NAME} {NAME2} down", "", ""),
     LINKREMOVE("link {NAME} {NAME2} remove", "", ""),
 
-    //TODO add all no operations
-    OSPFCONF,
-    OSPFROUTERBEGIN,
+    //Don't change this!
+    OSPFCONF("ROSPFCONF", "", "", ""),
 
     //=================OSPF ROUTER==================
     ROSPF("router ospf",
@@ -31,6 +30,7 @@ public enum OpType {
     //TODO ROSPFNUM("router ospf [NUM]"),
     //TODO ROSPFVRF("router ospf vrf [NAME]"),
 
+    OSPFROUTERBEGIN,
     RID("ospf router-id {ID}",
             "no ospf router-id | no ospf router-id {ID}",
             """
@@ -89,7 +89,7 @@ public enum OpType {
     //TODO proactive-arp
 
     OSPFDAEMONGROUPBEGIN,
-    //FIXME this instruction is not full
+    //FIXME this instruction's ctx is OSPFCONF
     CLEARIPOSPFPROCESS("clear ip ospf process", "EMPTY", "clear ip ospf process"),
     CLEARIPOSPFNEIGHBOR("clear ip ospf neighbor", "EMPTY", "clear ip ospf neighbor"),
 
@@ -109,7 +109,7 @@ public enum OpType {
                 SET ospfdaemon.writemulti {NUM}
             """,
             "write-multiplier (1-100)"),
-    SOCKETBUFFERSEND("socket buffer send {NUM}",
+    SOCKETBUFFERSEND("socket buffer send {IDNUM}",
                 "no socket buffer send | no socket buffer send {NUM}",
                 """
                 MEET has ospfdaemon
@@ -117,7 +117,7 @@ public enum OpType {
                 SET ospfdaemon.buffersend {NUM}
             """,
             "socket buffer send (1-4000000000)"),
-    SOCKETBUFFERRECV("socket buffer recv {NUM}",
+    SOCKETBUFFERRECV("socket buffer recv {IDNUM}",
                 "no socket buffer recv | no socket buffer recv {NUM}",
                 """
                 MEET has ospfdaemon
@@ -125,7 +125,7 @@ public enum OpType {
                 SET ospfdaemon.bufferrecv {NUM}
             """,
             "socket buffer recv (1-4000000000)"),
-    SOCKETBUFFERALL("socket buffer all {NUM}",
+    SOCKETBUFFERALL("socket buffer all {IDNUM}",
                 "no socket buffer all | no socket buffer all {NUM}",
                 """
                 MEET has ospfdaemon
@@ -260,10 +260,12 @@ public enum OpType {
                 SET areaSum.virtualLink {ID2}
             """,
             "area A.B.C.D virtual-link A.B.C.D"),
-    AreaShortcut("area {ID} shortcut",
-                "no area {ID} shortcut",
+    //FIXME shortcut command is enable disable default
+    AreaShortcut("area {ID} shortcut {NAME}",
+                "no area {ID} shortcut | no area {ID} shortcut {NAME}",
                 """
                 MEET HAS ospf
+                MEET NAME == enable || NAME == disable || NAME == default
                 IF !(HAS areaSum WHERE areaSum.area == {ID})
                     ADD areaSum LINK ospf
                 SET areaSum.shortcut True
@@ -302,8 +304,7 @@ public enum OpType {
 
     OSPFAREAGROUPEND,
 
-    OSPFIntfGroupBEGIN,
-    //FIXME syntax right?
+
     IntfName("interface {NAME}",
             """
             MEET HAS _curRouter
@@ -324,6 +325,7 @@ public enum OpType {
             """,
             "ip address ADDRESS/PREFIX"),
 
+    OSPFIntfGroupBEGIN,
     //NOT CONSIDER ip ospf authentication-key AUTH_KEY
     //NOT Consider ip ospf authentication message-digest
     //NOT consider ip ospf message-digest-key KEYID md5 KEY
@@ -443,24 +445,24 @@ public enum OpType {
         return typ.ordinal() >= NODEADD.ordinal() && typ.ordinal() <= LINKREMOVE.ordinal();
     }
 
-    public static boolean inOSPF(OpType typ) { 
-        return typ.ordinal() >= OSPFROUTERBEGIN.ordinal() && typ.ordinal() <= OSPFIntfGroupEND.ordinal();
+    public static boolean inOSPF(OpType typ) {
+        return typ.ordinal() > OSPFROUTERBEGIN.ordinal() && typ.ordinal() < OSPFIntfGroupEND.ordinal();
     }
 
-    public static boolean inOSPFRouterWithTopo(OpType typ) {
-        return typ.ordinal() >= ROSPF.ordinal() && typ.ordinal() <= NETAREAIDNUM.ordinal();
+    public  boolean inOSPFRouterWithTopo() {
+        return this.ordinal() > OSPFROUTERBEGIN.ordinal() && this.ordinal() < OSPFROUTEREND.ordinal();
     }
 
-    public static boolean inOSPFDAEMON(OpType typ){
-        return typ.ordinal() > OSPFDAEMONGROUPBEGIN.ordinal() && typ.ordinal() < OSPFDAEMONGROUPEND.ordinal();
+    public boolean inOSPFDAEMON(){
+        return this.ordinal() > OSPFDAEMONGROUPBEGIN.ordinal() && this.ordinal() < OSPFDAEMONGROUPEND.ordinal();
     }
 
-    public static boolean inOSPFAREA(OpType typ){
-        return typ.ordinal() > OSPFAREAGROUPBEGIN.ordinal() && typ.ordinal() < OSPFAREAGROUPEND.ordinal();
+    public  boolean inOSPFAREA(){
+        return this.ordinal() > OSPFAREAGROUPBEGIN.ordinal() && this.ordinal() < OSPFAREAGROUPEND.ordinal();
     }
 
-    public static boolean inOSPFINTF(OpType typ){
-        return typ.ordinal() > OSPFIntfGroupBEGIN.ordinal() && typ.ordinal() < OSPFIntfGroupEND.ordinal();
+    public  boolean inOSPFINTF(){
+        return this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal();
     }
     public String template() {
         return template;

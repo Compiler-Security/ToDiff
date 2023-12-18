@@ -35,6 +35,10 @@ public class OspfConfReader implements ConfR {
     private Operation checkNum(Operation op, long l, long r){
         return op.checkOrInvalid(x -> inRange(x.getNUM(), l, r));
     }
+
+    private Operation checkLongNum(Operation op, long l, long r){
+        return op.checkOrInvalid(x -> inRange(x.getIDNUM(), l, r));
+    }
     private Operation checkOperation(Operation op){
         if (OpType.inPhy(op.Type())) return op;
         switch (op.Type()){
@@ -63,8 +67,7 @@ public class OspfConfReader implements ConfR {
                 return checkNum(op, 1, 100);
             }
             case SOCKETBUFFERALL,SOCKETBUFFERRECV,SOCKETBUFFERSEND -> {
-                //FIXME longlong
-                return checkNum(op, 1, 40000000);
+                return checkLongNum(op, 1, 4000000000L);
             }
             case NOSOCKETPERINTERFACE -> {return op;}
             case AreaRange,AreaRangeAd,AreaRangeNoAd,AreaRangeSub -> {return op;}
@@ -93,7 +96,15 @@ public class OspfConfReader implements ConfR {
                 //FIXME areavlink don't implement
                 assert false: "area vlink don't implement";
             }
-            case AreaShortcut, AreaStub, AreaStubTotal, AreaNSSA -> {return op;}
+            case AreaShortcut -> {
+                String[] type = {"enable", "disable", "default"};
+                var name = op.getNAME();
+                if (!Arrays.stream(type).anyMatch(x -> x.equals(name))){
+                    return invalid();
+                }
+                return op;
+            }
+            case AreaStub, AreaStubTotal, AreaNSSA -> {return op;}
             case IntfName,IPAddr,IpOspfArea -> {return op;}
             case IpOspfAreaINT -> {
                 return checkOperation(changeIDNumToID(op, OpType.IpOspfArea));

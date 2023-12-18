@@ -2,7 +2,7 @@ package org.generator.operation.conf;
 
 import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
-import org.generator.operation.opgexec.IntfOpgExec;
+import org.generator.operation.opgexec.OspfIntfOpgExec;
 import org.generator.operation.opg.OpGroup;
 import org.generator.operation.opgexec.OspfOpgExec;
 import org.generator.operation.opg.ParserOpGroup;
@@ -19,8 +19,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
-import static java.lang.Integer.max;
-
 public class OspfConfParser {
 
     private static void parseOpCtx(OpGroup opg) {
@@ -34,10 +32,15 @@ public class OspfConfParser {
                 set_ospf = null;
                 set_intf = op.isUnset() ? null : op;
                 op.setCtxOp(new Operation(OpType.OSPFCONF));
-            } else if (OpType.inOSPFINTF(op.Type())) {
+            } else if (op.Type() == OpType.IPAddr){
                 op.setCtxOp(set_intf);
-            } else {
+            }
+            else if (op.Type().inOSPFINTF()) {
+                op.setCtxOp(set_intf);
+            } else if (op.Type().inOSPFDAEMON() || op.Type().inOSPFAREA() || op.Type().inOSPFRouterWithTopo()){
                 op.setCtxOp(set_ospf);
+            } else{
+                op.setCtxOp(new Operation(OpType.OSPFCONF));
             }
         }
     }
@@ -58,6 +61,32 @@ public class OspfConfParser {
         return unsetOp.equals(target.getMinimalUnsetOp());
     }
 
+    private static void removePreOp(@NotNull ParserOpGroup opg){
+        var op_list = opg.getOps();
+        if (op_list.isEmpty()) return;
+        boolean[] remain = new boolean[op_list.size()];
+        Arrays.fill(remain, true);
+        for (int i = op_list.size() - 1; i >= 0; i--) {
+            if (remain[i]) {
+                var op_cur = op_list.get(i);
+                if (op_cur.Type() == OpType.ROSPF || op_cur.Type() == OpType.IntfName) continue;
+                var op_unset = op_cur.cloneOfType(op_cur.Type());
+                op_unset.setCtxOp(op_cur.getCtxOp());
+                op_unset.setUnset(true);
+                for (int j = i - 1; j >= 0; j--) {
+                    var op = op_list.get(j);
+                    if (remain[j] && !op.isUnset()) {
+                        if (matchUnset(op_unset, op)) {
+                            remain[j] = false;
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < op_list.size(); i++) {
+            if (!remain[i]) op_list.get(i).setCtxOp(null);
+        }
+    }
     private static void unsetOp(@NotNull ParserOpGroup opg) {
         var op_list = opg.getOps();
         if (op_list.isEmpty()) return;
@@ -120,6 +149,29 @@ public class OspfConfParser {
                 op.setCtxOp(null);
             }
         }
+        if (ip_ospf_area){
+            Set<Operation> intfs = new HashSet<>();
+            for(var op: opg.getOps()){
+                if (op.Type() == OpType.IpOspfArea){
+                    if (!intfs.contains(op.getCtxOp())){
+                        intfs.add(op.getCtxOp());
+                    }else {
+                        op.setCtxOp(null);
+                    }
+                }
+            }
+        }else if (network_area){
+            Set<IPV4> ips = new HashSet<>();
+            for(var op: opg.getOps()){
+                if (op.Type() == OpType.NETAREAID){
+                    if (!ips.contains(op.getIP())){
+                        ips.add(op.getIP());
+                    }else{
+                        op.setCtxOp(null);
+                    }
+                }
+            }
+        }
         return ip_ospf_area;
     }
 
@@ -136,6 +188,9 @@ public class OspfConfParser {
         //remove inst not in intf/router ospf
         removeInvalidOp(opg);
 
+        removePreOp(opg);
+        removeInvalidOp(opg);
+
         //remove invalid ip area  network area
         boolean is_ip_ospf_area = IPNetworkInvalid(opg);
         removeInvalidOp(opg);
@@ -145,6 +200,18 @@ public class OspfConfParser {
         var intf_opgs = opgs.first();
         var ospf_opg = opgs.second();
 
+        //reconstruct opg
+        opg.getOps().clear();
+        for (var intf_opg: intf_opgs){
+            opg.addOp(intf_opg.getCtxOp());
+            opg.addOps(intf_opg.getOps());
+        }
+        if (ospf_opg != null){
+            opg.addOp(ospf_opg.getCtxOp());
+            opg.addOps(ospf_opg.getOps());
+        }
+        //int name
+        //ip address XXX.XXX.XXX.XXX
         //set intf ip || add intf
         for (var intf_opg : intf_opgs) {
             assert intf_opg.getTyp() == ParserOpGroup.OpGType.Intf;
@@ -153,6 +220,7 @@ public class OspfConfParser {
             var res = topo.<Intf>getOrCreateNode(intf_name, NodeType.Intf);
             if (!res.second()) {
                 res.first().setPersudo(true);
+                res.first().setUp(false);
                 topo.addIntfRelation(intf_name, r_name);
             }
             //parse ip address ...
@@ -161,6 +229,8 @@ public class OspfConfParser {
             }
         }
 
+        //network XXX.XXX.XXX.XXX area XXX
+        //ip ospf area XXX
         //set area & add ospfintf
         if (is_ip_ospf_area) {
             for(var intf_opg: intf_opgs){
@@ -211,6 +281,8 @@ public class OspfConfParser {
             }
         }
 
+
+        //router ospf
         //add ospf && ospf daemon
         if (ospf_opg != null){
             var ospf_name = NodeGen.getOSPFName(r_name);
@@ -221,11 +293,14 @@ public class OspfConfParser {
             var ospf_daemon = topo.<OSPFDaemon>getOrCreateNode(ospf_daemon_name, NodeType.OSPFDaemon);
             assert !ospf.second();
             topo.addOSPFDaemonRelation(ospf_name, ospf_daemon_name);
+
+            //
         }
 
+        //ospf intf commands
         //execute other intfs ops
         for (var intf_opg: intf_opgs){
-            var exec = new IntfOpgExec();
+            var exec = new OspfIntfOpgExec();
             var cur_intf_name = intf_opg.getCtxOp().getNAME();
             var cur_ospf_intf_name = NodeGen.getOSPFIntfName(cur_intf_name);
             if (topo.containsNode(cur_ospf_intf_name)){
@@ -233,6 +308,8 @@ public class OspfConfParser {
             }
             exec.execOps(intf_opg, topo);
         }
+
+        //ospf other commands
         //execute other ospf ops
         if (ospf_opg != null){
             var exec = new OspfOpgExec();
@@ -244,6 +321,13 @@ public class OspfConfParser {
                 exec.setCur_ospf_daemon(topo.getNodeNotNull(ospf_daemon_name));
             }
             exec.execOps(ospf_opg, topo);
+        }
+
+        //remove OSPF interface if OSPF daemon not running
+        if (!topo.containsOSPFOfRouter(r_name)){
+            for(var ospfintf : topo.getOSPFIntfOfRouter(r_name)){
+                topo.delNode(ospfintf);
+            }
         }
     }
 }

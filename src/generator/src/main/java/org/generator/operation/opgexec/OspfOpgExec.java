@@ -43,7 +43,7 @@ public class OspfOpgExec extends OpgExec{
             case TIMERSTHROTTLESPF -> {
                 int max_number = Stream.of(op.getNUM(), op.getNUM2(), op.getNUM3()).max(Integer::compareTo).get();
                 cur_ospf.setInitDelay(op.getNUM());
-                cur_ospf.setInitHoldTime(op.getNUM2());
+                cur_ospf.setMinHoldTime(op.getNUM2());
                 cur_ospf.setMaxHoldTime(op.getNUM3());
                 return ExecStat.SUCC;
             }
@@ -66,20 +66,20 @@ public class OspfOpgExec extends OpgExec{
             case WRITEMULTIPLIER -> {
                 var num = op.getNUM();
                 ospf_daemon.setWritemulti(num);
+                return ExecStat.SUCC;
             }
             case  SOCKETBUFFERSEND -> {
-                //FIXME num should be long!
-                var num = op.getNUM();
+                var num = op.getIDNUM();
                 ospf_daemon.setBuffersend(num);
                 return ExecStat.SUCC;
             }
             case SOCKETBUFFERRECV -> {
-                var num = op.getNUM();
+                var num = op.getIDNUM();
                 ospf_daemon.setBufferrecv(num);
                 return ExecStat.SUCC;
             }
             case SOCKETBUFFERALL -> {
-                var num = op.getNUM();
+                var num = op.getIDNUM();
                 ospf_daemon.setBuffersend(num);
                 ospf_daemon.setBufferrecv(num);
                 return ExecStat.SUCC;
@@ -88,8 +88,11 @@ public class OspfOpgExec extends OpgExec{
                 ospf_daemon.setSocketPerInterface(false);
                 return ExecStat.SUCC;
             }
+            case CLEARIPOSPFNEIGHBOR, CLEARIPOSPFPROCESS ->{
+                return ExecStat.SUCC;
+            }
         }
-        assert false:"should not go to here";
+        assert false:String.format("should not go to here %s", op.toString());
         return ExecStat.FAIL;
     }
 
@@ -155,7 +158,15 @@ public class OspfOpgExec extends OpgExec{
                     assert false : "AreaVlink not implemented";
                 }
                 case AreaShortcut -> {
-                    areaSum.setShortcut(true);
+                    if (op.getNAME().equals("enable")) {
+                        areaSum.setShortcut(OSPFAreaSum.shortCutType.Enable);
+                    }
+                    if (op.getNAME().equals("disable")){
+                        areaSum.setShortcut(OSPFAreaSum.shortCutType.Disable);
+                    }
+                    if (op.getNAME().equals("default")){
+                        areaSum.setShortcut(OSPFAreaSum.shortCutType.Default);
+                    }
                 }
                 case AreaStub -> {
                     areaSum.setStub(true);
@@ -173,11 +184,11 @@ public class OspfOpgExec extends OpgExec{
     }
 
     private ExecStat execOSPFOp(@NotNull Operation op, RelationGraph topo) {
-        if (OpType.inOSPFRouterWithTopo(op.Type())) {
+        if (op.Type().inOSPFRouterWithTopo()) {
             return execOSPFAttriCmds(op, topo);
-        }else if (OpType.inOSPFDAEMON(op.Type())){
+        }else if (op.Type().inOSPFDAEMON()){
             return execOspfDaemonAttriCmds(op, topo);
-        }else if (OpType.inOSPFAREA(op.Type())){
+        }else if (op.Type().inOSPFAREA()){
             return execOSPFAreaCmds(op, topo);
         }
         return ExecStat.MISS;

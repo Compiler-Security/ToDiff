@@ -6,7 +6,7 @@ import org.generator.topo.node.ospf.OSPFIntf;
 import org.generator.util.exec.ExecStat;
 import org.jetbrains.annotations.NotNull;
 
-public class IntfOpgExec extends OpgExec{
+public class OspfIntfOpgExec extends OpgExec{
 
     private ExecStat execOSPFIntfCmds(@NotNull Operation op, @NotNull RelationGraph topo){
         if (cur_ospf_intf == null){
@@ -20,7 +20,7 @@ public class IntfOpgExec extends OpgExec{
                 cur_ospf_intf.setDeadInterval(op.getNUM());
             }
             case IpOspfDeadInterMulti -> {
-                cur_ospf_intf.setHelloPerSec(op.getNUM());
+                cur_ospf_intf.setHelloMulti(op.getNUM());
                 cur_ospf_intf.setHelloInterval(0);
             }
             case IpOspfHelloInter -> {

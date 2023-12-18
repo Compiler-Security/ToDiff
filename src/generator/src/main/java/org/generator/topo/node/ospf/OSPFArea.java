@@ -22,7 +22,7 @@ public class OSPFArea extends AbstractNode {
 
     @Override
     public void initFiled() {
-        //TODO
+        area = null;
     }
 
 //    @Override

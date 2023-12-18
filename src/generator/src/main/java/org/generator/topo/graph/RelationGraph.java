@@ -122,6 +122,9 @@ public class RelationGraph extends AbstractRelationGraph {
         return ExecStat.SUCC;
     }
 
+    public boolean containsOSPFOfRouter(String r_name){
+        return this.containsNode(NodeGen.getOSPFName(r_name));
+    }
 
     @Override
     public String toDot(boolean verbose) {

@@ -6,10 +6,21 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Random;
 
 
 public class IPV4 {
-    public IPV4(){}
+    public boolean isWrong() {
+        return wrong;
+    }
+
+    public void setWrong(boolean wrong) {
+        this.wrong = wrong;
+    }
+
+    public IPV4(){
+        wrong = false;
+    }
 
     public static IPV4 IDOf(String id_st){
         var ip = new IPV4();
@@ -91,11 +102,36 @@ public class IPV4 {
 
     @Override
     public String toString() {
-        String st = utils.getInfo().getCidrSignature();
-        if (isId){
-            return Arrays.stream(st.split("/")).toList().get(0);
-        }else {
-            return st;
+        if (!wrong) {
+            String st = utils.getInfo().getCidrSignature();
+            if (isId) {
+                return Arrays.stream(st.split("/")).toList().get(0);
+            } else {
+                return st;
+            }
+        }else{
+            var ran = new Random();
+                StringBuilder b = new StringBuilder();
+                switch (ran.nextInt(3)){
+                    case 0,1 -> {
+                        b.append(ran.nextInt(-10000, 10000));
+                        for(int i = 1; i <= 3; i++){
+                            b.append("/");
+                            b.append(ran.nextInt(-10000, 10000));
+                        }
+                    }
+                    case 2 -> {
+                        for(int i = 0; i < ran.nextInt(10); i++){
+                            b.append(ran.nextInt(-10000, 10000));
+                            b.append("/");
+                        }
+                    }
+                }
+                if (isId && ran.nextInt(10) < 8){
+                    b.append("/");
+                    b.append(ran.nextInt(-32, 32));
+                }
+            return b.toString();
         }
     }
 
@@ -156,6 +192,8 @@ public class IPV4 {
             return IDOf(toString());
         }else return IPOf(toString());
     }
+
+    private boolean wrong;
     private SubnetUtils utils;
 
     public boolean isId() {
