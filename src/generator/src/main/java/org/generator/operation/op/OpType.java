@@ -89,7 +89,7 @@ public enum OpType {
     //TODO proactive-arp
 
     OSPFDAEMONGROUPBEGIN,
-    //FIXME this instruction is not full
+    //FIXME this instruction's ctx is OSPFCONF
     CLEARIPOSPFPROCESS("clear ip ospf process", "EMPTY", "clear ip ospf process"),
     CLEARIPOSPFNEIGHBOR("clear ip ospf neighbor", "EMPTY", "clear ip ospf neighbor"),
 
@@ -260,6 +260,7 @@ public enum OpType {
                 SET areaSum.virtualLink {ID2}
             """,
             "area A.B.C.D virtual-link A.B.C.D"),
+    //FIXME shortcut command is enable disable default
     AreaShortcut("area {ID} shortcut",
                 "no area {ID} shortcut",
                 """

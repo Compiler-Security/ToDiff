@@ -61,6 +61,32 @@ public class OspfConfParser {
         return unsetOp.equals(target.getMinimalUnsetOp());
     }
 
+    private static void removePreOp(@NotNull ParserOpGroup opg){
+        var op_list = opg.getOps();
+        if (op_list.isEmpty()) return;
+        boolean[] remain = new boolean[op_list.size()];
+        Arrays.fill(remain, true);
+        for (int i = op_list.size() - 1; i >= 0; i--) {
+            if (remain[i]) {
+                var op_cur = op_list.get(i);
+                if (op_cur.Type() == OpType.ROSPF || op_cur.Type() == OpType.IntfName) continue;
+                var op_unset = op_cur.cloneOfType(op_cur.Type());
+                op_unset.setCtxOp(op_cur.getCtxOp());
+                op_unset.setUnset(true);
+                for (int j = i - 1; j >= 0; j--) {
+                    var op = op_list.get(j);
+                    if (remain[j] && !op.isUnset()) {
+                        if (matchUnset(op_unset, op)) {
+                            remain[j] = false;
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < op_list.size(); i++) {
+            if (!remain[i]) op_list.get(i).setCtxOp(null);
+        }
+    }
     private static void unsetOp(@NotNull ParserOpGroup opg) {
         var op_list = opg.getOps();
         if (op_list.isEmpty()) return;
@@ -123,6 +149,29 @@ public class OspfConfParser {
                 op.setCtxOp(null);
             }
         }
+        if (ip_ospf_area){
+            Set<Operation> intfs = new HashSet<>();
+            for(var op: opg.getOps()){
+                if (op.Type() == OpType.IpOspfArea){
+                    if (!intfs.contains(op.getCtxOp())){
+                        intfs.add(op.getCtxOp());
+                    }else {
+                        op.setCtxOp(null);
+                    }
+                }
+            }
+        }else if (network_area){
+            Set<IPV4> ips = new HashSet<>();
+            for(var op: opg.getOps()){
+                if (op.Type() == OpType.NETAREAID){
+                    if (!ips.contains(op.getIP())){
+                        ips.add(op.getIP());
+                    }else{
+                        op.setCtxOp(null);
+                    }
+                }
+            }
+        }
         return ip_ospf_area;
     }
 
@@ -139,6 +188,9 @@ public class OspfConfParser {
         //remove inst not in intf/router ospf
         removeInvalidOp(opg);
 
+        removePreOp(opg);
+        removeInvalidOp(opg);
+
         //remove invalid ip area  network area
         boolean is_ip_ospf_area = IPNetworkInvalid(opg);
         removeInvalidOp(opg);
@@ -148,6 +200,16 @@ public class OspfConfParser {
         var intf_opgs = opgs.first();
         var ospf_opg = opgs.second();
 
+        //reconstruct opg
+        opg.getOps().clear();
+        for (var intf_opg: intf_opgs){
+            opg.addOp(intf_opg.getCtxOp());
+            opg.addOps(intf_opg.getOps());
+        }
+        if (ospf_opg != null){
+            opg.addOp(ospf_opg.getCtxOp());
+            opg.addOps(ospf_opg.getOps());
+        }
         //int name
         //ip address XXX.XXX.XXX.XXX
         //set intf ip || add intf

@@ -89,20 +89,24 @@ public class RelationGraphIntfExecTest {
                 ospf router-id 0.0.0.1
                 network 10.0.0.5/30 area 0
                 network 10.0.0.0/10 area 2
+                network 10.0.0.0/10 area 3
                 area 2 range 9.0.0.0/20
+                area 3 range 9.0.0.0/20
                 write-multiplier 95
 
                 interface r1-eth0
-                ip ospf area 3
-                no ip ospf area
                 ip address 10.0.0.0/10
+                ip ospf area 3
+                ip ospf cost 50
+                no ip ospf area
+                
+                ip address 11.0.0.0/10
                 ip ospf cost 100
 
                 interface r1-eth1
                 ip address 10.0.0.5/30
                 ip ospf cost 200
 
-                no router ospf
                 """;
         var topo = getBaseTopo();
         run_cmd_str(false, test_st, topo, Optional.of("r1"));
@@ -135,11 +139,11 @@ public class RelationGraphIntfExecTest {
     public void testGenerator(){
         for(int i = 0; i < 1; i++) {
             var gen = new RandomGen();
-            var ls = gen.genRandom(100, 0.5, 0.3, 5, 0, 0.9, "r1");
+            var ls = gen.genRandom(30, 0.5, 0.3, 5, 0, 0.9, "r1");
             StringJoiner joiner = new StringJoiner("\n");
             //System.out.println(ls);
             ls.getOps().forEach(x -> joiner.add(x.toString()));
-            //System.out.println(joiner.toString());
+            System.out.println(joiner.toString());
             run_cmd_str(false, joiner.toString(), getBaseTopo1(), Optional.of("r1"));
         }
     }
