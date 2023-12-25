@@ -80,7 +80,7 @@ public class StrOperation implements op {
         return sb.toString();
     }
     public boolean encode(StringBuilder buf, int index){
-        if (this.type == OpType.OSPFCONF){
+        if (this.type == OpType.OSPFCONFBEGIN){
             var ran = new Random();
             buf.append(generateRandomString(ran.nextInt(20) + 1));
             return true;

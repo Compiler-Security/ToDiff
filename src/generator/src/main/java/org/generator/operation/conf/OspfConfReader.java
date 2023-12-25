@@ -70,19 +70,21 @@ public class OspfConfReader implements ConfR {
                 return checkLongNum(op, 1, 4000000000L);
             }
             case NOSOCKETPERINTERFACE -> {return op;}
-            case AreaRange,AreaRangeAd,AreaRangeNoAd,AreaRangeSub -> {return op;}
-            case AreaRangeAdCost,AreaRangeCost -> {
+            //case AreaRangeAd,
+            case AreaRange, AreaRangeNoAd,AreaRangeSub -> {return op;}
+            //case AreaRangeAdCost,
+                    case AreaRangeCost -> {
                 return checkNum(op, 0, 16777215);
             }
             case AreaRangeINT -> {
                 return checkOperation(changeIDNumToID(op, OpType.AreaRange));
             }
-            case AreaRangeAdINT -> {
-                return checkOperation(changeIDNumToID(op, OpType.AreaRangeAd));
-            }
-            case AreaRangeAdCostINT -> {
-                return checkOperation(changeIDNumToID(op, OpType.AreaRangeAdCost));
-            }
+//            case AreaRangeAdINT -> {
+//                return checkOperation(changeIDNumToID(op, OpType.AreaRangeAd));
+//            }
+//            case AreaRangeAdCostINT -> {
+//                return checkOperation(changeIDNumToID(op, OpType.AreaRangeAdCost));
+//            }
             case AreaRangeNoAdINT -> {
                 return checkOperation(changeIDNumToID(op, OpType.AreaRangeNoAd));
             }

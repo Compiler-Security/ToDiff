@@ -130,16 +130,16 @@ public class OspfOpgExec extends OpgExec{
             switch (op.Type()) {
                 case AreaRange -> {
                 }
-                case AreaRangeAd -> {
-                    areaSumEntry.setAdvertise(true);
-                }
+//                case AreaRangeAd -> {
+//                    areaSumEntry.setAdvertise(true);
+//                }
                 case AreaRangeCost -> {
                     areaSumEntry.setCost(op.getNUM());
                 }
-                case AreaRangeAdCost -> {
-                    areaSumEntry.setAdvertise(true);
-                    areaSumEntry.setCost(op.getNUM());
-                }
+//                case AreaRangeAdCost -> {
+//                    areaSumEntry.setAdvertise(true);
+//                    areaSumEntry.setCost(op.getNUM());
+//                }
                 case AreaRangeNoAd -> {
                     areaSumEntry.setAdvertise(false);
                 }

@@ -4,12 +4,9 @@ import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
 import org.generator.operation.opg.ParserOpGroup;
 import org.generator.topo.node.NodeGen;
-import org.generator.util.collections.Pair;
-import org.generator.util.exception.Unimplemented;
 import org.generator.util.net.IPV4;
 
 import java.util.Random;
-import javax.swing.text.html.parser.Parser;
 import java.util.*;
 
 public class RandomGen {
@@ -245,9 +242,9 @@ public class RandomGen {
                         }
                     }
                     case 2 -> {
-                        if (opgs.empty() || (opgs.peek().getCtxOp().Type() != OpType.OSPFCONF || ran.nextDouble(1) > merge_ratio)){
+                        if (opgs.empty() || (opgs.peek().getCtxOp().Type() != OpType.OSPFCONFBEGIN || ran.nextDouble(1) > merge_ratio)){
                             var opg = new ParserOpGroup();
-                            opg.setCtxOp(new Operation(OpType.OSPFCONF));
+                            opg.setCtxOp(new Operation(OpType.OSPFCONFBEGIN));
                             opgs.push(opg);
                         }
                     }
