@@ -88,54 +88,72 @@ public class Operation extends StrOperation {
         var m = super.Args();
         if (m.containsKey("NAME")){
             NAME = super.Arg("NAME");
+            //check range
             var res = this.Type().getStrListRange("NAME");
-            if (res.second() && !res.first().contains(NAME)) return false;
+            if (res != null && !res.contains(NAME)) return false;
         }else NAME = null;
         if (m.containsKey("NAME2")){
             NAME2 = super.Arg("NAME2");
+            //check range
             var res = this.Type().getStrListRange("NAME2");
-            if (res.second() && !res.first().contains(NAME2)) return false;
+            if (res != null && !res.contains(NAME2)) return false;
         } else NAME2 = null;
         if (m.containsKey("DETAIL")){
             DETAIL = super.Arg("DETAIL");
+            //check range
             var res = this.Type().getStrListRange("DETAIL");
-            if (res.second() && !res.first().contains(DETAIL)) return false;
+            if (res != null && !res.contains(DETAIL)) return false;
         }else DETAIL = null;
+
         if (m.containsKey("IP")){
             IP = super.IPArg(super.Arg("IP"));
+            //check range
             if (IP == null) return false;
         }else IP = null;
+
         if (m.containsKey("IP2")){
             IP2 = super.IPArg(super.Arg("IP2"));
+            //check range
             if (IP2 == null) return false;
         } else IP2 = null;
-        if (m.containsKey("ID")){ ID = super.IDArg(super.Arg("ID"));
+
+        if (m.containsKey("ID")){
+            ID = super.IDArg(super.Arg("ID"));
+            //check range
             if (ID == null) return false;
         }
         else ID = null;
+
         try {
             if (m.containsKey("IDNUM")){
                 IDNUM = super.LongArg("IDNUM");
                 var res = this.Type().getNumRange("IDNUM");
-                if (res.second() && !(res.first().first() <= IDNUM && IDNUM <= res.first().second())) return false;
+                //check range
+                if (res != null && !(res.first() <= IDNUM && IDNUM <= res.second())) return false;
             }
             else IDNUM = null;
+
             if (m.containsKey("NUM")) {
                 NUM = super.IntArg("NUM");
                 var res = this.Type().getNumRange("NUM");
-                if (res.second() && !(res.first().first() <= NUM && NUM <= res.first().second())) return false;
+                //check range
+                if (res  != null && !(res.first() <= NUM && NUM <= res.second())) return false;
             }
             else NUM = null;
+
             if (m.containsKey("NUM2")){
                 NUM2 = super.IntArg("NUM2");
                 var res = this.Type().getNumRange("NUM2");
-                if (res.second() && !(res.first().first() <= NUM2 && NUM2 <= res.first().second())) return false;
+                //check range
+                if (res  != null && !(res.first() <= NUM2 && NUM2 <= res.second())) return false;
             }
             else NUM2 = null;
+
             if (m.containsKey("NUM3")) {
                 NUM3 = super.IntArg("NUM3");
                 var res = this.Type().getNumRange("NUM3");
-                if (res.second() && !(res.first().first() <= NUM3 && NUM3 <= res.first().second())) return false;
+                //check range
+                if (res != null && !(res.first() <= NUM3 && NUM3 <= res.second())) return false;
             }
             else NUM3 = null;
         }catch (NumberFormatException e){

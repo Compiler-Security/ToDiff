@@ -545,17 +545,12 @@ public enum OpType {
         return new Pair<>(re1, h);
     }
 
-    public Pair<Pair<Long, Long>, Boolean> getNumRange(String field){
-        var type = this;
-        if (argsRange.containsKey(field)){
-            return new Pair<>((Pair<Long, Long>) argsRange.get(field), true);
-        }else return new Pair<>(null, false);
+    public Pair<Long, Long> getNumRange(String field){
+        return (Pair<Long, Long>) argsRange.getOrDefault(field, null);
     }
 
-    public Pair<List<String> , Boolean> getStrListRange(String field){
-        if (argsRange.containsKey(field)){
-            return new Pair<>((List<String>) argsRange.get(field), true);
-        }else return new Pair<>(null, false);
+    public List<String> getStrListRange(String field){
+        return (List<String>) argsRange.getOrDefault(field, null);
     }
 
     private static  String removeRangeStr(String st){

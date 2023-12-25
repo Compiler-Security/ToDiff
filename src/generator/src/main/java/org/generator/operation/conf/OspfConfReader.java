@@ -4,6 +4,7 @@ import org.generator.operation.op.OpGen;
 import org.generator.operation.op.OpType;
 import org.generator.operation.op.Operation;
 import org.generator.util.net.IPV4;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
@@ -86,12 +87,12 @@ public class OspfConfReader implements ConfR {
     }
 
     @Override
-    public Optional<List<Operation>> read(String st) {
+    public @NotNull Optional<List<Operation>> read(String st) {
         return read(new BufferedReader(new StringReader(st)));
     }
 
     @Override
-    public Optional<List<Operation>> read(File file) {
+    public @NotNull Optional<List<Operation>> read(File file) {
         try {
             return read(new BufferedReader(new FileReader(file)));
         }catch (IOException e){
