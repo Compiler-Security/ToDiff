@@ -291,7 +291,7 @@ public enum OpType {
 
 
 
-    //FIXME we can set multiple ip to one interface
+    //FIXME we can set multiple ip to one interface, so here we should only generate one
     IPAddr("ip address {IP}",
             "no ip address {IP}",
             """

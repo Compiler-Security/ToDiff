@@ -218,6 +218,7 @@ public class RandomGen {
         opgs = new Stack<>();
         total_num = 0;
         rest_num = 0;
+        //fixme we should only generate one ip address XXX at once
         while(total_num < inst_num){
             if (rest_num > 0){
                 addOp(opgs.peek());
