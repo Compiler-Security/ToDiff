@@ -14,12 +14,12 @@ import java.util.regex.Pattern;
 public class StrOperation implements op {
 
     public StrOperation(OpType type){
-        this.template = type.template();
+        this.setTemplate = type.getSetTemplate();
         this.args = new HashMap<>();
         this.type = type;
-        this.re = type.Re();
-        this.unsetRe = type.UnsetRe();
-        this.unsetTemplate = type.getUnsetTemplate();
+        this.setRe = type.getSetRe();
+        this.unsetRe = type.getUnsetReS();
+        this.unsetTemplateS = type.getUnsetTemplateS();
         this.unset = false;
         this.unsetIndex = -1;
     }
@@ -38,7 +38,7 @@ public class StrOperation implements op {
     @Override
     public boolean decode(String st) {
         unsetIndex = -1;
-        if (decode_by_re(st, re)){
+        if (decode_by_re(st, setRe)){
             setUnset(false);
             return true;
         }else {
@@ -86,12 +86,12 @@ public class StrOperation implements op {
             return true;
         }
         if (!unset) {
-            return encode_by_template(buf, template);
+            return encode_by_template(buf, setTemplate);
         }else{
-            if (index >= this.unsetTemplate.length){
+            if (index >= this.unsetTemplateS.length){
                 return false;
             }
-            return encode_by_template(buf, this.unsetTemplate[index]);
+            return encode_by_template(buf, this.unsetTemplateS[index]);
         }
     }
     @Override
@@ -137,10 +137,10 @@ public class StrOperation implements op {
     }
 
     protected   OpType type;
-    private   String template;
+    private   String setTemplate;
 
-    private String[] unsetTemplate;
-    private   String re;
+    private String[] unsetTemplateS;
+    private   String setRe;
 
     private String[] unsetRe;
     private Map<String, String> args;

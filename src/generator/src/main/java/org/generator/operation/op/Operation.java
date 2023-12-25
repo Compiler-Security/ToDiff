@@ -86,9 +86,21 @@ public class Operation extends StrOperation {
 
     private boolean load_from_dynamic(){
         var m = super.Args();
-        if (m.containsKey("NAME")) NAME = super.Arg("NAME"); else NAME = null;
-        if (m.containsKey("NAME2")) NAME2 = super.Arg("NAME2"); else NAME2 = null;
-        if (m.containsKey("DETAIL")) DETAIL = super.Arg("DETAIL"); else DETAIL = null;
+        if (m.containsKey("NAME")){
+            NAME = super.Arg("NAME");
+            var res = this.Type().getStrListRange("NAME");
+            if (res.second() && !res.first().contains(NAME)) return false;
+        }else NAME = null;
+        if (m.containsKey("NAME2")){
+            NAME2 = super.Arg("NAME2");
+            var res = this.Type().getStrListRange("NAME2");
+            if (res.second() && !res.first().contains(NAME2)) return false;
+        } else NAME2 = null;
+        if (m.containsKey("DETAIL")){
+            DETAIL = super.Arg("DETAIL");
+            var res = this.Type().getStrListRange("DETAIL");
+            if (res.second() && !res.first().contains(DETAIL)) return false;
+        }else DETAIL = null;
         if (m.containsKey("IP")){
             IP = super.IPArg(super.Arg("IP"));
             if (IP == null) return false;
@@ -102,13 +114,29 @@ public class Operation extends StrOperation {
         }
         else ID = null;
         try {
-            if (m.containsKey("IDNUM")) IDNUM = super.LongArg("IDNUM");
+            if (m.containsKey("IDNUM")){
+                IDNUM = super.LongArg("IDNUM");
+                var res = this.Type().getNumRange("IDNUM");
+                if (res.second() && !(res.first().first() <= IDNUM && IDNUM <= res.first().second())) return false;
+            }
             else IDNUM = null;
-            if (m.containsKey("NUM")) NUM = super.IntArg("NUM");
+            if (m.containsKey("NUM")) {
+                NUM = super.IntArg("NUM");
+                var res = this.Type().getNumRange("NUM");
+                if (res.second() && !(res.first().first() <= NUM && NUM <= res.first().second())) return false;
+            }
             else NUM = null;
-            if (m.containsKey("NUM2")) NUM2 = super.IntArg("NUM2");
+            if (m.containsKey("NUM2")){
+                NUM2 = super.IntArg("NUM2");
+                var res = this.Type().getNumRange("NUM2");
+                if (res.second() && !(res.first().first() <= NUM2 && NUM2 <= res.first().second())) return false;
+            }
             else NUM2 = null;
-            if (m.containsKey("NUM3")) NUM3 = super.IntArg("NUM3");
+            if (m.containsKey("NUM3")) {
+                NUM3 = super.IntArg("NUM3");
+                var res = this.Type().getNumRange("NUM3");
+                if (res.second() && !(res.first().first() <= NUM3 && NUM3 <= res.first().second())) return false;
+            }
             else NUM3 = null;
         }catch (NumberFormatException e){
             return false;
@@ -117,7 +145,7 @@ public class Operation extends StrOperation {
     }
     @Override
     public boolean decode(String st) {
-        if (!Type().isToMatch()) return false;
+        if (!Type().isUsed()) return false;
         if (super.decode(st)){
             return load_from_dynamic();
         }
@@ -324,7 +352,7 @@ public class Operation extends StrOperation {
     @SafeVarargs
     public final Operation checkOrInvalid(Predicate<Operation>... predicates){
         for(var predicate: predicates){
-            if (!predicate.test(this)) return new Operation(OpType.INVALID);
+            if (!predicate.test(this)){assert false; return new Operation(OpType.INVALID);}
         }
         return this;
     }

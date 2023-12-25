@@ -195,7 +195,6 @@ public class OspfConfParser {
         boolean is_ip_ospf_area = IPNetworkInvalid(opg);
         removeInvalidOp(opg);
 
-
         var opgs = mergeOps(opg);
         var intf_opgs = opgs.first();
         var ospf_opg = opgs.second();

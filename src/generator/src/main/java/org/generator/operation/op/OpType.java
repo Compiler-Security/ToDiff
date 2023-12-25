@@ -1,6 +1,11 @@
 package org.generator.operation.op;
 
+import org.generator.util.collections.Pair;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public enum OpType {
     NODEADD("node {NAME} add", "", ""),
@@ -51,7 +56,7 @@ public enum OpType {
                     SET ospf.router-id {ID}
                     """,
             "ospf router-id A.B.C.D"),
-    RABRTYPE("ospf abr-type {NAME}",
+    RABRTYPE("ospf abr-type {NAME(standard|cisco)}",
             "no ospf abr-type | no ospf abr-type {NAME}",
             """
                     IF HAS ospf, ospfintf WHERE ospf->ospfintf && ospfintf.area == 0
@@ -67,7 +72,7 @@ public enum OpType {
                         SET ospfintf.area {ID}
                     """,
             "network A.B.C.D/M area A.B.C.D"),
-    NETAREAIDNUM("network {IP} area {IDNUM}",
+    NETAREAIDNUM("network {IP} area {IDNUM(0-4294967295)}",
             "no network {IP} area {IDNUM}",
             """
                     LET {ID} = IPV4({IDNUM})
@@ -84,7 +89,7 @@ public enum OpType {
             "passive-interface default"
             ),
 
-    TIMERSTHROTTLESPF("timers throttle spf {NUM} {NUM1} {NUM2}",
+    TIMERSTHROTTLESPF("timers throttle spf {NUM(0-600000)} {NUM1(0-600000)} {NUM2(0-600000)}",
             "no timers throttle spf | no timers throttle spf {NUM} {NUM1} {NUM2}",
             """
                         MEET has ospf
@@ -104,7 +109,7 @@ public enum OpType {
     CLEARIPOSPFNEIGHBOR("clear ip ospf neighbor", "EMPTY", "clear ip ospf neighbor"),
     OSPFDAEMONGROUPBEGIN,
     //FIXME this instruction's ctx is OSPFCONF
-    MAXIMUMPATHS("maximum-paths {NUM}",
+    MAXIMUMPATHS("maximum-paths {NUM(1-64)}",
                 "no maximum-paths | no maximum-paths {NUM}",
                 """
                 MEET has ospfdaemon
@@ -112,7 +117,7 @@ public enum OpType {
                 SET ospfdaemon.maxpaths {NUM}
             """,
             "maximum-paths (1-64)"),
-    WRITEMULTIPLIER("write-multiplier {NUM}",
+    WRITEMULTIPLIER("write-multiplier {NUM(1-100)}",
                 "no write-multiplier | no write-multiplier {NUM}",
                 """
                 MEET has ospfdaemon
@@ -120,7 +125,7 @@ public enum OpType {
                 SET ospfdaemon.writemulti {NUM}
             """,
             "write-multiplier (1-100)"),
-    SOCKETBUFFERSEND("socket buffer send {IDNUM}",
+    SOCKETBUFFERSEND("socket buffer send {IDNUM(1-4000000000)}",
                 "no socket buffer send | no socket buffer send {NUM}",
                 """
                 MEET has ospfdaemon
@@ -128,7 +133,7 @@ public enum OpType {
                 SET ospfdaemon.buffersend {NUM}
             """,
             "socket buffer send (1-4000000000)"),
-    SOCKETBUFFERRECV("socket buffer recv {IDNUM}",
+    SOCKETBUFFERRECV("socket buffer recv {IDNUM(1-4000000000)}",
                 "no socket buffer recv | no socket buffer recv {NUM}",
                 """
                 MEET has ospfdaemon
@@ -136,7 +141,7 @@ public enum OpType {
                 SET ospfdaemon.bufferrecv {NUM}
             """,
             "socket buffer recv (1-4000000000)"),
-    SOCKETBUFFERALL("socket buffer all {IDNUM}",
+    SOCKETBUFFERALL("socket buffer all {IDNUM(1-4000000000)}",
                 "no socket buffer all | no socket buffer all {NUM}",
                 """
                 MEET has ospfdaemon
@@ -174,23 +179,6 @@ public enum OpType {
                     SET areaSumEntry.net GROUP (ANY ospfnet WHERE ospfnet.area == {ID} && ospfnet.ip in {IP})
             """,
             "area A.B.C.D range A.B.C.D/M"),
-    //FIXME we don't use advertise for simplicity!
-//    AreaRangeAd("area {ID} range {IP} advertise",
-//                "no area {ID} range {IP} | no area {ID} range {IP} advertise",
-//                """
-//                #AREARANGE
-//                SET areaSumEntry.advertise True
-//            """,
-//            "area A.B.C.D range A.B.C.D/M advertise"),
-//    AreaRangeAdCost("area {ID} range {IP} advertise cost {NUM}",
-//                "no area {ID} range {IP} | no area {ID} range {IP} advertise | no area {ID} range {IP} advertise cost {NUM}",
-//                """
-//                MEET 0<={NUM}<=16777215
-//                #AREARANGEADVERTISE
-//                SET areaSumEntry.advertise True
-//                SET areaSumEntry.cost {NUM}
-//            """,
-//            "area A.B.C.D range A.B.C.D/M advertise cost (0-16777215)"),
     AreaRangeNoAd("area {ID} range {IP} not-advertise",
                 "no area {ID} range {IP} | no area {ID} range {IP} not-advertise",
                 """
@@ -205,7 +193,7 @@ public enum OpType {
                 SET areaSumEntry.substitute {IP2}
             """,
             "area A.B.C.D range A.B.C.D/M substitute A.B.C.D/M"),
-    AreaRangeCost("area {ID} range {IP} cost {NUM}",
+    AreaRangeCost("area {ID} range {IP} cost {NUM(0-16777215)}",
                 "no area {ID} range {IP}  | no area {ID} range {IP} cost {NUM}",
                 """
                 MEET 0<={NUM}<=16777215
@@ -213,7 +201,7 @@ public enum OpType {
                 SET areaSumEntry.cost {NUM}
             """,
             "area A.B.C.D range A.B.C.D/M cost (0-16777215)"),
-    AreaRangeINT("area {IDNUM} range {IP}",
+    AreaRangeINT("area {IDNUM(0-4294967295)} range {IP}",
                 "no area {IDNUM} | no area {IDNUM} range {IP}",
                 """
                 MEET 0<={NUM}<=16777215
@@ -221,23 +209,7 @@ public enum OpType {
                 #AREARANGE
             """,
             "area (0-4294967295) range A.B.C.D/M"),
-//    AreaRangeAdINT("area {IDNUM} range {IP} advertise",
-//                "no area {IDNUM} range {IP} advertise",
-//                """
-//                MEET 0<={NUM}<=16777215
-//                let {ID} = ID({NUM})
-//                #AREARANGEADVERTISE
-//            """,
-//            "area (0-4294967295) range A.B.C.D/M advertise"),
-//    AreaRangeAdCostINT("area {IDNUM} range {IP} advertise cost {NUM}",
-//                "no area {IDNUM} range {IP} advertise cost | no area {IDNUM} range {IP} advertise cost {NUM}",
-//                """
-//                MEET 0<={NUM2}<=16777215
-//                let {ID} = ID({NUM2})
-//                #AREARANGEADVERTISECOST
-//            """,
-//            "area (0-4294967295) range A.B.C.D/M advertise cost (0-16777215)"),
-    AreaRangeNoAdINT("area {IDNUM} range {IP} not-advertise",
+    AreaRangeNoAdINT("area {IDNUM(0-4294967295)} range {IP} not-advertise",
                 "no area {IDNUM} range | no area {IDNUM} range {IP} not-advertise",
                 """
                 MEET 0<={NUM}<=16777215
@@ -245,7 +217,7 @@ public enum OpType {
                 #AREARANGENOADVERTISE
             """,
             "area (0-4294967295) range A.B.C.D/M not-advertise"),
-    AreaRangeSubINT("area {IDNUM} range {IP} substitute {IP2}",
+    AreaRangeSubINT("area {IDNUM(0-4294967295)} range {IP} substitute {IP2}",
                 "no area {IDNUM} range {IP}  | no area {IDNUM} range {IP} substitute {IP2}",
                 """
                 MEET 0<={NUM}<=16777215
@@ -253,7 +225,7 @@ public enum OpType {
                 #AREARANGESUBSTITUTE
             """,
             "area A.B.C.D range A.B.C.D/M substitute A.B.C.D/M"),
-    AreaRangeCostINT("area {IDNUM} range {IP} cost {NUM}",
+    AreaRangeCostINT("area {IDNUM(0-4294967295)} range {IP} cost {NUM}",
                 "no area {IDNUM} range {IP} | no area {IDNUM} range {IP} cost {NUM}",
                 """
                 MEET 0<={NUM2}<=16777215
@@ -273,7 +245,7 @@ public enum OpType {
             """,
             "area A.B.C.D virtual-link A.B.C.D"),
 
-    AreaShortcut("area {ID} shortcut {NAME}",
+    AreaShortcut("area {ID} shortcut {NAME(enable|disable|default)}",
                 "no area {ID} shortcut {NAME}",
                 """
                 MEET HAS ospf
@@ -347,7 +319,7 @@ public enum OpType {
                 SET ospfnet.area {ID}
             """,
             "ip ospf area AREA"),
-    IpOspfAreaINT("ip ospf area {IDNUM}",
+    IpOspfAreaINT("ip ospf area {IDNUM(0-4294967295)}",
             "no ip ospf area | no ip ospf area {IDNUM}",
             """
             MEET 0 <= {NUM} && {NUM} <= 4294967295
@@ -355,7 +327,7 @@ public enum OpType {
             #IpOspfArea
             """,
             "ip ospf area (0-4294967295)"),
-    IpOspfCost("ip ospf cost {NUM}",
+    IpOspfCost("ip ospf cost {NUM(1-65535)}",
             "no ip ospf cost | no ip ospf cost {NUM}",
             """
             MEET HAS _curOIntf
@@ -364,7 +336,7 @@ public enum OpType {
             """,
             "ip ospf cost (1-65535)"),
     //FIXME default value?
-    IpOspfDeadInter("ip ospf dead-interval {NUM}",
+    IpOspfDeadInter("ip ospf dead-interval {NUM(1-65535)}",
             "no ip ospf dead-interval | no ip ospf dead-interval {NUM}",
             """
             MEET HAS _curOIntf
@@ -372,7 +344,7 @@ public enum OpType {
             SET _curOIntf.deadInterval {NUM}
             """,
             "ip ospf dead-interval (1-65535)"),
-    IpOspfDeadInterMulti("ip ospf dead-interval minimal hello-multiplier {NUM}",
+    IpOspfDeadInterMulti("ip ospf dead-interval minimal hello-multiplier {NUM(2-20)}",
             "no ip ospf dead-interval minimal hello-multiplier | no ip ospf dead-interval minimal hello-multiplier {NUM}",
             """
             MEET HAS _curOIntf
@@ -382,7 +354,7 @@ public enum OpType {
             """,
             "ip ospf dead-interval minimal hello-multiplier (2-20)"),
     //FIXME this will not work if we set IpOspfDeadInterMulti, should we consider which is in the front?
-    IpOspfHelloInter("ip ospf hello-interval {NUM}",
+    IpOspfHelloInter("ip ospf hello-interval {NUM(1-65535)}",
             "no ip ospf hello-interval | no ip ospf hello-interval {NUM}",
             """
             MEET HAS _curOIntf
@@ -391,7 +363,7 @@ public enum OpType {
             SET _curOIntf.helloInterval {NUM}
             """,
             "ip ospf hello-interval (1-65535)"),
-    IpOspfGRHelloDelay("ip ospf graceful-restart hello-delay {NUM}",
+    IpOspfGRHelloDelay("ip ospf graceful-restart hello-delay {NUM(1-1800)}",
             "no ip ospf graceful-restart hello-delay | no ip ospf graceful-restart hello-delay {NUM}",
             """
             MEET HAS _curOIntf
@@ -400,7 +372,7 @@ public enum OpType {
             """,
             "ip ospf graceful-restart hello-delay (1-1800)"),
     //FIXME what is nonbroadcast?
-    IpOspfNet("ip ospf network {NAME}",
+    IpOspfNet("ip ospf network {NAME(broadcast|non-broadcast)}",
             //FIXME is this no op right?
             "no ip ospf network | no ip ospf network {NAME}",
             """
@@ -408,21 +380,21 @@ public enum OpType {
             SET _curOIntf.netType {NAME}
             """,
             "ip ospf network (broadcast|non-broadcast| point-to-point)"),
-    IpOspfPriority("ip ospf priority {NUM}",
+    IpOspfPriority("ip ospf priority {NUM(0-255)}",
             "no ip ospf priority | no ip ospf priority {NUM}",
             """
             MEET {0} <= {NUM} && {NUM} <= 255
             SET _curOIntf.priority {NUM}
             """,
             "ip ospf priority (0-255)"),
-    IpOspfRetransInter("ip ospf retransmit-interval {NUM}",
+    IpOspfRetransInter("ip ospf retransmit-interval {NUM(1-65535)}",
             "ip ospf retransmit-interval | ip ospf retransmit-interval {NUM}",
             """
             MEET 1 <= NUM && NUM <= 65535
             SET _curOIntf.retransmit-interval {NUM}
             """,
             "ip ospf retransmit-interval (1-65535)"),
-    IpOspfTransDealy("ip ospf transmit-dealy {NUM}",
+    IpOspfTransDealy("ip ospf transmit-dealy {NUM(1-65535)}",
                 "no ip ospf transmit-dealy | no ip ospf transmit-dealy {NUM}",
                 """
                 MEET 1 <= NUM && NUM <= 65535
@@ -436,7 +408,7 @@ public enum OpType {
             """,
             "ip ospf passive"),
 
-//    IpOspfPrefixSupp("ip ospf prefix-suppression {ID}", """
+//    TODO IpOspfPrefixSupp("ip ospf prefix-suppression {ID}", """
 //
 //            """,
 //            "ip ospf prefix-suppression [A.B.C.D]"),
@@ -444,11 +416,11 @@ public enum OpType {
     OSPFIntfGroupEND,
     INVALID(".+", "", "");
 
-    public static boolean inPhy(OpType typ) {
+    public static boolean inPhy(@NotNull OpType typ) {
         return typ.ordinal() >= NODEADD.ordinal() && typ.ordinal() <= LINKREMOVE.ordinal();
     }
 
-    public static boolean inOSPF(OpType typ) {
+    public static boolean inOSPF(@NotNull OpType typ) {
         return typ.ordinal() > OSPFROUTERBEGIN.ordinal() && typ.ordinal() < OSPFIntfGroupEND.ordinal();
     }
 
@@ -467,86 +439,132 @@ public enum OpType {
     public  boolean inOSPFINTF(){
         return this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal();
     }
-    public String template() {
-        return template;
-    }
 
-    public String Re() {
-        return reMap.get(this);
-    }
 
-    public String[] UnsetRe(){
-        return unsetReMap.get(this);
-    }
-    private final String template;
-    private final String syntax;
 
-    private final String raw;
-
-    private final int noNum;
-
-    public boolean isToMatch() {
-        return toMatch;
-    }
-
-    private final boolean toMatch;
-
-    public String[] getUnsetTemplate() {
-        return unsetTemplate;
-    }
-
-    private  final String[] unsetTemplate;
 
     OpType(){
-        toMatch = false;
-        unsetTemplate = null;
-        template = null;
-        syntax = null;
-        raw = null;
-        noNum = 0;
+        used = false;
     }
 
-    OpType(String template, String unset, String syntax, String raw) {
-        toMatch = !template.isEmpty();
-        this.template = template;
-        this.syntax = syntax;
-        this.raw = raw;
-        this.unsetTemplate = Arrays.stream(unset.split("\\|")).map(String::strip).toArray(String[]::new);
-        this.noNum = this.unsetTemplate.length;
+    OpType(String setSeed, String unsetSeeds, String semantics, String raw) {
+        used = !setSeed.isEmpty();
+
+        setTemplate = removeRangeStr(setSeed);
+        var res = changeToRe(setSeed);
+        setRe = res.first();
+        argsRange = res.second();
+
+        var unsetSeedArray = Arrays.stream(unsetSeeds.split("\\|")).map(String::strip).toArray(String[]::new);
+        unsetTemplateS =  Arrays.stream(unsetSeedArray).map(OpType::removeRangeStr).toArray(String[]::new);
+        unsetReS = Arrays.stream(unsetSeedArray).map(x -> changeToRe(x).first()).toArray(String[]::new);
+        unsetNum = this.unsetTemplateS.length;
     }
 
-    OpType(String template, String syntax, String raw){
-        toMatch = !template.isEmpty();
-        this.template = template;
-        this.syntax = syntax;
-        this.raw = raw;
-        this.unsetTemplate = new String[]{};
-        this.noNum = 0;
+    OpType(String setSeed, String semantics, String raw){
+        used = !setSeed.isEmpty();
+
+        setTemplate = removeRangeStr(setSeed);
+        var res = changeToRe(setSeed);
+        setRe = res.first();
+        argsRange = res.second();
+
+        this.unsetTemplateS = new String[]{};
+        this.unsetReS = new String[]{};
+        this.unsetNum = 0;
     }
 
-    private static Map<OpType, String> reMap = new HashMap<>();
-    private static Map<OpType, String[]> unsetReMap = new HashMap<>();
+    //used for StrOperation
+    private boolean used;
 
-    private static List<OpType> matchOps = new ArrayList<>();
+    private String setTemplate;
+
+    private String setRe;
+
+    private  String[] unsetTemplateS;
+
+    private int unsetNum;
+    private String[] unsetReS;
+    private Map<String, Object> argsRange;
+
+    private static final List<OpType> matchOps = new ArrayList<>();
+
+    public String[] getUnsetTemplateS() {
+        return unsetTemplateS;
+    }
+
+    public String getSetRe() {
+        return setRe;
+    }
+
+    public String[] getUnsetReS(){
+        return unsetReS;
+    }
+
+    public boolean isUsed() {
+        return used;
+    }
+
+
+    public String getSetTemplate() {
+        return setTemplate;
+    }
+
 
     public static List<OpType> getMatchOps(){
         return matchOps;
     }
-    private static String changeToRe(String st){
-        String re = st;
-        do {
-            re = st;
-            st = st.replaceAll("\\{([^{}]+)\\}", "(?<$1>[0-9a-zA-Z./-]+)");
-            //st = st.replaceAll("\\[(.*)\\]", "(?:$1)?");
-        } while (!st.equals(re));
-        re = re.replaceAll("\s+", "\\\\s+");
-        return re;
+
+    private static Pair<String, Map<String, Object>> changeToRe(String st){
+        String regex = "\\{(\\w+)(?:\\(([\\w-|]+)\\))?\\}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(st);
+
+        StringBuilder result = new StringBuilder();
+
+        Map<String, Object> h = new HashMap<>();
+        while (matcher.find()) {
+            String name = matcher.group(1);
+            String value = matcher.group(2);
+
+            if (value != null) {
+                if (value.contains("|")){
+                    var tmp = Arrays.stream(value.split("\\|")).toList();
+                    h.put(name, tmp);
+                }else if (value.contains("-")){
+                    var tmp = Arrays.stream(value.split("-")).map(Long::valueOf).toList();
+                    h.put(name, new Pair<>(tmp.get(0), tmp.get(1)));
+                }
+            }
+
+            matcher.appendReplacement(result, "(?<" + name + ">[0-9a-zA-Z./-]+)");
+        }
+        matcher.appendTail(result);
+        var re1 = result.toString();
+        re1 = re1.replaceAll(" +", "\\\\s+");
+        return new Pair<>(re1, h);
     }
+
+    public Pair<Pair<Long, Long>, Boolean> getNumRange(String field){
+        var type = this;
+        if (argsRange.containsKey(field)){
+            return new Pair<>((Pair<Long, Long>) argsRange.get(field), true);
+        }else return new Pair<>(null, false);
+    }
+
+    public Pair<List<String> , Boolean> getStrListRange(String field){
+        if (argsRange.containsKey(field)){
+            return new Pair<>((List<String>) argsRange.get(field), true);
+        }else return new Pair<>(null, false);
+    }
+
+    private static  String removeRangeStr(String st){
+        return st.replaceAll("\\([\\w-|]+\\)", "");
+    }
+
     static {
         for (OpType typ : OpType.values()) {
-            if (typ.isToMatch()) matchOps.add(typ); else continue;
-            reMap.put(typ, changeToRe(typ.template));
-            unsetReMap.put(typ, Arrays.stream(typ.unsetTemplate).map(OpType::changeToRe).toArray(String[]::new));
+            if (typ.isUsed()) matchOps.add(typ);
         }
     }
 }
