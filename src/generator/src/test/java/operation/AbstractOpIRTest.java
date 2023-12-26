@@ -1,16 +1,16 @@
 package operation;
 
-import org.generator.operation.conf.OspfConfReader;
-import org.generator.operation.op.OpType;
-import org.generator.operation.op.Operation;
-import org.generator.util.net.IPV4;
+import org.generator.lib.operation.conf.OspfConfReader;
+import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.operation.operation.Op;
+import org.generator.util.net.IPBase;
 import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AbstractOperationTest {
+public class AbstractOpIRTest {
     @Test
     public void replaceAllTest(){
         String st = "area {AREA} range {RANGE} [advertise [cost {COST}]]";
@@ -19,7 +19,7 @@ public class AbstractOperationTest {
     }
     @Test
     public void regTest(){
-        var d = new Operation(OpType.INVALID);
+        var d = new Op(OpType.INVALID);
         System.out.println(d.decode("area 10 range 10.0.0.0/32 advertise cost 100"));
         System.out.println(d.IntArg("AREA"));
         System.out.println(d.encode_to_str());
@@ -87,7 +87,7 @@ public class AbstractOperationTest {
 //        var a = Arrays.stream("123".split("\\|")).map(String::strip).toList();
 //        System.out.println(a);
 //        //System.out.println((String[]) Arrays.stream("123".split("\\|")).map(String::strip).toArray());
-        var op = new Operation(OpType.AreaRangeINT);
+        var op = new Op(OpType.AreaRangeINT);
         //var c = op.decode("no ospf router-id 5.5.5.5");
         var c = op.decode("no area 10000 range 5.5.5.5/32");
         if (c) {
@@ -107,9 +107,9 @@ public class AbstractOperationTest {
     }
     @Test
     public void IPTest(){
-        var ip = IPV4.IPOf("5.5.5.5/24");
-        var ip1 = IPV4.IPOf("5.5.5.6/24");
-        var ip2 = IPV4.IDOf("5.5.5.5");
+        var ip = IPBase.IPOf("5.5.5.5/24");
+        var ip1 = IPBase.IPOf("5.5.5.6/24");
+        var ip2 = IPBase.IDOf("5.5.5.5");
         System.out.println(ip.getAddressOfIp());
         System.out.println(ip.getNetAddressOfIp());
         System.out.println(ip1.toString());

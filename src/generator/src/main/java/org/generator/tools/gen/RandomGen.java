@@ -1,10 +1,10 @@
-package org.generator.gen;
+package org.generator.tools.gen;
 
-import org.generator.operation.op.OpType;
-import org.generator.operation.op.Operation;
-import org.generator.operation.opg.ParserOpGroup;
-import org.generator.topo.node.NodeGen;
-import org.generator.util.net.IPV4;
+import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.operation.operation.Op;
+import org.generator.lib.operation.opg.ParserOpGroup;
+import org.generator.lib.topo.node.NodeGen;
+import org.generator.util.net.IPBase;
 
 import java.util.Random;
 import java.util.*;
@@ -13,8 +13,8 @@ public class RandomGen {
 
     private Stack<ParserOpGroup> opgs;
 
-    public List<Operation> getOpsOfCtx(Operation ctx) {
-        List<Operation> res = new ArrayList<>();
+    public List<Op> getOpsOfCtx(Op ctx) {
+        List<Op> res = new ArrayList<>();
         for (var opg : opgs) {
             if (opg.getCtxOp().equals(ctx)) {
                 res.addAll(opg.getOps());
@@ -28,22 +28,22 @@ public class RandomGen {
         return ran.nextLong(4294967296L);
     }
 
-    private IPV4 genRanID() {
+    private IPBase genRanID() {
         if (ran.nextInt(10) < 8)
-            return IPV4.IDOf(genRanIDNUM());
+            return IPBase.IDOf(genRanIDNUM());
         else{
-            var i = new IPV4();
+            var i = new IPBase();
             i.setIsId(true);
             i.setWrong(true);
             return i;
         }
     }
 
-    private IPV4 genRanIP() {
+    private IPBase genRanIP() {
         if (ran.nextInt(10) < 8) {
-            return IPV4.IPOf(genRanIDNUM(), ran.nextInt(32) + 1);
+            return IPBase.IPOf(genRanIDNUM(), ran.nextInt(32) + 1);
         }else {
-            var i = new IPV4();
+            var i = new IPBase();
             i.setIsId(false);
             i.setWrong(true);
             return i;
@@ -94,7 +94,7 @@ public class RandomGen {
         }
     }
 
-    void setOpFiled(Operation op) {
+    void setOpFiled(Op op) {
         op.setDETAIL("123");
         op.setIP2(genRanIP());
         op.setIP(genRanIP());
@@ -158,7 +158,7 @@ public class RandomGen {
             }
         }
     }
-    Operation genOp(boolean onlyIntf, boolean onlyOSPF){
+    Op genOp(boolean onlyIntf, boolean onlyOSPF){
         OpType op_type;
         if (onlyIntf){
             op_type = intfOp.get(ran.nextInt(intfOp.size()));
@@ -167,7 +167,7 @@ public class RandomGen {
         }else {
             op_type = allOp.get(ran.nextInt(allOp.size()));
         }
-        var op = new Operation(op_type);
+        var op = new Op(op_type);
         setOpFiled(op);
         return op;
     }
@@ -229,13 +229,13 @@ public class RandomGen {
                     case 0 -> {
                         if (opgs.empty() || (opgs.peek().getCtxOp().Type() != OpType.ROSPF || ran.nextDouble(1) > merge_ratio) ) {
                             var opg = new ParserOpGroup();
-                            opg.setCtxOp(new Operation(OpType.ROSPF));
+                            opg.setCtxOp(new Op(OpType.ROSPF));
                             opgs.push(opg);
                         }
                     }
                     case 1 -> {
                         var opg = new ParserOpGroup();
-                        var intf = new Operation(OpType.IntfName);
+                        var intf = new Op(OpType.IntfName);
                         intf.setNAME(NodeGen.getIntfName(r_name, ran.nextInt(interface_num)));
                         if (opgs.empty() || (!intf.getNAME().equals(opgs.peek().getCtxOp().getNAME()) || ran.nextDouble(1) > merge_ratio)){
                             opg.setCtxOp(intf);
@@ -245,7 +245,7 @@ public class RandomGen {
                     case 2 -> {
                         if (opgs.empty() || (opgs.peek().getCtxOp().Type() != OpType.OSPFCONFBEGIN || ran.nextDouble(1) > merge_ratio)){
                             var opg = new ParserOpGroup();
-                            opg.setCtxOp(new Operation(OpType.OSPFCONFBEGIN));
+                            opg.setCtxOp(new Op(OpType.OSPFCONFBEGIN));
                             opgs.push(opg);
                         }
                     }

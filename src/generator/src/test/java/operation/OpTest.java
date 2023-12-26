@@ -1,8 +1,8 @@
 package operation;
 
-import org.generator.operation.op.OpGen;
-import org.generator.operation.op.OpType;
-import org.generator.operation.conf.OspfConfReader;
+import org.generator.lib.operation.operation.OpGen;
+import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.operation.conf.OspfConfReader;
 import org.junit.Test;
 
 public class OpTest {

@@ -1,13 +1,12 @@
 package graph;
 
-import org.generator.gen.RandomGen;
-import org.generator.operation.conf.OspfConfParser;
-import org.generator.operation.conf.PhyConfParser;
-import org.generator.operation.conf.OspfConfReader;
-import org.generator.operation.opg.ParserOpGroup;
-import org.generator.topo.graph.RelationGraph;
-import org.generator.topo.node.ospf.OSPF;
-import org.generator.topo.node.phy.Router;
+import org.generator.tools.gen.RandomGen;
+import org.generator.lib.operation.conf.OspfConfParser;
+import org.generator.lib.operation.conf.PhyConfParser;
+import org.generator.lib.operation.conf.OspfConfReader;
+import org.generator.lib.operation.opg.ParserOpGroup;
+import org.generator.lib.topo.graph.RelationGraph;
+import org.generator.lib.topo.node.ospf.OSPF;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -95,17 +94,17 @@ public class RelationGraphIntfExecTest {
                 write-multiplier 95
 
                 interface r1-eth0
-                ip address 10.0.0.0/10
-                ip ospf area 3
-                ip ospf cost 50
-                no ip ospf area
+                ipRange address 10.0.0.0/10
+                ipRange ospf area 3
+                ipRange ospf cost 50
+                no ipRange ospf area
                 
-                ip address 11.0.0.0/10
-                ip ospf cost 100
+                ipRange address 11.0.0.0/10
+                ipRange ospf cost 100
 
                 interface r1-eth1
-                ip address 10.0.0.5/30
-                ip ospf cost 300
+                ipRange address 10.0.0.5/30
+                ipRange ospf cost 300
 
                 """;
         var topo = getBaseTopo();

@@ -9,7 +9,7 @@ import java.util.Objects;
 import java.util.Random;
 
 
-public class IPV4 {
+public class IPBase {
     public boolean isWrong() {
         return wrong;
     }
@@ -18,35 +18,35 @@ public class IPV4 {
         this.wrong = wrong;
     }
 
-    public IPV4(){
+    public IPBase(){
         wrong = false;
     }
 
-    public static IPV4 IDOf(String id_st){
-        var ip = new IPV4();
+    public static IPBase IDOf(String id_st){
+        var ip = new IPBase();
         if (ip.fromStr(id_st, true)){
             ip.setIsId(true);
             return ip;
         }else return null;
     }
 
-    public static IPV4 IPOf(String ip_st){
-        var ip = new IPV4();
+    public static IPBase IPOf(String ip_st){
+        var ip = new IPBase();
         if (ip.fromStr(ip_st, false)){
             ip.setIsId(false);
             return ip;
         }else return null;
     }
 
-    static public IPV4 IDOf(long num){
+    static public IPBase IDOf(long num){
         return IDOf(coverToStrId(num));
     }
 
-    static  public IPV4 IPOf(long num, int prefix){
+    static  public IPBase IPOf(long num, int prefix){
         return IPOf(convertToCIDR(num, prefix));
     }
 
-    private boolean fromStr(@NotNull String ip_st, boolean id){
+    protected boolean fromStr(@NotNull String ip_st, boolean id){
         if (id) {
             if (!ip_st.contains("/")) {
                 ip_st = ip_st + "/32";
@@ -64,12 +64,12 @@ public class IPV4 {
     }
 
 
-    public boolean containsId(IPV4 id){
+    public boolean containsId(IPBase id){
         assert id.isId : "should contain id not subnet";
         return utils.getInfo().isInRange(id.toString());
     }
 
-    public boolean containsIp(IPV4 ip){
+    public boolean containsIp(IPBase ip){
         assert !isId() : "should contain ip";
         //FIXME we don't check subnet(mask)
         return utils.getInfo().isInRange(ip.getAddressOfIp().toString());
@@ -79,7 +79,7 @@ public class IPV4 {
 //        return contains(ip) && ip.contains(this);
 //    }
 
-    private static String convertToCIDR(long ipAddress, int subnetMask) {
+    protected static String convertToCIDR(long ipAddress, int subnetMask) {
         if (ipAddress < 0 || ipAddress > 4294967295L) return "";
         StringBuilder sb = new StringBuilder();
 
@@ -92,7 +92,7 @@ public class IPV4 {
         return sb.toString();
     }
 
-    private static String coverToStrId(long ipAddress){
+    protected static String coverToStrId(long ipAddress){
         if (ipAddress < 0 || ipAddress > 4294967295L) return "";
         return ((ipAddress >> 24) & 255) + "." +
                 ((ipAddress >> 16) & 255) + "." +
@@ -143,17 +143,28 @@ public class IPV4 {
         }
     }
 
-    public int IDtoInt(){
-        assert isId;
-        return utils.getInfo().asInteger(utils.getInfo().getNetworkAddress());
+    private static long ipToLong(String ipAddress) {
+        String[] addrArray = ipAddress.split("\\.");
+        long num = 0;
+        for (int i = 0; i < addrArray.length; i++) {
+            int power = 3 - i;
+            num += (long) ((Integer.parseInt(addrArray[i]) % 256) * Math.pow(256, power));
+        }
+        return num;
     }
 
-    public IPV4 getAddressOfIp(){
+    public Long IDtoLong(){
+        assert isId;
+        return ipToLong(utils.getInfo().getNetworkAddress());
+        //return utils.getInfo().asInteger(utils.getInfo().getNetworkAddress());
+    }
+
+    public IPBase getAddressOfIp(){
         assert !isId;
         return IDOf(utils.getInfo().getAddress());
     }
 
-    public IPV4 getNetAddressOfIp(){
+    public IPBase getNetAddressOfIp(){
         assert !isId;
         return IDOf(utils.getInfo().getNetworkAddress());
     }
@@ -176,9 +187,9 @@ public class IPV4 {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        IPV4 ipv4 = (IPV4) o;
-        if (isId != ipv4.isId) return false;
-        return toNetString().equals(ipv4.toNetString());
+        IPBase IPBase = (IPBase) o;
+        if (isId != IPBase.isId) return false;
+        return toNetString().equals(IPBase.toNetString());
     }
 
     @Override
@@ -187,7 +198,7 @@ public class IPV4 {
     }
 
     @Override
-    public IPV4 clone(){
+    public IPBase clone(){
         if (isId){
             return IDOf(toString());
         }else return IPOf(toString());
