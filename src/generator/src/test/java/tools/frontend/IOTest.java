@@ -1,5 +1,7 @@
 package tools.frontend;
 
+import org.generator.lib.frontend.driver.IO;
+import org.generator.lib.item.IR.OpOspf;
 import org.generator.tools.frontend.OspfConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
 import org.junit.Test;
@@ -36,5 +38,14 @@ public class IOTest {
         var opCtxG = reader.read(test_st);
         var writer = new OspfConfWriter();
         System.out.println(writer.write(opCtxG));
+    }
+    @Test
+    public void OpOspfTest(){
+        var op1 = OpOspf.of();
+        var op2 = OpOspf.of();
+        var opCtx1 = IO.readOp("ip address 11.0.0.0/10", op1);
+        var opCtx2 = IO.readOp("ip address 11.0.0.0/10", op2);
+        assert opCtx1.getOperation().equals(opCtx2.getOperation());
+        assert opCtx1.getOperation().hashCode() == opCtx2.getOperation().hashCode();
     }
 }
