@@ -19,7 +19,7 @@ public enum OpType {
     LINKREMOVE("link {NAME} {NAME2} remove", "", ""),
 
     //Don't change this!
-    OSPFCONFBEGIN("ROSPFCONF", "", "", ""),
+    OSPFCONF("ROSPFCONF", "", "", ""),
     ROSPF("router ospf",
             "no router ospf",
             """

@@ -27,11 +27,11 @@ public class OspfConfParser {
             if (op.Type() == OpType.ROSPF) {
                 set_intf = null;
                 set_ospf = op.isUnset() ? null : op;
-                op.setCtxOp(new Op(OpType.OSPFCONFBEGIN));
+                op.setCtxOp(new Op(OpType.OSPFCONF));
             } else if (op.Type() == OpType.IntfName) {
                 set_ospf = null;
                 set_intf = op.isUnset() ? null : op;
-                op.setCtxOp(new Op(OpType.OSPFCONFBEGIN));
+                op.setCtxOp(new Op(OpType.OSPFCONF));
             } else if (op.Type() == OpType.IPAddr){
                 op.setCtxOp(set_intf);
             }
@@ -40,7 +40,7 @@ public class OspfConfParser {
             } else if (op.Type().inOSPFDAEMON() || op.Type().inOSPFAREA() || op.Type().inOSPFRouterWithTopo()){
                 op.setCtxOp(set_ospf);
             } else{
-                op.setCtxOp(new Op(OpType.OSPFCONFBEGIN));
+                op.setCtxOp(new Op(OpType.OSPFCONF));
             }
         }
     }

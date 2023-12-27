@@ -243,9 +243,9 @@ public class RandomGen {
                         }
                     }
                     case 2 -> {
-                        if (opgs.empty() || (opgs.peek().getCtxOp().Type() != OpType.OSPFCONFBEGIN || ran.nextDouble(1) > merge_ratio)){
+                        if (opgs.empty() || (opgs.peek().getCtxOp().Type() != OpType.OSPFCONF || ran.nextDouble(1) > merge_ratio)){
                             var opg = new ParserOpGroup();
-                            opg.setCtxOp(new Op(OpType.OSPFCONFBEGIN));
+                            opg.setCtxOp(new Op(OpType.OSPFCONF));
                             opgs.push(opg);
                         }
                     }

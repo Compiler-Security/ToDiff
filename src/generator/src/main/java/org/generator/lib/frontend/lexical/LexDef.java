@@ -31,7 +31,7 @@ public class LexDef {
                 {LINKUP, "link {NAME} {NAME2} up"},
                 {LINKDOWN, "link {NAME} {NAME2} down"},
                 {LINKREMOVE, "link {NAME} {NAME2} remove"},
-                {OSPFCONFBEGIN, "ROSPFCONF"},
+                {OSPFCONF, "ROSPFCONF"},
 
                 {ROSPF, "router ospf"},
                 {IntfName, "interface {NAME}|int {NAME}"},
