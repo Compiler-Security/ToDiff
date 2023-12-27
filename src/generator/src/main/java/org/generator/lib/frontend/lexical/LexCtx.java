@@ -1,4 +1,4 @@
-package org.generator.lib.item.lexical;
+package org.generator.lib.frontend.lexical;
 
 import org.generator.lib.operation.operation.OpType;
 

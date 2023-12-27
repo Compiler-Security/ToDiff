@@ -1,11 +1,11 @@
-package org.generator.lib.topo.node.ospf;
+package org.generator.lib.item.topo.node.ospf;
 
 
-import org.generator.lib.topo.node.NodeType;
+import org.generator.lib.item.topo.node.AbstractNode;
+import org.generator.lib.item.topo.node.NodeType;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
 import org.generator.util.net.IPBase;
-import org.generator.lib.topo.node.AbstractNode;
 
 import java.util.Arrays;
 import java.util.Optional;

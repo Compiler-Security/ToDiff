@@ -1,7 +1,7 @@
-package org.generator.lib.topo.node.phy;
+package org.generator.lib.item.topo.node.phy;
 
-import org.generator.lib.topo.node.AbstractNode;
-import org.generator.lib.topo.node.NodeType;
+import org.generator.lib.item.topo.node.AbstractNode;
+import org.generator.lib.item.topo.node.NodeType;
 
 public class Host extends AbstractNode {
     Host(String name){

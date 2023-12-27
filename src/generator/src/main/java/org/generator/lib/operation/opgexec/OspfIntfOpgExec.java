@@ -1,8 +1,8 @@
 package org.generator.lib.operation.opgexec;
 
 import org.generator.lib.operation.operation.Op;
-import org.generator.lib.topo.node.ospf.OSPFIntf;
-import org.generator.lib.topo.graph.RelationGraph;
+import org.generator.lib.item.topo.node.ospf.OSPFIntf;
+import org.generator.lib.item.topo.graph.RelationGraph;
 import org.generator.util.exec.ExecStat;
 import org.jetbrains.annotations.NotNull;
 

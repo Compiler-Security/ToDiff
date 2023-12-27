@@ -1,7 +1,7 @@
 package org.generator.lib.frontend.pass;
 
 import org.generator.lib.item.IR.OpCtx;
-import org.generator.lib.item.lexical.LexCtx;
+import org.generator.lib.frontend.lexical.LexCtx;
 import org.jetbrains.annotations.NotNull;
 
 public class OpDumpPass {

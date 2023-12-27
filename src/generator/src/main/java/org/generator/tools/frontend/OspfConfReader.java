@@ -1,13 +1,9 @@
 package org.generator.tools.frontend;
 
 import org.generator.lib.frontend.driver.IO;
-import org.generator.lib.frontend.pass.OpBuilderPass;
-import org.generator.lib.frontend.pass.StrToLexPass;
 import org.generator.lib.item.IR.*;
-import org.generator.lib.item.lexical.LexDef;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.operation.operation.OpType;
-import org.generator.tools.frontend.ConfR;
 
 import java.io.*;
 

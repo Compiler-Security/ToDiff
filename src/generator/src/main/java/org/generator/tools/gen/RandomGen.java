@@ -3,7 +3,7 @@ package org.generator.tools.gen;
 import org.generator.lib.operation.operation.OpType;
 import org.generator.lib.operation.operation.Op;
 import org.generator.lib.operation.opg.ParserOpGroup;
-import org.generator.lib.topo.node.NodeGen;
+import org.generator.lib.item.topo.node.NodeGen;
 import org.generator.util.net.IPBase;
 
 import java.util.Random;

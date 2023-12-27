@@ -1,4 +1,4 @@
-package org.generator.lib.topo.node;
+package org.generator.lib.item.topo.node;
 
 public enum NodeType {
     Host,

@@ -1,7 +1,7 @@
-package org.generator.lib.topo.graph;
+package org.generator.lib.item.topo.graph;
 
-import org.generator.lib.topo.edge.RelationEdge;
-import org.generator.lib.topo.node.AbstractNode;
+import org.generator.lib.item.topo.edge.RelationEdge;
+import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.util.exec.ExecStat;
 import org.generator.util.graph.AbstractGraph;
 

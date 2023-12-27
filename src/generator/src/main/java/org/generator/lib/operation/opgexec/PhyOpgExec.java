@@ -1,14 +1,14 @@
 package org.generator.lib.operation.opgexec;
 
 import org.generator.lib.operation.operation.OpType;
-import org.generator.lib.topo.node.NodeGen;
-import org.generator.lib.topo.node.ospf.OSPF;
-import org.generator.lib.topo.node.phy.Intf;
+import org.generator.lib.item.topo.node.NodeGen;
+import org.generator.lib.item.topo.node.ospf.OSPF;
+import org.generator.lib.item.topo.node.phy.Intf;
 import org.generator.lib.operation.operation.OpGen;
 import org.generator.lib.operation.operation.Op;
-import org.generator.lib.topo.edge.RelationEdge;
-import org.generator.lib.topo.graph.RelationGraph;
-import org.generator.lib.topo.node.NodeType;
+import org.generator.lib.item.topo.edge.RelationEdge;
+import org.generator.lib.item.topo.graph.RelationGraph;
+import org.generator.lib.item.topo.node.NodeType;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.exec.ExecStat;
 

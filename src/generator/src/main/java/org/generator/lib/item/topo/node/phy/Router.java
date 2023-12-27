@@ -1,7 +1,8 @@
-package org.generator.lib.topo.node.phy;
+package org.generator.lib.item.topo.node.phy;
 
-import org.generator.lib.topo.node.AbstractNode;
-import org.generator.lib.topo.node.NodeType;
+import org.generator.lib.item.topo.node.NodeType;
+import org.generator.lib.item.topo.node.AbstractNode;
+
 public class Router extends AbstractNode {
     public Router(String name){
           super();

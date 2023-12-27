@@ -5,8 +5,8 @@ import org.generator.lib.operation.conf.OspfConfParser;
 import org.generator.lib.operation.conf.PhyConfParser;
 import org.generator.lib.operation.conf.OspfConfReader;
 import org.generator.lib.operation.opg.ParserOpGroup;
-import org.generator.lib.topo.graph.RelationGraph;
-import org.generator.lib.topo.node.ospf.OSPF;
+import org.generator.lib.item.topo.graph.RelationGraph;
+import org.generator.lib.item.topo.node.ospf.OSPF;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 

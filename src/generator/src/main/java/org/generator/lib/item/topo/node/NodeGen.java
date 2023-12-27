@@ -1,9 +1,9 @@
-package org.generator.lib.topo.node;
+package org.generator.lib.item.topo.node;
 
-import org.generator.lib.topo.node.ospf.*;
-import org.generator.lib.topo.node.phy.Intf;
-import org.generator.lib.topo.node.phy.Router;
-import org.generator.lib.topo.node.phy.Switch;
+import org.generator.lib.item.topo.node.ospf.*;
+import org.generator.lib.item.topo.node.phy.Intf;
+import org.generator.lib.item.topo.node.phy.Router;
+import org.generator.lib.item.topo.node.phy.Switch;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.net.IPBase;
 

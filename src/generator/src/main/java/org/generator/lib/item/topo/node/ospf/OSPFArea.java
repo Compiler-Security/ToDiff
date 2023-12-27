@@ -1,8 +1,8 @@
-package org.generator.lib.topo.node.ospf;
+package org.generator.lib.item.topo.node.ospf;
 
-import org.generator.lib.topo.node.NodeType;
+import org.generator.lib.item.topo.node.NodeType;
 import org.generator.util.net.IPBase;
-import org.generator.lib.topo.node.AbstractNode;
+import org.generator.lib.item.topo.node.AbstractNode;
 public class OSPFArea extends AbstractNode {
     public OSPFArea(String name) {
         setName(name);

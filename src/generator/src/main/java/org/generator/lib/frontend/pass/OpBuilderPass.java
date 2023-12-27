@@ -1,9 +1,8 @@
 package org.generator.lib.frontend.pass;
 
 import org.generator.lib.item.IR.Op;
-import org.generator.lib.item.IR.OpBase;
 import org.generator.lib.item.IR.OpCtx;
-import org.generator.lib.item.lexical.LexCtx;
+import org.generator.lib.frontend.lexical.LexCtx;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;

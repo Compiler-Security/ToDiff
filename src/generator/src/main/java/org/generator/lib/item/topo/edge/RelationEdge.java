@@ -1,7 +1,7 @@
-package org.generator.lib.topo.edge;
+package org.generator.lib.item.topo.edge;
 
-import org.generator.lib.topo.node.AbstractNode;
-import org.generator.lib.topo.node.NodeType;
+import org.generator.lib.item.topo.node.NodeType;
+import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.util.graph.AbstractEdge;
 
 public class RelationEdge extends AbstractEdge<AbstractNode> {
