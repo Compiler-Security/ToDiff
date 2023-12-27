@@ -42,6 +42,10 @@ public interface Op {
     public void setNAME(String NAME);
 
 
+    public OpCtx getOpCtx();
+
+    public void setOpCtx(OpCtx opCtx);
+
     public OpType Type();
 
     public void setType(OpType type);

@@ -57,11 +57,7 @@ public class OpCtx {
         return operation;
     }
 
-    public void setOperation(Op operation) {
-        this.operation = operation;
-    }
-
-    private Op operation;
+    private final Op operation;
 
     public Format getFormmat() {
         return format;
@@ -76,21 +72,30 @@ public class OpCtx {
     private OpCtx(Op operation, Format format){
         this.operation = operation;
         this.format = format;
+        operation.setOpCtx(this);
     }
 
     /**gen OpCtx
-     * args: 1. op
-     * 2. lex_idx: the lex_idx th seed*/
+     * @param op
+     * @param lex_idx the lex_idx th LexDef*/
     public static OpCtx of(Op op, int lex_idx){
         return new OpCtx(op, OpCtx.Format.of(op.Type(), lex_idx));
     }
 
     /**
-     * This function create the OpCtx with the first LexDef
+     * This function create the OpCtx with init format of first LexDef
      * @param op Operation interface
      * @return OpCtx
      */
     public  static OpCtx of(Op op){
         return of(op, 0);
     }
+
+    /**
+     * This function create the OpCtx with format
+     * @param op
+     * @param format
+     * @return
+     */
+    public static OpCtx of(Op op, Format format){return  new OpCtx(op, format);}
 }
