@@ -1,18 +1,14 @@
 package org.generator.lib.item.IR;
 
 import org.generator.lib.item.lexical.LexDef;
+import org.generator.lib.operation.operation.OpType;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Op + Format
- * Format{
- *     IDISNUM
- *     lexDef
- *     byPass
- * }
- * Op operation
+ * OpCtx := Op + Format
+ * Format := LexDef(must) + byPass(must, default empty) + IDISNUM(default false)
  * */
 public class OpCtx {
 
@@ -26,8 +22,6 @@ public class OpCtx {
         }
 
 
-        public boolean IDISNUM;
-
         public LexDef getLexDef() {
             return lexDef;
         }
@@ -36,7 +30,7 @@ public class OpCtx {
             this.lexDef = lexDef;
         }
 
-        public LexDef lexDef;
+
 
         public Map<String, String> getByPass() {
             return byPass;
@@ -46,9 +40,17 @@ public class OpCtx {
             getByPass().put(key, val);
         }
 
+        public boolean IDISNUM;
+        public LexDef lexDef;
         Map<String, String> byPass;
-        Format(){
+
+        Format(LexDef lexDef){
+            this.IDISNUM = false;
+            this.lexDef = lexDef;
             byPass = new HashMap<>();
+        }
+        public static Format of(OpType type, int lex_idx){
+            return new Format(LexDef.getLexDef(type).get(lex_idx));
         }
     }
     public Op getOperation() {
@@ -59,7 +61,7 @@ public class OpCtx {
         this.operation = operation;
     }
 
-    Op operation;
+    private Op operation;
 
     public Format getFormmat() {
         return format;
@@ -70,12 +72,25 @@ public class OpCtx {
     }
 
     public Format format;
-    public OpCtx(Op operation){
-        format = new Format();
+
+    private OpCtx(Op operation, Format format){
         this.operation = operation;
-    }
-    public OpCtx(){
-        format = new Format();
+        this.format = format;
     }
 
+    /**gen OpCtx
+     * args: 1. op
+     * 2. lex_idx: the lex_idx th seed*/
+    public static OpCtx of(Op op, int lex_idx){
+        return new OpCtx(op, OpCtx.Format.of(op.Type(), lex_idx));
+    }
+
+    /**
+     * This function create the OpCtx with the first LexDef
+     * @param op Operation interface
+     * @return OpCtx
+     */
+    public  static OpCtx of(Op op){
+        return of(op, 0);
+    }
 }

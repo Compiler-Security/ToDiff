@@ -1,6 +1,7 @@
 package org.generator.lib.frontend.pass;
 
 import org.generator.lib.item.IR.Op;
+import org.generator.lib.item.IR.OpBase;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.lexical.LexCtx;
 import org.generator.util.net.ID;
@@ -123,7 +124,7 @@ public class OpBuilderPass {
         if (ctx == null) return null;
         if (op == null) return null;
         this.ctx = ctx;
-        this.opctx = new OpCtx(op);
+        this.opctx = OpCtx.of(op, 0);
         return setOpCtx();
     }
     LexCtx ctx;

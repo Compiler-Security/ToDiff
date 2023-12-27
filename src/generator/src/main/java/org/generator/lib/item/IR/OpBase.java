@@ -7,9 +7,13 @@ import org.generator.util.net.IPRange;
 
 abstract public class OpBase implements Op{
 
-    public OpBase(){}
-    public OpBase(OpType type){
+    protected OpBase(){}
+    protected OpBase(OpType type){
         this.type = type;
+    }
+
+    public static OpBase Of(){
+        return null;
     }
     public String NAME, NAME2;
 

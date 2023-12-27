@@ -414,7 +414,8 @@ public enum OpType {
 //            "ip ospf prefix-suppression [A.B.C.D]"),
 
     OSPFIntfGroupEND,
-    INVALID(".+", "", "");
+    INVALID(".+", "", ""),
+    PRINT;
 
     public static boolean inPhy(@NotNull OpType typ) {
         return typ.ordinal() >= NODEADD.ordinal() && typ.ordinal() <= LINKREMOVE.ordinal();

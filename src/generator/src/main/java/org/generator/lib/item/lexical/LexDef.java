@@ -36,7 +36,7 @@ public class LexDef {
                 {ROSPF, "router ospf"},
                 {IntfName, "interface {NAME}|int {NAME}"},
                 {RID, "ospf router-id {ID}"},
-                {RABRTYPE, "ospf abr-type {NAME(standard|cisco)}"},
+                {RABRTYPE, "ospf abr-type {NAME(standard,cisco)}"},
                 {NETAREAID, "network {IPRANGE} area {ID(NUM)}"},
                 {PASSIVEINTFDEFUALT, "passive-interface default"},
                 {TIMERSTHROTTLESPF, "timers throttle spf {NUM(0-600000)} {NUM1(0-600000)} {NUM2(0-600000)}"},
@@ -53,7 +53,7 @@ public class LexDef {
                 {AreaRangeSub, "area {ID(NUM)} range {IPRANGE} substitute {IP}"},
                 {AreaRangeCost, "area {ID(NUM)} range {IPRANGE} cost {NUM(0-16777215)}|area {ID(NUM)} range {IPRANGE} advertise cost {NUM(0-16777215)}"},
                 {AreaVLink, "area {ID(NUM)} virtual-link {ID2}"},
-                {AreaShortcut, "area {ID(NUM)} shortcut {NAME(enable|disable|default)}"},
+                {AreaShortcut, "area {ID(NUM)} shortcut {NAME(enable,disable,default)}"},
                 {AreaStub, "area {ID(NUM)} stub"},
                 {AreaStubTotal, "area {ID(NUM)} stub no-summary"},
                 {AreaNSSA, "area {ID(NUM)} nssa"},
@@ -64,12 +64,14 @@ public class LexDef {
                 {IpOspfDeadInterMulti, "ip ospf dead-interval minimal hello-multiplier {NUM(2-20)}"},
                 {IpOspfHelloInter, "ip ospf hello-interval {NUM(1-65535)}"},
                 {IpOspfGRHelloDelay, "ip ospf graceful-restart hello-delay {NUM(1-1800)}"},
-                {IpOspfNet, "ip ospf network {NAME(broadcast|non-broadcast)}"},
+                {IpOspfNet, "ip ospf network {NAME(broadcast,non-broadcast)}"},
                 {IpOspfPriority, "ip ospf priority {NUM(0-255)}"},
                 {IpOspfRetransInter, "ip ospf retransmit-interval {NUM(1-65535)}"},
                 {IpOspfTransDealy, "ip ospf transmit-dealy {NUM(1-65535)}"},
                 {IpOspfPassive, "ip ospf passive"},
 
+                //INVALID will not to match, it can read/write invalid str to bypass [NAME]
+                {INVALID, "{NAME}"},
         };
 
 
@@ -89,7 +91,7 @@ public class LexDef {
         Map<String, Object> argsRange = new HashMap<>();
         List<String> args = new ArrayList<>();
 
-        String regex = "\\{(\\w+)(?:\\(([\\w-|]+)\\))?\\}";
+        String regex = "\\{(\\w+)(?:\\(([\\w\\-|,]+)\\))?\\}";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(st);
         StringBuilder result = new StringBuilder();
@@ -102,8 +104,8 @@ public class LexDef {
                 if (value.contains("NUM")){
                     argsRange.put(name, true);
                 }
-                if (value.contains("|")){
-                    var tmp = Arrays.stream(value.split("\\|")).toList();
+                if (value.contains(",")){
+                    var tmp = Arrays.stream(value.split(",")).toList();
                     argsRange.put(name, tmp);
                 }else if (value.contains("-")){
                     var tmp = Arrays.stream(value.split("-")).map(Long::valueOf).toList();
@@ -123,11 +125,20 @@ public class LexDef {
     }
 
     private static  String removeRangeStr(String st){
-        return st.replaceAll("\\([\\w-|]+\\)", "");
+        return st.replaceAll("\\([\\w\\-,]+\\)", "");
     }
 
     public static List<LexDef> getLexDef(OpType opType){
+        assert preprocess.containsKey(opType): opType;
         return preprocess.get(opType);
+    }
+
+    /**
+     * INVALID will not to match
+     * @return OpType to match
+     */
+    public static List<OpType> getOpTypesToMatch(){
+        return preprocess.keySet().stream().filter(x -> x != INVALID).toList();
     }
     public String Template;
     public String Re;
@@ -148,9 +159,9 @@ public class LexDef {
 
     @Override
     public String toString() {
-        return Template +
-                Re +
-                Args +
+        return Template + " , " +
+                Re + " , "+
+                Args + " , " +
                 ArgsRange;
     }
 }

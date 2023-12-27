@@ -4,6 +4,7 @@ import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.frontend.pass.OpBuilderPass;
 import org.generator.lib.frontend.pass.StrToLexPass;
 import org.generator.lib.item.IR.*;
+import org.generator.lib.item.lexical.LexDef;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.operation.operation.OpType;
 import org.generator.tools.frontend.ConfR;
@@ -12,21 +13,23 @@ import java.io.*;
 
 public class OspfConfReader implements ConfR{
 
-    private OpCtx invalid(){
-        return new OpCtx(new OpOspf(OpType.INVALID));
+    private OpCtx invalid(String op_st){
+        var new_opctx = OpCtx.of(OpOspf.of(OpType.INVALID), 0);
+        new_opctx.format.addByPass("NAME", op_st);
+        return new_opctx;
     }
     private OpCtx getOperation(String op_st){
-        var op = new OpOspf();
+        var op = OpOspf.of();
         var opCtx = IO.readOp(op_st, op);
         if (opCtx == null){
-            return invalid();
+            return invalid(op_st);
         }
         return opCtx;
     }
 
     @Override
     public OpCtxG read(BufferedReader buf) {
-        var opctxg = new OpCtxG();
+        var opctxg = OpCtxG.Of();
         try {
             String line;
             while ((line = buf.readLine()) != null) {

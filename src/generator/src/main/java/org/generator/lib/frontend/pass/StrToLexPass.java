@@ -1,6 +1,5 @@
 package org.generator.lib.frontend.pass;
 
-import org.generator.lib.operation.operation.OpType;
 import org.generator.lib.item.lexical.LexCtx;
 import org.generator.lib.item.lexical.LexDef;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +24,7 @@ public class StrToLexPass {
     /** this will parse st_op to LexCtx, if fail return null*/
     @Nullable public LexCtx solve(String st_op){
         var lexCtx = new LexCtx();
-        for(var opType: OpType.getMatchOps()){
+        for(var opType: LexDef.getOpTypesToMatch()){
             for(var lexDef: LexDef.getLexDef(opType)){
                 var tokenMap = decode_by_re(st_op, lexDef.Re);
                 if (tokenMap != null){
