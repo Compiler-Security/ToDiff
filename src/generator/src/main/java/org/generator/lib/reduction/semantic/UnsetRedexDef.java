@@ -10,8 +10,8 @@ import static org.generator.lib.operation.operation.OpType.*;
 /**
  * This is the reduction Def of NoOpOSPF
  */
-public class RdcNoOpDef {
-    private static HashMap<OpType, RdcNoOpDef> preprocess;
+public class UnsetRedexDef {
+    private static HashMap<OpType, UnsetRedexDef> preprocess;
 
     static {
         var reduce_seed = new Object[][]{
@@ -55,7 +55,7 @@ public class RdcNoOpDef {
         };
         preprocess = new HashMap<>();
         for (var item : reduce_seed) {
-            var rdcDef = new RdcNoOpDef();
+            var rdcDef = new UnsetRedexDef();
             var opType = (OpType) item[0];
             rdcDef.targetOps = (OpType[]) item[1];
             rdcDef.lexDef = LexDef.getLexDef(opType).get(0);
@@ -79,7 +79,7 @@ public class RdcNoOpDef {
         this.lexDef = lexDef;
     }
 
-    public static RdcNoOpDef getRdcDef(OpType opType) {
+    public static UnsetRedexDef getRdcDef(OpType opType) {
         assert preprocess.containsKey(opType) : opType;
         return preprocess.get(opType);
     }
