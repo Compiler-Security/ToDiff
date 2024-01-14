@@ -10,7 +10,6 @@ public class OpOspf extends OpBase{
     OpOspf(OpType type) {
         super(type);
     }
-
     /**
      * create the OpOspf with OpType type
      * @param type OpOspf's type
