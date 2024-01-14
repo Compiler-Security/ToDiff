@@ -476,6 +476,10 @@ public enum OpType {
         return this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal();
     }
 
+    public boolean isUnsetOp(){
+        return this.ordinal() >= NOROSPF.ordinal() && this.ordinal() <= NOIpOspfPassive.ordinal();
+    }
+
 
 
 

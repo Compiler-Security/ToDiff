@@ -1,22 +1,20 @@
 package org.generator.lib.item.IR;
 
-import org.generator.lib.operation.operation.OpType;
-
 /***
  * OpAnalysis for OpOspf
  * extends OpOspf
  * OpOspf + ctxOp(OpAnalysis) + state + lineNo
  */
 public class OpAnalysis{
-    public OpOspf getOpOspf() {
-        return opOspf;
+    public OpOspf getOp() {
+        return op;
     }
 
-    public void setOpOspf(OpOspf opOspf) {
-        this.opOspf = opOspf;
+    public void setOp(OpOspf op) {
+        this.op = op;
     }
 
-    public OpOspf opOspf;
+    public OpOspf op;
 
     /**
      *
@@ -26,7 +24,7 @@ public class OpAnalysis{
      */
     public static OpAnalysis of(OpOspf opOspf){
         var opA = new OpAnalysis();
-        opA.opOspf = opOspf;
+        opA.op = opOspf;
         opA.state = STATE.INIT;
         opA.unsetLine();
         return opA;
@@ -81,5 +79,15 @@ public class OpAnalysis{
         return lineNo != -1;
     }
     public int lineNo;
+
+    public OpAnalysis getCtxOp() {
+        return ctxOp;
+    }
+
+    public void setCtxOp(OpAnalysis ctxOp) {
+        this.ctxOp = ctxOp;
+    }
+
+    public OpAnalysis ctxOp;
 
 }
