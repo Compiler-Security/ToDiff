@@ -7,23 +7,46 @@ import org.generator.lib.operation.operation.OpType;
  * extends OpOspf
  * OpOspf + ctxOp(OpAnalysis) + state + lineNo
  */
-public class OpAnalysis extends OpOspf{
-    OpAnalysis(OpType type) {
-        super(type);
-        state = STATE.INIT;
-        unsetLine();
+public class OpAnalysis{
+    public OpOspf getOpOspf() {
+        return opOspf;
     }
-    public static OpAnalysis of(OpType type){
-        return new OpAnalysis(type);
+
+    public void setOpOspf(OpOspf opOspf) {
+        this.opOspf = opOspf;
+    }
+
+    public OpOspf opOspf;
+
+    /**
+     *
+     * @param opOspf
+     * @return OpAnalysis
+     * create OpAnalysis, field opOspf + STATE(INIT) + lineNo(-1)
+     */
+    public static OpAnalysis of(OpOspf opOspf){
+        var opA = new OpAnalysis();
+        opA.opOspf = opOspf;
+        opA.state = STATE.INIT;
+        opA.unsetLine();
+        return opA;
     }
 
     /**
-     * create the default OpAnalysis, whose type is invalid
-     * @return default OpAnalysis INVALID
+     *
+     * @param opOspf opOspf
+     * @param lineNo lineNo
+     * @param state state
+     * @return
+     * create OpAnalysis and set lineNo and state
      */
-    public static OpAnalysis of(){
-        return new OpAnalysis(OpType.INVALID);
+    public static OpAnalysis of(OpOspf opOspf, int lineNo, STATE state){
+        var opA = of(opOspf);
+        opA.setLineNo(lineNo);
+        opA.setState(state);
+        return opA;
     }
+
 
     public enum STATE{
         INIT,
@@ -40,7 +63,7 @@ public class OpAnalysis extends OpOspf{
         this.state = state;
     }
 
-    STATE state;
+    public STATE state;
 
     public int getLineNo() {
         return lineNo;
@@ -57,6 +80,6 @@ public class OpAnalysis extends OpOspf{
     public boolean hasLine(){
         return lineNo != -1;
     }
-    int lineNo;
+    public int lineNo;
 
 }

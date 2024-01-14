@@ -89,4 +89,23 @@ public class OpOspf extends OpBase{
     public int hashCode() {
         return Objects.hash(super.hashCode(), ctxOp);
     }
+
+    /**
+     *@param newOp
+     * It's just a shadow copy, we copy all the Op fields and OpCtx
+     */
+//    void clone_to(OpOspf newOp){
+//        newOp.setType(Type());
+//        newOp.ID = ID;
+//        newOp.IP = IP;
+//        newOp.IPRANGE = IPRANGE;
+//        newOp.NAME = NAME;
+//        newOp.NAME2 = NAME2;
+//        newOp.NUM = NUM;
+//        newOp.NUM2 = NUM2;
+//        newOp.NUM3 = NUM3;
+//        newOp.LONGNUM = LONGNUM;
+//
+//        newOp.setOpCtx(getOpCtx());
+//    }
 }
