@@ -32,7 +32,7 @@ public class IOTest {
                 interface r1-eth1
                 ip address 10.0.0.5/30
                 ip ospf cost 300
-
+                
                 """;
         var reader = new OspfConfReader();
         var opCtxG = reader.read(test_st);

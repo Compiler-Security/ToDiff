@@ -6,7 +6,7 @@ import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.opg.RCtxG;
 import org.generator.lib.operation.operation.OpType;
 import org.generator.lib.reduction.semantic.CtxOpDef;
-import org.generator.lib.reduction.semantic.UnsetRedexDef;
+import org.generator.lib.reduction.semantic.OverideRedexDef;
 
 import java.util.Arrays;
 import java.util.List;
@@ -78,10 +78,14 @@ public class reducePass {
     private  boolean unsetOp(OpAnalysis preOpa, OpAnalysis opa){
         if (opa.op.Type().isUnsetOp()){
             //current Op should be unsetOp
-            var def = UnsetRedexDef.getRdcDef(opa.op.Type());
+            var def = OverideRedexDef.getRdcDef(opa.op.Type());
 
             if (Arrays.stream(def.getTargetOps()).anyMatch(typ -> typ == preOpa.getOp().Type())){
                 //preOpa's type is unsetOp's target Type
+                //ctx_op should equal
+                if (!preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){
+                    return false;
+                }
                 //compare all args, if equal, then unset is true, else unset is false
                 return compareByArgs(preOpa.getOp(), opa.getOp(), def.getLexDef().Args);
             }else{

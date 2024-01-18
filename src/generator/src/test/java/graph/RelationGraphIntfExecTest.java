@@ -84,28 +84,23 @@ public class RelationGraphIntfExecTest {
     @Test
     public void routerOperationTest(){
         String test_st = """
-                router ospf
-                ospf router-id 0.0.0.1
-                network 10.0.0.5/30 area 0
-                network 10.0.0.0/10 area 2
-                network 10.0.0.0/10 area 3
-                area 2 range 9.0.0.0/20
-                area 3 range 9.0.0.0/20
-                write-multiplier 95
-
                 interface r1-eth0
-                ipRange address 10.0.0.0/10
-                ipRange ospf area 3
-                ipRange ospf cost 50
-                no ipRange ospf area
-                
-                ipRange address 11.0.0.0/10
-                ipRange ospf cost 100
-
-                interface r1-eth1
-                ipRange address 10.0.0.5/30
-                ipRange ospf cost 300
-
+                interface r1-eth2
+                ip ospf passive
+                ip ospf network non-broadcast
+                ip ospf graceful-restart hello-delay 1732
+                interface r1-eth4
+                ip ospf passive
+                router ospf
+                area 116.176.127.134 range 223.180.81.197/10
+                network 212.56.192.129/23 area 180.232.150.53
+                passive-interface default
+                area 145.162.90.118 shortcut enable
+                area 164.98.104.221 range 84.204.154.130/10
+                network 137.114.215.31/27 area 10.51.223.58
+                area 149.171.129.19 shortcut default
+                ospf router-id 172.187.67.200
+                area 233.239.24.110 range 194.95.172.26/10 not-advertise                          
                 """;
         var topo = getBaseTopo();
         run_cmd_str(false, test_st, topo, Optional.of("r1"));
