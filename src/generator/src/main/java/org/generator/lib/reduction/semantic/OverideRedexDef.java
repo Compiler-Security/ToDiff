@@ -3,6 +3,7 @@ package org.generator.lib.reduction.semantic;
 import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.operation.operation.OpType;
 
+import java.awt.font.OpenType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -18,10 +19,9 @@ import static org.generator.lib.operation.operation.OpType.*;
  */
 public class OverideRedexDef extends BaseRedexDef {
     OverideRedexDef(){
-        targetOps = new ArrayList<>();
-        equalArgs = new ArrayList<>();
+        super();
     }
-    private static HashMap<OpType, OverideRedexDef> preprocess;
+
 
     static {
         var reduce_seed = new Object[][]{
@@ -43,78 +43,24 @@ public class OverideRedexDef extends BaseRedexDef {
 
                 //Other set instruction
                 //{XXX, new OpType[XXX], 0}
+
                 //Other unset instruction
                 //{XXX, new {}, 0}
         };
-
-        preprocess = new HashMap<>();
-        for(var item: reduce_seed){
-            OverideRedexDef rdcDef;
-            var opType = (OpType) item[0];
-            if (preprocess.containsKey(opType)){
-                rdcDef = preprocess.get(opType);
-            }else{
-                rdcDef = new OverideRedexDef();
-                rdcDef.lexDef = LexDef.getLexDef(opType).get(0);
-                preprocess.put(opType, rdcDef);
-            }
-            for(var targetType: (OpType[]) item[1]){
-                rdcDef.targetOps.add(targetType);
-                rdcDef.equalArgs.add(rdcDef.lexDef.Args.subList(0, (int) item[2]));
-            }
-        }
+        var seeds = Arrays.asList(reduce_seed);
         for (var opType : LexDef.getOpTypesToMatch()) {
-            if (preprocess.containsKey(opType)) continue;
+            if (Arrays.stream(reduce_seed).anyMatch(x -> (OpType)x[0] == opType)) {
+                continue;
+            }
             var rdcDef = new OverideRedexDef();
             if (opType.isUnsetOp()){
-                rdcDef.targetOps.add(opType);
-                rdcDef.equalArgs.add(new ArrayList<>());
-            }else if (inOSPF(opType)){
-                rdcDef.targetOps.clear();
-                rdcDef.equalArgs.clear();
+                //Other unset instruction
+                seeds.add(new Object[]{opType, new OpType[]{}, 0});
+            }else if (opType.isSetOp()){
+                //Other set instruction
+                seeds.add(new Object[]{opType, new OpType[]{opType}, 0});
             }else continue;
-            rdcDef.lexDef = LexDef.getLexDef(opType).get(0);
-            preprocess.put(opType, rdcDef);
         }
+        parse(seeds);
     }
-
-    public LexDef getLexDef() {
-        return lexDef;
-    }
-
-    public void setLexDef(LexDef lexDef) {
-        this.lexDef = lexDef;
-    }
-
-    public static OverideRedexDef getRdcDef(OpType opType) {
-        assert preprocess.containsKey(opType) : opType;
-        return preprocess.get(opType);
-    }
-
-    public List<OpType> getTargetOps() {
-        return targetOps;
-    }
-
-    public void setTargetOps(List<OpType> targetOps) {
-        this.targetOps = targetOps;
-    }
-
-    /**
-     * the target Ops to reduce
-     */
-    public List<OpType> targetOps;
-
-    public List<List<String>> getEqualArgs() {
-        return equalArgs;
-    }
-
-    public void setEqualArgs(List<List<String>> equalArgs) {
-        this.equalArgs = equalArgs;
-    }
-
-    public List<List<String>> equalArgs;
-    /**
-     *op's lexDef of minimal Args, we only use the Arg filed of lexDef
-     */
-    public LexDef lexDef;
 }

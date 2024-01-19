@@ -480,6 +480,10 @@ public enum OpType {
         return this.ordinal() >= NOROSPF.ordinal() && this.ordinal() <= NOIpOspfPassive.ordinal();
     }
 
+    public boolean isSetOp(){
+        return inOSPF(this);
+    }
+
 
 
 
