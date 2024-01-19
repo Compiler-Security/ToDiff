@@ -5,8 +5,10 @@ import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.opg.RCtxG;
 import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.reduction.semantic.ConflictRedexDef;
 import org.generator.lib.reduction.semantic.CtxOpDef;
 import org.generator.lib.reduction.semantic.OverideRedexDef;
+import org.generator.lib.reduction.semantic.UnsetRedexDef;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,8 +29,24 @@ public class reducePass {
         }
     }
 
+    boolean conflict(OpAnalysis preOpa, OpAnalysis opa){
+        if (!preOpa.ctxOp.equals(opa.ctxOp)) return false;
+        var odef = ConflictRedexDef.getRdcDef(opa.getOp().Type());
+        for(int i = 0; i < odef.targetOps.size(); i++){
+            var targetOp = odef.targetOps.get(i);
+            var equalArgs = odef.equalArgs.get(i);
+            if (targetOp == preOpa.op.Type() && compareByArgs(preOpa.getOp(), opa.getOp(), equalArgs)){
+                return true;
+            }
+        }
+        return false;
+    }
+
     private boolean hasConflict(OpAnalysis opa){
-        //TODO
+        for(var preOpa:rCtxG.getOps()){
+            if (preOpa.getLineNo() >= opa.getLineNo()) break;
+            if (conflict(preOpa, opa)) return true;
+        }
         return false;
     }
 
@@ -76,16 +94,16 @@ public class reducePass {
         return equal;
     }
     private  boolean unsetOp(OpAnalysis preOpa, OpAnalysis opa){
+        //ctx_op should equal
+        if (!preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){
+            return false;
+        }
         if (opa.op.Type().isUnsetOp()){
             //current Op should be unsetOp
-            var def = OverideRedexDef.getRdcDef(opa.op.Type());
+            var def = UnsetRedexDef.getRdcDef(opa.op.Type());
 
             if (Arrays.stream(def.getTargetOps()).anyMatch(typ -> typ == preOpa.getOp().Type())){
                 //preOpa's type is unsetOp's target Type
-                //ctx_op should equal
-                if (!preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){
-                    return false;
-                }
                 //compare all args, if equal, then unset is true, else unset is false
                 return compareByArgs(preOpa.getOp(), opa.getOp(), def.getLexDef().Args);
             }else{
@@ -103,6 +121,16 @@ public class reducePass {
 
     private boolean override(OpAnalysis preOpa, OpAnalysis opa){
         //TODO
+        //ctxOp should be same
+        if (!preOpa.ctxOp.equals(opa.ctxOp)) return false;
+        var odef = OverideRedexDef.getRdcDef(opa.getOp().Type());
+        for(int i = 0; i < odef.targetOps.size(); i++){
+            var targetOp = odef.targetOps.get(i);
+            var equalArgs = odef.equalArgs.get(i);
+            if (targetOp == preOpa.op.Type() && compareByArgs(preOpa.getOp(), opa.getOp(), equalArgs)){
+                return true;
+            }
+        }
         return false;
     }
     private void handleActive(OpAnalysis opa){
@@ -126,7 +154,7 @@ public class reducePass {
     }
 
     private void submittedMove(OpAnalysis opa){
-        if (!hasConflict(opa) && setCtxOp(opa)){
+        if (setCtxOp(opa) && !hasConflict(opa)){
             opa.setState(OpAnalysis.STATE.ACTIVE);
         }else{
             opa.setState(OpAnalysis.STATE.REMOVED);

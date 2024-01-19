@@ -457,7 +457,7 @@ public enum OpType {
     }
 
     public static boolean inOSPF(@NotNull OpType typ) {
-        return typ.ordinal() > OSPFROUTERBEGIN.ordinal() && typ.ordinal() < OSPFIntfGroupEND.ordinal();
+        return typ.ordinal() > OSPFCONF.ordinal() && typ.ordinal() < OSPFIntfGroupEND.ordinal();
     }
 
     public  boolean inOSPFRouterWithTopo() {

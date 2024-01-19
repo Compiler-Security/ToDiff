@@ -11,50 +11,35 @@ import java.util.List;
 import static org.generator.lib.operation.operation.OpType.*;
 
 /**
- * This is the reduction Def of override def
- * override can be two case:
- *  same instruction
- *  override to other insturction
+ * This is the reduction Def of conflict def
  */
-public class OverideRedexDef extends BaseRedexDef {
-    OverideRedexDef(){
+public class ConflictRedexDef {
+    ConflictRedexDef(){
         targetOps = new ArrayList<>();
         equalArgs = new ArrayList<>();
     }
-    private static HashMap<OpType, OverideRedexDef> preprocess;
+    private static HashMap<OpType, ConflictRedexDef> preprocess;
 
     static {
         var reduce_seed = new Object[][]{
-                {ROSPF, new OpType[]{}, 0},
-                {IntfName, new OpType[]{}, 0},
-                //完全一样
-                {IpOspfArea, new OpType[]{IpOspfArea}, 1},
-                {NETAREAID, new OpType[]{NETAREAID}, 2},
+                {IpOspfArea, new OpType[]{NETAREAID}, 0},
+                {NETAREAID, new OpType[]{IpOspfArea}, 0},
 
-                {AreaRangeNoAd, new OpType[]{AreaRange, AreaRangeSub, AreaRangeCost, AreaRangeNoAd}, 0},
-                {AreaRange, new OpType[]{AreaRange}, 2},
-                {AreaRangeSub, new OpType[]{AreaRange, AreaRangeSub}, 2},
-                {AreaRangeCost, new OpType[]{AreaRange, AreaRangeCost}, 2},
-                {AreaRange, new OpType[]{AreaRangeNoAd}, 0},
-                {AreaRangeSub, new OpType[]{AreaRangeNoAd}, 0},
-                {AreaRangeCost, new OpType[]{AreaRangeNoAd}, 0},
+                {AreaRange, new OpType[]{AreaRangeSub, AreaRangeCost}, 2},
 
-                {IpOspfDeadInterMulti, new OpType[]{IpOspfDeadInter, IpOspfHelloInter}, 0}
-
-                //Other set instruction
-                //{XXX, new OpType[XXX], 0}
-                //Other unset instruction
-                //{XXX, new {}, 0}
+                {IpOspfDeadInter, new OpType[]{IpOspfDeadInterMulti}, 0},
+                {IpOspfHelloInter, new OpType[]{IpOspfDeadInterMulti}, 0},
+                //Other instruction
+                //{XXX, [], 0}
         };
-
         preprocess = new HashMap<>();
         for(var item: reduce_seed){
-            OverideRedexDef rdcDef;
+            ConflictRedexDef rdcDef;
             var opType = (OpType) item[0];
             if (preprocess.containsKey(opType)){
                 rdcDef = preprocess.get(opType);
             }else{
-                rdcDef = new OverideRedexDef();
+                rdcDef = new ConflictRedexDef();
                 rdcDef.lexDef = LexDef.getLexDef(opType).get(0);
                 preprocess.put(opType, rdcDef);
             }
@@ -65,7 +50,7 @@ public class OverideRedexDef extends BaseRedexDef {
         }
         for (var opType : LexDef.getOpTypesToMatch()) {
             if (preprocess.containsKey(opType)) continue;
-            var rdcDef = new OverideRedexDef();
+            var rdcDef = new ConflictRedexDef();
             if (opType.isUnsetOp()){
                 rdcDef.targetOps.add(opType);
                 rdcDef.equalArgs.add(new ArrayList<>());
@@ -86,7 +71,7 @@ public class OverideRedexDef extends BaseRedexDef {
         this.lexDef = lexDef;
     }
 
-    public static OverideRedexDef getRdcDef(OpType opType) {
+    public static ConflictRedexDef getRdcDef(OpType opType) {
         assert preprocess.containsKey(opType) : opType;
         return preprocess.get(opType);
     }
