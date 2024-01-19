@@ -12,9 +12,8 @@ public  class BaseRedexDef {
         targetOps = new ArrayList<>();
         equalArgs = new ArrayList<>();
     }
-    private static HashMap<OpType, BaseRedexDef> preprocess;
-    public static void parse(List<Object[]> reduce_seed){
-        preprocess = new HashMap<>();
+
+    public static void parse(List<Object[]> reduce_seed, HashMap<OpType, BaseRedexDef> preprocess){
         for(var item: reduce_seed){
             BaseRedexDef rdcDef;
             var opType = (OpType) item[0];
@@ -31,10 +30,7 @@ public  class BaseRedexDef {
         }
     }
 
-    public static BaseRedexDef getRdcDef(OpType opType) {
-        assert preprocess.containsKey(opType) : opType;
-        return preprocess.get(opType);
-    }
+
 
     public List<OpType> getTargetOps() {
         return targetOps;

@@ -12,6 +12,8 @@ import static org.generator.lib.operation.operation.OpType.*;
  * This is the reduction Def of NoOpOSPF
  */
 public class UnsetRedexDef extends BaseRedexDef{
+    private static HashMap<OpType, BaseRedexDef> preprocess;
+
     static {
         var reduce_seed = new Object[][]{
                 //unset operation, we can assume that we compare minimal Args of NoOp with corresponding Args of OP
@@ -57,7 +59,12 @@ public class UnsetRedexDef extends BaseRedexDef{
             var opType = (OpType) item[0];
             seeds.add(new Object[]{item[0], item[1], LexDef.getLexDef(opType).get(0).Args.size()});
         }
-        parse(seeds);
+        preprocess = new HashMap<>();
+        parse(seeds, preprocess);
     }
 
+    public static BaseRedexDef getRdcDef(OpType opType) {
+        assert preprocess.containsKey(opType) : opType;
+        return preprocess.get(opType);
+    }
 }

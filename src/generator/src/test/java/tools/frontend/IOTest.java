@@ -2,6 +2,7 @@ package tools.frontend;
 
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.item.IR.OpOspf;
+import org.generator.lib.reduction.pass.reducePass;
 import org.generator.tools.frontend.OspfConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
 import org.junit.Test;
@@ -36,8 +37,10 @@ public class IOTest {
                 """;
         var reader = new OspfConfReader();
         var opCtxG = reader.read(test_st);
+        var reducer = new reducePass();
+        var rCtxg = reducer.resolve(opCtxG);
         var writer = new OspfConfWriter();
-        System.out.println(writer.write(opCtxG));
+        System.out.println(writer.write(rCtxg.getRemainOps()));
     }
     @Test
     public void OpOspfTest(){

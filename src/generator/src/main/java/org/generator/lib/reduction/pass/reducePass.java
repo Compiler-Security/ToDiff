@@ -86,6 +86,7 @@ public class reducePass {
     private boolean hasConflict(OpAnalysis opa){
         for(var preOpa:rCtxG.getOps()){
             if (preOpa.getLineNo() >= opa.getLineNo()) break;
+            if (preOpa.state != OpAnalysis.STATE.ACTIVE) continue;
             if (conflict(preOpa, opa)) return true;
         }
         return false;
@@ -143,6 +144,7 @@ public class reducePass {
                 state = OpAnalysis.STATE.SUBMITTED;
             }
             rCtxG.addOp(OpAnalysis.of((OpOspf) op.getOperation(), lineNo, state));
+            lineNo += 1;
         }
     }
 

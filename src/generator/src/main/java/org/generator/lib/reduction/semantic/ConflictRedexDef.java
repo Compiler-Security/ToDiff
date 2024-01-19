@@ -18,6 +18,8 @@ public class ConflictRedexDef extends  BaseRedexDef{
         super();
     }
 
+    private static HashMap<OpType, BaseRedexDef> preprocess;
+
     static {
         var reduce_seed = new Object[][]{
                 {IpOspfArea, new OpType[]{NETAREAID}, 0},
@@ -30,17 +32,22 @@ public class ConflictRedexDef extends  BaseRedexDef{
                 //Other instruction
                 //{XXX, [], 0}
         };
-        var seeds = Arrays.asList(reduce_seed);
+        var seeds = new ArrayList<>(Arrays.asList(reduce_seed));
         for (var opType : LexDef.getOpTypesToMatch()) {
             if (Arrays.stream(reduce_seed).anyMatch(x -> (OpType)x[0] == opType)) {
                 continue;
             }
-            var rdcDef = new OverideRedexDef();
             if (opType.isSetOp() || opType.isUnsetOp()){
                 //Other instruction
                 seeds.add(new Object[]{opType, new OpType[]{}, 0});
             }
         }
-        parse(seeds);
+        preprocess = new HashMap<>();
+        parse(seeds, preprocess);
+    }
+
+    public static BaseRedexDef getRdcDef(OpType opType) {
+        assert preprocess.containsKey(opType) : opType;
+        return preprocess.get(opType);
     }
 }

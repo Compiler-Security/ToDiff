@@ -22,6 +22,7 @@ public class OverideRedexDef extends BaseRedexDef {
         super();
     }
 
+    private static HashMap<OpType, BaseRedexDef> preprocess;
 
     static {
         var reduce_seed = new Object[][]{
@@ -47,7 +48,7 @@ public class OverideRedexDef extends BaseRedexDef {
                 //Other unset instruction
                 //{XXX, new {}, 0}
         };
-        var seeds = Arrays.asList(reduce_seed);
+        var seeds = new ArrayList<>(Arrays.asList(reduce_seed));
         for (var opType : LexDef.getOpTypesToMatch()) {
             if (Arrays.stream(reduce_seed).anyMatch(x -> (OpType)x[0] == opType)) {
                 continue;
@@ -61,6 +62,12 @@ public class OverideRedexDef extends BaseRedexDef {
                 seeds.add(new Object[]{opType, new OpType[]{opType}, 0});
             }else continue;
         }
-        parse(seeds);
+        preprocess = new HashMap<>();
+        parse(seeds, preprocess);
+    }
+
+    public static BaseRedexDef getRdcDef(OpType opType) {
+        assert preprocess.containsKey(opType) : opType;
+        return preprocess.get(opType);
     }
 }
