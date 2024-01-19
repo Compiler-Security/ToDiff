@@ -28,6 +28,7 @@ public class OverideRedexDef extends BaseRedexDef {
         var reduce_seed = new Object[][]{
                 {ROSPF, new OpType[]{}, 0},
                 {IntfName, new OpType[]{}, 0},
+                {IPAddr, new OpType[]{}, 0},
                 //完全一样
                 {IpOspfArea, new OpType[]{IpOspfArea}, 1},
                 {NETAREAID, new OpType[]{NETAREAID}, 2},

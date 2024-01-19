@@ -7,7 +7,6 @@ import org.generator.lib.item.opg.RCtxG;
 import org.generator.lib.operation.operation.OpType;
 import org.generator.lib.reduction.semantic.*;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class reducePass {
@@ -63,11 +62,11 @@ public class reducePass {
                 if (preOpa.getLineNo() >= opa.getLineNo()) break;
                 if (preOpa.state == OpAnalysis.STATE.ACTIVE){
                     //ROSPF -> OP not in intf group
-                    if (preOpa.op.Type() == OpType.ROSPF && CtxOpDef.isCtxOpROSPF(opa.op.Type())){
+                    if (preOpa.op.Type() == OpType.ROSPF && CtxOpDef.shouldInROSPF(opa.op.Type())){
                         ctxOp  = preOpa;
                     }
                     //INTF -> OP in intf grop
-                    if (preOpa.op.Type() == OpType.IntfName && CtxOpDef.isCtxOpIntfN(opa.op.Type())){
+                    if (preOpa.op.Type() == OpType.IntfName && CtxOpDef.shouldInIntfN(opa.op.Type())){
                         ctxOp = preOpa;
                     }
                 }
@@ -79,7 +78,7 @@ public class reducePass {
 
     boolean conflict(OpAnalysis preOpa, OpAnalysis opa){
         //ctx_op should equal
-        if (!preOpa.ctxOp.equals(opa.ctxOp)) return false;
+        if (!CtxOpDef.isCtxOpSelf(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
         return matchByRedexDef(opa, preOpa, ConflictRedexDef.getRdcDef(opa.getOp().Type()));
     }
 
@@ -96,7 +95,7 @@ public class reducePass {
     //===========Active -> REMOVED===================
     private  boolean unsetOp(OpAnalysis preOpa, OpAnalysis opa){
         //ctx_op should equal
-        if (!preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
+        if (!CtxOpDef.isCtxOpSelf(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
         //opa should be unsetOp
         if (!opa.op.Type().isUnsetOp()) {return false;}
         return matchByRedexDef(opa, preOpa, UnsetRedexDef.getRdcDef(opa.op.Type()));
@@ -109,7 +108,7 @@ public class reducePass {
 
     private boolean override(OpAnalysis preOpa, OpAnalysis opa){
         //ctx_op should equal
-        if (!preOpa.ctxOp.equals(opa.ctxOp)) return false;
+        if (!CtxOpDef.isCtxOpSelf(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
         return matchByRedexDef(opa, preOpa, OverideRedexDef.getRdcDef(opa.op.Type()));
     }
 

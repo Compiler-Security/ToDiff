@@ -20,6 +20,7 @@ public enum OpType {
 
     //Don't change this!
     OSPFCONF("ROSPFCONF", "", "", ""),
+
     ROSPF("router ospf",
             "no router ospf",
             """
@@ -489,7 +490,23 @@ public enum OpType {
      * @return
      */
     public boolean isSetOp(){
-        return inOSPF(this);
+        return this.ordinal() > OSPFCONF.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal();
+    }
+
+    /**
+     * all ops(set/unset) in router ospf, don't include router ospf, no router ospf, intf name
+     * @return
+     */
+    public boolean isRouterOp(){
+        return (this.ordinal() > OSPFROUTERBEGIN.ordinal() && this.ordinal() < OSPFAREAGROUPEND.ordinal()) || (this.ordinal() >= NORID.ordinal() && this.ordinal() <= NOAreaNSSA.ordinal());
+    }
+
+    /**
+     * all ops(set/unset) in interface {name}, don't include router ospf, no router ospf, intfname, include ip address
+     * @return
+     */
+    public boolean isIntfOp(){
+        return (this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal()) || (this.ordinal() > NOAreaStub.ordinal()) || this == IPAddr || this == NOIPAddr;
     }
 
 

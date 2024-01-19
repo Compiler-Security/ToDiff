@@ -95,7 +95,7 @@ public class LexDef {
                 {NOAreaStubTotal, "no area {ID(NUM)} stub no-summary"},
                 {NOAreaNSSA, "no area {ID(NUM)} nssa"},
                 {NOIPAddr, "no ip address {IP}"},
-                {NOIpOspfArea, "no ip ospf area {ID(NUM)}"},
+                {NOIpOspfArea, "no ip ospf area | no ip ospf area {ID(NUM)}"},
                 {NOIpOspfCost, "no ip ospf cost | no ip ospf cost {NUM(1-65535)}"},
                 {NOIpOspfDeadInter, "no ip ospf dead-interval | no ip ospf dead-interval {NUM(1-65535)}"},
                 {NOIpOspfDeadInterMulti, "no ip ospf dead-interval minimal hello-multiplier | no ip ospf dead-interval minimal hello-multiplier {NUM(2-20)}"},

@@ -7,11 +7,11 @@ public class CtxOpDef {
         return type == OpType.ROSPF || type == OpType.IntfName || type == OpType.NOROSPF;
     }
 
-    public static boolean isCtxOpIntfN(OpType type){
-        return type.inOSPFINTF();
+    public static boolean shouldInIntfN(OpType type){
+        return type.isIntfOp();
     }
 
-    public static  boolean isCtxOpROSPF(OpType type){
-        return type.inOSPFRouterWithTopo() || type.inOSPFDAEMON() || type.inOSPFAREA();
+    public static  boolean shouldInROSPF(OpType type){
+        return type.isRouterOp();
     }
 }

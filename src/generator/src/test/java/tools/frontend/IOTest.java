@@ -17,6 +17,8 @@ public class IOTest {
                 network 10.0.0.5/30 area 0
                 network 10.0.0.0/10 area 2
                 network 10.0.0.0/10 area 3
+                no router ospf
+                router ospf
                 area 2.0.0.0 range 9.0.0.0/20
                 area 3 range 9.0.0.0/20
                 write-multiplier 95
@@ -33,13 +35,15 @@ public class IOTest {
                 interface r1-eth1
                 ip address 10.0.0.5/30
                 ip ospf cost 300
-                
+                   
+            
                 """;
         var reader = new OspfConfReader();
         var opCtxG = reader.read(test_st);
+        var writer = new OspfConfWriter();
+        //System.out.println(writer.write(opCtxG));
         var reducer = new reducePass();
         var rCtxg = reducer.resolve(opCtxG);
-        var writer = new OspfConfWriter();
         System.out.println(writer.write(rCtxg.getRemainOps()));
     }
     @Test
