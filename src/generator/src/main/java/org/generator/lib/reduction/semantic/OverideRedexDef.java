@@ -33,13 +33,10 @@ public class OverideRedexDef extends BaseRedexDef {
                 {IpOspfArea, new OpType[]{IpOspfArea}, 1},
                 {NETAREAID, new OpType[]{NETAREAID}, 2},
 
-                {AreaRangeNoAd, new OpType[]{AreaRange, AreaRangeSub, AreaRangeCost, AreaRangeNoAd}, 0},
-                {AreaRange, new OpType[]{AreaRange}, 2},
-                {AreaRangeSub, new OpType[]{AreaRange, AreaRangeSub}, 2},
-                {AreaRangeCost, new OpType[]{AreaRange, AreaRangeCost}, 2},
-                {AreaRange, new OpType[]{AreaRangeNoAd}, 0},
-                {AreaRangeSub, new OpType[]{AreaRangeNoAd}, 0},
-                {AreaRangeCost, new OpType[]{AreaRangeNoAd}, 0},
+                {AreaRangeNoAd, new OpType[]{AreaRange, AreaRangeSub, AreaRangeCost, AreaRangeNoAd}, 2},
+                {AreaRange, new OpType[]{AreaRange, AreaRangeNoAd}, 2},
+                {AreaRangeSub, new OpType[]{AreaRange, AreaRangeSub, AreaRangeNoAd}, 2},
+                {AreaRangeCost, new OpType[]{AreaRange, AreaRangeCost, AreaRangeNoAd}, 2},
 
                 {IpOspfDeadInterMulti, new OpType[]{IpOspfDeadInter, IpOspfHelloInter}, 0}
 

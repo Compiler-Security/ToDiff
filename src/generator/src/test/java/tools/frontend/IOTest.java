@@ -12,29 +12,11 @@ public class IOTest {
     @Test
     public void IoTest(){
         String test_st = """
-                router ospf
-                ospf router-id 0.0.0.1
-                network 10.0.0.5/30 area 0
-                network 10.0.0.0/10 area 2
-                network 10.0.0.0/10 area 3
-                no router ospf
-                router ospf
-                area 2.0.0.0 range 9.0.0.0/20
-                area 3 range 9.0.0.0/20
-                write-multiplier 95
-
-                interface r1-eth0
-                ip address 10.0.0.0/10
-                ip ospf area 3
-                ip ospf cost 50
-                no ip ospf area
-                
-                ip address 11.0.0.0/10
-                ip ospf cost 100
-
-                interface r1-eth1
-                ip address 10.0.0.5/30
-                ip ospf cost 300
+      
+                                router ospf
+                                area 1061954456 range 91.122.46.62/11 not-advertise  
+                                area 3389220260 range 92.238.183.225/7
+                         
                    
             
                 """;
