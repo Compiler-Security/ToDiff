@@ -3,6 +3,7 @@ package org.generator.lib.reduction.semantic;
 import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.operation.operation.OpType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static org.generator.lib.operation.operation.OpType.*;
@@ -10,9 +11,7 @@ import static org.generator.lib.operation.operation.OpType.*;
 /**
  * This is the reduction Def of NoOpOSPF
  */
-public class UnsetRedexDef {
-    private static HashMap<OpType, UnsetRedexDef> preprocess;
-
+public class UnsetRedexDef extends BaseRedexDef{
     static {
         var reduce_seed = new Object[][]{
                 //unset operation, we can assume that we compare minimal Args of NoOp with corresponding Args of OP
@@ -53,44 +52,12 @@ public class UnsetRedexDef {
                 {NOIpOspfTransDealy, new OpType[]{IpOspfTransDealy}},
                 {NOIpOspfPassive, new OpType[]{IpOspfPassive}},
         };
-        preprocess = new HashMap<>();
+        var seeds = new ArrayList<Object[]>();
         for (var item : reduce_seed) {
-            var rdcDef = new UnsetRedexDef();
             var opType = (OpType) item[0];
-            rdcDef.targetOps = (OpType[]) item[1];
-            rdcDef.lexDef = LexDef.getLexDef(opType).get(0);
-            preprocess.put(opType, rdcDef);
+            seeds.add(new Object[]{item[0], item[1], LexDef.getLexDef(opType).get(0).Args.size()});
         }
+        parse(seeds);
     }
 
-    public OpType[] getTargetOps() {
-        return targetOps;
-    }
-
-    public void setTargetOps(OpType[] targetOps) {
-        this.targetOps = targetOps;
-    }
-
-    public LexDef getLexDef() {
-        return lexDef;
-    }
-
-    public void setLexDef(LexDef lexDef) {
-        this.lexDef = lexDef;
-    }
-
-    public static UnsetRedexDef getRdcDef(OpType opType) {
-        assert preprocess.containsKey(opType) : opType;
-        return preprocess.get(opType);
-    }
-
-    /**
-     * the target Ops to reduce
-     */
-    public OpType[] targetOps;
-
-    /**
-     *op's lexDef of minimal Args, we only use the Arg filed of lexDef
-     */
-    public LexDef lexDef;
 }
