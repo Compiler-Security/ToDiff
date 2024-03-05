@@ -1,11 +1,11 @@
-package org.generator.lib.generator.pass;
+package org.generator.lib.reducer.pass;
 
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.operation.operation.OpType;
-import org.generator.lib.generator.semantic.*;
+import org.generator.lib.reducer.semantic.*;
 
 import java.util.List;
 

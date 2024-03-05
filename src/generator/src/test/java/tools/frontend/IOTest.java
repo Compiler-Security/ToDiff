@@ -2,7 +2,7 @@ package tools.frontend;
 
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.item.IR.OpOspf;
-import org.generator.lib.generator.pass.reducePass;
+import org.generator.lib.reducer.pass.reducePass;
 import org.generator.tools.frontend.OspfConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
 import org.junit.Test;

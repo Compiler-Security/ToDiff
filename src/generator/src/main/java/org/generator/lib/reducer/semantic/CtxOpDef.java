@@ -1,4 +1,4 @@
-package org.generator.lib.generator.semantic;
+package org.generator.lib.reducer.semantic;
 
 import org.generator.lib.operation.operation.OpType;
 

@@ -1,15 +1,32 @@
 /*
-This pass will transform Ropg to Ropg' = Move(Ropg, target_opA(opAnalysis))
+This pass will transform OpAG to OpAG' = Move(OpAG', target_opA(opAnalysis))
 Input:
-    Ropg
+    OPAG
     target opA(opOspf + status)
 Output:
-    Ropg'
+    list of OpAG'
 
-ATTENTION: this pass may add multiple
+
+ATTENTION: this pass may add multiple opA to OpAG, and may change other OpA's states in the OpAG' by the rules
  */
 package org.generator.lib.generator.pass;
 
-public class movePass {
+import org.generator.lib.item.IR.OpAnalysis;
+import org.generator.lib.item.opg.OpAG;
 
+import java.util.ArrayList;
+import java.util.List;
+
+public class movePass {
+    private  OpAG move(OpAG opAG, OpAnalysis target_opA, int idx){
+        var res = OpAG.of();
+
+        return res;
+    }
+
+    public List<OpAG> solve(OpAG opAG, OpAnalysis target_opA){
+        List<OpAG> res_list = new ArrayList<>();
+
+        return res_list;
+    }
 }
