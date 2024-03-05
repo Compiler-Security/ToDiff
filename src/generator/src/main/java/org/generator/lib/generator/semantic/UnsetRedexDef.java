@@ -1,4 +1,4 @@
-package org.generator.lib.reduction.semantic;
+package org.generator.lib.generator.semantic;
 
 import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.operation.operation.OpType;

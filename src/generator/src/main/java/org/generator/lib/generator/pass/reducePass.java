@@ -1,16 +1,16 @@
-package org.generator.lib.reduction.pass;
+package org.generator.lib.generator.pass;
 
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
-import org.generator.lib.item.opg.RCtxG;
+import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.operation.operation.OpType;
-import org.generator.lib.reduction.semantic.*;
+import org.generator.lib.generator.semantic.*;
 
 import java.util.List;
 
 public class reducePass {
-    RCtxG rCtxG;
+    OpAG opAG;
 
 
     private boolean compareByArgs(OpOspf op1, OpOspf op2, List<String> args){
@@ -58,7 +58,7 @@ public class reducePass {
             return true;
         }else{
             OpAnalysis ctxOp = null;
-            for(var preOpa: rCtxG.getOps()){
+            for(var preOpa: opAG.getOps()){
                 if (preOpa.getLineNo() >= opa.getLineNo()) break;
                 if (preOpa.state == OpAnalysis.STATE.ACTIVE){
                     //ROSPF -> OP not in intf group
@@ -83,7 +83,7 @@ public class reducePass {
     }
 
     private boolean hasConflict(OpAnalysis opa){
-        for(var preOpa:rCtxG.getOps()){
+        for(var preOpa: opAG.getOps()){
             if (preOpa.getLineNo() >= opa.getLineNo()) break;
             if (preOpa.state != OpAnalysis.STATE.ACTIVE) continue;
             if (conflict(preOpa, opa)) return true;
@@ -114,7 +114,7 @@ public class reducePass {
 
 
     private void handleActive(OpAnalysis opa){
-        for(var preOpa: rCtxG.getOps()){
+        for(var preOpa: opAG.getOps()){
             //HANDLE OP front of opa
             if (preOpa.lineNo >= opa.lineNo) break;
             if (preOpa.state != OpAnalysis.STATE.ACTIVE) continue;
@@ -142,7 +142,7 @@ public class reducePass {
             }else{
                 state = OpAnalysis.STATE.SUBMITTED;
             }
-            rCtxG.addOp(OpAnalysis.of((OpOspf) op.getOperation(), lineNo, state));
+            opAG.addOp(OpAnalysis.of((OpOspf) op.getOperation(), lineNo, state));
             lineNo += 1;
         }
     }
@@ -154,10 +154,10 @@ public class reducePass {
             opa.setState(OpAnalysis.STATE.REMOVED);
         }
     }
-    public RCtxG resolve(OpCtxG opCtxG){
-        rCtxG = new RCtxG();
+    public OpAG resolve(OpCtxG opCtxG){
+        opAG = new OpAG();
         initMove(opCtxG);
-        for (var opa: rCtxG.getOps()){
+        for (var opa: opAG.getOps()){
             if (opa.getState() == OpAnalysis.STATE.SUBMITTED){
                 submittedMove(opa);
                 if (opa.getState() == OpAnalysis.STATE.ACTIVE){
@@ -165,6 +165,6 @@ public class reducePass {
                 }
             }
         }
-        return rCtxG;
+        return opAG;
     }
 }

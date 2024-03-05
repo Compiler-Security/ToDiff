@@ -1,4 +1,4 @@
-package org.generator.lib.reduction.semantic;
+package org.generator.lib.generator.semantic;
 
 import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.operation.operation.OpType;
@@ -6,7 +6,6 @@ import org.generator.lib.operation.operation.OpType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import static org.generator.lib.operation.operation.OpType.*;
 
@@ -29,8 +28,8 @@ public class ConflictRedexDef extends  BaseRedexDef{
 
                 {IpOspfDeadInter, new OpType[]{IpOspfDeadInterMulti}, 0},
                 {IpOspfHelloInter, new OpType[]{IpOspfDeadInterMulti}, 0},
-                //Other instruction
-                //{XXX, [], 0}
+                // Other instruction
+                // {XXX, [], 0}
         };
         var seeds = new ArrayList<>(Arrays.asList(reduce_seed));
         for (var opType : LexDef.getOpTypesToMatch()) {

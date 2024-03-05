@@ -1,13 +1,11 @@
-package org.generator.lib.reduction.semantic;
+package org.generator.lib.generator.semantic;
 
 import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.operation.operation.OpType;
 
-import java.awt.font.OpenType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 
 import static org.generator.lib.operation.operation.OpType.*;
 
@@ -38,7 +36,7 @@ public class OverideRedexDef extends BaseRedexDef {
                 {AreaRangeSub, new OpType[]{AreaRange, AreaRangeSub, AreaRangeNoAd}, 2},
                 {AreaRangeCost, new OpType[]{AreaRange, AreaRangeCost, AreaRangeNoAd}, 2},
 
-                {IpOspfDeadInterMulti, new OpType[]{IpOspfDeadInter, IpOspfHelloInter}, 0}
+                {IpOspfDeadInterMulti, new OpType[]{IpOspfDeadInter, IpOspfHelloInter,IpOspfDeadInterMulti}, 0}
 
                 //Other set instruction
                 //{XXX, new OpType[XXX], 0}

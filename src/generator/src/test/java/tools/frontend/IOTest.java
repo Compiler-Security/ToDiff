@@ -2,7 +2,7 @@ package tools.frontend;
 
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.item.IR.OpOspf;
-import org.generator.lib.reduction.pass.reducePass;
+import org.generator.lib.generator.pass.reducePass;
 import org.generator.tools.frontend.OspfConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class IOTest {
                                 area 3389220260 range 92.238.183.225/7
                          
                    
-            
+            ·
                 """;
         var reader = new OspfConfReader();
         var opCtxG = reader.read(test_st);
