@@ -1,6 +1,7 @@
 package org.generator.lib.reducer.pass;
 
 import org.generator.lib.item.IR.OpAnalysis;
+import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.opg.OpAG;
@@ -62,12 +63,14 @@ public class reducePass {
                 if (preOpa.getLineNo() >= opa.getLineNo()) break;
                 if (preOpa.state == OpAnalysis.STATE.ACTIVE){
                     //ROSPF -> OP not in intf group
-                    if (preOpa.op.Type() == OpType.ROSPF && CtxOpDef.shouldInROSPF(opa.op.Type())){
-                        ctxOp  = preOpa;
-                    }
+                    if (preOpa.op.Type() == OpType.ROSPF){
+                        if (CtxOpDef.shouldInROSPF(opa.op.Type()))  ctxOp  = preOpa;
+                        else ctxOp = null;
+                    } else ctxOp = null;
                     //INTF -> OP in intf grop
-                    if (preOpa.op.Type() == OpType.IntfName && CtxOpDef.shouldInIntfN(opa.op.Type())){
-                        ctxOp = preOpa;
+                    if (preOpa.op.Type() == OpType.IntfName){
+                        if (CtxOpDef.shouldInIntfN(opa.op.Type())) ctxOp = preOpa;
+                        else ctxOp = null;
                     }
                 }
             }
@@ -83,10 +86,23 @@ public class reducePass {
     }
 
     private boolean hasConflict(OpAnalysis opa){
+        OpAnalysis ctxOp = null;
         for(var preOpa: opAG.getOps()){
             if (preOpa.getLineNo() >= opa.getLineNo()) break;
             if (preOpa.state != OpAnalysis.STATE.ACTIVE) continue;
+            //COUNT CTXOP
+            if (preOpa.op.Type() == OpType.ROSPF){
+                ctxOp  = preOpa;
+            }
+            if (preOpa.op.Type() == OpType.IntfName){
+                ctxOp = preOpa;
+            }
+
             if (conflict(preOpa, opa)) return true;
+        }
+        //check ROSPF IntfName conflict
+        if (opa.getOp().Type() == OpType.ROSPF || opa.getOp().Type() == OpType.IntfName){
+            return ctxOp != null && ctxOp.getOp().equals(opa.getOp());
         }
         return false;
     }
@@ -167,4 +183,6 @@ public class reducePass {
         }
         return opAG;
     }
+
+
 }
