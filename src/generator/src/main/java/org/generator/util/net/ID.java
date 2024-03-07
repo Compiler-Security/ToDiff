@@ -36,4 +36,8 @@ public class ID extends  IPBase{
     public int hashCode() {
         return super.hashCode();
     }
+
+    public ID copy(){
+        return ID.of(toLong());
+    }
 }

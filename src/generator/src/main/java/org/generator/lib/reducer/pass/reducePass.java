@@ -163,6 +163,22 @@ public class reducePass {
         }
     }
 
+    private void initMove(OpAG opAG){
+        int lineNo = 0;
+        for(var opa: opAG.getOps()){
+            OpAnalysis.STATE state;
+            if (opa.getOp().Type() == OpType.INVALID){
+                state = OpAnalysis.STATE.REMOVED;
+            }else{
+                state = OpAnalysis.STATE.SUBMITTED;
+            }
+            opa.setCtxOp(null);
+            opa.setState(state);
+            opa.setLineNo(lineNo);
+            lineNo += 1;
+        }
+    }
+
     private void submittedMove(OpAnalysis opa){
         if (setCtxOp(opa) && !hasConflict(opa)){
             opa.setState(OpAnalysis.STATE.ACTIVE);
@@ -184,5 +200,16 @@ public class reducePass {
         return opAG;
     }
 
+    public void resolve(OpAG opAG){
+        initMove(opAG);
+        for (var opa: opAG.getOps()){
+            if (opa.getState() == OpAnalysis.STATE.SUBMITTED){
+                submittedMove(opa);
+                if (opa.getState() == OpAnalysis.STATE.ACTIVE){
+                    handleActive(opa);
+                }
+            }
+        }
+    }
 
 }

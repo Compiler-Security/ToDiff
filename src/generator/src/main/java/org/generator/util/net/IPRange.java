@@ -47,4 +47,8 @@ public class IPRange extends IPBase{
     public int hashCode() {
         return super.hashCode();
     }
+
+    public IPRange copy(){
+        return IPRange.of(toString());
+    }
 }

@@ -52,6 +52,14 @@ public class OpCtx {
         public static Format of(OpType type, int lex_idx){
             return new Format(LexDef.getLexDef(type).get(lex_idx));
         }
+        public Format copy(){
+            var format = new Format(lexDef);
+            format.setIDISNUM(isIDISNUM());
+            for(var key: byPass.keySet()){
+                format.addByPass(key, byPass.get(key));
+            }
+            return format;
+        }
     }
     public Op getOperation() {
         return operation;
@@ -98,4 +106,10 @@ public class OpCtx {
      * @return
      */
     public static OpCtx of(Op op, Format format){return  new OpCtx(op, format);}
+
+    public OpCtx copy(Op op){
+        var opCtx = OpCtx.of(op);
+        opCtx.format = format.copy();
+        return opCtx;
+    }
 }

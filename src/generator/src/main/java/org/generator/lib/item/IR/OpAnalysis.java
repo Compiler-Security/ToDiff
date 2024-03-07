@@ -1,5 +1,7 @@
 package org.generator.lib.item.IR;
 
+import java.util.Objects;
+
 /***
  * OpAnalysis for OpOspf
  * extends OpOspf
@@ -90,4 +92,30 @@ public class OpAnalysis{
 
     public OpAnalysis ctxOp;
 
+    /**
+     * Two OpA is equal if it's opCtx is equal,
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OpAnalysis that = (OpAnalysis) o;
+        return Objects.equals(op, that.op) && state == that.state && Objects.equals(ctxOp, that.ctxOp);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(op, state, ctxOp);
+    }
+
+    /**
+     * This copy will link to this.op, others to init
+     * @return
+     */
+    public OpAnalysis copy(){
+        var opa = OpAnalysis.of(this.op);
+        return opa;
+    }
 }

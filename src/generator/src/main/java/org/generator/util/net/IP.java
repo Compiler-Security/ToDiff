@@ -45,4 +45,8 @@ public class IP extends IPBase{
     public int hashCode() {
         return Objects.hash(toString());
     }
+
+    public IP copy(){
+        return IP.of(toString());
+    }
 }

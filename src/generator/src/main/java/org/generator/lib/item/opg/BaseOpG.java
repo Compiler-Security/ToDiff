@@ -11,6 +11,7 @@ abstract public class BaseOpG<T> {
         addOps(ops);
     }
 
+    //public void reset(List<T> ops) {opgroup.clear();opgroup.addAll(ops);}
     public List<T> getOps() {
         return opgroup;
     }

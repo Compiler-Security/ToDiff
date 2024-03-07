@@ -27,13 +27,13 @@ public class OpOspf extends OpBase{
         return new OpOspf(OpType.INVALID);
     }
 
-    public OpOspf getCtxOp() {
-        return ctxOp;
-    }
+//    public OpOspf getCtxOp() {
+//        return ctxOp;
+//    }
 
-    public void setCtxOp(OpOspf ctxOp) {
-        this.ctxOp = ctxOp;
-    }
+//    public void setCtxOp(OpOspf ctxOp) {
+//        this.ctxOp = ctxOp;
+//    }
 
     public OpOspfG getOpg() {
         return opg;
@@ -46,7 +46,7 @@ public class OpOspf extends OpBase{
     /**
      * ctxOp of this op, this should equal to opg's ctxOp
      */
-    private OpOspf ctxOp;
+//    private OpOspf ctxOp;
 
     /**
      * this op's Opg
@@ -65,7 +65,8 @@ public class OpOspf extends OpBase{
         if (o == null || getClass() != o.getClass()) return false;
         OpOspf opOspf = (OpOspf) o;
         if (!super.equals(o)) return false;
-        return argEqual(getCtxOp(), opOspf.getCtxOp());
+        return true;
+        //return argEqual(getCtxOp(), opOspf.getCtxOp());
     }
 
     /**
@@ -87,25 +88,26 @@ public class OpOspf extends OpBase{
      */
     @Override
     public int hashCode() {
-        return Objects.hash(super.hashCode(), ctxOp);
+        return Objects.hash(super.hashCode());
     }
 
     /**
-     *@param newOp
-     * It's just a shadow copy, we copy all the Op fields and OpCtx
+     * It's a deep copy, we deep copy all the Op fields and deep OpCtx
+     *@param
+     *
      */
-//    void clone_to(OpOspf newOp){
-//        newOp.setType(Type());
-//        newOp.ID = ID;
-//        newOp.IP = IP;
-//        newOp.IPRANGE = IPRANGE;
-//        newOp.NAME = NAME;
-//        newOp.NAME2 = NAME2;
-//        newOp.NUM = NUM;
-//        newOp.NUM2 = NUM2;
-//        newOp.NUM3 = NUM3;
-//        newOp.LONGNUM = LONGNUM;
-//
-//        newOp.setOpCtx(getOpCtx());
-//    }
+    public OpOspf copy(){
+        var newOp = new OpOspf(Type());
+        newOp.ID = ID.copy();
+        newOp.IP = IP.copy();
+        newOp.IPRANGE = IPRANGE.copy();
+        newOp.NAME = NAME;
+        newOp.NAME2 = NAME2;
+        newOp.NUM = NUM;
+        newOp.NUM2 = NUM2;
+        newOp.NUM3 = NUM3;
+        newOp.LONGNUM = LONGNUM;
+        newOp.setOpCtx(getOpCtx().copy(newOp));
+        return newOp;
+    }
 }

@@ -5,6 +5,7 @@ import org.generator.lib.operation.operation.OpType;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.generator.lib.operation.operation.OpType.*;
 
@@ -63,6 +64,20 @@ public class UnsetRedexDef extends BaseRedexDef{
         parse(seeds, preprocess);
     }
 
+    /**
+     * find unsetOp Type by setOp
+     * @param setType
+     * @return
+     */
+    public static List<OpType> getUnsetType(OpType setType){
+        List<OpType> res = new ArrayList<>();
+        for(var unsetOpType: preprocess.keySet()){
+            if (getRdcDef(unsetOpType).targetOps.contains(setType)){
+                res.add(unsetOpType);
+            }
+        }
+        return res;
+    }
     public static BaseRedexDef getRdcDef(OpType opType) {
         assert preprocess.containsKey(opType) : opType;
         return preprocess.get(opType);
