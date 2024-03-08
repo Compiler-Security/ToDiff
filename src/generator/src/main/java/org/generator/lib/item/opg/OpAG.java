@@ -29,6 +29,8 @@ public class OpAG extends BaseOpG<OpAnalysis>{
     public OpAG copy(){
         var opAG = new OpAG();
         this.getOps().forEach(op -> opAG.addOp(op.copy()));
+        //FIXME this copy is very slow!!!
+        opAG.reduce();
         return opAG;
     }
 

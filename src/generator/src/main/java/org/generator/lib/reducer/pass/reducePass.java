@@ -14,7 +14,7 @@ public class reducePass {
     OpAG opAG;
 
 
-    private boolean compareByArgs(OpOspf op1, OpOspf op2, List<String> args){
+    private static boolean compareByArgs(OpOspf op1, OpOspf op2, List<String> args){
         var equal = true;
         for(var arg: args){
             switch (arg){
@@ -40,7 +40,7 @@ public class reducePass {
      * @param def
      * @return
      */
-    boolean matchByRedexDef(OpAnalysis opaSource, OpAnalysis opaTarget, BaseRedexDef def){
+    static boolean matchByRedexDef(OpAnalysis opaSource, OpAnalysis opaTarget, BaseRedexDef def){
         for(int i = 0; i < def.targetOps.size(); i++){
             var targetOp = def.targetOps.get(i);
             var equalArgs = def.equalArgs.get(i);
@@ -79,12 +79,15 @@ public class reducePass {
         }
     }
 
-    boolean conflict(OpAnalysis preOpa, OpAnalysis opa){
+    private static boolean conflict(OpAnalysis preOpa, OpAnalysis opa){
         //ctx_op should equal
         if (!CtxOpDef.isCtxOpSelf(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
         return matchByRedexDef(opa, preOpa, ConflictRedexDef.getRdcDef(opa.getOp().Type()));
     }
 
+    public static boolean isConflict(OpAnalysis preOpa, OpAnalysis opa){
+        return conflict(preOpa, opa);
+    }
     private boolean hasConflict(OpAnalysis opa){
         OpAnalysis ctxOp = null;
         for(var preOpa: opAG.getOps()){

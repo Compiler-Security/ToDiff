@@ -1,11 +1,18 @@
 package org.generator.lib.item.IR;
 
+import org.generator.lib.operation.operation.OpType;
+
 import java.util.Objects;
 
 /***
  * OpAnalysis for OpOspf
  * extends OpOspf
  * OpOspf + ctxOp(OpAnalysis) + state + lineNo
+ *
+ * ctxOp should be constant
+ * OpOspf shoule be constant
+ *
+ * ctxOp's ctxOp should always be null
  */
 public class OpAnalysis{
     public OpOspf getOp() {
@@ -23,6 +30,7 @@ public class OpAnalysis{
      * @param opOspf
      * @return OpAnalysis
      * create OpAnalysis, field opOspf + STATE(INIT) + lineNo(-1)
+     * if opOspf is ctxOp, set ctxOp to itself
      */
     public static OpAnalysis of(OpOspf opOspf){
         var opA = new OpAnalysis();
@@ -111,11 +119,13 @@ public class OpAnalysis{
     }
 
     /**
-     * This copy will link to this.op, others to init
+     * Copy no ctxOp
+     * This copy will deep copy ospfOp, ctxOp, others to init
      * @return
      */
     public OpAnalysis copy(){
-        var opa = OpAnalysis.of(this.op);
+        var opa = OpAnalysis.of(this.op.copy());
+        opa.setCtxOp(ctxOp);
         return opa;
     }
 }

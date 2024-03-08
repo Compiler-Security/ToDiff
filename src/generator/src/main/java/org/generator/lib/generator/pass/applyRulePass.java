@@ -24,32 +24,97 @@ package org.generator.lib.generator.pass;
 
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
-import org.generator.lib.item.opg.OpCtxG;
-import org.generator.lib.reducer.driver.reducer;
 import org.generator.lib.reducer.pass.reducePass;
-import org.generator.util.collections.Pair;
-import org.junit.Rule;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class applyRulePass {
 
     public enum RuleType{
-        SolveConflict,
+        SolveConflict, //after solve conflict, we then add target_op like keep
         GenConflict,
         UnsetOp,
         UnsetCtx,
         Overrided,
         Keep,
         SYNWrong,
-        NoCtx
+        NoCtx,
+        DisCard
     }
 
 
+
+    private static List<OpAnalysis> conflictOps(OpAG opAG, OpAnalysis target_opa){
+        opAG.reduce();
+        return opAG.activeView().getOps().stream().filter(opa -> reducePass.isConflict(opa, target_opa)).toList();
+    }
+    /**
+     * This pass will apply given rule to the opAG, and return a new opAG
+     * @param opAG
+     * @param target_opa
+     * @param ruleType
+     * @return  opAG_new, null if apply fail
+     */
     public static OpAG solve(OpAG opAG, OpAnalysis target_opa, RuleType ruleType) {
+        var opAG_new = opAG.copy();
         //IF target meet, return current opAGNew
         switch (ruleType){
             case Keep -> {
-                actionRulePass.solve(opAG, target_opa, actionRulePass.ActionType.COPY);
-                return opAG;
+                actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.COPY);
+                return opAG_new;
+            }
+            case SolveConflict -> {
+                //TODO solveConflict
+                var conflict_ops = conflictOps(opAG_new, target_opa);
+                while(!conflict_ops.isEmpty()){
+                    //TODO we should random select one to solve
+                    var handle_opa = conflict_ops.get(0);
+                    var expect_opa = handle_opa.copy();
+                    expect_opa.setState(OpAnalysis.STATE.REMOVED);
+                    var opa_next = movePass.solve(opAG_new, expect_opa, Arrays.stream(new RuleType[]{RuleType.UnsetOp, RuleType.UnsetCtx}).toList());
+                    if (opa_next != null){
+                        opAG_new = opa_next;
+                        conflict_ops = conflictOps(opAG_new, target_opa);
+                    }else{
+                        assert false: "conflict should always be solved";
+                    }
+                }
+                actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.COPY);
+                return opAG_new;
+            }
+            case GenConflict -> {
+                //TODO currently we don't use this rule
+                return null;
+            }
+            case UnsetOp -> {
+                actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.UNSET);
+                return opAG_new;
+            }
+            case UnsetCtx -> {
+                if (!actionRulePass.solve(opAG_new, target_opa.ctxOp.getCtxOp(), actionRulePass.ActionType.UNSET)){
+                    //unset IntfName
+                    return null;
+                }else return opAG_new; //unset ROSPF
+            }
+            case Overrided -> {
+                if (!actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.MUTATE)){
+                    //some instruction don't have args
+                    return null;
+                }
+                return opAG_new;
+            }
+            case SYNWrong -> {
+                if (!actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.BREAK)){
+                    return null;
+                }
+                return opAG_new;
+            }
+            case NoCtx -> {
+                if (!actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.NoCtx)){
+                    return null;
+                }
+                return opAG_new;
             }
         }
         return null;

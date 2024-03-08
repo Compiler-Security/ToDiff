@@ -2,10 +2,10 @@ package org.generator.lib.generator.pass;
 
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpCtx;
-import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.operation.operation.OpType;
 import org.generator.lib.reducer.semantic.UnsetRedexDef;
+import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
 import org.generator.util.net.IPRange;
 
@@ -15,7 +15,8 @@ public class actionRulePass {
         MUTATE, //mutate given op (change args)
         BREAK, //mutate given op to syntax wrong
         UNSET, //unset given op
-        CLEAR, //discard given op
+        NoCtx, //given op not have ctxOp
+        Discard //discard given op
     }
 
     /**
@@ -36,7 +37,9 @@ public class actionRulePass {
     private static OpAnalysis mutate(OpAnalysis opA){
         var op = opA.getOp();
         var new_op = op.copy();
-        for(var arg: op.getOpCtx().getFormmat().getLexDef().Args){
+        var args =  op.getOpCtx().getFormmat().getLexDef().Args;
+        if (args.isEmpty()) return null;
+        for(var arg: args){
             //TODO we should choose random args to mutate
             //TODO random mutate
             switch (arg){
@@ -86,7 +89,9 @@ public class actionRulePass {
                 return true;
             }
             case MUTATE -> {
-                insert(opAG, mutate(targetOpA));
+                var mutate_op = mutate(targetOpA);
+                if (mutate_op == null) return false;
+                insert(opAG, mutate_op);
                 return true;
             }
             case BREAK -> {
@@ -97,9 +102,15 @@ public class actionRulePass {
                 var unset_op = unset(targetOpA);
                 if (unset_op == null) return false;
                 insert(opAG, unset_op);
+                return true;
             }
-            case CLEAR -> {
-                //DO NOTHING
+            case NoCtx -> {
+                //FIXME currently we don't handle this
+                return false;
+            }
+            case Discard -> {
+                //return false
+                return true;
             }
         }
         return true;
