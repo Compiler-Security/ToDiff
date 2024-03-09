@@ -1,13 +1,14 @@
+
 package org.generator.lib.reducer.pass;
 
 import org.generator.lib.item.IR.OpAnalysis;
-import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.operation.operation.OpType;
 import org.generator.lib.reducer.semantic.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class reducePass {
@@ -53,7 +54,7 @@ public class reducePass {
 
     //=========INIT -> REMOVED/ACTIVE==============
     private boolean setCtxOp(OpAnalysis opa){
-        if (CtxOpDef.isCtxOpSelf(opa.op.Type())){
+        if (CtxOpDef.isCtxOp(opa.op.Type())){
             //ROSPF INTFN NOROSPF ctxop is itself
             opa.setCtxOp(opa);
             return true;
@@ -81,7 +82,7 @@ public class reducePass {
 
     private static boolean conflict(OpAnalysis preOpa, OpAnalysis opa){
         //ctx_op should equal
-        if (!CtxOpDef.isCtxOpSelf(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
+        if (!CtxOpDef.isCtxOp(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
         return matchByRedexDef(opa, preOpa, ConflictRedexDef.getRdcDef(opa.getOp().Type()));
     }
 
@@ -114,7 +115,7 @@ public class reducePass {
     //===========Active -> REMOVED===================
     private  boolean unsetOp(OpAnalysis preOpa, OpAnalysis opa){
         //ctx_op should equal
-        if (!CtxOpDef.isCtxOpSelf(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
+        if (!CtxOpDef.isCtxOp(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
         //opa should be unsetOp
         if (!opa.op.Type().isUnsetOp()) {return false;}
         return matchByRedexDef(opa, preOpa, UnsetRedexDef.getRdcDef(opa.op.Type()));
@@ -127,7 +128,7 @@ public class reducePass {
 
     private boolean override(OpAnalysis preOpa, OpAnalysis opa){
         //ctx_op should equal
-        if (!CtxOpDef.isCtxOpSelf(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
+        if (!CtxOpDef.isCtxOp(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
         return matchByRedexDef(opa, preOpa, OverideRedexDef.getRdcDef(opa.op.Type()));
     }
 
@@ -189,8 +190,45 @@ public class reducePass {
             opa.setState(OpAnalysis.STATE.REMOVED);
         }
     }
+
+    /**
+     * return expanded form of opAG
+     * @param opAG
+     * @return
+     */
+    private OpAG expandOpAG(OpAG opAG){
+        var opAg_expand = new OpAG();
+        for(var opa: opAG.getOps()){
+            if (opa.getCtxOp() != null){
+                opAg_expand.addOp(opa.getCtxOp());
+            }
+            opAg_expand.addOp(opa);
+        }
+        initMove(opAG);
+        return opAg_expand;
+    }
+
+    private void setOpAGLineNo(OpAG opAG){
+        int i = 0;
+        for(var opa: opAG.getOps()){
+            opa.setLineNo(i++);
+        }
+    }
+    /**
+     * This function will change OpAG to the normal form
+     * normal form don't have ROSPF && INTFNAME
+     * TODO all the instruction witch has the same ctxOp's str will point to the same ctxOp
+     * @param opAG
+     * @return
+     */
+    private void normOpAG(OpAG opAG){
+        opAG.setOpgroup(opAG.getOps().stream().filter(opA -> !CtxOpDef.isSetCtxOp(opA.op.Type())).toList());
+        setOpAGLineNo(opAG);
+    }
+
     public OpAG resolve(OpCtxG opCtxG){
         opAG = new OpAG();
+        //this opCtxG is in expanded form
         initMove(opCtxG);
         for (var opa: opAG.getOps()){
             if (opa.getState() == OpAnalysis.STATE.SUBMITTED){
@@ -200,12 +238,17 @@ public class reducePass {
                 }
             }
         }
+        normOpAG(opAG);
         return opAG;
     }
 
+    /**
+     * calculate opA's state, should given normal opAG
+     * @param opAG normal opAG
+     */
     public void resolve(OpAG opAG){
-        initMove(opAG);
-        for (var opa: opAG.getOps()){
+        var opAG_full = expandOpAG(opAG);
+        for (var opa: opAG_full.getOps()){
             if (opa.getState() == OpAnalysis.STATE.SUBMITTED){
                 submittedMove(opa);
                 if (opa.getState() == OpAnalysis.STATE.ACTIVE){
@@ -213,6 +256,13 @@ public class reducePass {
                 }
             }
         }
+        normOpAG(opAG_full);
+        int i = 0;
+        for(var opa: opAG_full.getOps()){
+            var opa_set = opAG.getOps().get(i++);
+            opa_set.setState(opa.state);
+            opa_set.setCtxOp(opa.getCtxOp());
+            opa_set.setLineNo(opa.lineNo);
+        }
     }
-
 }

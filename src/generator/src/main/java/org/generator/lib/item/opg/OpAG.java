@@ -9,6 +9,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Normal OpAG
+ * the opAg don't have setCtxOp, every opA has ctxOp
+ *
+ * Expand OpAG
+ * the opAG have setCtxop, every opA's ctxOp is null
+ */
 public class OpAG extends BaseOpG<OpAnalysis>{
     public OpCtxG getRemainOps(){
         var ctxg = OpCtxG.Of();
