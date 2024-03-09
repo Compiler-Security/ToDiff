@@ -12,7 +12,7 @@ import java.util.List;
 
 public class genPass {
 
-    boolean checkOpAG(OpAG opAG, NormalController controller, CapacityController tmp_controller){
+    static boolean checkOpAG(OpAG opAG, NormalController controller, CapacityController tmp_controller){
         for(var opa: opAG.setOpView()){
             var current_state = opAG.getOpAStatus(opa);
             if (controller.hasConfigOfOpa(opa)){
@@ -30,7 +30,7 @@ public class genPass {
         return true;
     }
 
-    void updateController(OpAG opAG, NormalController controller, CapacityController tmp_controller){
+    static void updateController(OpAG opAG, NormalController controller, CapacityController tmp_controller){
         for(var opa: opAG.setOpView()){
             var current_state = opAG.getOpAStatus(opa);
             if (controller.hasConfigOfOpa(opa)){
@@ -44,32 +44,38 @@ public class genPass {
             }
         }
     }
-    public OpAG solve(NormalController controller, CapacityController tmp_controller){
+    public static OpAG solve(NormalController controller, CapacityController tmp_controller){
         //TODO in the simpleset version, we don't add
         var opag = OpAG.of();
         while(!controller.getCanMoveOpas().isEmpty() || !tmp_controller.getCanMoveOpas().isEmpty()){
             var action_list = controller.getCanMoveOpas();
             action_list.addAll(tmp_controller.getCanMoveOpas());
             //TODO we should random pick one
-            var actionOpa = action_list.get(0);
-            List<OpAnalysis.STATE> actionStates;
-            if (controller.hasConfigOfOpa(actionOpa)){
-                actionStates = controller.getValidMoveStatesOfOpa(actionOpa);
-            }else{
-                actionStates = tmp_controller.getValidMoveStatesOfOpa(actionOpa);
-            }
-
-            //TODO we should random pick one state
-            for(var action_state: actionStates){
-                actionOpa.setState(action_state);
-                var possible_opag = movePass.solve(opag, actionOpa, null);
-                if (possible_opag == null) continue;
-                if (checkOpAG(possible_opag, controller, tmp_controller)){
-                    updateController(possible_opag, controller, tmp_controller);
-                    opag = possible_opag;
-                    break;
+            for(var actionOpa_old: action_list){
+                var actionOpa = actionOpa_old.copy();
+                List<OpAnalysis.STATE> actionStates;
+                if (controller.hasConfigOfOpa(actionOpa)) {
+                    actionStates = controller.getValidMoveStatesOfOpa(actionOpa);
+                } else {
+                    actionStates = tmp_controller.getValidMoveStatesOfOpa(actionOpa);
                 }
+
+                boolean succ = false;
+                //TODO we should random pick one state
+                for (var action_state : actionStates) {
+                    actionOpa.setState(action_state);
+                    var possible_opag = movePass.solve(opag, actionOpa, null);
+                    if (possible_opag == null) continue;
+                    if (checkOpAG(possible_opag, controller, tmp_controller)) {
+                        updateController(possible_opag, controller, tmp_controller);
+                        opag = possible_opag;
+                        succ = true;
+                        break;
+                    }
+                }
+                if (succ) break;
             }
+            System.out.println(opag.getRemainOps().toString());
         }
         return opag;
     }

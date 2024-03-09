@@ -1,6 +1,9 @@
 package tools.frontend;
 
 import org.generator.lib.frontend.driver.IO;
+import org.generator.lib.generator.controller.CapacityController;
+import org.generator.lib.generator.controller.NormalController;
+import org.generator.lib.generator.pass.genPass;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.reducer.pass.reducePass;
 import org.generator.tools.frontend.OspfConfReader;
@@ -9,6 +12,33 @@ import org.junit.Test;
 
 public class IOTest {
 
+    @Test
+    public void Part2Test(){
+        String test_st = """
+                                router ospf
+                                int r1-eth0
+                                router ospf     
+                                area 1061954456 range 91.122.46.62/11 not-advertise  
+                                area 3389220260 range 92.238.183.225/7 
+                         
+                   
+            ·
+                """;
+        var reader = new OspfConfReader();
+        var opCtxG = reader.read(test_st);
+        var writer = new OspfConfWriter();
+        //System.out.println(writer.write(opCtxG));
+        var reducer = new reducePass();
+        var opas = reducer.resolve(opCtxG).activeView().getOps();
+        var normal_controller = NormalController.of();
+        for(var opa: opas){
+            normal_controller.addConfig(opa, 1, 2, 1, 1);
+        }
+        var tmp_controller = CapacityController.of(6, 0, 0, 1, 0);
+        var gen_opag = genPass.solve(normal_controller, tmp_controller);
+        reducePass.expandOpAG(gen_opag);
+        System.out.println(writer.write(gen_opag.getRemainOps()));
+    }
     @Test
     public void IoTest(){
         String test_st = """

@@ -1,6 +1,7 @@
 package org.generator.lib.item.IR;
 
 import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.reducer.semantic.CtxOpDef;
 
 import java.util.Objects;
 
@@ -110,12 +111,13 @@ public class OpAnalysis{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OpAnalysis that = (OpAnalysis) o;
-        return Objects.equals(op, that.op) && state == that.state && Objects.equals(ctxOp, that.ctxOp);
+        return Objects.equals(op, that.op) && Objects.equals(ctxOp, that.ctxOp);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(op, state, ctxOp);
+        if (CtxOpDef.isCtxOp(this.op.Type())) return Objects.hash(op, null);
+        else return Objects.hash(op, ctxOp);
     }
 
     /**

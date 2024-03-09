@@ -98,9 +98,9 @@ public class OpOspf extends OpBase{
      */
     public OpOspf copy(){
         var newOp = new OpOspf(Type());
-        newOp.ID = ID.copy();
-        newOp.IP = IP.copy();
-        newOp.IPRANGE = IPRANGE.copy();
+        if (ID != null) newOp.ID = ID.copy();
+        if (IP != null) newOp.IP = IP.copy();
+        if (IPRANGE != null) newOp.IPRANGE = IPRANGE.copy();
         newOp.NAME = NAME;
         newOp.NAME2 = NAME2;
         newOp.NUM = NUM;

@@ -25,10 +25,6 @@ abstract public class BaseOpG<T> {
     }
 
 
-    public String toString() {
-        return opgroup.toString();
-    }
-
     public void setOpgroup(List<T> opgroup) {
         this.opgroup = opgroup;
     }

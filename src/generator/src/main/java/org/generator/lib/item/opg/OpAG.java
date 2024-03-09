@@ -22,7 +22,9 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         getOps().stream().filter(opa -> opa.state == OpAnalysis.STATE.ACTIVE && opa.getOp().Type().isSetOp()).forEach(opa -> ctxg.addOp(opa.getOp().getOpCtx()));
         return ctxg;
     }
-
+    public OpAG(){
+        OpStatus = new HashMap<>();
+    }
     public static OpAG of(){
         return new OpAG();
     }
