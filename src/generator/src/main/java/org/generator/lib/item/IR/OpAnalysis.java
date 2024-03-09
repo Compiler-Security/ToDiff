@@ -133,4 +133,10 @@ public class OpAnalysis{
         opa.setCtxOp(ctxOp);
         return opa;
     }
+
+    @Override
+    public String toString() {
+        //TODO
+        return "";
+    }
 }

@@ -96,6 +96,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         return this;
     }
 
+    //FIXME reconstruct this
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
