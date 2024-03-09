@@ -63,11 +63,12 @@ public class OpAG extends BaseOpG<OpAnalysis>{
     public OpAnalysis.STATE getOpAStatus(OpAnalysis opA){
         return OpStatus.getOrDefault(opA, OpAnalysis.STATE.INIT);
     }
+    //FIXME this have some problem
     /**
      * This function filter the active ops, not include unset op, not COPY!
      * @return
      */
-    public OpAG activeView(){
+    public OpAG setActiveView(){
         var opAG = OpAG.of();
         this.getOps().stream().filter(opa -> opa.state == OpAnalysis.STATE.ACTIVE && opa.op.Type().isSetOp()).forEach(opAG::addOp);
         return opAG;

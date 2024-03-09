@@ -101,6 +101,7 @@ public class OpAnalysis{
 
     public OpAnalysis ctxOp;
 
+    //FIXME this is not elegant
     /**
      * Two OpA is equal if it's opCtx is equal,
      * @param o
@@ -115,6 +116,7 @@ public class OpAnalysis{
         return Objects.equals(op, that.op) && Objects.equals(ctxOp, that.ctxOp);
     }
 
+    //FIXME this is not elegant
     @Override
     public int hashCode() {
         if (CtxOpDef.isCtxOp(this.op.Type())) return Objects.hash(op, null);
