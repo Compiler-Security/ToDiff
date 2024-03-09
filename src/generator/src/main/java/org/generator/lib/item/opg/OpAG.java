@@ -87,4 +87,9 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         });
         return this;
     }
+
+    @Override
+    public String toString() {
+        return "";
+    }
 }

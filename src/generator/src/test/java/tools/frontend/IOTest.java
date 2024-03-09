@@ -14,10 +14,9 @@ public class IOTest {
         String test_st = """
                                 router ospf
                                 int r1-eth0
-                                router ospf
-                                int r1-eth0
+                                router ospf     
                                 area 1061954456 range 91.122.46.62/11 not-advertise  
-                                area 3389220260 range 92.238.183.225/7
+                                area 3389220260 range 92.238.183.225/7 
                          
                    
             ·
@@ -27,7 +26,7 @@ public class IOTest {
         var writer = new OspfConfWriter();
         //System.out.println(writer.write(opCtxG));
         var reducer = new reducePass();
-        var rCtxg = reducer.resolve(opCtxG);
+        var rCtxg = reducePass.expandOpAG(reducer.resolve(opCtxG));
         System.out.println(writer.write(rCtxg.getRemainOps()));
     }
     @Test
