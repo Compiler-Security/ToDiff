@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Normal OpAG
@@ -57,7 +57,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
      * @param opA
      * @return
      */
-    public OpAnalysis.STATE findOpAStatus(OpAnalysis opA){
+    public OpAnalysis.STATE getOpAStatus(OpAnalysis opA){
         return OpStatus.getOrDefault(opA, OpAnalysis.STATE.INIT);
     }
     /**
@@ -70,6 +70,9 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         return opAG;
     }
 
+    public List<OpAnalysis> setOpView(){
+        return this.getOps().stream().filter(opa -> opa.op.Type().isSetOp()).toList();
+    }
     Map<OpAnalysis, OpAnalysis.STATE> OpStatus;
     /**
      * This method will reduce itself and return itself
