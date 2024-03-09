@@ -1,5 +1,6 @@
 package org.generator.lib.item.opg;
 
+import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.reducer.driver.reducer;
 import org.jetbrains.annotations.NotNull;
@@ -72,8 +73,12 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         return opAG;
     }
 
+    /**
+     * one op only last version
+     * @return
+     */
     public List<OpAnalysis> setOpView(){
-        return this.getOps().stream().filter(opa -> opa.op.Type().isSetOp()).toList();
+        return OpStatus.keySet().stream().filter(opa -> opa.op.Type().isSetOp()).toList();
     }
     Map<OpAnalysis, OpAnalysis.STATE> OpStatus;
     /**
@@ -92,6 +97,16 @@ public class OpAG extends BaseOpG<OpAnalysis>{
 
     @Override
     public String toString() {
-        return "";
+        StringBuilder b = new StringBuilder();
+        b.append("[");
+        for(var opa: getOps()){
+            b.append(IO.writeOp(opa.op.getOpCtx()));
+            b.append("(");
+            b.append(opa.state);
+            b.append(")");
+            b.append(",");
+        }
+        b.append("]");
+        return b.toString();
     }
 }

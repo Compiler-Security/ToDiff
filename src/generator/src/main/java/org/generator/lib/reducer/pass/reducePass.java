@@ -200,10 +200,11 @@ public class reducePass {
         var opAg_expand = new OpAG();
         for(var opa: opAG.getOps()){
             if (opa.getCtxOp() != null){
-                opAg_expand.addOp(opa.getCtxOp());
+                opAg_expand.addOp(opa.getCtxOp().copy());
             }
             opAg_expand.addOp(opa);
         }
+        setOpAGLineNo(opAg_expand);
         return opAg_expand;
     }
 

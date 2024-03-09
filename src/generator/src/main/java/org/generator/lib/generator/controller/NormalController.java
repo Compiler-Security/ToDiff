@@ -63,6 +63,7 @@ public  class NormalController {
                     }
                 }
             }
+            state = target_state;
         }
 
         public boolean canMove(){

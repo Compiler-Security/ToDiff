@@ -111,6 +111,7 @@ public class OpAnalysis{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OpAnalysis that = (OpAnalysis) o;
+        if (CtxOpDef.isCtxOp(this.op.Type())) return Objects.equals(op, that.op);
         return Objects.equals(op, that.op) && Objects.equals(ctxOp, that.ctxOp);
     }
 

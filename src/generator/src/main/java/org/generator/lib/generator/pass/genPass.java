@@ -12,9 +12,17 @@ import java.util.List;
 
 public class genPass {
 
-    static boolean checkOpAG(OpAG opAG, NormalController controller, CapacityController tmp_controller){
+    static boolean checkOpAG(OpAG opAG, NormalController controller, CapacityController tmp_controller, OpAnalysis target_opa){
         for(var opa: opAG.setOpView()){
             var current_state = opAG.getOpAStatus(opa);
+            if (!opa.equals(target_opa)){
+                if (controller.hasConfigOfOpa(opa)){
+                    if (controller.getConfigStateOfOpa(opa) == current_state) continue;
+                }
+                if (tmp_controller.hasConfigOfOpa(opa)){
+                    if (tmp_controller.getConfigStateOfOpa(opa) == current_state) continue;
+                }
+            }
             if (controller.hasConfigOfOpa(opa)){
                 if (!controller.canMoveStateOfOpa(opa, current_state)) return false;
             }else{
@@ -30,9 +38,17 @@ public class genPass {
         return true;
     }
 
-    static void updateController(OpAG opAG, NormalController controller, CapacityController tmp_controller){
+    static void updateController(OpAG opAG, NormalController controller, CapacityController tmp_controller, OpAnalysis target_opa){
         for(var opa: opAG.setOpView()){
             var current_state = opAG.getOpAStatus(opa);
+            if (!opa.equals(target_opa)){
+                if (controller.hasConfigOfOpa(opa)){
+                    if (controller.getConfigStateOfOpa(opa) == current_state) continue;
+                }
+                if (tmp_controller.hasConfigOfOpa(opa)){
+                    if (tmp_controller.getConfigStateOfOpa(opa) == current_state) continue;
+                }
+            }
             if (controller.hasConfigOfOpa(opa)){
                 controller.moveToStateOfOpa(opa, current_state);
             }else{
@@ -66,8 +82,8 @@ public class genPass {
                     actionOpa.setState(action_state);
                     var possible_opag = movePass.solve(opag, actionOpa, null);
                     if (possible_opag == null) continue;
-                    if (checkOpAG(possible_opag, controller, tmp_controller)) {
-                        updateController(possible_opag, controller, tmp_controller);
+                    if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
+                        updateController(possible_opag, controller, tmp_controller, actionOpa);
                         opag = possible_opag;
                         succ = true;
                         break;
@@ -75,7 +91,7 @@ public class genPass {
                 }
                 if (succ) break;
             }
-            System.out.println(opag.getRemainOps().toString());
+            System.out.println(opag.toString());
         }
         return opag;
     }
