@@ -14,7 +14,6 @@ public class OSPFIntf extends AbstractNode {
         setName(name);
         setNodeType(NodeType.OSPFIntf);
         initFiled();
-        passive = false;
     }
 
 //    public enum NetType()

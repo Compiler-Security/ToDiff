@@ -75,8 +75,6 @@ public class NodeGen {
 
     public static OSPFIntf new_OSPF_Intf(String name) {return new OSPFIntf(name);}
 
-    public static OSPFNet new_OSPF_Net(String name){return new OSPFNet(name);}
-
     public static <T extends  AbstractNode> T newNode(String name, NodeType type){;
         return (T)new_node(name, type);
     }
@@ -99,9 +97,6 @@ public class NodeGen {
             }
             case OSPFIntf -> {
                 return new_OSPF_Intf(name);
-            }
-            case OSPFNet -> {
-                return new_OSPF_Net(name);
             }
             case OSPFDaemon -> {
                 return new OSPFDaemon(name);

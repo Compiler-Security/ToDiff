@@ -9,6 +9,7 @@ import org.generator.lib.item.topo.node.ospf.OSPF;
 import org.generator.lib.item.topo.node.ospf.OSPFAreaSum;
 import org.generator.util.exec.ExecStat;
 import org.generator.util.net.IPBase;
+import org.generator.util.net.IPRange;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
@@ -104,7 +105,7 @@ public class ospfDaemonExecPass extends argExecPass {
         return res.first();
     }
 
-    private OSPFAreaSum.OSPFAreaSumEntry getAreaSumEntry(@NotNull OSPFAreaSum areaSum, IPBase range){
+    private OSPFAreaSum.OSPFAreaSumEntry getAreaSumEntry(@NotNull OSPFAreaSum areaSum, IPRange range){
         return Optional.ofNullable(areaSum.getSumEntries().get(range.toString()))
                 .orElseGet(() -> {
                     var entry = new OSPFAreaSum.OSPFAreaSumEntry();

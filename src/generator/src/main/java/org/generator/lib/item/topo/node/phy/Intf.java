@@ -1,6 +1,7 @@
 package org.generator.lib.item.topo.node.phy;
 
 import org.generator.lib.item.topo.node.NodeType;
+import org.generator.util.net.IP;
 import org.generator.util.net.IPBase;
 import org.generator.lib.item.topo.node.AbstractNode;
 public class Intf extends AbstractNode {
@@ -18,16 +19,16 @@ public class Intf extends AbstractNode {
         this.up = up;
     }
 
-    public IPBase getIp() {
+    public IP getIp() {
         return ip;
     }
 
-    public void setIp(IPBase ip) {
+    public void setIp(IP ip) {
         this.ip = ip;
     }
 
     boolean up;
-    IPBase ip;
+    IP ip;
 
     public boolean isPersudo() {
         return persudo;

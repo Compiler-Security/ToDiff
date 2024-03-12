@@ -2,7 +2,10 @@ package org.generator.lib.item.topo.node.ospf;
 
 import org.generator.lib.item.topo.node.NodeType;
 import org.generator.lib.item.topo.node.AbstractNode;
+import org.generator.util.net.ID;
+import org.generator.util.net.IP;
 import org.generator.util.net.IPBase;
+import org.generator.util.net.IPRange;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,21 +21,15 @@ public class OSPFAreaSum extends AbstractNode {
     }
 
     public static class OSPFAreaSumEntry{
-        public IPBase getRange() {
+        public IPRange getRange() {
             return range;
         }
 
-        public void setRange(IPBase range) {
+        public void setRange(IPRange range) {
             this.range = range;
         }
 
-        public Set<OSPFNet> getNet() {
-            return net;
-        }
 
-        public void setNet(Set<OSPFNet> net) {
-            this.net = net;
-        }
 
         public boolean isAdvertise() {
             return advertise;
@@ -54,15 +51,14 @@ public class OSPFAreaSum extends AbstractNode {
             return substitute;
         }
 
-        public void setSubstitute(IPBase substitute) {
+        public void setSubstitute(IP substitute) {
             this.substitute = substitute;
         }
 
-        IPBase range;
-        Set<OSPFNet> net;
+        IPRange range;
         boolean advertise;
         int cost;
-        IPBase substitute;
+        IP substitute;
     }
 
     public Map<String, OSPFAreaSumEntry> getSumEntries() {
@@ -71,11 +67,11 @@ public class OSPFAreaSum extends AbstractNode {
 
     Map<String, OSPFAreaSumEntry> sumEntries;
 
-    public IPBase getVirtualLink() {
+    public ID getVirtualLink() {
         return virtualLink;
     }
 
-    public void setVirtualLink(IPBase virtualLink) {
+    public void setVirtualLink(ID virtualLink) {
         this.virtualLink = virtualLink;
     }
 
@@ -113,7 +109,7 @@ public class OSPFAreaSum extends AbstractNode {
         Disable,
         Default
     };
-    IPBase virtualLink;
+    ID virtualLink;
 
     public shortCutType getShortcut() {
         return shortcut;
@@ -124,15 +120,15 @@ public class OSPFAreaSum extends AbstractNode {
     boolean nosummary;
     boolean nssa;
 
-    public IPBase getArea() {
+    public ID getArea() {
         return area;
     }
 
-    public void setArea(IPBase area) {
+    public void setArea(ID area) {
         this.area = area;
     }
 
-    IPBase area;
+    ID area;
 
     @Override
     public void initFiled() {

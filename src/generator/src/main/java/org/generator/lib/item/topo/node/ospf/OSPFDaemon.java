@@ -7,7 +7,6 @@ public class OSPFDaemon extends AbstractNode {
     public OSPFDaemon(String name){
         setName(name);
         setNodeType(NodeType.OSPFDaemon);
-        socketPerInterface = true;
         initFiled();
     }
 

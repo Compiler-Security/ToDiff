@@ -1,6 +1,5 @@
 package org.generator.lib.item.topo.graph;
 
-import org.generator.lib.item.topo.node.ospf.OSPFNet;
 import org.generator.lib.item.topo.edge.RelationEdge;
 import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.lib.item.topo.node.NodeGen;
@@ -58,10 +57,6 @@ public class RelationGraph extends AbstractRelationGraph {
      }
      public Set<OSPFIntf> getOSPFIntfOfRouter(String r_name){
         return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF).stream().map(x->this.<OSPFIntf>getDstsByType(x.getName(), RelationEdge.EdgeType.OSPFINTF)).flatMap(Collection::stream).collect(Collectors.toSet());
-     }
-
-     public Set<OSPFNet> getOSPFNetOfOSPFArea(String ospf_area_name){
-        return this.<OSPFNet> getDstsByType(ospf_area_name, RelationEdge.EdgeType.OSPFNetwork);
      }
 
      public Set<OSPFAreaSum> getOSPFAreaSumOfOSPF(String ospf_name){
