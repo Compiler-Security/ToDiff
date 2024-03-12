@@ -93,7 +93,6 @@ public enum OpType {
     //NOT consider ip ospf authentication key-chain KEYCHAIN
 
     IpOspfArea,
-    IpOspfAreaINT,
     IpOspfCost,
     IpOspfDeadInter,
     IpOspfDeadInterMulti,
