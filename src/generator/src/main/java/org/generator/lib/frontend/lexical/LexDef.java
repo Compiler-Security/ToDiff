@@ -1,13 +1,12 @@
 package org.generator.lib.frontend.lexical;
 
-import org.generator.lib.operation.operation.OpType;
 import org.generator.util.collections.Pair;
 
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.generator.lib.operation.operation.OpType.*;
+import static org.generator.lib.frontend.lexical.OpType.*;
 
 /** one template -> {template x re x args x argsRange}*/
 public class LexDef {

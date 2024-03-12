@@ -1,7 +1,5 @@
 package org.generator.lib.frontend.lexical;
 
-import org.generator.lib.operation.operation.OpType;
-
 import java.util.HashMap;
 import java.util.Map;
 

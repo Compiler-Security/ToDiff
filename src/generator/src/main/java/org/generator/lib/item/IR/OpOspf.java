@@ -2,7 +2,7 @@ package org.generator.lib.item.IR;
 
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.item.opg.OpOspfG;
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 
 import java.util.Objects;
 
@@ -55,7 +55,7 @@ public class OpOspf extends OpBase{
 
 
     /**
-     * two OpOspf equal iff type1==type2 && args1 equal args2 && ctxOp1 equal ctxOp2 <br>
+     * two OpOspf equal iff type1==type2 && args1 equal args2 <br>
      * args1 equal args2 iff any arg in args1 union args2, args1[arg] equal args2[arg]
      * @return is_equal
      */

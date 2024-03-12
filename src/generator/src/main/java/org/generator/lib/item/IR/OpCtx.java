@@ -1,7 +1,7 @@
 package org.generator.lib.item.IR;
 
 import org.generator.lib.frontend.lexical.LexDef;
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package operation;
 
 import org.generator.lib.operation.operation.OpGen;
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.operation.conf.OspfConfReader;
 import org.junit.Test;
 

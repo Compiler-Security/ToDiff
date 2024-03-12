@@ -1,4 +1,4 @@
-package org.generator.lib.operation.operation;
+package org.generator.lib.frontend.lexical;
 
 import org.generator.util.collections.Pair;
 import org.jetbrains.annotations.NotNull;

@@ -1,5 +1,6 @@
 package org.generator.lib.operation.operation;
 
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.util.net.IPBase;
 
 import java.util.Map;

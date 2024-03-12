@@ -1,13 +1,13 @@
 package org.generator.lib.reducer.semantic;
 
 import org.generator.lib.frontend.lexical.LexDef;
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-import static org.generator.lib.operation.operation.OpType.*;
+import static org.generator.lib.frontend.lexical.OpType.*;
 
 /**
  * This is the reduction Def of override def

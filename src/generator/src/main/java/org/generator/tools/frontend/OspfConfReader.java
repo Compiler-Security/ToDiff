@@ -3,7 +3,7 @@ package org.generator.tools.frontend;
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.item.IR.*;
 import org.generator.lib.item.opg.OpCtxG;
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 
 import java.io.*;
 

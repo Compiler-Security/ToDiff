@@ -1,6 +1,5 @@
 package org.generator.lib.item.IR;
 
-import org.generator.lib.operation.operation.OpType;
 import org.generator.lib.reducer.semantic.CtxOpDef;
 
 import java.util.Objects;

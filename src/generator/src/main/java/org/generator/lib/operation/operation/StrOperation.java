@@ -1,5 +1,7 @@
 package org.generator.lib.operation.operation;
 
+import org.generator.lib.frontend.lexical.OpType;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;

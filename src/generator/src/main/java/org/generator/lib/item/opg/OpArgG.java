@@ -1,44 +1,33 @@
-package org.generator.lib.operation.opg;
+package org.generator.lib.item.opg;
 
+import org.generator.lib.item.IR.Op;
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.lib.operation.operation.Op;
+
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ParserOpGroup implements OpGroup{
-    public ParserOpGroup(){
+public class OpArgG extends BaseOpG<Op>{
+    public OpArgG(){
         opgroup = new ArrayList<>();
     }
-    public ParserOpGroup(List<Op> ops, Optional<String> target){
+    public OpArgG(List<Op> ops, Optional<String> target){
         opgroup = new ArrayList<>();
         this.target = target;
         setCtxOp(null);
         addOps(ops);
     }
-    @Override
-    public List<Op> getOps() {
-        return opgroup;
-    }
 
-    @Override
+
     public void addOp(Op op) {
         opgroup.add(op);
     }
 
-    @Override
-    public void addOps(List<Op> ops) {
-        opgroup.addAll(ops);
-    }
 
     @Override
     public String toString() {
         return opgroup.toString();
-    }
-
-    public void setOpgroup(List<Op> opgroup) {
-        this.opgroup = opgroup;
     }
 
     private List<Op> opgroup;

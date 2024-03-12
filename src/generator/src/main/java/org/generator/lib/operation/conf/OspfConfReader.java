@@ -1,6 +1,6 @@
 package org.generator.lib.operation.conf;
 
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.operation.operation.OpGen;
 import org.generator.lib.operation.operation.Op;
 import org.generator.util.net.IPBase;

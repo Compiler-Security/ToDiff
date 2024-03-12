@@ -1,6 +1,6 @@
 package org.generator.lib.item.IR;
 
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;

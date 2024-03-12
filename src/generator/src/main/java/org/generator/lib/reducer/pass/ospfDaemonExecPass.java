@@ -1,12 +1,12 @@
-package org.generator.lib.operation.opgexec;
+package org.generator.lib.reducer.pass;
 
-import org.generator.lib.operation.operation.Op;
 import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.item.IR.Op;
+import org.generator.lib.item.topo.graph.RelationGraph;
 import org.generator.lib.item.topo.node.NodeGen;
 import org.generator.lib.item.topo.node.NodeType;
 import org.generator.lib.item.topo.node.ospf.OSPF;
 import org.generator.lib.item.topo.node.ospf.OSPFAreaSum;
-import org.generator.lib.item.topo.graph.RelationGraph;
 import org.generator.util.exec.ExecStat;
 import org.generator.util.net.IPBase;
 import org.jetbrains.annotations.NotNull;
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class OspfOpgExec extends OpgExec{
+public class ospfDaemonExecPass extends argExecPass {
     public ExecStat execOSPFAttriCmds(@NotNull Op op, @NotNull RelationGraph topo) {
         if (op.Type() != OpType.ROSPF && (cur_router ==null || cur_ospf == null)){
             return ExecStat.FAIL;
@@ -69,17 +69,17 @@ public class OspfOpgExec extends OpgExec{
                 return ExecStat.SUCC;
             }
             case  SOCKETBUFFERSEND -> {
-                var num = op.getIDNUM();
+                var num = op.getLONGNUM();
                 ospf_daemon.setBuffersend(num);
                 return ExecStat.SUCC;
             }
             case SOCKETBUFFERRECV -> {
-                var num = op.getIDNUM();
+                var num = op.getLONGNUM();
                 ospf_daemon.setBufferrecv(num);
                 return ExecStat.SUCC;
             }
             case SOCKETBUFFERALL -> {
-                var num = op.getIDNUM();
+                var num = op.getLONGNUM();
                 ospf_daemon.setBuffersend(num);
                 ospf_daemon.setBufferrecv(num);
                 return ExecStat.SUCC;
@@ -124,9 +124,8 @@ public class OspfOpgExec extends OpgExec{
             if (!is_ABR) {
                 return ExecStat.MISS;
             }
-            if (op.getID() == null) op.setID(IPBase.IDOf(op.getNUM()));
             var areaSum = getAreaSum(op.getID(), topo);
-            var areaSumEntry = getAreaSumEntry(areaSum, op.getIP());
+            var areaSumEntry = getAreaSumEntry(areaSum, op.getIPRANGE());
             switch (op.Type()) {
                 case AreaRange -> {
                 }
@@ -144,13 +143,12 @@ public class OspfOpgExec extends OpgExec{
                     areaSumEntry.setAdvertise(false);
                 }
                 case AreaRangeSub -> {
-                    areaSumEntry.setSubstitute(op.getIP2());
+                    areaSumEntry.setSubstitute(op.getIP());
                 }
             }
             return ExecStat.SUCC;
         }else{
             //FIXME Is these commands should be used only in ABR?
-            if (op.getID() == null) op.setID(IPBase.IDOf(op.getNUM()));
             var areaSum = getAreaSum(op.getID(), topo);
             switch (op.Type()){
                 case AreaVLink -> {

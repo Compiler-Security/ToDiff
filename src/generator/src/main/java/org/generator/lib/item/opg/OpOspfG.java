@@ -1,7 +1,7 @@
 package org.generator.lib.item.opg;
 
 import org.generator.lib.item.IR.OpOspf;
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 
 import java.util.List;
 

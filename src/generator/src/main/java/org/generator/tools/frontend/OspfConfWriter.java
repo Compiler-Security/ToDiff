@@ -1,10 +1,8 @@
 package org.generator.tools.frontend;
 
 import org.generator.lib.frontend.driver.IO;
-import org.generator.lib.item.IR.OpCtx;
-import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 
 public class OspfConfWriter implements ConfW{
 

@@ -1,6 +1,6 @@
 package org.generator.lib.operation.opgexec;
 
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.item.topo.node.NodeGen;
 import org.generator.lib.item.topo.node.ospf.OSPF;
 import org.generator.lib.item.topo.node.phy.Intf;

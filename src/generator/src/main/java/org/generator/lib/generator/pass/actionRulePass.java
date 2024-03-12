@@ -3,9 +3,8 @@ package org.generator.lib.generator.pass;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.opg.OpAG;
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.reducer.semantic.UnsetRedexDef;
-import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
 import org.generator.util.net.IPRange;
 

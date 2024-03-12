@@ -1,6 +1,6 @@
 package org.generator.lib.reducer.semantic;
 
-import org.generator.lib.operation.operation.OpType;
+import org.generator.lib.frontend.lexical.OpType;
 
 public class CtxOpDef {
     public static boolean isCtxOp(OpType type){

@@ -1,4 +1,5 @@
 package org.generator.lib.operation.operation;
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.util.net.IPBase;
 import org.generator.util.net.IPRange;
 import org.jetbrains.annotations.NotNull;
