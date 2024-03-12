@@ -2,7 +2,7 @@ package org.generator.lib.reducer.pass;
 
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.item.IR.Op;
-import org.generator.lib.item.topo.graph.RelationGraph;
+import org.generator.lib.item.topo.graph.OspfConfGraph;
 import org.generator.lib.item.topo.node.NodeGen;
 import org.generator.lib.item.topo.node.NodeType;
 import org.generator.lib.item.topo.node.ospf.OSPF;
@@ -16,7 +16,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public class ospfDaemonExecPass extends argExecPass {
-    public ExecStat execOSPFAttriCmds(@NotNull Op op, @NotNull RelationGraph topo) {
+    public ExecStat execOSPFAttriCmds(@NotNull Op op, @NotNull OspfConfGraph topo) {
         if (op.Type() != OpType.ROSPF && (cur_router ==null || cur_ospf == null)){
             return ExecStat.FAIL;
         }
@@ -53,7 +53,7 @@ public class ospfDaemonExecPass extends argExecPass {
         return ExecStat.FAIL;
     }
 
-    public ExecStat execOspfDaemonAttriCmds(@NotNull Op op, @NotNull RelationGraph topo) {
+    public ExecStat execOspfDaemonAttriCmds(@NotNull Op op, @NotNull OspfConfGraph topo) {
         if (cur_ospf_daemon == null){
             return ExecStat.MISS;
         }
@@ -97,7 +97,7 @@ public class ospfDaemonExecPass extends argExecPass {
         return ExecStat.FAIL;
     }
 
-    private OSPFAreaSum getAreaSum(@NotNull IPBase area, @NotNull RelationGraph topo){
+    private OSPFAreaSum getAreaSum(@NotNull IPBase area, @NotNull OspfConfGraph topo){
         var res = topo.<OSPFAreaSum>getOrCreateNode(NodeGen.getOSPFAreaSumName(cur_ospf.getName(), NodeGen.getAreaName(area)), NodeType.OSPFAreaSum);
         if (!res.second()){
             topo.addOSPFAreaSumRelation(res.first().getName(), cur_ospf.getName());
@@ -115,7 +115,7 @@ public class ospfDaemonExecPass extends argExecPass {
                 });
     }
 
-    public ExecStat execOSPFAreaCmds(@NotNull Op op, @NotNull RelationGraph topo) {
+    public ExecStat execOSPFAreaCmds(@NotNull Op op, @NotNull OspfConfGraph topo) {
         if (cur_router == null || cur_ospf == null) return ExecStat.MISS;
         //FIXME num range should be deal before this
         var cur_rname = cur_router.getName();
@@ -182,7 +182,7 @@ public class ospfDaemonExecPass extends argExecPass {
         }
     }
 
-    private ExecStat execOSPFOp(@NotNull Op op, RelationGraph topo) {
+    private ExecStat execOSPFOp(@NotNull Op op, OspfConfGraph topo) {
         if (op.Type().inOSPFRouterWithTopo()) {
             return execOSPFAttriCmds(op, topo);
         }else if (op.Type().inOSPFDAEMON()){
@@ -193,7 +193,7 @@ public class ospfDaemonExecPass extends argExecPass {
         return ExecStat.MISS;
     }
     @Override
-    ExecStat execOp(Op op, RelationGraph topo) {
+    ExecStat execOp(Op op, OspfConfGraph topo) {
         return execOSPFOp(op, topo);
     }
 }

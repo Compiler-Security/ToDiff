@@ -1,14 +1,14 @@
 package org.generator.lib.reducer.pass;
 
 import org.generator.lib.item.IR.Op;
-import org.generator.lib.item.topo.graph.RelationGraph;
+import org.generator.lib.item.topo.graph.OspfConfGraph;
 import org.generator.lib.item.topo.node.ospf.OSPFIntf;
 import org.generator.util.exec.ExecStat;
 import org.jetbrains.annotations.NotNull;
 
 public class ospfIntfExecPass extends argExecPass {
 
-    private ExecStat execOSPFIntfCmds(@NotNull Op op, @NotNull RelationGraph topo){
+    private ExecStat execOSPFIntfCmds(@NotNull Op op, @NotNull OspfConfGraph topo){
         if (cur_ospf_intf == null){
             return ExecStat.MISS;
         }
@@ -50,7 +50,7 @@ public class ospfIntfExecPass extends argExecPass {
         return ExecStat.SUCC;
     }
     @Override
-    ExecStat execOp(Op op, RelationGraph topo) {
+    ExecStat execOp(Op op, OspfConfGraph topo) {
         return execOSPFIntfCmds(op, topo);
     }
 

@@ -20,7 +20,7 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class RelationGraph extends AbstractRelationGraph {
+public class OspfConfGraph extends AbstractRelationGraph {
     private Pair<AbstractNode, Boolean> createNode(AbstractNode node){
         var res = addNode(node);
         assert res == ExecStat.SUCC;

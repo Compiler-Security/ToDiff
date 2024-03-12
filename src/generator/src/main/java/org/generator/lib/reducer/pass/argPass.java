@@ -3,7 +3,7 @@ package org.generator.lib.reducer.pass;
 import org.generator.lib.item.IR.Op;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpArgG;
-import org.generator.lib.item.topo.graph.RelationGraph;
+import org.generator.lib.item.topo.graph.OspfConfGraph;
 import org.generator.lib.item.topo.node.NodeGen;
 import org.generator.lib.item.topo.node.NodeType;
 import org.generator.lib.item.topo.node.ospf.OSPF;
@@ -50,7 +50,7 @@ public class argPass {
         return ip_ospf_area;
     }
 
-    public static void parse(OpAG opg, RelationGraph topo, String r_name) {
+    public static void parse(OpAG opg, OspfConfGraph topo, String r_name) {
         var opgs = splitOpAG(opg);
         var intf_opgs = opgs.first();
         var ospf_opg = opgs.second();
