@@ -5,6 +5,7 @@ import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.lib.item.topo.node.NodeType;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
+import org.generator.util.net.ID;
 import org.generator.util.net.IPBase;
 
 import java.util.Arrays;
@@ -43,11 +44,11 @@ public class OSPF extends AbstractNode {
         }
     }
 
-    public IPBase getRouterId() {
+    public ID getRouterId() {
         return routerId;
     }
 
-    public void setRouterId(IPBase routerId) {
+    public void setRouterId(ID routerId) {
         this.routerId = routerId;
     }
 
@@ -59,7 +60,7 @@ public class OSPF extends AbstractNode {
         this.status = status;
     }
 
-    IPBase routerId;
+    ID routerId;
     OSPF_STATUS status;
 
     public ABR_TYPE getAbrType() {
@@ -105,7 +106,7 @@ public class OSPF extends AbstractNode {
         status = OSPF_STATUS.UP;
         abrType = null; //abrType if it's not ABR, this field is null
         //TODO we should set this in init
-        routerId = IPBase.IDOf(0);
+        routerId = ID.of(0);
         initDelay = 0; //spfScheduleDelayMsecs
         minHoldTime = 50; //holdtimeMinMsecs
         maxHoldTime = 5000; //holdtimeMaxMsecs

@@ -11,11 +11,7 @@ import org.generator.lib.item.topo.node.ospf.OSPFDaemon;
 import org.generator.lib.item.topo.node.ospf.OSPFIntf;
 import org.generator.lib.item.topo.node.phy.Intf;
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.lib.operation.opg.OpGroup;
-import org.generator.lib.operation.opgexec.OspfIntfOpgExec;
-import org.generator.lib.operation.opgexec.OspfOpgExec;
 import org.generator.util.collections.Pair;
-import org.generator.util.exec.ExecStat;
 import org.generator.util.net.IPBase;
 
 import java.util.*;
