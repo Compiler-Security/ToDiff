@@ -15,7 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class ospfDaemonExecPass extends argExecPass {
+public class ospfDaemonExecPass extends baseExecPass {
     public ExecStat execOSPFAttriCmds(@NotNull Op op, @NotNull OspfConfGraph topo) {
         if (op.Type() != OpType.ROSPF && (cur_router ==null || cur_ospf == null)){
             return ExecStat.FAIL;

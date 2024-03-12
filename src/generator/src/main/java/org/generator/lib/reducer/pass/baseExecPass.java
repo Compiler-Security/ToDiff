@@ -14,8 +14,8 @@ import org.generator.util.exec.ExecStat;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class argExecPass {
-    argExecPass(){
+public abstract class baseExecPass {
+    baseExecPass(){
         cur_intf = null;
         cur_ospf = null;
         cur_router = null;

@@ -68,17 +68,17 @@ public class OpAG extends BaseOpG<OpAnalysis>{
      * This function filter the active ops, not include unset op, not COPY!
      * @return
      */
-    public OpAG setActiveView(){
+    public OpAG activeSetView(){
         var opAG = OpAG.of();
         this.getOps().stream().filter(opa -> opa.state == OpAnalysis.STATE.ACTIVE && opa.op.Type().isSetOp()).forEach(opAG::addOp);
         return opAG;
     }
 
     /**
-     * one op only last version
+     * one set op only last version
      * @return
      */
-    public List<OpAnalysis> setOpView(){
+    public List<OpAnalysis> setView(){
         return OpStatus.keySet().stream().filter(opa -> opa.op.Type().isSetOp()).toList();
     }
     Map<OpAnalysis, OpAnalysis.STATE> OpStatus;

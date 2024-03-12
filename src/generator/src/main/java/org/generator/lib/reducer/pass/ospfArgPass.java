@@ -16,7 +16,7 @@ import org.generator.util.net.IPBase;
 
 import java.util.*;
 
-public class argPass {
+public class ospfArgPass {
 
     private static Pair<List<OpArgG>, OpArgG> splitOpAG(OpAG opAG) {
         var h = new HashMap<Op, OpArgG>();
@@ -50,7 +50,7 @@ public class argPass {
         return ip_ospf_area;
     }
 
-    public static void parse(OpAG opg, OspfConfGraph topo, String r_name) {
+    public static void solve(OpAG opg, OspfConfGraph topo, String r_name) {
         var opgs = splitOpAG(opg);
         var intf_opgs = opgs.first();
         var ospf_opg = opgs.second();

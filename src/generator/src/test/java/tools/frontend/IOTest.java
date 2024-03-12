@@ -6,6 +6,10 @@ import org.generator.lib.generator.controller.NormalController;
 import org.generator.lib.generator.pass.genPass;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
+import org.generator.lib.item.topo.graph.OspfConfGraph;
+import org.generator.lib.item.topo.node.phy.Intf;
+import org.generator.lib.item.topo.node.phy.Router;
+import org.generator.lib.reducer.pass.ospfArgPass;
 import org.generator.lib.reducer.pass.reducePass;
 import org.generator.tools.frontend.OspfConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
@@ -27,7 +31,7 @@ public class IOTest {
         var writer = new OspfConfWriter();
         //System.out.println(writer.write(opCtxG));
         var reducer = new reducePass();
-        var opas = reducer.resolve(opCtxG).setActiveView().getOps();
+        var opas = reducer.solve(opCtxG).activeSetView().getOps();
         var normal_controller = NormalController.of();
         for(var opa: opas){
             normal_controller.addConfig(opa, 1, 2, 1, 1);
@@ -53,8 +57,9 @@ public class IOTest {
         var writer = new OspfConfWriter();
         //System.out.println(writer.write(opCtxG));
         var reducer = new reducePass();
-        var rCtxg = reducer.resolve(opCtxG);
+        var rCtxg = reducer.solve(opCtxG);
         rCtxg.reduce();
+        //rCtxg.activeSetView()
         //var rCtxg = reducePass.expandOpAG(reducer.resolve(opCtxG));
         System.out.println(writer.write(rCtxg.getRemainOps()));
     }

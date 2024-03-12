@@ -47,7 +47,7 @@ public class applyRulePass {
 
     private static List<OpAnalysis> conflictOps(OpAG opAG, OpAnalysis target_opa){
         opAG.reduce();
-        return opAG.setActiveView().getOps().stream().filter(opa -> reducePass.isConflict(opa, target_opa)).toList();
+        return opAG.activeSetView().getOps().stream().filter(opa -> reducePass.isConflict(opa, target_opa)).toList();
     }
     /**
      * This pass will apply given rule to the opAG, and return a new opAG

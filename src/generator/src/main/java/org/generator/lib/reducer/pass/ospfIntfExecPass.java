@@ -6,7 +6,7 @@ import org.generator.lib.item.topo.node.ospf.OSPFIntf;
 import org.generator.util.exec.ExecStat;
 import org.jetbrains.annotations.NotNull;
 
-public class ospfIntfExecPass extends argExecPass {
+public class ospfIntfExecPass extends baseExecPass {
 
     private ExecStat execOSPFIntfCmds(@NotNull Op op, @NotNull OspfConfGraph topo){
         if (cur_ospf_intf == null){

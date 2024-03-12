@@ -225,7 +225,7 @@ public class reducePass {
         setOpAGLineNo(opAG);
     }
 
-    public OpAG resolve(OpCtxG opCtxG){
+    public OpAG solve(OpCtxG opCtxG){
         opAG = new OpAG();
         //this opCtxG is in expanded form
         initMove(opCtxG);
@@ -245,7 +245,7 @@ public class reducePass {
      * calculate opA's state, should given normal opAG
      * @param normal_opag normal opAG
      */
-    public void resolve(OpAG normal_opag){
+    public void solve(OpAG normal_opag){
         opAG = expandOpAG(normal_opag);
         initMove(opAG);
         for (var opa: opAG.getOps()){

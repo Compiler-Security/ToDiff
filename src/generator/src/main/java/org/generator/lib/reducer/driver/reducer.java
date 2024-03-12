@@ -1,7 +1,6 @@
 package org.generator.lib.reducer.driver;
 
 import org.generator.lib.item.opg.OpAG;
-import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.reducer.pass.reducePass;
 
 public class reducer {
@@ -12,6 +11,6 @@ public class reducer {
      */
     public static void reduce(OpAG opAG){
         var r = new reducePass();
-        r.resolve(opAG);
+        r.solve(opAG);
     }
 }

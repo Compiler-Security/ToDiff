@@ -13,7 +13,7 @@ import java.util.List;
 public class genPass {
 
     static boolean checkOpAG(OpAG opAG, NormalController controller, CapacityController tmp_controller, OpAnalysis target_opa){
-        for(var opa: opAG.setOpView()){
+        for(var opa: opAG.setView()){
             var current_state = opAG.getOpAStatus(opa);
             if (!opa.equals(target_opa)){
                 if (controller.hasConfigOfOpa(opa)){
@@ -39,7 +39,7 @@ public class genPass {
     }
 
     static void updateController(OpAG opAG, NormalController controller, CapacityController tmp_controller, OpAnalysis target_opa){
-        for(var opa: opAG.setOpView()){
+        for(var opa: opAG.setView()){
             var current_state = opAG.getOpAStatus(opa);
             if (!opa.equals(target_opa)){
                 if (controller.hasConfigOfOpa(opa)){
