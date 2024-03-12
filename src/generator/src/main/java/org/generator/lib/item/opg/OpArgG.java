@@ -10,39 +10,8 @@ import java.util.Optional;
 
 public class OpArgG extends BaseOpG<Op>{
     public OpArgG(){
-        opgroup = new ArrayList<>();
+        super();
     }
-    public OpArgG(List<Op> ops, Optional<String> target){
-        opgroup = new ArrayList<>();
-        this.target = target;
-        setCtxOp(null);
-        addOps(ops);
-    }
-
-
-    public void addOp(Op op) {
-        opgroup.add(op);
-    }
-
-
-    @Override
-    public String toString() {
-        return opgroup.toString();
-    }
-
-    private List<Op> opgroup;
-
-    public Optional<String> getTarget() {
-        return target;
-    }
-
-
-    public void setTarget(Optional<String> target) {
-        this.target = target;
-    }
-
-    private Optional<String> target;
-
 
     public Op getCtxOp() {
         return CtxOp;

@@ -6,12 +6,11 @@ import org.generator.lib.generator.controller.NormalController;
 import org.generator.lib.generator.pass.genPass;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
-import org.generator.lib.item.topo.graph.OspfConfGraph;
-import org.generator.lib.item.topo.node.phy.Intf;
-import org.generator.lib.item.topo.node.phy.Router;
+import org.generator.lib.item.topo.graph.ConfGraph;
 import org.generator.lib.reducer.pass.ospfArgPass;
+import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.reducer.pass.reducePass;
-import org.generator.tools.frontend.OspfConfReader;
+import org.generator.tools.frontend.ConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
 import org.junit.Test;
 
@@ -26,7 +25,7 @@ public class IOTest {
                                 area 1061954456 range 91.122.46.62/11 not-advertise  
                                 area 3389220260 range 92.238.183.225/7      
                 """;
-        var reader = new OspfConfReader();
+        var reader = new ConfReader();
         var opCtxG = reader.read(test_st);
         var writer = new OspfConfWriter();
         //System.out.println(writer.write(opCtxG));
@@ -45,23 +44,39 @@ public class IOTest {
     }
     @Test
     public void IoTest(){
-        String test_st = """
-                                router ospf     
-                                area 1061954456 range 91.122.46.62/11 not-advertise  
-                                area 1061954456 range 91.122.46.62/11 not-advertise  
-                         
-            ·
+
+        String phy_st = """
+                     node r1 add
+                     node s1 add
+                     link r1-eth0 s1-eth0 up
                 """;
-        var reader = new OspfConfReader();
-        var opCtxG = reader.read(test_st);
-        var writer = new OspfConfWriter();
-        //System.out.println(writer.write(opCtxG));
+
+        String ospf_st = """
+                                router ospf
+                                area 1061954456 range 91.122.46.62/11 not-advertise
+                                area 1061954456 range 91.122.46.62/11 not-advertise 
+                                int r1-eth0
+                                ip ospf area 0
+                                ip address 10.0.0.0/10
+                """;
+        var reader = new ConfReader();
+        var opCtxG = reader.read(phy_st);
+        var confGraph = new ConfGraph();
+        phyArgPass.solve(opCtxG, confGraph);
+
         var reducer = new reducePass();
-        var rCtxg = reducer.solve(opCtxG);
-        rCtxg.reduce();
-        //rCtxg.activeSetView()
-        //var rCtxg = reducePass.expandOpAG(reducer.resolve(opCtxG));
+        var opCtxG1 = reader.read(ospf_st);
+        var rCtxg = reducer.solve(opCtxG1);
+        var writer = new OspfConfWriter();
         System.out.println(writer.write(rCtxg.getRemainOps()));
+        ospfArgPass.solve(rCtxg.activeSetView(), confGraph, "r1");
+        System.out.println(confGraph.toDot(true));
+//        var reducer = new reducePass();
+//        var rCtxg = reducer.solve(opCtxG);
+//        rCtxg.reduce();
+//        //rCtxg.activeSetView()
+//        //var rCtxg = reducePass.expandOpAG(reducer.resolve(opCtxG));
+//        System.out.println(writer.write(rCtxg.getRemainOps()));
     }
     @Test
     public void OpOspfTest(){

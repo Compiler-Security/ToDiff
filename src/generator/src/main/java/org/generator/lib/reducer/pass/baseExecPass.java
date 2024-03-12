@@ -2,7 +2,7 @@ package org.generator.lib.reducer.pass;
 
 import org.generator.lib.item.IR.Op;
 import org.generator.lib.item.opg.OpArgG;
-import org.generator.lib.item.topo.graph.OspfConfGraph;
+import org.generator.lib.item.topo.graph.ConfGraph;
 import org.generator.lib.item.topo.node.ospf.OSPF;
 import org.generator.lib.item.topo.node.ospf.OSPFDaemon;
 import org.generator.lib.item.topo.node.ospf.OSPFIntf;
@@ -22,8 +22,8 @@ public abstract class baseExecPass {
         cur_ospf_intf = null;
         cur_ospf_daemon = null;
     }
-    abstract ExecStat execOp(Op op, OspfConfGraph topo);
-    public List<Pair<Op, ExecStat>> execOps(OpArgG opg, OspfConfGraph topo){
+    abstract ExecStat execOp(Op op, ConfGraph topo);
+    public List<Pair<Op, ExecStat>> execOps(OpArgG opg, ConfGraph topo){
         List<Pair<Op, ExecStat>> l = new ArrayList<>();
         for(var op: opg.getOps()){
             var res = execOp(op, topo);

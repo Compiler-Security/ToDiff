@@ -7,7 +7,7 @@ import org.generator.lib.frontend.lexical.OpType;
 
 import java.io.*;
 
-public class OspfConfReader implements ConfR{
+public class ConfReader implements ConfR{
 
     private OpCtx invalid(String op_st){
         var new_opctx = OpCtx.of(OpOspf.of(OpType.INVALID), 0);
