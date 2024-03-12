@@ -27,7 +27,7 @@ public class IOTest {
         var writer = new OspfConfWriter();
         //System.out.println(writer.write(opCtxG));
         var reducer = new reducePass();
-        var opas = reducer.resolve(opCtxG).activeView().getOps();
+        var opas = reducer.resolve(opCtxG).setActiveView().getOps();
         var normal_controller = NormalController.of();
         for(var opa: opas){
             normal_controller.addConfig(opa, 1, 2, 1, 1);

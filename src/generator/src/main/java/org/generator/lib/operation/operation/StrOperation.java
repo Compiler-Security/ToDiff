@@ -80,11 +80,11 @@ public class StrOperation implements OpIntf {
         return sb.toString();
     }
     public boolean encode(StringBuilder buf, int index){
-        if (this.type == OpType.OSPFCONF){
-            var ran = new Random();
-            buf.append(generateRandomString(ran.nextInt(20) + 1));
-            return true;
-        }
+//        if (this.type == OpType.OSPFCONF){
+//            var ran = new Random();
+//            buf.append(generateRandomString(ran.nextInt(20) + 1));
+//            return true;
+//        }
         if (!unset) {
             return encode_by_template(buf, setTemplate);
         }else{
