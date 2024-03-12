@@ -121,7 +121,7 @@ public class ospfDaemonExecPass extends argExecPass {
         var cur_rname = cur_router.getName();
         boolean is_ABR = topo.getOSPFIntfOfRouter(cur_rname)
                 .stream().anyMatch(x -> x.getArea().IDtoLong() == 0);
-        if (op.Type().ordinal() >= OpType.AreaRange.ordinal() && op.Type().ordinal() <= OpType.AreaRangeCostINT.ordinal()) {
+        if (op.Type().ordinal() >= OpType.AreaRange.ordinal() && op.Type().ordinal() <= OpType.AreaRangeCost.ordinal()) {
             if (!is_ABR) {
                 return ExecStat.MISS;
             }
