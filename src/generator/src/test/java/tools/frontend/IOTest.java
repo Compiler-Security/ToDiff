@@ -3,7 +3,7 @@ package tools.frontend;
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.generator.controller.CapacityController;
 import org.generator.lib.generator.controller.NormalController;
-import org.generator.lib.generator.pass.genPass;
+import org.generator.lib.generator.pass.genEqualPass;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.topo.graph.ConfGraph;
@@ -36,11 +36,32 @@ public class IOTest {
             normal_controller.addConfig(opa, 1, 2, 1, 1);
         }
         var tmp_controller = CapacityController.of(6, 0, 0, 1, 0);
-        var gen_opag = genPass.solve(normal_controller, tmp_controller);
+        var gen_opag = genEqualPass.solve(normal_controller, tmp_controller);
         gen_opag = reducePass.expandOpAG(gen_opag);
         var print_ctx = OpCtxG.Of();
         gen_opag.getOps().forEach(opa -> print_ctx.addOp(opa.getOp().getOpCtx()));
         System.out.println(writer.write(print_ctx));
+    }
+
+    @Test
+    public void phyTest(){
+        String phy_st = """
+                 node r1 add
+                 node r2 add
+                 node r3 add
+                 node s1 add
+                 node s2 add
+                 link r1-eth0 s1-eth0 up
+                 link r2-eth0 s1-eth1 up
+                 link r3-eth0 s1-eth2 up
+                 link r1-eth1 s2-eth0 up
+                 link r2-eth1 s2-eth1 up
+                """;
+        var reader = new ConfReader();
+        var opCtxG = reader.read(phy_st);
+        var confGraph = new ConfGraph();
+        phyArgPass.solve(opCtxG, confGraph);
+        System.out.println(confGraph.toDot(false));
     }
     @Test
     public void IoTest(){
@@ -49,15 +70,21 @@ public class IOTest {
                      node r1 add
                      node s1 add
                      link r1-eth0 s1-eth0 up
+                     link r1-eth1 s1-eth1 up
                 """;
 
         String ospf_st = """
                                 router ospf
                                 area 1061954456 range 91.122.46.62/11 not-advertise
                                 area 1061954456 range 91.122.46.62/11 not-advertise 
+                                write-multiplier 10
                                 int r1-eth0
                                 ip ospf area 0
                                 ip address 10.0.0.0/10
+                                ip ospf cost 20
+                                int r1-eth1 
+                                ip ospf area 1
+                                ip address 11.1.1.1/10
                 """;
         var reader = new ConfReader();
         var opCtxG = reader.read(phy_st);
@@ -70,7 +97,8 @@ public class IOTest {
         var writer = new OspfConfWriter();
         System.out.println(writer.write(rCtxg.getRemainOps()));
         ospfArgPass.solve(rCtxg.activeSetView(), confGraph, "r1");
-        System.out.println(confGraph.toDot(true));
+        System.out.println(confGraph.toDot(false));
+        confGraph.getNodes().forEach(node -> System.out.printf("%s %s\n", node.getName(), node.getNodeAtrriStr()));
 //        var reducer = new reducePass();
 //        var rCtxg = reducer.solve(opCtxG);
 //        rCtxg.reduce();

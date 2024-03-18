@@ -25,11 +25,11 @@ public class OSPFIntf extends AbstractNode {
         this.vrf = vrf;
     }
 
-    public long getCost() {
+    public int getCost() {
         return cost;
     }
 
-    public void setCost(long cost) {
+    public void setCost(int cost) {
         this.cost = cost;
     }
 
@@ -45,7 +45,7 @@ public class OSPFIntf extends AbstractNode {
 
     boolean passive;
     int vrf;
-    long cost;
+    int cost;
 
     public IPBase getArea() {
         return area;
@@ -115,6 +115,11 @@ public class OSPFIntf extends AbstractNode {
                     .filter(x -> x.match(st))
                     .findFirst();
         }
+
+        @Override
+        public String toString() {
+            return template;
+        }
     }
 
     public OSPFNetType getNetType() {
@@ -137,7 +142,7 @@ public class OSPFIntf extends AbstractNode {
         retansInter = 5; //timerRetransmitSecs
         transDelay = 1; //transmitDelaySecs
 
-        helloMulti = 760; 
+        helloMulti = 0;
         GRHelloDelay = 10; //grHelloDelaySecs
         netType = OSPFNetType.BROADCAST;
         priority = 1; //priority

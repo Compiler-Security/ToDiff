@@ -42,6 +42,11 @@ public class OSPF extends AbstractNode {
                     .filter(x -> x.match(st))
                     .findFirst();
         }
+
+        @Override
+        public String toString() {
+            return template.split("\\|")[0];
+        }
     }
 
     public ID getRouterId() {

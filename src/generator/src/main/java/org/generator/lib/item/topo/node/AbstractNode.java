@@ -26,17 +26,19 @@ public abstract class AbstractNode {
 
     public String getNodeAtrriStr(){
         StringBuilder builder = new StringBuilder();
+        builder.append("{\n");
         Class<?> clazz = this.getClass();
         for(var field : clazz.getDeclaredFields()){
             var key = field.getName();
             field.setAccessible(true);
             try {
                 var val = field.get(this);
-                builder.append(String.format("%s : %s, ", key, val));
+                builder.append(String.format("\t%s:%s,\n", key, val));
             }catch (Exception e){
                 assert false: e;
             }
         }
+        builder.append("}");
         return builder.toString();
     }
 

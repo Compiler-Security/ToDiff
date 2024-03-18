@@ -10,7 +10,7 @@ import org.generator.lib.item.opg.OpAG;
 
 import java.util.List;
 
-public class genPass {
+public class genEqualPass {
 
     static boolean checkOpAG(OpAG opAG, NormalController controller, CapacityController tmp_controller, OpAnalysis target_opa){
         for(var opa: opAG.setView()){

@@ -47,7 +47,7 @@ public class OSPFAreaSum extends AbstractNode {
             this.cost = cost;
         }
 
-        public IPBase getSubstitute() {
+        public IP getSubstitute() {
             return substitute;
         }
 
@@ -107,7 +107,18 @@ public class OSPFAreaSum extends AbstractNode {
     public enum shortCutType{
         Enable,
         Disable,
-        Default
+        Default;
+
+        @Override
+        public String toString() {
+            switch (this){
+                case Default -> {return "default";}
+                case Enable -> {return "enable";}
+                case Disable -> {return "disable";}
+            }
+            assert false: "should not go to here";
+            return "";
+        }
     };
     ID virtualLink;
 

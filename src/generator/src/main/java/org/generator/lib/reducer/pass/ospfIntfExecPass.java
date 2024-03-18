@@ -22,6 +22,7 @@ public class ospfIntfExecPass extends baseExecPass {
             case IpOspfDeadInterMulti -> {
                 cur_ospf_intf.setHelloMulti(op.getNUM());
                 cur_ospf_intf.setHelloInterval(0);
+                cur_ospf_intf.setDeadInterval(1);
             }
             case IpOspfHelloInter -> {
                 cur_ospf_intf.setHelloInterval(op.getNUM());
