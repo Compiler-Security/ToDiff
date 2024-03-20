@@ -1,5 +1,7 @@
 package tools.frontend;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.generator.controller.CapacityController;
 import org.generator.lib.generator.controller.NormalController;
@@ -7,6 +9,7 @@ import org.generator.lib.generator.pass.genEqualPass;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.topo.graph.ConfGraph;
+import org.generator.lib.item.topo.node.ospf.OSPF;
 import org.generator.lib.reducer.pass.ospfArgPass;
 import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.reducer.pass.reducePass;
@@ -14,8 +17,18 @@ import org.generator.tools.frontend.ConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
 import org.junit.Test;
 
+import java.io.IOException;
+
 public class IOTest {
 
+    @Test
+    public void jsonTest(){
+        var node = new OSPF("r1");
+        var node1 = new OSPF("r2");
+        node1.setInitDelay(10);
+        System.out.println(node1.getJsonNode());
+        System.out.println( node.getJsonNode().equals(node1.getJsonNode()));
+    }
     @Test
     public void Part2Test(){
         String test_st = """

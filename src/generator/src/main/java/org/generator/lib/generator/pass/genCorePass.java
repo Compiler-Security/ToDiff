@@ -21,7 +21,10 @@ import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 public class genCorePass {
 
     String r_name;
@@ -151,7 +154,7 @@ public class genCorePass {
         return opCtxG;
     }
 
-    private List<OpCtxG> handleIntfs(String r_name){
+    private List<OpCtxG> handleIntfs(){
         List<OpCtxG> opgs = new ArrayList<>();
         for(var ospf_intf: confg.getOSPFIntfOfRouter(r_name)){
             opgs.add(handleIntf(ospf_intf));
@@ -289,11 +292,57 @@ public class genCorePass {
         }
         return opCtxGS;
     }
-    public  OpCtxG solve(ConfGraph confg, String r_name){
+
+
+    public static List<OpCtxG> mergeOpCtxgToEach(List<OpCtxG> opCtxG){
+        Map<OpCtx, OpCtxG> merge = new HashMap<>();
+        for(var opctxg: opCtxG){
+            var ctxOp = opctxg.getOps().getFirst();
+            merge.putIfAbsent(ctxOp, OpCtxG.Of());
+            merge.get(ctxOp).addOps(opctxg.getOps());
+        }
+        return merge.values().stream().toList();
+    }
+
+    public static OpCtxG mergeOpCtxgToOne(List<OpCtxG> opCtxGS){
+        var opCtxg = OpCtxG.Of();
+        for(var opctxg: opCtxGS){
+            opCtxg.addOps(opctxg.getOps());
+        }
+        return opCtxg;
+    }
+    /**
+     * This pass will return generate core config
+     * @param confg
+     * @param r_name
+     * @return each opCtxG is one interface or router ospf
+     */
+    public  List<OpCtxG> solve(ConfGraph confg, String r_name){
         this.r_name = r_name;
         this.confg = confg;
+        List<OpCtxG> opgs = new ArrayList<>();
+        //daemon
+        var tmp1 = handleDaemon();
+        opgs.add(tmp1);
 
-        var opCtxG = OpCtxG.Of();
-        return opCtxG;
+        //intfs
+        var tmp2s = handleIntfs();
+        opgs.addAll(tmp2s);
+
+        //areas
+        var tmp3s = handleAreas();
+        opgs.addAll(tmp3s);
+
+        //areaId
+        //FIXME we need random
+        var tmp4 = handleAREAID(true);
+        opgs.addAll(tmp4);
+
+        //passive intf
+        var tmp5 = handlePassiveIntf();
+        opgs.addAll(tmp5);
+
+        var res = mergeOpCtxgToEach(opgs);
+        return res;
     }
 }

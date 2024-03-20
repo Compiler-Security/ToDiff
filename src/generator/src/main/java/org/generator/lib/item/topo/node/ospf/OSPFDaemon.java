@@ -3,6 +3,8 @@ package org.generator.lib.item.topo.node.ospf;
 import org.generator.lib.item.topo.node.NodeType;
 import org.generator.lib.item.topo.node.AbstractNode;
 
+import java.util.Objects;
+
 public class OSPFDaemon extends AbstractNode {
     public OSPFDaemon(String name){
         setName(name);
@@ -66,7 +68,20 @@ public class OSPFDaemon extends AbstractNode {
         bufferrecv = 8 * 1024 * 1024;
     }
 
-//    @Override
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OSPFDaemon that = (OSPFDaemon) o;
+        return maxPaths == that.maxPaths && writemulti == that.writemulti && buffersend == that.buffersend && bufferrecv == that.bufferrecv && socketPerInterface == that.socketPerInterface;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(maxPaths, writemulti, buffersend, bufferrecv, socketPerInterface);
+    }
+
+    //    @Override
 //    public String getNodeAtrriStr() {
 //        return "";
 //    }

@@ -14,6 +14,8 @@ dependencies {
     implementation("org.realityforge.org.jetbrains.annotations:org.jetbrains.annotations:1.7.0")
     implementation("org.graphstream:gs-core:2.0")
     implementation("commons-net:commons-net:3.9.0")
+    implementation("com.fasterxml.jackson.core:jackson-core:2.16.1")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.testng:testng:7.7.0")

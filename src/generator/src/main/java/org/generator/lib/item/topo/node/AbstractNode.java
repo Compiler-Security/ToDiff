@@ -1,5 +1,9 @@
 package org.generator.lib.item.topo.node;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 public abstract class AbstractNode {
 
     public String getName(){
@@ -45,5 +49,21 @@ public abstract class AbstractNode {
     @Override
     public String toString() {
         return getName();
+    }
+
+    public JsonNode getJsonNode(){
+        ObjectNode jsonObject = new ObjectMapper().createObjectNode();
+        Class<?> clazz = this.getClass();
+        for(var field : clazz.getDeclaredFields()){
+            var key = field.getName();
+            field.setAccessible(true);
+            try {
+                var val = field.get(this);
+                jsonObject.put(key, String.format("%s", val));
+            }catch (Exception e){
+                assert false: e;
+            }
+        }
+        return jsonObject;
     }
 }

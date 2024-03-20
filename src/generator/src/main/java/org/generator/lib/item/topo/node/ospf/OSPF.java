@@ -1,6 +1,9 @@
 package org.generator.lib.item.topo.node.ospf;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.lib.item.topo.node.NodeType;
 import org.generator.util.collections.AbstractStringEnum;
@@ -9,6 +12,7 @@ import org.generator.util.net.ID;
 import org.generator.util.net.IPBase;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 public class OSPF extends AbstractNode {
@@ -117,5 +121,17 @@ public class OSPF extends AbstractNode {
         maxHoldTime = 5000; //holdtimeMaxMsecs
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OSPF ospf = (OSPF) o;
+        return initDelay == ospf.initDelay && minHoldTime == ospf.minHoldTime && maxHoldTime == ospf.maxHoldTime && Objects.equals(routerId, ospf.routerId) && status == ospf.status && abrType == ospf.abrType;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(routerId, status, abrType, initDelay, minHoldTime, maxHoldTime);
+    }
 
 }

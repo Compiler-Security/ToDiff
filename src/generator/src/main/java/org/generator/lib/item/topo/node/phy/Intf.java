@@ -4,6 +4,9 @@ import org.generator.lib.item.topo.node.NodeType;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPBase;
 import org.generator.lib.item.topo.node.AbstractNode;
+
+import java.util.Objects;
+
 public class Intf extends AbstractNode {
     public Intf(String name){
         setName(name);
@@ -46,7 +49,20 @@ public class Intf extends AbstractNode {
         persudo = false;
     }
 
-//    @Override
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Intf intf = (Intf) o;
+        return up == intf.up && persudo == intf.persudo && Objects.equals(ip, intf.ip);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(up, ip, persudo);
+    }
+
+    //    @Override
 //    public String getNodeAtrriStr() {
 //        String ip_str = "UNK";
 //        if (getIp() != null){

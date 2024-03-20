@@ -9,6 +9,7 @@ import org.generator.util.net.IPRange;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class OSPFAreaSum extends AbstractNode {
@@ -152,7 +153,20 @@ public class OSPFAreaSum extends AbstractNode {
         area = null;
     }
 
-//    @Override
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OSPFAreaSum that = (OSPFAreaSum) o;
+        return stub == that.stub && nosummary == that.nosummary && nssa == that.nssa && Objects.equals(sumEntries, that.sumEntries) && Objects.equals(virtualLink, that.virtualLink) && shortcut == that.shortcut && Objects.equals(area, that.area);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sumEntries, virtualLink, shortcut, stub, nosummary, nssa, area);
+    }
+
+    //    @Override
 //    public String getNodeAtrriStr() {
 //        new Unimplemented();
 //        return "";
