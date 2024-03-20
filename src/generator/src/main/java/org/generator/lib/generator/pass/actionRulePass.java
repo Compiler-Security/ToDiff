@@ -150,7 +150,11 @@ public class actionRulePass {
         if (new_op.Type().isUnsetOp()) return null;
         var unset_list = UnsetRedexDef.getUnsetType(new_op.Type());
         if (unset_list.isEmpty()) return null;
-        var unsetType = ranHelper.randomElemOfList(unset_list);
+        OpType unsetType;
+        if (generate.ran){
+            unsetType = ranHelper.randomElemOfList(unset_list);
+        }
+        unsetType = unset_list.get(0);
         new_op.setType(unsetType);
         new_op.getOpCtx().setFormmat(OpCtx.Format.of(unsetType, 0));
         if (generate.ran) {

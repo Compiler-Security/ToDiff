@@ -16,11 +16,12 @@ public class ranHelper {
      */
     static private final Random random = new Random();
     public static int randomInt(int l, int r){
-        return (int) randomLong(l, r);
+        int k = Math.abs(random.nextInt());
+        return l + (k % (r - l + 1));
     }
 
     public static long randomLong(long l, long r){
-        return l + (random.nextLong() % (r - l + 1));
+        return l + (Math.abs(random.nextLong()) % (r - l + 1));
     }
 
     static public ID randomID(){

@@ -28,6 +28,7 @@ public class shrinkCorePass {
     }
     /**
      * This will change opCtxGs to the mininal formal
+     * each OpCtxG's first op is SetOp
      * @param confG
      * @param opCtxGs
      */

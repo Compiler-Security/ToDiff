@@ -240,8 +240,10 @@ public class genCorePass {
         if (!netAreaId){
             for(var ospf_intf: confg.getOSPFIntfOfRouter(r_name)){
                 if (ospf_intf.getArea() != null){
+                    Intf intf = (Intf) confg.getDstsByType(ospf_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
                     var opCtxg = OpCtxG.Of();
-                    addOp(opCtxg, OpType.IntfName);
+                    var op1 = addOp(opCtxg, OpType.IntfName);
+                    op1.setNAME(intf.getName());
                     var op = addOp(opCtxg, OpType.IpOspfArea);
                     op.setID(ospf_intf.getArea());
                     opCtxGS.add(opCtxg);
@@ -299,6 +301,8 @@ public class genCorePass {
     public static List<OpCtxG> mergeOpCtxgToEach(List<OpCtxG> opCtxG){
         Map<OpOspf, OpCtxG> merge = new HashMap<>();
         for(var opctxg: opCtxG){
+            //TO check correctness, don't deal
+            opctxg.toString();
             var ctxOp = (OpOspf) opctxg.getOps().getFirst().getOperation();
             merge.putIfAbsent(ctxOp, OpCtxG.Of());
             merge.get(ctxOp).addOps(opctxg.getOps());
