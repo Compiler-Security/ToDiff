@@ -20,7 +20,7 @@ public class OpCtxG extends BaseOpG<OpCtx>{
         b.append("[");
         for(var op: getOps()){
             b.append(IO.writeOp(op));
-            b.append(",");
+            b.append(",\n");
         }
         b.append("]");
         return b.toString();

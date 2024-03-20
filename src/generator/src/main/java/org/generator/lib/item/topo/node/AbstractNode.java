@@ -51,7 +51,7 @@ public abstract class AbstractNode {
         return getName();
     }
 
-    public JsonNode getJsonNode(){
+    public ObjectNode getJsonNode(){
         ObjectNode jsonObject = new ObjectMapper().createObjectNode();
         Class<?> clazz = this.getClass();
         for(var field : clazz.getDeclaredFields()){

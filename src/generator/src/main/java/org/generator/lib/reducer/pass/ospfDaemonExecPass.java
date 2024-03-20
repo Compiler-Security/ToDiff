@@ -8,6 +8,7 @@ import org.generator.lib.item.topo.node.NodeType;
 import org.generator.lib.item.topo.node.ospf.OSPF;
 import org.generator.lib.item.topo.node.ospf.OSPFAreaSum;
 import org.generator.util.exec.ExecStat;
+import org.generator.util.net.ID;
 import org.generator.util.net.IPBase;
 import org.generator.util.net.IPRange;
 import org.jetbrains.annotations.NotNull;
@@ -97,9 +98,10 @@ public class ospfDaemonExecPass extends baseExecPass {
         return ExecStat.FAIL;
     }
 
-    private OSPFAreaSum getAreaSum(@NotNull IPBase area, @NotNull ConfGraph topo){
+    private OSPFAreaSum getAreaSum(@NotNull ID area, @NotNull ConfGraph topo){
         var res = topo.<OSPFAreaSum>getOrCreateNode(NodeGen.getOSPFAreaSumName(cur_ospf.getName(), NodeGen.getAreaName(area)), NodeType.OSPFAreaSum);
         if (!res.second()){
+            res.first().setArea(area);
             topo.addOSPFAreaSumRelation(res.first().getName(), cur_ospf.getName());
         }
         return res.first();

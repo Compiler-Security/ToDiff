@@ -21,11 +21,10 @@ public class reducer {
      * This will reduce given opCtxG, and write it to confG
      * @param opCtxG
      * @param confG
-     * @param r_name
      */
-    public static void reduceToConfG(OpCtxG opCtxG, ConfGraph confG, String r_name){
+    public static void reduceToConfG(OpCtxG opCtxG, ConfGraph confG){
         var r = new reducePass();
-        var opaG = r.solve(opCtxG);
-        ospfArgPass.solve(opaG, confG, r_name);
+        var opaG = r.solve(opCtxG).activeSetView();
+        ospfArgPass.solve(opaG, confG, confG.getR_name());
     }
 }

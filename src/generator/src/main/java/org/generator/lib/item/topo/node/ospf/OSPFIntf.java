@@ -181,18 +181,6 @@ public class OSPFIntf extends AbstractNode {
 
     int transDelay;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OSPFIntf ospfIntf = (OSPFIntf) o;
-        return passive == ospfIntf.passive && vrf == ospfIntf.vrf && cost == ospfIntf.cost && deadInterval == ospfIntf.deadInterval && helloMulti == ospfIntf.helloMulti && GRHelloDelay == ospfIntf.GRHelloDelay && helloInterval == ospfIntf.helloInterval && priority == ospfIntf.priority && retansInter == ospfIntf.retansInter && transDelay == ospfIntf.transDelay && Objects.equals(area, ospfIntf.area) && netType == ospfIntf.netType;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(passive, vrf, cost, area, deadInterval, helloMulti, GRHelloDelay, helloInterval, netType, priority, retansInter, transDelay);
-    }
 
     //    @Override
 //    public String getNodeAtrriStr() {

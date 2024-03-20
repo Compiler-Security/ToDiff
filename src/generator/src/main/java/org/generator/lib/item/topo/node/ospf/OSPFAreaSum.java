@@ -1,5 +1,8 @@
 package org.generator.lib.item.topo.node.ospf;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.generator.lib.item.topo.node.NodeType;
 import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.util.net.ID;
@@ -60,6 +63,23 @@ public class OSPFAreaSum extends AbstractNode {
         boolean advertise;
         int cost;
         IP substitute;
+
+        public ObjectNode getJsonNode() {
+            ObjectNode jsonObject = new ObjectMapper().createObjectNode();
+            Class<?> clazz = this.getClass();
+            for(var field : clazz.getDeclaredFields()){
+                var key = field.getName();
+                if (key.equals("$assertionsDisabled")) continue;
+                field.setAccessible(true);
+                try {
+                    var val = field.get(this);
+                    jsonObject.put(key, String.format("%s", val));
+                }catch (Exception e){
+                    assert false: e;
+                }
+            }
+            return jsonObject;
+        }
     }
 
     public Map<String, OSPFAreaSumEntry> getSumEntries() {
@@ -154,16 +174,14 @@ public class OSPFAreaSum extends AbstractNode {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OSPFAreaSum that = (OSPFAreaSum) o;
-        return stub == that.stub && nosummary == that.nosummary && nssa == that.nssa && Objects.equals(sumEntries, that.sumEntries) && Objects.equals(virtualLink, that.virtualLink) && shortcut == that.shortcut && Objects.equals(area, that.area);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(sumEntries, virtualLink, shortcut, stub, nosummary, nssa, area);
+    public ObjectNode getJsonNode() {
+        var jsNode = super.getJsonNode();
+        var sums = new ObjectMapper().createObjectNode();
+        for(var entry: sumEntries.values()){
+            sums.set(entry.getRange().toString(), entry.getJsonNode());
+        }
+        jsNode.set("sumEntries", sums);
+        return jsNode;
     }
 
     //    @Override

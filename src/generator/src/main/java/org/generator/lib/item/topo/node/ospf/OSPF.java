@@ -120,18 +120,4 @@ public class OSPF extends AbstractNode {
         minHoldTime = 50; //holdtimeMinMsecs
         maxHoldTime = 5000; //holdtimeMaxMsecs
     }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OSPF ospf = (OSPF) o;
-        return initDelay == ospf.initDelay && minHoldTime == ospf.minHoldTime && maxHoldTime == ospf.maxHoldTime && Objects.equals(routerId, ospf.routerId) && status == ospf.status && abrType == ospf.abrType;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(routerId, status, abrType, initDelay, minHoldTime, maxHoldTime);
-    }
-
 }

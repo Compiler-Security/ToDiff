@@ -29,7 +29,7 @@ public class genCorePass {
 
     String r_name;
     ConfGraph confg;
-
+    public genCorePass(){}
     private OpOspf addOp(OpCtxG opCtxG, OpType typ){
         var op = OpOspf.of(typ);
         opCtxG.addOp(OpCtx.of(op));
@@ -317,8 +317,8 @@ public class genCorePass {
      * @param r_name
      * @return each opCtxG is one interface or router ospf
      */
-    public  List<OpCtxG> solve(ConfGraph confg, String r_name){
-        this.r_name = r_name;
+    public  List<OpCtxG> solve(ConfGraph confg){
+        this.r_name = confg.getR_name();
         this.confg = confg;
         List<OpCtxG> opgs = new ArrayList<>();
         //daemon

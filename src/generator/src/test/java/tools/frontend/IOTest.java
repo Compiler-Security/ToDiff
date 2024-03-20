@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.generator.controller.CapacityController;
 import org.generator.lib.generator.controller.NormalController;
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.generator.pass.genEqualPass;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.topo.graph.ConfGraph;
 import org.generator.lib.item.topo.node.ospf.OSPF;
+import org.generator.lib.item.topo.node.phy.Intf;
+import org.generator.lib.item.topo.node.phy.Router;
+import org.generator.lib.reducer.driver.reducer;
 import org.generator.lib.reducer.pass.ospfArgPass;
 import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.reducer.pass.reducePass;
@@ -28,6 +32,35 @@ public class IOTest {
         node1.setInitDelay(10);
         System.out.println(node1.getJsonNode());
         System.out.println( node.getJsonNode().equals(node1.getJsonNode()));
+    }
+    @Test
+    public void Part1Test(){
+        var confg = new ConfGraph("r1");
+        confg.addNode(new Router("r1"));
+        confg.addNode(new Intf("r1-eth0"));
+        confg.addIntfRelation("r1-eth0", "r1");
+        confg.addNode(new Intf("r1-eth2"));
+        confg.addIntfRelation("r1-eth2", "r1");
+
+
+        String test_st = """
+                                router ospf
+                                int r1-eth0
+                                ip ospf area 0
+                                ip address 10.0.0.0/10
+                                router ospf    
+                                area 1061954456 range 91.122.46.62/11 not-advertise  
+                                area 3389220260 range 92.238.183.225/7      
+                """;
+        var reader = new ConfReader();
+        var opCtxG = reader.read(test_st);
+        reducer.reduceToConfG(opCtxG, confg);
+        var genG = generate.generateCore(confg);
+        var confg1 = confg.copyPhyGraph();
+        reducer.reduceToConfG(genG, confg1);
+        System.out.println(confg1.toJson().toPrettyString());
+        System.out.println(confg.toJson().toPrettyString());
+        System.out.println(confg1.toJson().equals(confg.toJson()));
     }
     @Test
     public void Part2Test(){

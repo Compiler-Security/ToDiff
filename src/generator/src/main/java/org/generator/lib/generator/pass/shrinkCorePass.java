@@ -25,7 +25,7 @@ public class shrinkCorePass {
     boolean check(List<OpCtxG> opCtxGS, ConfGraph confG, String r_name){
         var opCtxG = genCorePass.mergeOpCtxgToOne(opCtxGS);
         var g = confG.copyPhyGraph();
-        reducer.reduceToConfG(opCtxG, g, r_name);
+        reducer.reduceToConfG(opCtxG, g);
         return getJson(confG).equals(getJson(g));
     }
     /**

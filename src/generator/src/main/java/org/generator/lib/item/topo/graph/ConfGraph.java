@@ -1,5 +1,9 @@
 package org.generator.lib.item.topo.graph;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.generator.lib.item.topo.edge.RelationEdge;
 import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.lib.item.topo.node.NodeGen;
@@ -45,16 +49,24 @@ public class ConfGraph extends AbstractRelationGraph {
      * @return
      */
     public ConfGraph copyPhyGraph(){
-        var g = new ConfGraph();
+        var g = new ConfGraph(r_name);
         g.addNode(new Router(r_name));
         for(var intf: getIntfsOfRouter(r_name)){
-            g.addNode(new Intf(intf.getName()));
+            var intf_new = new Intf(intf.getName());
+            intf_new.setUp(intf.isUp());
+            g.addNode(intf_new);
             g.addIntfRelation(intf.getName(), r_name);
         }
         return g;
     }
 
-
+    public ObjectNode toJson(){
+        var jsonNode = new ObjectMapper().createObjectNode();
+        for(var node: getNodes()){
+            jsonNode.set(node.getName(), node.getJsonNode());
+        }
+        return jsonNode;
+    }
     private Pair<AbstractNode, Boolean> createNode(AbstractNode node){
         var res = addNode(node);
         assert res == ExecStat.SUCC;
@@ -118,7 +130,7 @@ public class ConfGraph extends AbstractRelationGraph {
 
     public ExecStat addIntfRelation(String intfName, String routerName){
         addEdge(intfName, routerName, RelationEdge.EdgeType.PhyNODE);
-        addEdge(routerName, intfName, RelationEdge.EdgeType.PhyNODE);
+        addEdge(routerName, intfName, RelationEdge.EdgeType.INTF);
         return ExecStat.SUCC;
     }
 

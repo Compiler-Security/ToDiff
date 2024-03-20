@@ -15,7 +15,8 @@ public abstract class AbstractRelationGraph extends AbstractGraph<AbstractNode, 
     @Override
     public ExecStat addNode(AbstractNode node) {
         if(name_to_nodes.containsKey(node.getName())) return ExecStat.MISS;
-        if (super.hasNode(node)) return ExecStat.MISS;
+        if (super.hasNode(node))
+            return ExecStat.MISS;
         super.addnode(node);
         name_to_nodes.put(node.getName(), node);
         return ExecStat.SUCC;
