@@ -6,7 +6,6 @@ package org.generator.lib.generator.pass;
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;
-import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.topo.edge.RelationEdge;
 import org.generator.lib.item.topo.graph.ConfGraph;
@@ -18,12 +17,11 @@ import org.generator.lib.item.topo.node.ospf.OSPFIntf;
 import org.generator.lib.item.topo.node.phy.Intf;
 import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
+import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
-
 public class genCorePass {
 
     String r_name;
@@ -232,6 +230,64 @@ public class genCorePass {
             opgs.add(opctxg);
         }
         return opgs;
+    }
+
+    private List<OpCtxG> handleAREAID(boolean netAreaId){
+        List<OpCtxG> opCtxGS = new ArrayList<>();
+        if (!netAreaId){
+            for(var ospf_intf: confg.getOSPFIntfOfRouter(r_name)){
+                if (ospf_intf.getArea() != null){
+                    var opCtxg = OpCtxG.Of();
+                    addOp(opCtxg, OpType.IntfName);
+                    var op = addOp(opCtxg, OpType.IpOspfArea);
+                    op.setID(ospf_intf.getArea());
+                    opCtxGS.add(opCtxg);
+                }
+            }
+        }else{
+            List<Pair<IP, ID>> intfToArea = new ArrayList<>();
+            for(var ospf_intf: confg.getOSPFIntfOfRouter(r_name)){
+                if (ospf_intf.getArea() != null) {
+                    Intf intf = (Intf) confg.getDstsByType(ospf_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
+                    intfToArea.add(new Pair<>(intf.getIp(), ospf_intf.getArea()));
+                }
+            }
+            var opCtxg = OpCtxG.Of();
+            addOp(opCtxg, OpType.ROSPF);
+            //TODO add prefix Tree
+            for(var entry: intfToArea){
+                var ip = entry.first();
+                var area = entry.second();
+                var op = addOp(opCtxg, OpType.NETAREAID);
+                op.setIPRANGE(IPRange.of(ip.toString()));
+                op.setID(area);
+            }
+            opCtxGS.add(opCtxg);
+        }
+        return opCtxGS;
+    }
+
+    private List<OpCtxG> handlePassiveIntf(){
+        List<Pair<IP, ID>> intfToArea = new ArrayList<>();
+        boolean isAllPassive = true;
+        List<OpCtxG> opCtxGS = new ArrayList<>();
+        for(var ospf_intf: confg.getOSPFIntfOfRouter(r_name)) {
+            isAllPassive  &= ospf_intf.isPassive();
+            Intf intf = (Intf) confg.getDstsByType(ospf_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
+            var opCtxg = OpCtxG.Of();
+            var op = addOp(opCtxg, OpType.IntfName);
+            op.setNAME(intf.getName());
+            addOp(opCtxg, OpType.IpOspfPassive);
+            opCtxGS.add(opCtxg);
+        }
+
+        if (isAllPassive){
+            var opCtxg = OpCtxG.Of();
+            addOp(opCtxg, OpType.ROSPF);
+            addOp(opCtxg, OpType.PASSIVEINTFDEFUALT);
+            opCtxGS.add(opCtxg);
+        }
+        return opCtxGS;
     }
     public  OpCtxG solve(ConfGraph confg, String r_name){
         this.r_name = r_name;

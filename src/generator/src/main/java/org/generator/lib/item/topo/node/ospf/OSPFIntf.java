@@ -4,6 +4,7 @@ import org.generator.lib.item.topo.node.NodeType;
 import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
+import org.generator.util.net.ID;
 import org.generator.util.net.IPBase;
 
 import java.util.Arrays;
@@ -47,15 +48,15 @@ public class OSPFIntf extends AbstractNode {
     int vrf;
     int cost;
 
-    public IPBase getArea() {
+    public ID getArea() {
         return area;
     }
 
-    public void setArea(IPBase area) {
+    public void setArea(ID area) {
         this.area = area;
     }
 
-    IPBase area;
+    ID area;
 
     public int getDeadInterval() {
         return deadInterval;

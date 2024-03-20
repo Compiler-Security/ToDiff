@@ -12,8 +12,10 @@ import org.generator.lib.item.topo.node.ospf.OSPFIntf;
 import org.generator.lib.item.topo.node.phy.Intf;
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.util.collections.Pair;
+import org.generator.util.net.ID;
 import org.generator.util.net.IPBase;
 
+import javax.swing.*;
 import java.util.*;
 
 public class ospfArgPass {
@@ -93,7 +95,7 @@ public class ospfArgPass {
                 }
             }
         }else if (ospf_opg != null){
-            HashMap<IPBase, IPBase> netToArea = new HashMap<>();
+            HashMap<IPBase, ID> netToArea = new HashMap<>();
             for (var op: ospf_opg.popOpsOfType(OpType.NETAREAID)){
                 if (!netToArea.containsKey(op.getIP())){
                     netToArea.put(op.getIP(), op.getID());
@@ -102,7 +104,7 @@ public class ospfArgPass {
             for (var intf: topo.getIntfsOfRouter(r_name)){
                 if (intf.getIp() == null) continue;
                 int mask_len = -1;
-                Map.Entry<IPBase, IPBase> mxEntry = null;
+                Map.Entry<IPBase, ID> mxEntry = null;
                 //find the most small subnetwork
                 for (var entry: netToArea.entrySet()){
                     if (entry.getKey().containsIp(intf.getIp())){
