@@ -100,10 +100,6 @@ public class genCorePass {
             op.setNAME(intf.getName());
         }
 
-        {
-            var op = addOp(opCtxG, OpType.IPAddr);
-            op.setIP(intf.getIp());
-        }
 
         {
             var op = addOp(opCtxG, OpType.IpOspfCost);
@@ -158,6 +154,19 @@ public class genCorePass {
 
     private List<OpCtxG> handleIntfs(){
         List<OpCtxG> opgs = new ArrayList<>();
+        for(var intf: confg.getIntfsOfRouter(r_name)){
+            if (intf.getIp() == null) continue;
+            var opCtxG = OpCtxG.Of();
+            {
+                var op = addOp(opCtxG, OpType.IntfName);
+                op.setNAME(intf.getName());
+            }
+            {
+                var op = addOp(opCtxG, OpType.IPAddr);
+                op.setIP(intf.getIp());
+            }
+            opgs.add(opCtxG);
+        }
         for(var ospf_intf: confg.getOSPFIntfOfRouter(r_name)){
             opgs.add(handleIntf(ospf_intf));
         }
