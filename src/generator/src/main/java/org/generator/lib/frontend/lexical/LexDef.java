@@ -170,6 +170,10 @@ public class LexDef {
         return preprocess.get(opType);
     }
 
+    public static int getLexDefNum(OpType opType){
+        return preprocess.get(opType).size();
+    }
+
     /**
      * INVALID will not to match
      * @return OpType to match
