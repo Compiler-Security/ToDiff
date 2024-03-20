@@ -4,6 +4,7 @@
 package org.generator.lib.generator.pass;
 
 import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
@@ -19,6 +20,7 @@ import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
+import org.generator.util.ran.ranHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -175,7 +177,7 @@ public class genCorePass {
         if (areaSum.getVirtualLink() != null){
             var op = addOp(opCtxG, OpType.AreaVLink);
             op.setID(area_id);
-            //FIXME
+            //FIXME(VLINK)
             assert false:"virtual link don't implemented";
         }
         //stub
@@ -333,8 +335,10 @@ public class genCorePass {
         opgs.addAll(tmp3s);
 
         //areaId
-        //TODO we need random boolean
-        var tmp4 = handleAREAID(true);
+        List<OpCtxG> tmp4;
+        if (generate.ran){
+            tmp4 = handleAREAID(ranHelper.randomInt(0, 1) == 0);
+        }else tmp4 = handleAREAID(false);
         opgs.addAll(tmp4);
 
         //passive intf

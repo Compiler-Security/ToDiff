@@ -11,6 +11,7 @@ ATTENTION: this pass may add multiple opA to OpAG, and may change other OpA's st
  */
 package org.generator.lib.generator.pass;
 
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.util.collections.Pair;
@@ -56,8 +57,10 @@ public class movePass {
         List<applyRulePass.RuleType> possibleRules;
         if (allowed_ruleType != null) possibleRules = new ArrayList<>(Arrays.stream(getRules(current_state, target_opa.state)).toList()).stream().filter(x -> allowed_ruleType.contains(x)).toList();
         else possibleRules = List.of(getRules(current_state, target_opa.state));
+        if (generate.ran){
+            Collections.shuffle(possibleRules);
+        }
         for(var rule: possibleRules){
-            //TODO we should random choose the rule
             var opAG_new = applyRulePass.solve(opAG, target_opa, rule);
             if (opAG_new != null) return opAG_new;
         }

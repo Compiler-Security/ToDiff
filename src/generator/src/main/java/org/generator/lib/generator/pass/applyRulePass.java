@@ -22,9 +22,11 @@
  */
 package org.generator.lib.generator.pass;
 
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.reducer.pass.reducePass;
+import org.generator.util.ran.ranHelper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -67,8 +69,10 @@ public class applyRulePass {
             case SolveConflict -> {
                 var conflict_ops = conflictOps(opAG_new, target_opa);
                 while(!conflict_ops.isEmpty()){
-                    //TODO we should random select one to solve
                     var handle_opa = conflict_ops.get(0);
+                    if (generate.ran){
+                        handle_opa = ranHelper.randomElemOfList(conflict_ops);
+                    }
                     var expect_opa = handle_opa.copy();
                     expect_opa.setState(OpAnalysis.STATE.REMOVED);
                     var opa_next = movePass.solve(opAG_new, expect_opa, Arrays.stream(new RuleType[]{RuleType.UnsetOp, RuleType.UnsetCtx}).toList());

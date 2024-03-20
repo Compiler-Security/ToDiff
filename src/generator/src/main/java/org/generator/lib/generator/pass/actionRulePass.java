@@ -1,6 +1,7 @@
 package org.generator.lib.generator.pass;
 
 import org.generator.lib.frontend.lexical.LexDef;
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.opg.OpAG;
@@ -151,7 +152,10 @@ public class actionRulePass {
         if (unset_list.isEmpty()) return null;
         var unsetType = ranHelper.randomElemOfList(unset_list);
         new_op.setType(unsetType);
-        new_op.getOpCtx().setFormmat(OpCtx.Format.of(unsetType, ranHelper.randomInt(0, LexDef.getLexDefNum(unsetType) - 1)));
+        new_op.getOpCtx().setFormmat(OpCtx.Format.of(unsetType, 0));
+        if (generate.ran) {
+            new_op.getOpCtx().setFormmat(OpCtx.Format.of(unsetType, ranHelper.randomInt(0, LexDef.getLexDefNum(unsetType) - 1)));
+        }
         return OpAnalysis.of(new_op);
     }
     /**

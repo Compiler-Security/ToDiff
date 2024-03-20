@@ -5,9 +5,12 @@ package org.generator.lib.generator.pass;
 
 import org.generator.lib.generator.controller.CapacityController;
 import org.generator.lib.generator.controller.NormalController;
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class genEqualPass {
@@ -60,12 +63,16 @@ public class genEqualPass {
             }
         }
     }
+
+    //FIXME(should turn to true when running)
     public static OpAG solve(NormalController controller, CapacityController tmp_controller){
         var opag = OpAG.of();
         while(!controller.getCanMoveOpas().isEmpty() || !tmp_controller.getCanMoveOpas().isEmpty()){
             var action_list = controller.getCanMoveOpas();
             action_list.addAll(tmp_controller.getCanMoveOpas());
-            //TODO we should random pick one
+            if (generate.ran) {
+                Collections.shuffle(action_list);
+            }
             for(var actionOpa_old: action_list){
                 var actionOpa = actionOpa_old.copy();
                 List<OpAnalysis.STATE> actionStates;
@@ -76,7 +83,9 @@ public class genEqualPass {
                 }
 
                 boolean succ = false;
-                //TODO we should random pick one state
+                if (generate.ran){
+                    Collections.shuffle(actionStates);
+                }
                 for (var action_state : actionStates) {
                     actionOpa.setState(action_state);
                     var possible_opag = movePass.solve(opag, actionOpa, null);

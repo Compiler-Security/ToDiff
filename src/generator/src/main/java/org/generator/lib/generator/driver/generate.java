@@ -30,4 +30,7 @@ public class generate {
         var gen_opag = genEqualPass.solve(normal_controller, tmp_controller);
         return gen_opag.toOpCtxGALL();
     }
+
+    //FIXME(should turn to true when running)
+    public static final boolean ran = false;
 }
