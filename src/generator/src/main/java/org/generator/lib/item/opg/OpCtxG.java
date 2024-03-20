@@ -2,6 +2,8 @@ package org.generator.lib.item.opg;
 
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.item.IR.OpCtx;
+import org.generator.lib.reducer.semantic.CtxOpDef;
+import org.generator.tools.frontend.OspfConfWriter;
 
 public class OpCtxG extends BaseOpG<OpCtx>{
     private OpCtxG(){super();}
@@ -16,13 +18,7 @@ public class OpCtxG extends BaseOpG<OpCtx>{
 
     @Override
     public String toString() {
-        StringBuilder b = new StringBuilder();
-        b.append("[");
-        for(var op: getOps()){
-            b.append(IO.writeOp(op));
-            b.append(",\n");
-        }
-        b.append("]");
-        return b.toString();
+        var ospfConfWriter = new OspfConfWriter();
+        return ospfConfWriter.write(this);
     }
 }

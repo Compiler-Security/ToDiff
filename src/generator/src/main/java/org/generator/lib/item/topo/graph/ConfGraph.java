@@ -28,6 +28,19 @@ import java.util.stream.Collectors;
 //TODO clean this code
 public class ConfGraph extends AbstractRelationGraph {
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConfGraph that = (ConfGraph) o;
+        return that.toJson().equals(this.toJson());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(toJson().hashCode());
+    }
+
     public String getR_name() {
         return r_name;
     }
@@ -67,6 +80,12 @@ public class ConfGraph extends AbstractRelationGraph {
         }
         return jsonNode;
     }
+
+    @Override
+    public String toString() {
+        return toJson().toPrettyString();
+    }
+
     private Pair<AbstractNode, Boolean> createNode(AbstractNode node){
         var res = addNode(node);
         assert res == ExecStat.SUCC;

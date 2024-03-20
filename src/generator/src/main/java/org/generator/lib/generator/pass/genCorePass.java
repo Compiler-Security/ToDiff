@@ -295,9 +295,9 @@ public class genCorePass {
 
 
     public static List<OpCtxG> mergeOpCtxgToEach(List<OpCtxG> opCtxG){
-        Map<OpCtx, OpCtxG> merge = new HashMap<>();
+        Map<OpOspf, OpCtxG> merge = new HashMap<>();
         for(var opctxg: opCtxG){
-            var ctxOp = opctxg.getOps().getFirst();
+            var ctxOp = (OpOspf) opctxg.getOps().getFirst().getOperation();
             merge.putIfAbsent(ctxOp, OpCtxG.Of());
             merge.get(ctxOp).addOps(opctxg.getOps());
         }

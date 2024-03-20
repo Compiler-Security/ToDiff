@@ -7,8 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.topo.graph.ConfGraph;
-import org.generator.lib.item.topo.node.phy.Intf;
-import org.generator.lib.item.topo.node.phy.Router;
 import org.generator.lib.reducer.driver.reducer;
 
 import java.util.List;

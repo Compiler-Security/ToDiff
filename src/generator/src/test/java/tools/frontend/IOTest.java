@@ -23,6 +23,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 
+import static org.junit.Assert.assertEquals;
+
 public class IOTest {
 
     @Test
@@ -33,16 +35,24 @@ public class IOTest {
         System.out.println(node1.getJsonNode());
         System.out.println( node.getJsonNode().equals(node1.getJsonNode()));
     }
-    @Test
-    public void Part1Test(){
+
+    ConfGraph getConfG(){
         var confg = new ConfGraph("r1");
         confg.addNode(new Router("r1"));
         confg.addNode(new Intf("r1-eth0"));
         confg.addIntfRelation("r1-eth0", "r1");
         confg.addNode(new Intf("r1-eth2"));
         confg.addIntfRelation("r1-eth2", "r1");
+        return confg;
+    }
 
-
+    ConfGraph getSetConfG(OpCtxG conf){
+        ConfGraph g = getConfG();
+        reducer.reduceToConfG(conf, g);
+        return g;
+    }
+    @Test
+    public void Part1Test(){
         String test_st = """
                                 router ospf
                                 int r1-eth0
@@ -52,15 +62,18 @@ public class IOTest {
                                 area 1061954456 range 91.122.46.62/11 not-advertise  
                                 area 3389220260 range 92.238.183.225/7      
                 """;
-        var reader = new ConfReader();
-        var opCtxG = reader.read(test_st);
-        reducer.reduceToConfG(opCtxG, confg);
-        var genG = generate.generateCore(confg);
-        System.out.println(genG);
-        var confg1 = confg.copyPhyGraph();
-        reducer.reduceToConfG(genG, confg1);
-        //System.out.println(confg.toJson().toPrettyString());
-        System.out.println(confg1.toJson().equals(confg.toJson()));
+        var ori = new ConfReader().read(test_st);
+        var confg = getSetConfG(ori);
+
+        var gen = generate.generateCore(confg);
+        System.out.println(gen);
+        var confg_core = getSetConfG(gen);
+        assert confg_core.equals(confg);
+
+        var gen_equal = generate.generateEqualOfCore(gen, 1);
+        System.out.println(gen_equal);
+        var confg_equal = getSetConfG(gen_equal);
+        assert confg_equal.equals(confg);
     }
     @Test
     public void Part2Test(){
