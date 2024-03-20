@@ -59,7 +59,6 @@ public class IOTest {
         var confg1 = confg.copyPhyGraph();
         reducer.reduceToConfG(genG, confg1);
         System.out.println(confg1.toJson().toPrettyString());
-        System.out.println(confg.toJson().toPrettyString());
         System.out.println(confg1.toJson().equals(confg.toJson()));
     }
     @Test

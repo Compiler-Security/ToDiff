@@ -173,6 +173,10 @@ public class OSPFAreaSum extends AbstractNode {
         area = null;
     }
 
+    /**
+     * We override this Node because we should print entrySums
+     * @return
+     */
     @Override
     public ObjectNode getJsonNode() {
         var jsNode = super.getJsonNode();

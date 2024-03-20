@@ -276,12 +276,14 @@ public class genCorePass {
         List<OpCtxG> opCtxGS = new ArrayList<>();
         for(var ospf_intf: confg.getOSPFIntfOfRouter(r_name)) {
             isAllPassive  &= ospf_intf.isPassive();
-            Intf intf = (Intf) confg.getDstsByType(ospf_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
-            var opCtxg = OpCtxG.Of();
-            var op = addOp(opCtxg, OpType.IntfName);
-            op.setNAME(intf.getName());
-            addOp(opCtxg, OpType.IpOspfPassive);
-            opCtxGS.add(opCtxg);
+            if (ospf_intf.isPassive()) {
+                Intf intf = (Intf) confg.getDstsByType(ospf_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
+                var opCtxg = OpCtxG.Of();
+                var op = addOp(opCtxg, OpType.IntfName);
+                op.setNAME(intf.getName());
+                addOp(opCtxg, OpType.IpOspfPassive);
+                opCtxGS.add(opCtxg);
+            }
         }
 
         if (isAllPassive){
