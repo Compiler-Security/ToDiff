@@ -33,7 +33,8 @@ public class shrinkCorePass {
      * @param confG
      * @param opCtxGs
      */
-    public void solve(List<OpCtxG> opCtxGs, ConfGraph confG, String r_name){
+    public void solve(List<OpCtxG> opCtxGs, ConfGraph confG){
+        String r_name = confG.getR_name();
         for(var opCtxg: opCtxGs){
             var ops = opCtxg.getOps();
             for(int i = 0; i < ops.size(); i++){
@@ -47,4 +48,5 @@ public class shrinkCorePass {
             }
         }
     }
+    public shrinkCorePass(){}
 }

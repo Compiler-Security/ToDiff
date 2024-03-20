@@ -48,7 +48,7 @@ public class IOTest {
                                 int r1-eth0
                                 ip ospf area 0
                                 ip address 10.0.0.0/10
-                                router ospf    
+                                router ospf   
                                 area 1061954456 range 91.122.46.62/11 not-advertise  
                                 area 3389220260 range 92.238.183.225/7      
                 """;
@@ -56,9 +56,10 @@ public class IOTest {
         var opCtxG = reader.read(test_st);
         reducer.reduceToConfG(opCtxG, confg);
         var genG = generate.generateCore(confg);
+        System.out.println(genG);
         var confg1 = confg.copyPhyGraph();
         reducer.reduceToConfG(genG, confg1);
-        System.out.println(confg1.toJson().toPrettyString());
+        //System.out.println(confg.toJson().toPrettyString());
         System.out.println(confg1.toJson().equals(confg.toJson()));
     }
     @Test

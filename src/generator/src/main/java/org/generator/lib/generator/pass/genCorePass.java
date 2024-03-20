@@ -163,6 +163,7 @@ public class genCorePass {
     }
     private OpCtxG handleArea(OSPFAreaSum areaSum){
         var opCtxG = OpCtxG.Of();
+        addOp(opCtxG, OpType.ROSPF);
         var area_id = areaSum.getArea();
         //shortcut
         {
@@ -196,12 +197,7 @@ public class genCorePass {
                     op.setID(area_id);
                     op.setIPRANGE(areaRange.getRange());
                 }
-                //areaRangeSub
-                {
-                    var op = addOp(opCtxG, OpType.AreaRangeSub);
-                    op.setID(area_id);
-                    op.setIPRANGE(areaRange.getRange());
-                }
+
                 //areaRangeCost
                 {
                     var op = addOp(opCtxG, OpType.AreaRangeCost);
@@ -211,10 +207,12 @@ public class genCorePass {
                 }
                 //areaRangeSub
                 {
-                    var op = addOp(opCtxG, OpType.AreaRangeSub);
-                    op.setID(area_id);
-                    op.setIPRANGE(areaRange.getRange());
-                    op.setIP(areaRange.getSubstitute());
+                    if (areaRange.getSubstitute() != null) {
+                        var op = addOp(opCtxG, OpType.AreaRangeSub);
+                        op.setID(area_id);
+                        op.setIPRANGE(areaRange.getRange());
+                        op.setIP(areaRange.getSubstitute());
+                    }
                 }
             }else{
                 var op = addOp(opCtxG, OpType.AreaRangeNoAd);
@@ -316,7 +314,6 @@ public class genCorePass {
     /**
      * This pass will return generate core config
      * @param confg
-     * @param r_name
      * @return each opCtxG is one interface or router ospf
      */
     public  List<OpCtxG> solve(ConfGraph confg){

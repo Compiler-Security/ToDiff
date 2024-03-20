@@ -129,6 +129,7 @@ public class ospfDaemonExecPass extends baseExecPass {
             }
             var areaSum = getAreaSum(op.getID(), topo);
             var areaSumEntry = getAreaSumEntry(areaSum, op.getIPRANGE());
+            areaSumEntry.setAdvertise(true);
             switch (op.Type()) {
                 case AreaRange -> {
                 }

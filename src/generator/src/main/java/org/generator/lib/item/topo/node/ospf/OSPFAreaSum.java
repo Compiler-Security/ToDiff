@@ -25,6 +25,12 @@ public class OSPFAreaSum extends AbstractNode {
     }
 
     public static class OSPFAreaSumEntry{
+        public OSPFAreaSumEntry(){
+        }
+        void initField(){
+            //FIXME other fields
+            setAdvertise(true);
+        }
         public IPRange getRange() {
             return range;
         }
