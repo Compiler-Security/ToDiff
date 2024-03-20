@@ -24,7 +24,7 @@ public class actionRulePass {
      * `+` means add OpA in the end of the OpAG
      */
     private static void insert(OpAG opAG, OpAnalysis opA){
-        //FIXME for simplicity currently we can only add opAs in the end of OpAG
+        //TODO for simplicity currently we can only add opAs in the end of OpAG
         opAG.addOp(opA.copy());
         opAG.reduce();
     }

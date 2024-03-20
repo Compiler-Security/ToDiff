@@ -65,7 +65,6 @@ public class applyRulePass {
                 return opAG_new;
             }
             case SolveConflict -> {
-                //TODO solveConflict
                 var conflict_ops = conflictOps(opAG_new, target_opa);
                 while(!conflict_ops.isEmpty()){
                     //TODO we should random select one to solve

@@ -20,6 +20,7 @@ public class generate {
     }
 
     public static OpCtxG generateEqualOfCore(OpCtxG opCtxG, int expand_ratio){
+        //TODO in the simplest version, we don't add other irrelevant instructions
         var opas = reducer.reduce(opCtxG);
         var normal_controller = NormalController.of();
         for(var opa: opas.getOps()){

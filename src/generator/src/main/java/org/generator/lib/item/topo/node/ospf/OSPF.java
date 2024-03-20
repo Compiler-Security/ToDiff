@@ -114,7 +114,6 @@ public class OSPF extends AbstractNode {
     public void initFiled() {
         status = OSPF_STATUS.UP;
         abrType = null; //abrType if it's not ABR, this field is null
-        //TODO we should set this in init
         routerId = ID.of(0);
         initDelay = 0; //spfScheduleDelayMsecs
         minHoldTime = 50; //holdtimeMinMsecs

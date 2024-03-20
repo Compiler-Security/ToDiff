@@ -22,9 +22,9 @@ public class movePass {
 
 
     /**
-     * INIT,REMOVED -> REMOVED SYNWRONG, GenConf (may not ok), NoCtx (may not ok) (FIXME currently for simplicity the last two rule we don't use)
+     * INIT,REMOVED -> REMOVED SYNWRONG, GenConf (may not ok), NoCtx (may not ok)
      * INIT,REMOVED -> ACTIVE SolveConflict
-     * ACTIVE-> REMOVED UnsetOp | UnsetCtx | Overrided(FIXME currently for simplicity)
+     * ACTIVE-> REMOVED UnsetOp | UnsetCtx | Overrided
      * ACTIVE-> ACTIVE Keep
      * other DisCard
      */
@@ -50,14 +50,14 @@ public class movePass {
      */
     public static  OpAG solve(OpAG opAG, OpAnalysis target_opa, @Nullable List<applyRulePass.RuleType> allowed_ruleType){
         /*
-        FIXME For simplicity we only use dfs and currently not build condition graph
+        TDOO For simplicity we only use dfs and currently not build condition graph
         */
         var current_state = opAG.getOpAStatus(target_opa);
         List<applyRulePass.RuleType> possibleRules;
         if (allowed_ruleType != null) possibleRules = new ArrayList<>(Arrays.stream(getRules(current_state, target_opa.state)).toList()).stream().filter(x -> allowed_ruleType.contains(x)).toList();
         else possibleRules = List.of(getRules(current_state, target_opa.state));
         for(var rule: possibleRules){
-            //FIXME we should random choose the rule
+            //TODO we should random choose the rule
             var opAG_new = applyRulePass.solve(opAG, target_opa, rule);
             if (opAG_new != null) return opAG_new;
         }

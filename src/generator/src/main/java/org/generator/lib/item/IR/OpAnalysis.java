@@ -135,7 +135,6 @@ public class OpAnalysis{
 
     @Override
     public String toString() {
-        //TODO
         return op.toString() + "(" + state + ")";
     }
 }

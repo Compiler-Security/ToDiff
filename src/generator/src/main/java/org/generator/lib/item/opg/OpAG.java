@@ -65,7 +65,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
     public OpAnalysis.STATE getOpAStatus(OpAnalysis opA){
         return OpStatus.getOrDefault(opA, OpAnalysis.STATE.INIT);
     }
-    //FIXME this have some problem
+    //FIXME this is not elegant
     /**
      * This function filter the active ops, not include unset op, not COPY!
      * @return
@@ -125,7 +125,6 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         return toOpCtx(activeSetView());
     }
 
-    //FIXME reconstruct this
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();

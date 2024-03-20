@@ -216,7 +216,6 @@ public class reducePass {
     /**
      * This function will change OpAG to the normal form
      * normal form don't have ROSPF && INTFNAME
-     * TODO all the instruction witch has the same ctxOp's str will point to the same ctxOp
      * @param opAG
      * @return
      */

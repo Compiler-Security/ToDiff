@@ -156,7 +156,7 @@ public class ospfDaemonExecPass extends baseExecPass {
             var areaSum = getAreaSum(op.getID(), topo);
             switch (op.Type()){
                 case AreaVLink -> {
-                    //TODO
+                    //FIXME(VLINK) currently we don't handle this
                     assert false : "AreaVlink not implemented";
                 }
                 case AreaShortcut -> {

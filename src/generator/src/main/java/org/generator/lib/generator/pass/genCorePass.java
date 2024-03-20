@@ -333,7 +333,7 @@ public class genCorePass {
         opgs.addAll(tmp3s);
 
         //areaId
-        //FIXME we need random
+        //TODO we need random boolean
         var tmp4 = handleAREAID(true);
         opgs.addAll(tmp4);
 

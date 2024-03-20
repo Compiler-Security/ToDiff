@@ -61,7 +61,6 @@ public class genEqualPass {
         }
     }
     public static OpAG solve(NormalController controller, CapacityController tmp_controller){
-        //TODO in the simpleset version, we don't add
         var opag = OpAG.of();
         while(!controller.getCanMoveOpas().isEmpty() || !tmp_controller.getCanMoveOpas().isEmpty()){
             var action_list = controller.getCanMoveOpas();
