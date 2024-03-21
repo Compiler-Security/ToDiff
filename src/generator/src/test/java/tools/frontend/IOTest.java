@@ -41,8 +41,8 @@ public class IOTest {
         confg.addNode(new Router("r1"));
         confg.addNode(new Intf("r1-eth0"));
         confg.addIntfRelation("r1-eth0", "r1");
-        confg.addNode(new Intf("r1-eth2"));
-        confg.addIntfRelation("r1-eth2", "r1");
+        confg.addNode(new Intf("r1-eth1"));
+        confg.addIntfRelation("r1-eth1", "r1");
         return confg;
     }
 
@@ -63,14 +63,26 @@ public class IOTest {
 //                                area 3389220260 range 92.238.183.225/7
 //                """;
         String test_st = """
+                  router ospf
+                                area 1061954456 range 91.122.46.62/11 not-advertise
+                                area 1061954456 range 91.122.46.62/11 not-advertise 
+                                write-multiplier 10
                                 int r1-eth0
                                 ip ospf area 0
                                 ip address 10.0.0.0/10
                                 ip ospf cost 20
-                                router ospf
-                                area 3389220260 range 92.238.183.225/7
-
+                                int r1-eth1 
+                                ip ospf area 1
+                                ip address 11.1.1.1/10
                 """;
+//        String test_st = """
+//                                int r1-eth0
+//                                ip ospf area 0
+//                                ip address 10.0.0.0/10
+//                                ip ospf cost 20
+//                                router ospf
+//                                area 3389220260 range 92.238.183.225/7
+//                """;
 //        String test_st = """
 //                router ospf
 //                area 202.3.101.164 range 92.238.183.225/7 cost 0
