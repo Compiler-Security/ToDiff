@@ -114,7 +114,9 @@ public class actionRulePass {
                 }
             }
         }
-        return OpAnalysis.of(new_op);
+        var res = OpAnalysis.of(new_op);
+        res.setCtxOp(opA.getCtxOp());
+        return res;
     }
 
     private static OpAnalysis broken(OpAnalysis opA){
@@ -142,7 +144,9 @@ public class actionRulePass {
                 }
             }
         }
-        return OpAnalysis.of(new_op);
+        var res = OpAnalysis.of(new_op);
+        res.setCtxOp(opA.getCtxOp());
+        return res;
     }
 
     private static OpAnalysis unset(OpAnalysis opA){
@@ -160,7 +164,9 @@ public class actionRulePass {
         if (generate.ran) {
             new_op.getOpCtx().setFormmat(OpCtx.Format.of(unsetType, ranHelper.randomInt(0, LexDef.getLexDefNum(unsetType) - 1)));
         }
-        return OpAnalysis.of(new_op);
+        var res = OpAnalysis.of(new_op);
+        res.setCtxOp(opA.getCtxOp());
+        return res;
     }
     /**
      * we add a new  OpA to opAG considering actionType

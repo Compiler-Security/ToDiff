@@ -135,6 +135,6 @@ public class OpAnalysis{
 
     @Override
     public String toString() {
-        return op.toString() + "(" + state + ")";
+        return op.toString() + "(" + state + ")" + "[" + String.format("%s", ctxOp.getOp()) + "]";
     }
 }

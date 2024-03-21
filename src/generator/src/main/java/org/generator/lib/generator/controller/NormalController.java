@@ -32,6 +32,17 @@ public  class NormalController {
             state = OpAnalysis.STATE.REMOVED;
         }
 
+        @Override
+        public String toString() {
+            return "GenConfig{" +
+                    "ra=" + ra +
+                    ", rr=" + rr +
+                    ", ar=" + ar +
+                    ", aa=" + aa +
+                    ", state=" + state +
+                    '}';
+        }
+
         public List<OpAnalysis.STATE> getValidMoveStates(){
             List<OpAnalysis.STATE> valid_states = new ArrayList<>();
             if (state == OpAnalysis.STATE.REMOVED){
@@ -165,5 +176,12 @@ public  class NormalController {
             }
         }
         return res;
+    }
+
+    @Override
+    public String toString() {
+        return "NormalController{" +
+                "configMap=" + configMap +
+                '}';
     }
 }

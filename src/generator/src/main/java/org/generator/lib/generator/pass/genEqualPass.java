@@ -73,6 +73,7 @@ public class genEqualPass {
             if (generate.ran) {
                 Collections.shuffle(action_list);
             }
+
             for(var actionOpa_old: action_list){
                 var actionOpa = actionOpa_old.copy();
                 List<OpAnalysis.STATE> actionStates;
@@ -99,7 +100,9 @@ public class genEqualPass {
                 }
                 if (succ) break;
             }
-            //System.out.println(opag.toString());
+//            System.out.println(opag);
+//            System.out.println(controller);
+//            System.out.println(tmp_controller);
         }
         return opag;
     }

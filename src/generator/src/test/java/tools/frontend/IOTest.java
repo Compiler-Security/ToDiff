@@ -53,17 +53,31 @@ public class IOTest {
     }
     @Test
     public void Part1Test(){
+//        String test_st = """
+//                                router ospf
+//                                int r1-eth0
+//                                ip ospf area 0
+//                                ip address 10.0.0.0/10
+//                                router ospf
+//                                area 1061954456 range 91.122.46.62/11 not-advertise
+//                                area 3389220260 range 92.238.183.225/7
+//                """;
         String test_st = """
-                                router ospf
                                 int r1-eth0
                                 ip ospf area 0
                                 ip address 10.0.0.0/10
-                                router ospf   
-                                area 1061954456 range 91.122.46.62/11 not-advertise  
-                                area 3389220260 range 92.238.183.225/7      
+                                router ospf
+                                area 3389220260 range 92.238.183.225/7
+
                 """;
+//        String test_st = """
+//                router ospf
+//                area 202.3.101.164 range 92.238.183.225/7 cost 0
+//                no router ospf
+//                """;
         var ori = new ConfReader().read(test_st);
         var confg = getSetConfG(ori);
+        System.out.println(confg);
 
         var gen = generate.generateCore(confg);
         System.out.println(gen);
