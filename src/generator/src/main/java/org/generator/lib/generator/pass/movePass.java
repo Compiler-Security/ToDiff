@@ -55,6 +55,7 @@ public class movePass {
         */
         var current_state = opAG.getOpAStatus(target_opa);
         List<applyRulePass.RuleType> possibleRules;
+        System.out.printf("%s %s->%s\n", target_opa.toString(), current_state, target_opa.state);
         if (allowed_ruleType != null) possibleRules = new ArrayList<>(Arrays.stream(getRules(current_state, target_opa.state)).toList()).stream().filter(x -> allowed_ruleType.contains(x)).toList();
         else possibleRules = new ArrayList<>(List.of(getRules(current_state, target_opa.state)));
         if (generate.ran){

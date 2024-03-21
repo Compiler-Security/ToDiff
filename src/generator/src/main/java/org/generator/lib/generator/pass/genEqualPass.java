@@ -100,9 +100,9 @@ public class genEqualPass {
                 }
                 if (succ) break;
             }
-//            System.out.println(opag);
-//            System.out.println(controller);
-//            System.out.println(tmp_controller);
+            System.out.println(opag);
+            System.out.println(controller);
+            System.out.println(tmp_controller);
         }
         return opag;
     }

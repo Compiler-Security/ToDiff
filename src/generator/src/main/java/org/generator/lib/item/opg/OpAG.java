@@ -128,7 +128,14 @@ public class OpAG extends BaseOpG<OpAnalysis>{
 
     public OpCtxG toOpCtxGLeaner(){
         var opCtxg = OpCtxG.Of();
-        getOps().forEach(x -> opCtxg.addOp(x.getOp().getOpCtx()));
+        OpOspf preCtxOp = null;
+        for(var opa: getOps()){
+            if (opa.getCtxOp() != null && !opa.getCtxOp().getOp().equals(preCtxOp)){
+                opCtxg.addOp(opa.getCtxOp().getOp().getOpCtx());
+                preCtxOp = opa.getCtxOp().getOp();
+            }
+            opCtxg.addOp(opa.getOp().getOpCtx());
+        }
         return opCtxg;
     }
 
@@ -137,7 +144,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         StringBuilder b = new StringBuilder();
         b.append("[\n");
         for(var opa: getOps()){
-            b.append(IO.writeOp(opa.op.getOpCtx()));
+            b.append(opa);
             b.append("(");
             b.append(opa.state);
             b.append(")");

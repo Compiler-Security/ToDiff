@@ -135,6 +135,8 @@ public class OpAnalysis{
 
     @Override
     public String toString() {
-        return op.toString() + "(" + state + ")" + "[" + String.format("%s", ctxOp.getOp()) + "]";
+        if (ctxOp == null)
+            return  op.toString() + "(" + state + ")[null]";
+        else return op.toString() + "(" + state + ")" + "[" + String.format("%s", ctxOp.getOp()) + "]";
     }
 }
