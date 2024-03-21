@@ -220,15 +220,18 @@ public class genOps {
         rest_num = 0;
         all = false;
         //fixme we should only generate one ip address XXX at once
+        var opg1 = OpCtxG.Of();
+        opg1.addOp(genOp(OpType.ROSPF));
+        opgs.push(opg1);
         while(total_num < inst_num){
             if (rest_num > 0){
                 addOp(opgs.peek());
                 rest_num -= 1;
                 total_num += 1;
             }else{
-                switch (selectCtx()){
+                switch (selectCtx()) {
                     case 0 -> {
-                        if (opgs.empty() || (getCtxOpType(opgs.peek()) != OpType.ROSPF || ran.nextDouble(1) > merge_ratio) ) {
+                        if (opgs.empty() || (getCtxOpType(opgs.peek()) != OpType.ROSPF || ran.nextDouble(1) > merge_ratio)) {
                             var opg = OpCtxG.Of();
                             opg.addOp(genOp(OpType.ROSPF));
                             opgs.push(opg);
@@ -239,7 +242,7 @@ public class genOps {
                         var opg = OpCtxG.Of();
                         var intf = genOp(OpType.IntfName);
                         intf.getOperation().setNAME(NodeGen.getIntfName(r_name, ran.nextInt(interface_num)));
-                        if (opgs.empty() || (!intf.getOperation().getNAME().equals(opgs.peek().getOps().get(0).getOperation().getNAME()) || ran.nextDouble(1) > merge_ratio)){
+                        if (opgs.empty() || (!intf.getOperation().getNAME().equals(opgs.peek().getOps().get(0).getOperation().getNAME()) || ran.nextDouble(1) > merge_ratio)) {
                             opg.addOp(intf);
                             opgs.push(opg);
                         }

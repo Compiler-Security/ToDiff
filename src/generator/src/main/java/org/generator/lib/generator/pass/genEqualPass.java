@@ -89,14 +89,18 @@ public class genEqualPass {
                 }
                 for (var action_state : actionStates) {
                     actionOpa.setState(action_state);
-                    var possible_opag = movePass.solve(opag, actionOpa, null);
-                    if (possible_opag == null) continue;
-                    if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
-                        updateController(possible_opag, controller, tmp_controller, actionOpa);
-                        opag = possible_opag;
-                        succ = true;
-                        break;
+                    //FIXME This is a bug, we should try different when do possible_opag, set this to 20 is safe I think
+                    for(int j = 0; j < 20; j++) {
+                        var possible_opag = movePass.solve(opag, actionOpa, null);
+                        if (possible_opag == null) continue;
+                        if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
+                            updateController(possible_opag, controller, tmp_controller, actionOpa);
+                            opag = possible_opag;
+                            succ = true;
+                            break;
+                        }
                     }
+                    if (succ) break;
                 }
                 if (succ) break;
             }

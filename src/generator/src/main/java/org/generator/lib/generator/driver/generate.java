@@ -32,5 +32,5 @@ public class generate {
     }
 
     //FIXME(should turn to true when running)
-    public static final boolean ran = false;
+    public static final boolean ran = true;
 }

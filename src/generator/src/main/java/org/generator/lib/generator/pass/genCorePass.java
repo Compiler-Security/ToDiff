@@ -88,6 +88,10 @@ public class genCorePass {
                     var op = addOp(opCtxG, OpType.NOSOCKETPERINTERFACE);
                 }
             }
+            {
+                var op = addOp(opCtxG, OpType.MAXIMUMPATHS);
+                op.setNUM(daemon.getMaxPaths());
+            }
         }
         return opCtxG;
     }
@@ -188,6 +192,11 @@ public class genCorePass {
             op.setID(area_id);
             //FIXME(VLINK)
             assert false:"virtual link don't implemented";
+        }
+        //stub nosummary
+        if (areaSum.isNosummary()){
+            var op = addOp(opCtxG, OpType.AreaStubTotal);
+            op.setID(area_id);
         }
         //stub
         if (areaSum.isStub()){

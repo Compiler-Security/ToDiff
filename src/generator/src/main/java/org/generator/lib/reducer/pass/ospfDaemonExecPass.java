@@ -50,7 +50,7 @@ public class ospfDaemonExecPass extends baseExecPass {
                 return ExecStat.SUCC;
             }
         }
-        assert false:"should not goto here";
+        assert false:"should not goto here %s".formatted(op.Type());
         return ExecStat.FAIL;
     }
 

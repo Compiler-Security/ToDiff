@@ -19,6 +19,7 @@ import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.reducer.pass.reducePass;
 import org.generator.tools.frontend.ConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
+import org.generator.tools.testOps.genOps;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -27,6 +28,12 @@ import static org.junit.Assert.assertEquals;
 
 public class IOTest {
 
+    @Test
+    public void genRandom(){
+        var genOp = new genOps();
+        var res = genOp.genRandom(100, 0.5, 0.4, 2, 0, 0.3, "r1");
+        System.out.println(res);
+    }
     @Test
     public void jsonTest(){
         var node = new OSPF("r1");
@@ -62,19 +69,19 @@ public class IOTest {
 //                                area 1061954456 range 91.122.46.62/11 not-advertise
 //                                area 3389220260 range 92.238.183.225/7
 //                """;
-        String test_st = """
-                  router ospf
-                                area 1061954456 range 91.122.46.62/11 not-advertise
-                                area 1061954456 range 91.122.46.62/11 not-advertise 
-                                write-multiplier 10
-                                int r1-eth0
-                                ip ospf area 0
-                                ip address 10.0.0.0/10
-                                ip ospf cost 20
-                                int r1-eth1 
-                                ip ospf area 1
-                                ip address 11.1.1.1/10
-                """;
+//        String test_st = """
+//                  router ospf
+//                                area 1061954456 range 91.122.46.62/11 not-advertise
+//                                area 1061954456 range 91.122.46.62/11 not-advertise
+//                                write-multiplier 10
+//                                int r1-eth0
+//                                ip ospf area 0
+//                                ip address 10.0.0.0/10
+//                                ip ospf cost 20
+//                                int r1-eth1
+//                                ip ospf area 1
+//                                ip address 11.1.1.1/10
+//                """;
 //        String test_st = """
 //                                int r1-eth0
 //                                ip ospf area 0
@@ -88,14 +95,26 @@ public class IOTest {
 //                area 202.3.101.164 range 92.238.183.225/7 cost 0
 //                no router ospf
 //                """;
-        var ori = new ConfReader().read(test_st);
+//        String test_st = """
+//                router ospf
+//                	socket buffer send 1287520359
+//                	area 58.167.154.44 nssa
+//                	area 159.65.5.110 stub
+//                """;
+        var genOp = new genOps();
+        var ori = genOp.genRandom(10, 0.5, 0.4, 2, 0, 1, "r1");
+        //var ori = new ConfReader().read(test_st);
         var confg = getSetConfG(ori);
-        System.out.println(confg);
+
 
         var gen = generate.generateCore(confg);
+        System.out.println(ori);
+        System.out.println("========");
         System.out.println(gen);
         var confg_core = getSetConfG(gen);
-        assert confg_core.equals(confg);
+        System.out.println(confg);
+        System.out.println(confg_core);
+        assert confg_core.equals(confg) : "GEN WRONG";
 
         var gen_equal = generate.generateEqualOfCore(gen, 1);
         System.out.println(gen_equal);
