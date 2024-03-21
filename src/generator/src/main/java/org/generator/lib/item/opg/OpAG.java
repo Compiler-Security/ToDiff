@@ -114,6 +114,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         }
         return genCorePass.mergeOpCtxgToOne(merge.values().stream().toList());
     }
+
     /**
      * This function will get active set OpCtxG from OpAG
      */
@@ -123,6 +124,12 @@ public class OpAG extends BaseOpG<OpAnalysis>{
 
     public OpCtxG toOpCtxGActiveSet(){
         return toOpCtx(activeSetView());
+    }
+
+    public OpCtxG toOpCtxGLeaner(){
+        var opCtxg = OpCtxG.Of();
+        getOps().forEach(x -> opCtxg.addOp(x.getOp().getOpCtx()));
+        return opCtxg;
     }
 
     @Override

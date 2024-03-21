@@ -28,7 +28,7 @@ public class generate {
         }
         var tmp_controller = CapacityController.of(opas.getOps().size(), 0, 0, 1, 0);
         var gen_opag = genEqualPass.solve(normal_controller, tmp_controller);
-        return gen_opag.toOpCtxGALL();
+        return gen_opag.toOpCtxGLeaner();
     }
 
     //FIXME(should turn to true when running)

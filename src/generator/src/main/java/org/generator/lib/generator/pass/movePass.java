@@ -61,7 +61,7 @@ public class movePass {
             Collections.shuffle(possibleRules);
         }
         for(var rule: possibleRules){
-            System.out.println(rule);
+           // System.out.println(rule);
             var opAG_new = applyRulePass.solve(opAG, target_opa, rule);
             if (opAG_new != null) return opAG_new;
         }

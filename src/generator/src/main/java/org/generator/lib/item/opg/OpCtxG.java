@@ -1,9 +1,12 @@
 package org.generator.lib.item.opg;
 
 import org.generator.lib.frontend.driver.IO;
+import org.generator.lib.item.IR.Op;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.reducer.semantic.CtxOpDef;
 import org.generator.tools.frontend.OspfConfWriter;
+
+import java.util.List;
 
 public class OpCtxG extends BaseOpG<OpCtx>{
     private OpCtxG(){super();}
@@ -14,6 +17,12 @@ public class OpCtxG extends BaseOpG<OpCtx>{
      */
     public static OpCtxG Of(){
         return new OpCtxG();
+    }
+
+    public static OpCtxG Of(List<OpCtx> ops){
+        var opctxg = OpCtxG.Of();
+        opctxg.addOps(ops);
+        return opctxg;
     }
 
     @Override
