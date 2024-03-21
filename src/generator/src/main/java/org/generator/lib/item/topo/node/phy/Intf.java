@@ -4,6 +4,9 @@ import org.generator.lib.item.topo.node.NodeType;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPBase;
 import org.generator.lib.item.topo.node.AbstractNode;
+
+import java.util.Objects;
+
 public class Intf extends AbstractNode {
     public Intf(String name){
         setName(name);
@@ -46,7 +49,8 @@ public class Intf extends AbstractNode {
         persudo = false;
     }
 
-//    @Override
+
+    //    @Override
 //    public String getNodeAtrriStr() {
 //        String ip_str = "UNK";
 //        if (getIp() != null){

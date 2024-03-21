@@ -5,15 +5,18 @@ package org.generator.lib.generator.pass;
 
 import org.generator.lib.generator.controller.CapacityController;
 import org.generator.lib.generator.controller.NormalController;
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-public class genPass {
+public class genEqualPass {
 
     static boolean checkOpAG(OpAG opAG, NormalController controller, CapacityController tmp_controller, OpAnalysis target_opa){
-        for(var opa: opAG.setView()){
+        for(var opa: opAG.setList()){
             var current_state = opAG.getOpAStatus(opa);
             if (!opa.equals(target_opa)){
                 if (controller.hasConfigOfOpa(opa)){
@@ -39,7 +42,7 @@ public class genPass {
     }
 
     static void updateController(OpAG opAG, NormalController controller, CapacityController tmp_controller, OpAnalysis target_opa){
-        for(var opa: opAG.setView()){
+        for(var opa: opAG.setList()){
             var current_state = opAG.getOpAStatus(opa);
             if (!opa.equals(target_opa)){
                 if (controller.hasConfigOfOpa(opa)){
@@ -60,13 +63,17 @@ public class genPass {
             }
         }
     }
+
+    //FIXME(should turn to true when running)
     public static OpAG solve(NormalController controller, CapacityController tmp_controller){
-        //TODO in the simpleset version, we don't add
         var opag = OpAG.of();
         while(!controller.getCanMoveOpas().isEmpty() || !tmp_controller.getCanMoveOpas().isEmpty()){
             var action_list = controller.getCanMoveOpas();
             action_list.addAll(tmp_controller.getCanMoveOpas());
-            //TODO we should random pick one
+            if (generate.ran) {
+                Collections.shuffle(action_list);
+            }
+            boolean succ = false;
             for(var actionOpa_old: action_list){
                 var actionOpa = actionOpa_old.copy();
                 List<OpAnalysis.STATE> actionStates;
@@ -76,22 +83,31 @@ public class genPass {
                     actionStates = tmp_controller.getValidMoveStatesOfOpa(actionOpa);
                 }
 
-                boolean succ = false;
-                //TODO we should random pick one state
+
+                if (generate.ran){
+                    Collections.shuffle(actionStates);
+                }
                 for (var action_state : actionStates) {
                     actionOpa.setState(action_state);
-                    var possible_opag = movePass.solve(opag, actionOpa, null);
-                    if (possible_opag == null) continue;
-                    if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
-                        updateController(possible_opag, controller, tmp_controller, actionOpa);
-                        opag = possible_opag;
-                        succ = true;
-                        break;
+                    //FIXME This is a bug, we should try different when do possible_opag, set this to 20 is safe I think
+                    for(int j = 0; j < 20; j++) {
+                        var possible_opag = movePass.solve(opag, actionOpa, null);
+                        if (possible_opag == null) continue;
+                        if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
+                            updateController(possible_opag, controller, tmp_controller, actionOpa);
+                            opag = possible_opag;
+                            succ = true;
+                            break;
+                        }
                     }
+                    if (succ) break;
                 }
                 if (succ) break;
             }
-            System.out.println(opag.toString());
+            assert succ: "all op can not move!";
+            System.out.println(opag);
+            System.out.println(controller);
+            System.out.println(tmp_controller);
         }
         return opag;
     }

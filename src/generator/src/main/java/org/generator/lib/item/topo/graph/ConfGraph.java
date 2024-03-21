@@ -1,5 +1,9 @@
 package org.generator.lib.item.topo.graph;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.generator.lib.item.topo.edge.RelationEdge;
 import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.lib.item.topo.node.NodeGen;
@@ -7,6 +11,7 @@ import org.generator.lib.item.topo.node.NodeType;
 import org.generator.lib.item.topo.node.ospf.OSPFAreaSum;
 import org.generator.lib.item.topo.node.ospf.OSPFIntf;
 import org.generator.lib.item.topo.node.phy.Intf;
+import org.generator.lib.item.topo.node.phy.Router;
 import org.generator.util.collections.Pair;
 import org.generator.util.exec.ExecStat;
 import org.graphstream.graph.Graph;
@@ -20,7 +25,67 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+//TODO clean this code
 public class ConfGraph extends AbstractRelationGraph {
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConfGraph that = (ConfGraph) o;
+        return that.toJson().equals(this.toJson());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(toJson().hashCode());
+    }
+
+    public String getR_name() {
+        return r_name;
+    }
+
+    public void setR_name(String r_name) {
+        this.r_name = r_name;
+    }
+
+    String r_name;
+    public ConfGraph(){
+        super();
+    }
+    public ConfGraph(String r_name){
+        this.r_name = r_name;
+    }
+
+    /**
+     * build a new phy graph from this graph
+     * @return
+     */
+    public ConfGraph copyPhyGraph(){
+        var g = new ConfGraph(r_name);
+        g.addNode(new Router(r_name));
+        for(var intf: getIntfsOfRouter(r_name)){
+            var intf_new = new Intf(intf.getName());
+            intf_new.setUp(intf.isUp());
+            g.addNode(intf_new);
+            g.addIntfRelation(intf.getName(), r_name);
+        }
+        return g;
+    }
+
+    public ObjectNode toJson(){
+        var jsonNode = new ObjectMapper().createObjectNode();
+        for(var node: getNodes()){
+            jsonNode.set(node.getName(), node.getJsonNode());
+        }
+        return jsonNode;
+    }
+
+    @Override
+    public String toString() {
+        return toJson().toPrettyString();
+    }
+
     private Pair<AbstractNode, Boolean> createNode(AbstractNode node){
         var res = addNode(node);
         assert res == ExecStat.SUCC;
@@ -84,7 +149,7 @@ public class ConfGraph extends AbstractRelationGraph {
 
     public ExecStat addIntfRelation(String intfName, String routerName){
         addEdge(intfName, routerName, RelationEdge.EdgeType.PhyNODE);
-        addEdge(routerName, intfName, RelationEdge.EdgeType.PhyNODE);
+        addEdge(routerName, intfName, RelationEdge.EdgeType.INTF);
         return ExecStat.SUCC;
     }
 

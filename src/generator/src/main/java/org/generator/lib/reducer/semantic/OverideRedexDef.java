@@ -14,6 +14,7 @@ import static org.generator.lib.frontend.lexical.OpType.*;
  * override can be two case:
  *  same instruction
  *  override to other insturction
+ *  {Type, to override Type, equal args num}
  */
 public class OverideRedexDef extends BaseRedexDef {
     OverideRedexDef(){

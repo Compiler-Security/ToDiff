@@ -1,6 +1,9 @@
 package org.generator.lib.item.topo.node.ospf;
 
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.lib.item.topo.node.NodeType;
 import org.generator.util.collections.AbstractStringEnum;
@@ -9,6 +12,7 @@ import org.generator.util.net.ID;
 import org.generator.util.net.IPBase;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 public class OSPF extends AbstractNode {
@@ -41,6 +45,11 @@ public class OSPF extends AbstractNode {
             return Arrays.stream(ABR_TYPE.values())
                     .filter(x -> x.match(st))
                     .findFirst();
+        }
+
+        @Override
+        public String toString() {
+            return template.split("\\|")[0];
         }
     }
 
@@ -105,12 +114,9 @@ public class OSPF extends AbstractNode {
     public void initFiled() {
         status = OSPF_STATUS.UP;
         abrType = null; //abrType if it's not ABR, this field is null
-        //TODO we should set this in init
         routerId = ID.of(0);
         initDelay = 0; //spfScheduleDelayMsecs
         minHoldTime = 50; //holdtimeMinMsecs
         maxHoldTime = 5000; //holdtimeMaxMsecs
     }
-
-
 }

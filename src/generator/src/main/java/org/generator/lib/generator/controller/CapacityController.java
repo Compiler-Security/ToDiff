@@ -1,6 +1,8 @@
 package org.generator.lib.generator.controller;
 
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
+import org.generator.util.ran.ranHelper;
 
 
 /**
@@ -31,8 +33,9 @@ public class CapacityController extends NormalController {
             return true;
         }
         else if (getActiveOpas().size() < cap){
-            //TODO random remove one
-            delConfig(getREMOVEDOpas().get(0));
+            if (generate.ran){
+                delConfig(getREMOVEDOpas().get(ranHelper.randomInt(0, getREMOVEDOpas().size() - 1)));
+            }else delConfig(getREMOVEDOpas().get(0));
             super.addConfig(opa, new_config.rr, new_config.ra, new_config.ar, new_config.aa);
             return true;
         } else return false;

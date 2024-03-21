@@ -65,6 +65,7 @@ public class OpCtx {
         return operation;
     }
 
+
     private final Op operation;
 
     public Format getFormmat() {

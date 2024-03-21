@@ -1,5 +1,8 @@
 package org.generator.lib.item.topo.node.ospf;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.generator.lib.item.topo.node.NodeType;
 import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.util.net.ID;
@@ -9,6 +12,7 @@ import org.generator.util.net.IPRange;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 public class OSPFAreaSum extends AbstractNode {
@@ -21,6 +25,12 @@ public class OSPFAreaSum extends AbstractNode {
     }
 
     public static class OSPFAreaSumEntry{
+        public OSPFAreaSumEntry(){
+        }
+        void initField(){
+            //TODO other fields
+            setAdvertise(true);
+        }
         public IPRange getRange() {
             return range;
         }
@@ -47,7 +57,7 @@ public class OSPFAreaSum extends AbstractNode {
             this.cost = cost;
         }
 
-        public IPBase getSubstitute() {
+        public IP getSubstitute() {
             return substitute;
         }
 
@@ -59,6 +69,23 @@ public class OSPFAreaSum extends AbstractNode {
         boolean advertise;
         int cost;
         IP substitute;
+
+        public ObjectNode getJsonNode() {
+            ObjectNode jsonObject = new ObjectMapper().createObjectNode();
+            Class<?> clazz = this.getClass();
+            for(var field : clazz.getDeclaredFields()){
+                var key = field.getName();
+                if (key.equals("$assertionsDisabled")) continue;
+                field.setAccessible(true);
+                try {
+                    var val = field.get(this);
+                    jsonObject.put(key, String.format("%s", val));
+                }catch (Exception e){
+                    assert false: e;
+                }
+            }
+            return jsonObject;
+        }
     }
 
     public Map<String, OSPFAreaSumEntry> getSumEntries() {
@@ -107,7 +134,18 @@ public class OSPFAreaSum extends AbstractNode {
     public enum shortCutType{
         Enable,
         Disable,
-        Default
+        Default;
+
+        @Override
+        public String toString() {
+            switch (this){
+                case Default -> {return "default";}
+                case Enable -> {return "enable";}
+                case Disable -> {return "disable";}
+            }
+            assert false: "should not go to here";
+            return "";
+        }
     };
     ID virtualLink;
 
@@ -141,7 +179,22 @@ public class OSPFAreaSum extends AbstractNode {
         area = null;
     }
 
-//    @Override
+    /**
+     * We override this Node because we should print entrySums
+     * @return
+     */
+    @Override
+    public ObjectNode getJsonNode() {
+        var jsNode = super.getJsonNode();
+        var sums = new ObjectMapper().createObjectNode();
+        for(var entry: sumEntries.values()){
+            sums.set(entry.getRange().toString(), entry.getJsonNode());
+        }
+        jsNode.set("sumEntries", sums);
+        return jsNode;
+    }
+
+    //    @Override
 //    public String getNodeAtrriStr() {
 //        new Unimplemented();
 //        return "";

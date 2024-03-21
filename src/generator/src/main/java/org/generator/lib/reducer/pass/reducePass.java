@@ -198,7 +198,7 @@ public class reducePass {
     public static OpAG expandOpAG(OpAG opAG){
         var opAg_expand = new OpAG();
         for(var opa: opAG.getOps()){
-            if (opa.getCtxOp() != null){
+            if (opa.getCtxOp() != null && CtxOpDef.isSetCtxOp(opa.getCtxOp().op.Type())){
                 opAg_expand.addOp(opa.getCtxOp().copy());
             }
             opAg_expand.addOp(opa);
@@ -216,7 +216,6 @@ public class reducePass {
     /**
      * This function will change OpAG to the normal form
      * normal form don't have ROSPF && INTFNAME
-     * TODO all the instruction witch has the same ctxOp's str will point to the same ctxOp
      * @param opAG
      * @return
      */

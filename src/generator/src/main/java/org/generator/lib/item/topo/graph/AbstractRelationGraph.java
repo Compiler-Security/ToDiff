@@ -7,7 +7,7 @@ import org.generator.util.graph.AbstractGraph;
 
 import java.util.*;
 
-//FIXME AbstractGraph is non-multi-edge graph
+//TODO AbstractGraph is non-multi-edge graph
 public abstract class AbstractRelationGraph extends AbstractGraph<AbstractNode, RelationEdge> implements RelationGraphIntf {
     public AbstractRelationGraph(){
         name_to_nodes = new HashMap<>();
@@ -15,7 +15,8 @@ public abstract class AbstractRelationGraph extends AbstractGraph<AbstractNode, 
     @Override
     public ExecStat addNode(AbstractNode node) {
         if(name_to_nodes.containsKey(node.getName())) return ExecStat.MISS;
-        if (super.hasNode(node)) return ExecStat.MISS;
+        if (super.hasNode(node))
+            return ExecStat.MISS;
         super.addnode(node);
         name_to_nodes.put(node.getName(), node);
         return ExecStat.SUCC;
@@ -75,7 +76,7 @@ public abstract class AbstractRelationGraph extends AbstractGraph<AbstractNode, 
     @Override
     public ExecStat delEdge(String src_name, String dst_name, RelationEdge.EdgeType etyp) {
         if (!containsEdge(src_name, dst_name, etyp)) return ExecStat.MISS;
-        //FIXME API not 100% good
+        //TODO this is not elegant
         super.delEdge(name_to_nodes.get(src_name), name_to_nodes.get(dst_name));
         return ExecStat.SUCC;
     }

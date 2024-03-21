@@ -4,9 +4,11 @@ import org.generator.lib.item.topo.node.NodeType;
 import org.generator.lib.item.topo.node.AbstractNode;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
+import org.generator.util.net.ID;
 import org.generator.util.net.IPBase;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Optional;
 
 public class OSPFIntf extends AbstractNode {
@@ -25,11 +27,11 @@ public class OSPFIntf extends AbstractNode {
         this.vrf = vrf;
     }
 
-    public long getCost() {
+    public int getCost() {
         return cost;
     }
 
-    public void setCost(long cost) {
+    public void setCost(int cost) {
         this.cost = cost;
     }
 
@@ -45,17 +47,17 @@ public class OSPFIntf extends AbstractNode {
 
     boolean passive;
     int vrf;
-    long cost;
+    int cost;
 
-    public IPBase getArea() {
+    public ID getArea() {
         return area;
     }
 
-    public void setArea(IPBase area) {
+    public void setArea(ID area) {
         this.area = area;
     }
 
-    IPBase area;
+    ID area;
 
     public int getDeadInterval() {
         return deadInterval;
@@ -115,6 +117,11 @@ public class OSPFIntf extends AbstractNode {
                     .filter(x -> x.match(st))
                     .findFirst();
         }
+
+        @Override
+        public String toString() {
+            return template;
+        }
     }
 
     public OSPFNetType getNetType() {
@@ -137,7 +144,7 @@ public class OSPFIntf extends AbstractNode {
         retansInter = 5; //timerRetransmitSecs
         transDelay = 1; //transmitDelaySecs
 
-        helloMulti = 760; 
+        helloMulti = 0;
         GRHelloDelay = 10; //grHelloDelaySecs
         netType = OSPFNetType.BROADCAST;
         priority = 1; //priority
@@ -174,7 +181,8 @@ public class OSPFIntf extends AbstractNode {
 
     int transDelay;
 
-//    @Override
+
+    //    @Override
 //    public String getNodeAtrriStr() {
 //        return String.format("{type:%s, area: %s, vrf:%d, cost:%d}",  getNodeType(), getArea(), getVrf(), getCost());
 //    }

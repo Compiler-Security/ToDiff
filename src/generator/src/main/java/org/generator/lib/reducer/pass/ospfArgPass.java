@@ -12,8 +12,12 @@ import org.generator.lib.item.topo.node.ospf.OSPFIntf;
 import org.generator.lib.item.topo.node.phy.Intf;
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.util.collections.Pair;
+import org.generator.util.net.ID;
+import org.generator.util.net.IP;
 import org.generator.util.net.IPBase;
+import org.generator.util.net.IPRange;
 
+import javax.swing.*;
 import java.util.*;
 
 public class ospfArgPass {
@@ -21,7 +25,7 @@ public class ospfArgPass {
     private static Pair<List<OpArgG>, OpArgG> splitOpAG(OpAG opAG) {
         var h = new HashMap<Op, OpArgG>();
         for (var opa : opAG.getOps()) {
-            assert opa.getCtxOp() != null: "each avtive opa in opAG's normal form should have ctxOp";
+            assert opa.getCtxOp() != null: "each active opa in opAG's normal form should have ctxOp";
             assert opa.getOp().Type().isSetOp() : "each op should be set Op";
             var ctx_op = opa.getCtxOp().getOp();
             var op = opa.getOp();
@@ -93,16 +97,16 @@ public class ospfArgPass {
                 }
             }
         }else if (ospf_opg != null){
-            HashMap<IPBase, IPBase> netToArea = new HashMap<>();
+            HashMap<IPRange, ID> netToArea = new HashMap<>();
             for (var op: ospf_opg.popOpsOfType(OpType.NETAREAID)){
-                if (!netToArea.containsKey(op.getIP())){
-                    netToArea.put(op.getIP(), op.getID());
+                if (!netToArea.containsKey(op.getIPRANGE())){
+                    netToArea.put(op.getIPRANGE(), op.getID());
                 }
             }
             for (var intf: topo.getIntfsOfRouter(r_name)){
                 if (intf.getIp() == null) continue;
                 int mask_len = -1;
-                Map.Entry<IPBase, IPBase> mxEntry = null;
+                Map.Entry<IPRange, ID> mxEntry = null;
                 //find the most small subnetwork
                 for (var entry: netToArea.entrySet()){
                     if (entry.getKey().containsIp(intf.getIp())){

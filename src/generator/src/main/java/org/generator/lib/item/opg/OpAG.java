@@ -1,7 +1,9 @@
 package org.generator.lib.item.opg;
 
 import org.generator.lib.frontend.driver.IO;
+import org.generator.lib.generator.pass.genCorePass;
 import org.generator.lib.item.IR.OpAnalysis;
+import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.reducer.driver.reducer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -63,7 +65,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
     public OpAnalysis.STATE getOpAStatus(OpAnalysis opA){
         return OpStatus.getOrDefault(opA, OpAnalysis.STATE.INIT);
     }
-    //FIXME this have some problem
+    //FIXME this is not elegant
     /**
      * This function filter the active ops, not include unset op, not COPY!
      * @return
@@ -78,9 +80,10 @@ public class OpAG extends BaseOpG<OpAnalysis>{
      * one set op only last version
      * @return
      */
-    public List<OpAnalysis> setView(){
+    public List<OpAnalysis> setList(){
         return OpStatus.keySet().stream().filter(opa -> opa.op.Type().isSetOp()).toList();
     }
+
     Map<OpAnalysis, OpAnalysis.STATE> OpStatus;
     /**
      * This method will reduce itself and return itself
@@ -96,19 +99,58 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         return this;
     }
 
-    //FIXME reconstruct this
+
+    private OpCtxG toOpCtx(OpAG opAG){
+        var opaG = this;
+        Map<OpOspf, OpCtxG> merge = new HashMap<>();
+        for(var opa: opaG.getOps()){
+            var ctxOp = opa.getCtxOp().getOp();
+            if (!merge.containsKey(ctxOp)){
+                var o = OpCtxG.Of();
+                o.addOp(ctxOp.getOpCtx());
+                merge.put(ctxOp, o);
+            }
+            merge.get(ctxOp).addOp(opa.getOp().getOpCtx());
+        }
+        return genCorePass.mergeOpCtxgToOne(merge.values().stream().toList());
+    }
+
+    /**
+     * This function will get active set OpCtxG from OpAG
+     */
+    public OpCtxG toOpCtxGALL(){
+       return toOpCtx(this);
+    }
+
+    public OpCtxG toOpCtxGActiveSet(){
+        return toOpCtx(activeSetView());
+    }
+
+    public OpCtxG toOpCtxGLeaner(){
+        var opCtxg = OpCtxG.Of();
+        OpOspf preCtxOp = null;
+        for(var opa: getOps()){
+            if (opa.getCtxOp() != null && !opa.getCtxOp().getOp().equals(preCtxOp)){
+                opCtxg.addOp(opa.getCtxOp().getOp().getOpCtx());
+                preCtxOp = opa.getCtxOp().getOp();
+            }
+            opCtxg.addOp(opa.getOp().getOpCtx());
+        }
+        return opCtxg;
+    }
+
     @Override
     public String toString() {
         StringBuilder b = new StringBuilder();
-        b.append("[");
+        b.append("[\n");
         for(var opa: getOps()){
-            b.append(IO.writeOp(opa.op.getOpCtx()));
+            b.append(opa);
             b.append("(");
             b.append(opa.state);
             b.append(")");
-            b.append(",");
+            b.append("\n");
         }
-        b.append("]");
+        b.append("]\n");
         return b.toString();
     }
 }

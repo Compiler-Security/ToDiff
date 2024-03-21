@@ -38,7 +38,7 @@ public class LexDef {
                 {RABRTYPE, "ospf abr-type {NAME(standard,shortcut,ibm,cisco)}"},
                 {NETAREAID, "network {IPRANGE} area {ID(NUM)}"},
                 {PASSIVEINTFDEFUALT, "passive-interface default"},
-                {TIMERSTHROTTLESPF, "timers throttle spf {NUM(0-600000)} {NUM1(0-600000)} {NUM2(0-600000)}"},
+                {TIMERSTHROTTLESPF, "timers throttle spf {NUM(0-600000)} {NUM2(0-600000)} {NUM3(0-600000)}"},
                 {CLEARIPOSPFPROCESS, "clear ip ospf process"},
                 {CLEARIPOSPFNEIGHBOR, "clear ip ospf neighbor"},
                 {MAXIMUMPATHS, "maximum-paths {NUM(1-64)}"},
@@ -76,7 +76,7 @@ public class LexDef {
                 {NORABRTYPE, "no ospf abr-type|no ospf abr-type {NAME(standard,shortcut,ibm,cisco)}"},
                 {NONETAREAID, "no network {IPRANGE} area {ID}"},
                 {NOPASSIVEINTFDEFUALT, "no passive-interface default"},
-                {NOTIMERSTHROTTLESPF, "no timers throttle spf|no timers throttle spf {NUM(0-600000)} {NUM1(0-600000)} {NUM2(0-600000)}"},
+                {NOTIMERSTHROTTLESPF, "no timers throttle spf|no timers throttle spf {NUM(0-600000)} {NUM2(0-600000)} {NUM3(0-600000)}"},
                 {NOMAXIMUMPATHS, "no maximum-paths|no maximum-paths {NUM(1-64)}"},
                 {NOWRITEMULTIPLIER, "no write-multiplier|no write-multiplier {NUM(1-100)}"},
                 {NOSOCKETBUFFERSEND, "no socket buffer send|no socket buffer send {LONGNUM(1-4000000000)}"},
@@ -168,6 +168,10 @@ public class LexDef {
     public static List<LexDef> getLexDef(OpType opType){
         assert preprocess.containsKey(opType): opType;
         return preprocess.get(opType);
+    }
+
+    public static int getLexDefNum(OpType opType){
+        return preprocess.get(opType).size();
     }
 
     /**
