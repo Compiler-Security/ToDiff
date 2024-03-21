@@ -34,13 +34,14 @@ public  class NormalController {
 
         @Override
         public String toString() {
-            return "GenConfig{" +
+            return "\nGenConfig{" +
                     "ra=" + ra +
                     ", rr=" + rr +
                     ", ar=" + ar +
                     ", aa=" + aa +
                     ", state=" + state +
-                    '}';
+                    "}\n";
+
         }
 
         public List<OpAnalysis.STATE> getValidMoveStates(){

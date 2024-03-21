@@ -73,7 +73,7 @@ public class genEqualPass {
             if (generate.ran) {
                 Collections.shuffle(action_list);
             }
-
+            boolean succ = false;
             for(var actionOpa_old: action_list){
                 var actionOpa = actionOpa_old.copy();
                 List<OpAnalysis.STATE> actionStates;
@@ -83,7 +83,7 @@ public class genEqualPass {
                     actionStates = tmp_controller.getValidMoveStatesOfOpa(actionOpa);
                 }
 
-                boolean succ = false;
+
                 if (generate.ran){
                     Collections.shuffle(actionStates);
                 }
@@ -100,6 +100,7 @@ public class genEqualPass {
                 }
                 if (succ) break;
             }
+            assert succ: "all op can not move!";
             System.out.println(opag);
             System.out.println(controller);
             System.out.println(tmp_controller);

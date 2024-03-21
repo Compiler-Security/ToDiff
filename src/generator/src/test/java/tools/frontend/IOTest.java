@@ -66,6 +66,7 @@ public class IOTest {
                                 int r1-eth0
                                 ip ospf area 0
                                 ip address 10.0.0.0/10
+                                ip ospf cost 20
                                 router ospf
                                 area 3389220260 range 92.238.183.225/7
 

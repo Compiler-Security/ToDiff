@@ -4,8 +4,10 @@ import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpCtx;
+import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.reducer.semantic.OverideRedexDef;
 import org.generator.lib.reducer.semantic.UnsetRedexDef;
 import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
@@ -40,15 +42,15 @@ public class actionRulePass {
 
     private static  int getRanIntNum(Map<String, Object> argRange, String field){
         if (argRange.containsKey(field) && argRange.get(field) instanceof Pair<?,?> p){
-            return ranHelper.randomInt((int) p.first(), (int) p.second());
+            return ranHelper.randomInt((int)((Long) p.first() + 0), (int) ((Long) p.second() + 0));
         }else return ranHelper.randomInt(0, 2100000000);
     }
 
     private static  int getRanNoIntNum(Map<String, Object> argRange, String field){
         if (argRange.containsKey(field) && argRange.get(field) instanceof Pair<?,?> p) {
             if (ranHelper.randomInt(0, 1) == 0) {
-                return ranHelper.randomInt(-2100000000, (int) p.first() - 1);
-            } else return ranHelper.randomInt((int) p.second() + 1, 2100000000);
+                return ranHelper.randomInt(-2100000000, (int) ((Long) p.first() - 1));
+            } else return ranHelper.randomInt((int) ((Long) p.second() + 1), 2100000000);
         }else return ranHelper.randomInt(0, 2100000000);
     }
 
@@ -92,28 +94,38 @@ public class actionRulePass {
      * @param opA
      */
     private static OpAnalysis mutate(OpAnalysis opA){
+        //TODO we can use other type of op to override
         var op = opA.getOp();
         var new_op = op.copy();
         var args =  op.getOpCtx().getFormmat().getLexDef().Args;
         var argsRange = op.getOpCtx().getFormmat().getLexDef().ArgsRange;
+        var redex_def = OverideRedexDef.getRdcDef(op.Type());
+        if (redex_def.targetOps.isEmpty()) return null;
+        var target_opType = redex_def.targetOps.get(0);
+        var equal_args = redex_def.getEqualArgs().get(0);
+
         if (args.isEmpty()) return null;
         for(var arg: args){
-            switch (arg){
-                case "ID" -> {new_op.setID(ranHelper.randomID());}
-                case "IPRANGE" -> {new_op.setIPRANGE(ranHelper.randomIpRange());}
-                case "IP" -> {new_op.setIP(ranHelper.randomIP());}
-                case "NUM" -> {new_op.setNUM(getRanIntNum(argsRange, "NUM"));}
-                case "NUM2" -> {new_op.setNUM2(getRanIntNum(argsRange, "NUM2"));}
-                case "NUM3" -> {new_op.setNUM3(getRanIntNum(argsRange, "NUM3"));}
-                case "LONGNUM" -> {new_op.setLONGNUM(getRanLongNum(argsRange, "LONGNUM"));}
-                case "NAME" -> {new_op.setNAME(getRanName(argsRange, "NAME"));}
-                case "NAME2" -> {new_op.setNAME(getRanName(argsRange, "NAME2"));}
-                //case "NUM" -> {new_op.setNUM(argsRange.get("NUM"));}
-                default -> {
-                    assert false : "mutate TODO";
+            if (!equal_args.contains(arg)){
+                switch (arg){
+                    case "ID" -> {new_op.setID(ranHelper.randomID());}
+                    case "IPRANGE" -> {new_op.setIPRANGE(ranHelper.randomIpRange());}
+                    case "IP" -> {new_op.setIP(ranHelper.randomIP());}
+                    case "NUM" -> {new_op.setNUM(getRanIntNum(argsRange, "NUM"));}
+                    case "NUM2" -> {new_op.setNUM2(getRanIntNum(argsRange, "NUM2"));}
+                    case "NUM3" -> {new_op.setNUM3(getRanIntNum(argsRange, "NUM3"));}
+                    case "LONGNUM" -> {new_op.setLONGNUM(getRanLongNum(argsRange, "LONGNUM"));}
+                    case "NAME" -> {new_op.setNAME(getRanName(argsRange, "NAME"));}
+                    case "NAME2" -> {new_op.setNAME(getRanName(argsRange, "NAME2"));}
+                    //case "NUM" -> {new_op.setNUM(argsRange.get("NUM"));}
+                    default -> {
+                        assert false : "mutate TODO";
+                    }
                 }
             }
         }
+        if (new_op.equals(op)) return null;
+        assert !new_op.equals(op) : "mutate should not be same";
         var res = OpAnalysis.of(new_op);
         res.setCtxOp(opA.getCtxOp());
         return res;
