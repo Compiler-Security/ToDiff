@@ -103,42 +103,6 @@ public class actionRulePass {
             else return OpAnalysis.of(new_op.getOpOspf(), opA.getCtxOp());
         }
         return null;
-//        //TODO we can use other type of op to override
-//        var op = opA.getOp();
-//        var new_op = op.copy();
-//        var args =  op.getOpCtx().getFormmat().getLexDef().Args;
-//        var argsRange = op.getOpCtx().getFormmat().getLexDef().ArgsRange;
-//        var redex_def = OverideRedexDef.getRdcDef(op.Type());
-//        if (redex_def.targetOps.isEmpty()) return null;
-//        var target_opType = redex_def.targetOps.get(0);
-//        var equal_args = redex_def.getEqualArgs().get(0);
-//
-//        if (args.isEmpty()) return null;
-//        for(var arg: args){
-//            if (!equal_args.contains(arg)){
-//                switch (arg){
-//                    case "ID" -> {new_op.setID(ranHelper.randomID());}
-//                    case "IPRANGE" -> {new_op.setIPRANGE(ranHelper.randomIpRange());}
-//                    case "IP" -> {new_op.setIP(ranHelper.randomIP());}
-//                    case "NUM" -> {new_op.setNUM(getRanIntNum(argsRange, "NUM"));}
-//                    case "NUM2" -> {new_op.setNUM2(getRanIntNum(argsRange, "NUM2"));}
-//                    case "NUM3" -> {new_op.setNUM3(getRanIntNum(argsRange, "NUM3"));}
-//                    case "LONGNUM" -> {new_op.setLONGNUM(getRanLongNum(argsRange, "LONGNUM"));}
-//                    case "NAME" -> {new_op.setNAME(getRanName(argsRange, "NAME"));}
-//                    case "NAME2" -> {new_op.setNAME(getRanName(argsRange, "NAME2"));}
-//                    //case "NUM" -> {new_op.setNUM(argsRange.get("NUM"));}
-//                    default -> {
-//                        assert false : "mutate TODO";
-//                    }
-//                }
-//            }
-//        }
-//        if (new_op.equals(op)) return null;
-//        assert !new_op.equals(op) : "mutate should not be same";
-//        var res = OpAnalysis.of(new_op);
-//        res.setCtxOp(opA.getCtxOp());
-//        //System.out.printf("mutate: %s -> %s\n", opA, res);
-//        return res;
     }
 
     private static OpAnalysis broken(OpAnalysis opA){
