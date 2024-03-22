@@ -8,8 +8,11 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.topo.graph.ConfGraph;
 import org.generator.lib.reducer.driver.reducer;
+import org.generator.util.diff.differ;
 
 import java.util.List;
+
+import static org.generator.util.diff.differ.compareJson;
 
 public class shrinkCorePass {
 
@@ -34,6 +37,14 @@ public class shrinkCorePass {
      */
     public void solve(List<OpCtxG> opCtxGs, ConfGraph confG){
         String r_name = confG.getR_name();
+        if (!check(opCtxGs, confG, r_name)){
+            var opCtxG = genCorePass.mergeOpCtxgToOne(opCtxGs);
+            var g = confG.copyPhyGraph();
+            reducer.reduceToConfG(opCtxG, g);
+            System.out.println(compareJson(confG.toJson(),g.toJson()).toPrettyString());
+            assert false:"genCorePass's core is not equal to confG";
+        }
+
         for(var opCtxg: opCtxGs){
             var ops = opCtxg.getOps();
             for(int i = 0; i < ops.size(); i++){

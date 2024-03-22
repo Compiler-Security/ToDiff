@@ -199,7 +199,7 @@ public class genCorePass {
             op.setID(area_id);
         }
         //stub
-        if (areaSum.isStub()){
+        if (areaSum.isStub() && !areaSum.isNosummary()){
             var op = addOp(opCtxG, OpType.AreaStub);
             op.setID(area_id);
         }

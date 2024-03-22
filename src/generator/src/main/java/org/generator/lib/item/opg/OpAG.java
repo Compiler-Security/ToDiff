@@ -101,7 +101,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
 
 
     private OpCtxG toOpCtx(OpAG opAG){
-        var opaG = this;
+        var opaG = opAG;
         Map<OpOspf, OpCtxG> merge = new HashMap<>();
         for(var opa: opaG.getOps()){
             var ctxOp = opa.getCtxOp().getOp();
