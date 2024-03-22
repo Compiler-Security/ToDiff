@@ -129,7 +129,7 @@ public class reducePass {
     private boolean override(OpAnalysis preOpa, OpAnalysis opa){
         //ctx_op should equal
         if (!CtxOpDef.isCtxOp(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
-        return matchByRedexDef(opa, preOpa, OverideRedexDef.getRdcDef(opa.op.Type()));
+        return matchByRedexDef(opa, preOpa, OverrideRedexDef.getRdcDef(opa.op.Type()));
     }
 
 

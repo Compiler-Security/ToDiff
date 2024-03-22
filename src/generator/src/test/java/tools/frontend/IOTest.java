@@ -1,10 +1,14 @@
 package tools.frontend;
 
 import org.generator.lib.frontend.driver.IO;
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.controller.CapacityController;
 import org.generator.lib.generator.controller.NormalController;
 import org.generator.lib.generator.driver.generate;
+import org.generator.lib.generator.pass.actionRulePass;
 import org.generator.lib.generator.pass.genEqualPass;
+import org.generator.lib.generator.pass.genOpPass;
+import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.topo.graph.ConfGraph;
@@ -18,6 +22,8 @@ import org.generator.lib.reducer.pass.reducePass;
 import org.generator.tools.frontend.ConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
 import org.generator.tools.testOps.genOps;
+import org.generator.util.net.ID;
+import org.generator.util.net.IPRange;
 import org.junit.Test;
 
 import static org.generator.util.diff.differ.compareJson;
@@ -55,6 +61,34 @@ public class IOTest {
         reducer.reduceToConfG(conf, g);
         return g;
     }
+
+    @Test
+    public void mutateOpTest(){
+        var opA = OpAnalysis.of(genOpPass.genRanOpOfType(OpType.IpOspfDeadInter).getOpOspf());
+        System.out.println(opA.getOp());
+        var opA_new = actionRulePass.mutate(opA);
+        System.out.println(opA_new);
+    }
+
+    @Test
+    public void unsetOpTest(){
+        var opA = OpAnalysis.of(OpOspf.of(OpType.AreaRange));
+        opA.getOp().setID(ID.of(0));
+        opA.getOp().setIPRANGE(IPRange.of(10, 5));
+        System.out.println(opA.getOp());
+        var opA_new = actionRulePass.mutate(opA);
+        System.out.println(opA_new);
+    }
+    @Test
+    public void reduceTest(){
+        String test_st = """
+                                int r1-eth0
+                                    ip address 11.1.1.1/10
+                                    ip address 10.1.1.1/10 
+                """;
+        var ori = new ConfReader().read(test_st);
+        System.out.println(reducer.reduceToCore(ori));
+    }
     @Test
     public void generatorTest(){
         String test_st = """
@@ -76,8 +110,8 @@ public class IOTest {
             i++;
             System.out.printf("testCase %d\n", i);
             var genOp = new genOps();
-            var ori = genOp.genRandom(1000, 0.4, 0.4, 2, 0, 1, "r1");
-            //var ori = new ConfReader().read(test_st);
+            //var ori = genOp.genRandom(1000, 0.4, 0.4, 2, 0, 1, "r1");
+            var ori = new ConfReader().read(test_st);
             var confg = getSetConfG(ori);
             var gen = generate.generateCore(confg);
             //System.out.println(gen.getOps().size());

@@ -6,6 +6,7 @@ import org.generator.lib.frontend.lexical.OpType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.generator.lib.frontend.lexical.OpType.*;
 
@@ -16,8 +17,8 @@ import static org.generator.lib.frontend.lexical.OpType.*;
  *  override to other insturction
  *  {Type, to override Type, equal args num}
  */
-public class OverideRedexDef extends BaseRedexDef {
-    OverideRedexDef(){
+public class OverrideRedexDef extends BaseRedexDef {
+    OverrideRedexDef(){
         super();
     }
 
@@ -25,9 +26,13 @@ public class OverideRedexDef extends BaseRedexDef {
 
     static {
         var reduce_seed = new Object[][]{
+                /*
+                This says item[0] can override op in item[1]
+                if the first item[2] arg is same
+                 */
                 {ROSPF, new OpType[]{}, 0},
                 {IntfName, new OpType[]{}, 0},
-                {IPAddr, new OpType[]{}, 0},
+                {IPAddr, new OpType[]{IPAddr}, 1},
                 //完全一样
                 {IpOspfArea, new OpType[]{IpOspfArea}, 1},
                 {NETAREAID, new OpType[]{NETAREAID}, 2},
@@ -44,8 +49,8 @@ public class OverideRedexDef extends BaseRedexDef {
                 {AreaStubTotal, new OpType[]{AreaStubTotal, AreaStub, AreaNSSA}, 1},
                 {AreaNSSA, new OpType[]{AreaStub, AreaNSSA, AreaStubTotal}, 1},
 
-                {IpOspfDeadInterMulti, new OpType[]{IpOspfDeadInter, IpOspfHelloInter,IpOspfDeadInterMulti}, 0}
-
+                {IpOspfDeadInterMulti, new OpType[]{IpOspfDeadInter, IpOspfDeadInterMulti}, 0},
+                {IpOspfDeadInter, new OpType[]{IpOspfDeadInter, IpOspfDeadInterMulti}, 0}
                 //Other set instruction
                 //{XXX, new OpType[XXX], 0}
 
@@ -57,7 +62,7 @@ public class OverideRedexDef extends BaseRedexDef {
             if (Arrays.stream(reduce_seed).anyMatch(x -> (OpType)x[0] == opType)) {
                 continue;
             }
-            var rdcDef = new OverideRedexDef();
+            var rdcDef = new OverrideRedexDef();
             if (opType.isUnsetOp()){
                 //Other unset instruction
                 seeds.add(new Object[]{opType, new OpType[]{}, 0});
@@ -73,5 +78,26 @@ public class OverideRedexDef extends BaseRedexDef {
     public static BaseRedexDef getRdcDef(OpType opType) {
         assert preprocess.containsKey(opType) : opType;
         return preprocess.get(opType);
+    }
+
+    public static List<OpType> getOverrideType(OpType setType){
+        List<OpType> res = new ArrayList<>();
+        for(var overrideOpType: preprocess.keySet()){
+            if (getRdcDef(overrideOpType).targetOps.contains(setType)){
+                res.add(overrideOpType);
+            }
+        }
+        return res;
+    }
+
+    public static List<String> getOverrideEqualArg(OpType prev_op_type, OpType cur_op_type){
+        var rdcDef = getRdcDef(cur_op_type);
+        for(int i = 0; i < rdcDef.getEqualArgs().size(); i++){
+            if (rdcDef.targetOps.get(i) == prev_op_type){
+                return rdcDef.equalArgs.get(i);
+            }
+        }
+        assert false: "not have this cur_op_type %s , prev_op_type %s pair ".formatted(prev_op_type, cur_op_type);
+        return null;
     }
 }
