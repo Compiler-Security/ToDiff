@@ -9,9 +9,7 @@ import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class genEqualPass {
 
@@ -67,10 +65,11 @@ public class genEqualPass {
     //FIXME(should turn to true when running)
     public static OpAG solve(NormalController controller, CapacityController tmp_controller){
         var opag = OpAG.of();
+        int s = 0;
         while(!controller.getCanMoveOpas().isEmpty() || !tmp_controller.getCanMoveOpas().isEmpty()){
             var action_list = controller.getCanMoveOpas();
             action_list.addAll(tmp_controller.getCanMoveOpas());
-            System.out.println(action_list.size());
+            //System.out.println(action_list.size());
             if (generate.ran) {
                 Collections.shuffle(action_list);
             }
@@ -83,19 +82,23 @@ public class genEqualPass {
                 } else {
                     actionStates = tmp_controller.getValidMoveStatesOfOpa(actionOpa);
                 }
-
-
                 if (generate.ran){
                     Collections.shuffle(actionStates);
                 }
                 for (var action_state : actionStates) {
                     actionOpa.setState(action_state);
                     //FIXME This is a bug, we should try different when do possible_opag, set this to 20 is safe I think
-                    for(int j = 0; j < 20; j++) {
-                        var possible_opag = movePass.solve(opag, actionOpa, null);
+                    var possibleRules = movePass.getPossibleRules(opag, actionOpa);
+                    if (generate.ran){
+                        Collections.shuffle(possibleRules);
+                    }
+                    for(var rule: possibleRules){
+                        var possible_opag = movePass.solve(opag, actionOpa, List.of(rule));
+                        s++;
                         if (possible_opag == null) continue;
                         if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
                             updateController(possible_opag, controller, tmp_controller, actionOpa);
+                            //System.out.printf("%s %s\n", rule, actionOpa);
                             opag = possible_opag;
                             succ = true;
                             break;
@@ -105,11 +108,13 @@ public class genEqualPass {
                 }
                 if (succ) break;
             }
-            assert succ: "all op can not move!";
             //System.out.println(opag);
-            //System.out.println(controller);
-            //System.out.println(tmp_controller);
+//            System.out.println(controller);
+//            System.out.println(tmp_controller);
+            assert succ: "all op can not move!";
+
         }
+        //System.out.printf("total move time %d\n", s);
         return opag;
     }
 }

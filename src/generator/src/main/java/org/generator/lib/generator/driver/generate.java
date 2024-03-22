@@ -1,14 +1,19 @@
 package org.generator.lib.generator.driver;
 
+import org.generator.lib.frontend.lexical.LexDef;
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.controller.CapacityController;
 import org.generator.lib.generator.controller.NormalController;
 import org.generator.lib.generator.pass.genCorePass;
 import org.generator.lib.generator.pass.genEqualPass;
 import org.generator.lib.generator.pass.shrinkCorePass;
 import org.generator.lib.item.IR.OpAnalysis;
+import org.generator.lib.item.IR.OpCtx;
+import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.topo.graph.ConfGraph;
 import org.generator.lib.reducer.driver.reducer;
+import org.generator.util.ran.ranHelper;
 
 public class generate {
     public static OpCtxG generateCore(ConfGraph confGraph){
@@ -30,6 +35,8 @@ public class generate {
         var gen_opag = genEqualPass.solve(normal_controller, tmp_controller);
         return gen_opag.toOpCtxGLeaner();
     }
+
+
 
     //FIXME(should turn to true when running)
     public static final boolean ran = true;

@@ -14,6 +14,7 @@ import org.generator.util.net.ID;
 import org.generator.util.net.IPRange;
 import org.generator.util.ran.ranHelper;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -163,23 +164,15 @@ public class actionRulePass {
     }
 
     private static OpAnalysis unset(OpAnalysis opA){
-        var new_op = opA.getOp().copy();
-        if (new_op.Type().isUnsetOp()) return null;
-        var unset_list = UnsetRedexDef.getUnsetType(new_op.Type());
+        var unset_list = UnsetRedexDef.getUnsetType(opA.getOp().Type());
         if (unset_list.isEmpty()) return null;
-        OpType unsetType;
+        var unsetType = unset_list.get(0);
         if (generate.ran){
             unsetType = ranHelper.randomElemOfList(unset_list);
         }
-        unsetType = unset_list.get(0);
-        new_op.setType(unsetType);
-        new_op.getOpCtx().setFormmat(OpCtx.Format.of(unsetType, 0));
-        if (generate.ran) {
-            new_op.getOpCtx().setFormmat(OpCtx.Format.of(unsetType, ranHelper.randomInt(0, LexDef.getLexDefNum(unsetType) - 1)));
-        }
-        var res = OpAnalysis.of(new_op);
-        res.setCtxOp(opA.getCtxOp());
-        return res;
+        var new_op = genOpPass.genRanOpOfType(unsetType);
+        genOpPass.copyFileds(new_op.getOperation(), opA.getOp(), opA.getOp().getOpCtx().getFormmat().getLexDef().Args);
+        return OpAnalysis.of(new_op.getOpOspf(), opA.getCtxOp());
     }
     /**
      * we add a new  OpA to opAG considering actionType

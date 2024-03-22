@@ -133,7 +133,7 @@ public class reducePass {
     }
 
 
-    private void handleActive(OpAnalysis opa){
+    private void   handleActive(OpAnalysis opa){
         for(var preOpa: opAG.getOps()){
             //HANDLE OP front of opa
             if (preOpa.lineNo >= opa.lineNo) break;

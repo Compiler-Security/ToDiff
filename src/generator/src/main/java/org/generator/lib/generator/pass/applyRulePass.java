@@ -48,7 +48,7 @@ public class applyRulePass {
 
 
     private static List<OpAnalysis> conflictOps(OpAG opAG, OpAnalysis target_opa){
-        opAG.reduce();
+        //opAG.reduce();
         return opAG.activeSetView().getOps().stream().filter(opa -> reducePass.isConflict(opa, target_opa)).toList();
     }
     /**

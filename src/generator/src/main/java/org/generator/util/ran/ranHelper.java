@@ -1,10 +1,12 @@
 package org.generator.util.ran;
 
+import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 public class ranHelper {
@@ -74,4 +76,7 @@ public class ranHelper {
         if (elems.isEmpty()) return null;
         return elems.get(ranHelper.randomInt(0, elems.size() - 1));
      }
+    private static String getRanNoName(Map<String, Object> argRange, String field){
+        return ranHelper.randomStr();
+    }
 }
