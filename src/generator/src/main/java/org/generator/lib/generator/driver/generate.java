@@ -24,7 +24,7 @@ public class generate {
         var opas = reducer.reduce(opCtxG);
         var normal_controller = NormalController.of();
         for(var opa: opas.getOps()){
-            normal_controller.addConfig(opa, expand_ratio, expand_ratio + 1, expand_ratio, expand_ratio);
+            normal_controller.addConfig(opa, 0, expand_ratio + 1, expand_ratio, 0);
         }
         var tmp_controller = CapacityController.of(opas.getOps().size(), 0, 0, 1, 0);
         var gen_opag = genEqualPass.solve(normal_controller, tmp_controller);

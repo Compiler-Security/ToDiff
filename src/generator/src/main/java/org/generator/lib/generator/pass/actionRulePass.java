@@ -128,7 +128,7 @@ public class actionRulePass {
         assert !new_op.equals(op) : "mutate should not be same";
         var res = OpAnalysis.of(new_op);
         res.setCtxOp(opA.getCtxOp());
-        System.out.printf("mutate: %s -> %s\n", opA, res);
+        //System.out.printf("mutate: %s -> %s\n", opA, res);
         return res;
     }
 

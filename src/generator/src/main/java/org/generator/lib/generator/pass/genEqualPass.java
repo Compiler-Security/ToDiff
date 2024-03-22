@@ -70,6 +70,7 @@ public class genEqualPass {
         while(!controller.getCanMoveOpas().isEmpty() || !tmp_controller.getCanMoveOpas().isEmpty()){
             var action_list = controller.getCanMoveOpas();
             action_list.addAll(tmp_controller.getCanMoveOpas());
+            System.out.println(action_list.size());
             if (generate.ran) {
                 Collections.shuffle(action_list);
             }
@@ -105,9 +106,9 @@ public class genEqualPass {
                 if (succ) break;
             }
             assert succ: "all op can not move!";
-            System.out.println(opag);
-            System.out.println(controller);
-            System.out.println(tmp_controller);
+            //System.out.println(opag);
+            //System.out.println(controller);
+            //System.out.println(tmp_controller);
         }
         return opag;
     }
