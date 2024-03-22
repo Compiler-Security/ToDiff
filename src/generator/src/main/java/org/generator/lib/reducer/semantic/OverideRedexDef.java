@@ -37,6 +37,13 @@ public class OverideRedexDef extends BaseRedexDef {
                 {AreaRangeSub, new OpType[]{AreaRange, AreaRangeSub, AreaRangeNoAd}, 2},
                 {AreaRangeCost, new OpType[]{AreaRange, AreaRangeCost, AreaRangeNoAd}, 2},
 
+                {AreaVLink, new OpType[]{AreaVLink}, 1},
+                {AreaShortcut, new OpType[]{AreaShortcut}, 1},
+
+                {AreaStub, new OpType[]{AreaStub, AreaStubTotal, AreaNSSA}, 1},
+                {AreaStubTotal, new OpType[]{AreaStubTotal, AreaStub, AreaNSSA}, 1},
+                {AreaNSSA, new OpType[]{AreaStub, AreaNSSA, AreaStubTotal}, 1},
+
                 {IpOspfDeadInterMulti, new OpType[]{IpOspfDeadInter, IpOspfHelloInter,IpOspfDeadInterMulti}, 0}
 
                 //Other set instruction

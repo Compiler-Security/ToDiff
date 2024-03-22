@@ -21,8 +21,11 @@ public class ConflictRedexDef extends  BaseRedexDef{
 
     static {
         var reduce_seed = new Object[][]{
+                //This means if OpType[] is in the previous context, then this op should be conflict and remove, third number is the compare arg num
                 {IpOspfArea, new OpType[]{NETAREAID}, 0},
                 {NETAREAID, new OpType[]{IpOspfArea}, 0},
+                {NETAREAID, new OpType[]{NETAREAID}, 1},
+                {IpOspfArea, new OpType[]{IpOspfArea}, 0},
 
                 {AreaRange, new OpType[]{AreaRangeSub, AreaRangeCost}, 2},
 
