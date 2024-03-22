@@ -58,17 +58,18 @@ public class IOTest {
     @Test
     public void generatorTest(){
         String test_st = """
-                  router ospf
-                                area 1061954456 range 91.122.46.62/11 not-advertise
-                                area 1061954456 range 91.122.46.62/11 not-advertise
-                                write-multiplier 10
+                                router ospf
+                                    area 10 range 91.122.46.62/11 cost 5
+                                    area 1061954456 range 91.122.46.62/11 not-advertise
+                                    network 10.0.0.0/10 area 2
+                                    write-multiplier 10
                                 int r1-eth0
-                                ip ospf area 0
-                                ip address 10.0.0.0/10
-                                ip ospf cost 20
+                                    ip ospf area 0
+                                    ip address 10.0.0.0/10
+                                    ip ospf cost 20
                                 int r1-eth1
-                                ip ospf area 0
-                                ip address 11.1.1.1/10
+                                    ip ospf area 0
+                                    ip address 11.1.1.1/10
                 """;
         int i = 0;
         while(true) {

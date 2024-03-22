@@ -164,14 +164,17 @@ public class actionRulePass {
     }
 
     private static OpAnalysis unset(OpAnalysis opA){
+        //first choose one unset_op type
         var unset_list = UnsetRedexDef.getUnsetType(opA.getOp().Type());
         if (unset_list.isEmpty()) return null;
         var unsetType = unset_list.get(0);
         if (generate.ran){
             unsetType = ranHelper.randomElemOfList(unset_list);
         }
+        //second generate unset_op
         var new_op = genOpPass.genRanOpOfType(unsetType);
-        genOpPass.copyFileds(new_op.getOperation(), opA.getOp(), opA.getOp().getOpCtx().getFormmat().getLexDef().Args);
+        //third make unset_equal fields to be the same
+        genOpPass.copyFileds(new_op.getOperation(), opA.getOp(), UnsetRedexDef.getUnsetEqualArg(opA.op.Type(), unsetType));
         return OpAnalysis.of(new_op.getOpOspf(), opA.getCtxOp());
     }
     /**

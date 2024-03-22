@@ -2,6 +2,7 @@ package org.generator.lib.reducer.semantic;
 
 import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.frontend.lexical.OpType;
+import org.generator.util.collections.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -90,6 +91,18 @@ public class UnsetRedexDef extends BaseRedexDef{
         }
         return res;
     }
+
+    public static List<String> getUnsetEqualArg(OpType set_op_type, OpType unset_op_type){
+        var rdcDef = getRdcDef(unset_op_type);
+        for(int i = 0; i < rdcDef.getEqualArgs().size(); i++){
+            if (rdcDef.targetOps.get(i) == set_op_type){
+                return rdcDef.equalArgs.get(i);
+            }
+        }
+        assert false: "not have this set_op %s , unset_op %s pair ".formatted(set_op_type, unset_op_type);
+        return null;
+    }
+
     public static BaseRedexDef getRdcDef(OpType opType) {
         assert preprocess.containsKey(opType) : opType;
         return preprocess.get(opType);
