@@ -80,8 +80,8 @@ public class reducePass {
     }
 
     private static boolean conflict(OpAnalysis preOpa, OpAnalysis opa){
-        //ctx_op should equal except IpOspfArea
-        if (opa.getOp().Type() == OpType.IpOspfArea || opa.getOp().Type() == OpType.NETAREAID) return matchByRedexDef(opa, preOpa, ConflictRedexDef.getRdcDef(opa.getOp().Type()));
+        //ctx_op should equal except IpOspfArea vs. networkAreaId
+        if ((opa.getOp().Type() == OpType.IpOspfArea && preOpa.getOp().Type() == OpType.NETAREAID) || (preOpa.getOp().Type() == OpType.IpOspfArea && opa.getOp().Type() == OpType.NETAREAID)) return matchByRedexDef(opa, preOpa, ConflictRedexDef.getRdcDef(opa.getOp().Type()));
         if (!CtxOpDef.isCtxOp(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
         return matchByRedexDef(opa, preOpa, ConflictRedexDef.getRdcDef(opa.getOp().Type()));
     }
