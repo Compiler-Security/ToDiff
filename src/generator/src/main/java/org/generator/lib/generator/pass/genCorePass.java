@@ -40,9 +40,9 @@ public class genCorePass {
     public OpCtxG handleDaemon(){
         var opCtxG = OpCtxG.Of();
         var ospf_name = NodeGen.getOSPFName(r_name);
-        addOp(opCtxG, OpType.ROSPF);
         if (confg.containsNode(ospf_name)){
             OSPF ospf = confg.getNodeNotNull(NodeGen.getOSPFName(r_name));
+            addOp(opCtxG, OpType.ROSPF);
             if (ospf.getRouterId() != null){
                 var op = addOp(opCtxG, OpType.RID);
                 op.setID(ospf.getRouterId());
@@ -253,9 +253,9 @@ public class genCorePass {
         return opgs;
     }
 
-    private List<OpCtxG> handleAREAID(boolean netAreaId){
+    private List<OpCtxG> handleAREAID(boolean netAreaId, boolean router_ospf){
         List<OpCtxG> opCtxGS = new ArrayList<>();
-        if (!netAreaId){
+        if (!netAreaId || !router_ospf){
             for(var ospf_intf: confg.getOSPFIntfOfRouter(r_name)){
                 if (ospf_intf.getArea() != null){
                     Intf intf = (Intf) confg.getDstsByType(ospf_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
@@ -290,7 +290,7 @@ public class genCorePass {
         return opCtxGS;
     }
 
-    private List<OpCtxG> handlePassiveIntf(){
+    private List<OpCtxG> handlePassiveIntf(boolean router_ospf){
         List<Pair<IP, ID>> intfToArea = new ArrayList<>();
         boolean isAllPassive = true;
         List<OpCtxG> opCtxGS = new ArrayList<>();
@@ -306,10 +306,10 @@ public class genCorePass {
             }
         }
 
-        if (isAllPassive){
+        if (isAllPassive && router_ospf){
             var opCtxg = OpCtxG.Of();
             addOp(opCtxg, OpType.ROSPF);
-            addOp(opCtxg, OpType.PASSIVEINTFDEFUALT);
+            var op =  addOp(opCtxg, OpType.PASSIVEINTFDEFUALT);
             opCtxGS.add(opCtxg);
         }
         return opCtxGS;
@@ -321,6 +321,7 @@ public class genCorePass {
         for(var opctxg: opCtxG){
             //TO check correctness, don't deal
             opctxg.toString();
+            if (opctxg.getOps().isEmpty()) continue;
             var ctxOp = (OpOspf) opctxg.getOps().getFirst().getOperation();
             merge.putIfAbsent(ctxOp, OpCtxG.Of());
             merge.get(ctxOp).addOps(opctxg.getOps());
@@ -346,6 +347,7 @@ public class genCorePass {
         List<OpCtxG> opgs = new ArrayList<>();
         //daemon
         var tmp1 = handleDaemon();
+        var router_ospf = !tmp1.getOps().isEmpty();
         opgs.add(tmp1);
 
         //intfs
@@ -359,12 +361,12 @@ public class genCorePass {
         //areaId
         List<OpCtxG> tmp4;
         if (generate.ran){
-            tmp4 = handleAREAID(ranHelper.randomInt(0, 1) == 0);
-        }else tmp4 = handleAREAID(false);
+            tmp4 = handleAREAID(ranHelper.randomInt(0, 1) == 0, router_ospf);
+        }else tmp4 = handleAREAID(true, router_ospf);
         opgs.addAll(tmp4);
 
         //passive intf
-        var tmp5 = handlePassiveIntf();
+        var tmp5 = handlePassiveIntf(router_ospf);
         opgs.addAll(tmp5);
 
         var res = mergeOpCtxgToEach(opgs);
