@@ -282,7 +282,7 @@ public class genCorePass {
                 var ip = entry.first();
                 var area = entry.second();
                 var op = addOp(opCtxg, OpType.NETAREAID);
-                op.setIPRANGE(IPRange.of(ip.toString()));
+                op.setIPRANGE(IPRange.of("%s/%d".formatted(ip.getAddress(), 32)));
                 op.setID(area);
             }
             opCtxGS.add(opCtxg);
