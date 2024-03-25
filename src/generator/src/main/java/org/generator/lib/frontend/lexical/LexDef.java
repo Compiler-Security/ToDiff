@@ -98,7 +98,7 @@ public class LexDef {
                 {NOIpOspfCost, "no ip ospf cost | no ip ospf cost {NUM(1-65535)}"},
                 {NOIpOspfDeadInter, "no ip ospf dead-interval | no ip ospf dead-interval {NUM(1-65535)}"},
                 {NOIpOspfDeadInterMulti, "no ip ospf dead-interval minimal hello-multiplier | no ip ospf dead-interval minimal hello-multiplier {NUM(2-20)}"},
-                {NOIpOspfHelloInter, "no ip ospf hello-interval | no ip ospf hello-interval {NUMNUM(1-65535)}"},
+                {NOIpOspfHelloInter, "no ip ospf hello-interval | no ip ospf hello-interval {NUM(1-65535)}"},
                 {NOIpOspfGRHelloDelay, "no ip ospf graceful-restart hello-delay | no ip ospf graceful-restart hello-delay {NUM(1-1800)}"},
                 {NOIpOspfNet, "no ip ospf network | no ip ospf network {NAME(broadcast,non-broadcast)}"},
                 {NOIpOspfPriority, "no ip ospf priority | no ip ospf priority {NUM(0-255)}"},
