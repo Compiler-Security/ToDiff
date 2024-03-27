@@ -32,15 +32,30 @@ def kill_pid(pid: int):
 
 class FrrNode(Node):
     def __init__(self, name, inNamespace=True, **params):
-        super().__init__(name, privateDirs=["/var/run/frr"], **params)
+        super().__init__(name, privateDirs=["/var/run/frr", "/etc/frr"], **params)
         self.daemon_dict = {}
         self.log_path = None
+        if path.exists("/etc/frr"):
+            shutil.rmtree("/etc/frr")
+        assert (not path.exists("/etc/frr"))
 
-    def load_frr(self, daemons, conf_dir):
+        os.makedirs("/etc/frr")
+        assert (path.exists("/etc/frr"))
+        assert (len(os.listdir("/etc/frr")) == 0)
+
+        self.cmds_error(["touch", "/etc/frr/vtysh.conf"])
+        self.cmd('''echo "service integrated-vtysh-config" >> /etc/frr/vtysh.conf''')
+        assert (len(os.listdir("/etc/frr")) != 0)
+
+    def load_frr(self, daemons, conf_dir, universe=False):
         self.log_path = path.join("/home/frr/log", self.name)
         for daemon in daemons:
-            self._load_daemon(daemon, conf_dir)
-
+            self._load_daemon(daemon, conf_dir, universe)
+        if (universe):
+            conf_path = path.join(conf_dir, f"{self.name}.conf")
+            self.cmds_error(["cp", conf_path, "/etc/frr/frr.conf"])
+            self.cmds_error(["vtysh", "-b"])
+            infoaln("ls /etc/frr", self.cmds(["ls", "/etc/frr"]))
         if DEBUG:
             self.log_load_frr()
 
@@ -49,9 +64,10 @@ class FrrNode(Node):
         infoaln("zebra_log", self.cmds(["cat", self.daemon_dict["zebra"]["log_path"]]))
         infoaln("ospf_log", self.cmds(["cat", self.daemon_dict["ospfd"]["log_path"]]))
         infoaln("ls log/route", self.cmds(["ls", self.log_path]))
+        infoaln("cat /etc/frr/vtysh.conf", self.cmds(["cat", "/etc/frr/vtysh.conf"]))
         infoaln("ls run", self.cmds(["ls", "/run/frr"]))
 
-    def _load_daemon(self, daemon_name, work_dir: str):
+    def _load_daemon(self, daemon_name, work_dir: str, universe=False):
         if path.exists(self.log_path):
             shutil.rmtree(self.log_path)
         assert (not path.exists(self.log_path))
@@ -59,12 +75,17 @@ class FrrNode(Node):
         os.makedirs(self.log_path)
         assert (path.exists(self.log_path))
         assert (len(os.listdir(self.log_path)) == 0)
-        pid_path = path.join(self.log_path, f"{self.name}.pid")
-        log_path = path.join(self.log_path, f"{self.name}.log")
+        pid_path = path.join(self.log_path, f"{self.name}_{daemon_name}.pid")
+        log_path = path.join(self.log_path, f"{self.name}_{daemon_name}.log")
         conf_path = path.join(work_dir, f"{self.name}_{daemon_name}.conf")
         self.daemon_dict[daemon_name] = {"pid_path": pid_path, "log_path": log_path, "conf_path": conf_path}
-        self.cmds(
+        if (not universe):
+            self.cmds(
             [f"{BIN_DIR}/{daemon_name}", "-u", "root", "-f", conf_path, "-d", "-i", pid_path, "--log-level", "debug",
+             "--log", f"file:{log_path}"])
+        else:
+             self.cmds(
+            [f"{BIN_DIR}/{daemon_name}", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
              "--log", f"file:{log_path}"])
         with open(pid_path, "r") as file:
             daemon_pid = int(file.read())
