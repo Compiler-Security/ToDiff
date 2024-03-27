@@ -3,7 +3,7 @@ from mininet.net import Mininet
 from mininet.node import Node
 import sys
 import os
-
+import json
 from src.restful_mininet.util.log import *
 from time import sleep
 
@@ -124,6 +124,15 @@ class FrrNode(Node):
             cmds_list = cmds_list + ["-d", daemon_name]
         cmds_list = cmds_list + [f'-c "{cmd}"' for cmd in cmds]
         return self.cmds(cmds_list)
+    
+    def dump_info_to_json(self):
+        j = dict()
+        router = self.name
+        j[router] = dict()
+        j[router]["ospf-daemon"] = json.loads(self.daemon_cmds(["show ip ospf json"]))
+        j[router]["intfs"] = json.loads(self.daemon_cmds(["show interface json"]))
+        j[router]["ospf-intfs"] = json.loads(self.daemon_cmds(["show ip ospf interface json"]))
+        return json.dumps(j, indent=4)
 
 
 if __name__ == "__main__":
