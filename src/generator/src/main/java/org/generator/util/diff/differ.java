@@ -13,7 +13,7 @@ public class differ {
             JsonNode value2 = actual.get(key);
 
             if (value2 == null) {
-                differences.put(key, "Key not present in second JSON");
+                differences.put(key, "Key not present in actual JSON");
             } else if (!value1.equals(value2)) {
                 if (value1.isObject() && value2.isObject()) {
                     ObjectNode diff = compareJson(value1, value2);
@@ -34,7 +34,7 @@ public class differ {
             JsonNode value1 = expect.get(key);
 
             if (value1 == null) {
-                differences.put(key, "Key not present in first JSON");
+                differences.put(key, "Key not present in expect JSON");
             }
         });
 

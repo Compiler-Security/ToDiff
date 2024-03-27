@@ -89,7 +89,7 @@ public class genOpPass {
                 }
                 //case "NUM" -> {new_op.setNUM(argsRange.get("NUM"));}
                 default -> {
-                    assert false : "mutate TODO";
+                    assert false : "%s mutate TODO %s".formatted(type, arg);
                 }
             }
         }

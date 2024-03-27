@@ -135,7 +135,7 @@ public class actionRulePass {
         return res;
     }
 
-    private static OpAnalysis unset(OpAnalysis opA){
+    public static OpAnalysis unset(OpAnalysis opA){
         //first choose one unset_op type
         var unset_list = UnsetRedexDef.getUnsetType(opA.getOp().Type());
         if (unset_list.isEmpty()) return null;

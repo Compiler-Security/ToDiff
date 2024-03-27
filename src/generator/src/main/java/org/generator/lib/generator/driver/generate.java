@@ -20,8 +20,8 @@ public class generate {
         var p = new genCorePass();
         var res1 = p.solve(confGraph);
         //FIXME shrinkPass is very slow in huge case
-        var q = new shrinkCorePass();
-        q.solve(res1, confGraph);
+        //var q = new shrinkCorePass();
+        //q.solve(res1, confGraph);
         return reducer.reduceToCore(genCorePass.mergeOpCtxgToOne(res1));
     }
 

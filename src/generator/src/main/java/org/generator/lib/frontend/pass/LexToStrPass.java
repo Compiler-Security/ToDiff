@@ -24,7 +24,7 @@ public class LexToStrPass {
     @NotNull public String solve(LexCtx ctx){
         StringBuilder builder = new StringBuilder();
         var res = encode_by_template(builder, ctx.lexDef.Template, ctx.tokenMap);
-        assert res: String.format("when lowering in lexicalPass, UpperRes ctx not right {%s}", ctx);
+        assert res: String.format("when lowering in lexicalPass, UpperRes ctx not right {%s} %s", ctx, ctx.tokenMap);
         return builder.toString();
     }
 }

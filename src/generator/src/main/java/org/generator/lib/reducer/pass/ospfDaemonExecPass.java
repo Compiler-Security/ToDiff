@@ -28,6 +28,7 @@ public class ospfDaemonExecPass extends baseExecPass {
                 return ExecStat.SUCC;
             }
             case RABRTYPE -> {
+                assert OSPF.ABR_TYPE.of(op.getNAME()).isPresent() : "abr type name not right %s".formatted(op.getNAME());
                 cur_ospf.setAbrType(OSPF.ABR_TYPE.of(op.getNAME()).get());
                 return ExecStat.SUCC;
             }
