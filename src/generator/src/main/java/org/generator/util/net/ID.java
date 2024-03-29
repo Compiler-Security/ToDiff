@@ -1,5 +1,7 @@
 package org.generator.util.net;
 
+import java.util.Objects;
+
 public class ID extends  IPBase{
     public static ID of(String id_st){
         var ip = new ID();
@@ -21,12 +23,15 @@ public class ID extends  IPBase{
         return IDtoLong();
     }
 
+    String toString;
     @Override
     public String toString() {
-        return super.toString();
+        if (toString == null) toString = super.toString();
+        return toString;
     }
 
     //this equal means str xxx.xxx.xxx.xxx is equal
+
     @Override
     public boolean equals(Object o) {
         return super.equals(o);

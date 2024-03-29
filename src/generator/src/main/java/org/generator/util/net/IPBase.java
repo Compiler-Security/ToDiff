@@ -38,13 +38,6 @@ public class IPBase {
         }else return null;
     }
 
-    static public IPBase IDOf(long num){
-        return IDOf(coverToStrId(num));
-    }
-
-    static  public IPBase IPOf(long num, int prefix){
-        return IPOf(convertToCIDR(num, prefix));
-    }
 
     protected boolean fromStr(@NotNull String ip_st, boolean id){
         if (id) {
@@ -135,12 +128,15 @@ public class IPBase {
         }
     }
 
+    String netString;
     public String toNetString(){
+        if (netString != null) return netString;
         if (isId){
-            return toString();
+            netString = toString();
         }else{
-            return String.format("%s/%d", getNetAddressOfIp(), getMaskOfIp());
+            netString = String.format("%s/%d", getNetAddressOfIp(), getMaskOfIp());
         }
+        return netString;
     }
 
     private static long ipToLong(String ipAddress) {
@@ -197,12 +193,6 @@ public class IPBase {
         return Objects.hash(toNetString());
     }
 
-    @Override
-    public IPBase clone(){
-        if (isId){
-            return IDOf(toString());
-        }else return IPOf(toString());
-    }
 
     private boolean wrong;
     private SubnetUtils utils;
@@ -216,4 +206,6 @@ public class IPBase {
     }
 
     private boolean isId;
+
+    public Long longNum;
 }

@@ -80,7 +80,8 @@ public class reducePass {
     }
 
     private static boolean conflict(OpAnalysis preOpa, OpAnalysis opa){
-        //ctx_op should equal
+        //ctx_op should equal except IpOspfArea vs. networkAreaId
+        if ((opa.getOp().Type() == OpType.IpOspfArea && preOpa.getOp().Type() == OpType.NETAREAID) || (preOpa.getOp().Type() == OpType.IpOspfArea && opa.getOp().Type() == OpType.NETAREAID)) return matchByRedexDef(opa, preOpa, ConflictRedexDef.getRdcDef(opa.getOp().Type()));
         if (!CtxOpDef.isCtxOp(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
         return matchByRedexDef(opa, preOpa, ConflictRedexDef.getRdcDef(opa.getOp().Type()));
     }
@@ -128,11 +129,11 @@ public class reducePass {
     private boolean override(OpAnalysis preOpa, OpAnalysis opa){
         //ctx_op should equal
         if (!CtxOpDef.isCtxOp(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
-        return matchByRedexDef(opa, preOpa, OverideRedexDef.getRdcDef(opa.op.Type()));
+        return matchByRedexDef(opa, preOpa, OverrideRedexDef.getRdcDef(opa.op.Type()));
     }
 
 
-    private void handleActive(OpAnalysis opa){
+    private void   handleActive(OpAnalysis opa){
         for(var preOpa: opAG.getOps()){
             //HANDLE OP front of opa
             if (preOpa.lineNo >= opa.lineNo) break;

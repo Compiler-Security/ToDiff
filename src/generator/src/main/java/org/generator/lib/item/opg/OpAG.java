@@ -33,16 +33,15 @@ public class OpAG extends BaseOpG<OpAnalysis>{
     }
 
     /**
-     * This copy will crate new OpAG from this
-     * Each OpA is copied as well
+     * This will create a new OpAG from this
+     * Each OpA is copied, however, OspfOp is not copied
      * @return
      */
     @NotNull
     public OpAG copy(){
         var opAG = new OpAG();
-        this.getOps().forEach(op -> opAG.addOp(op.copy()));
-        //FIXME this copy is very slow!!!
-        opAG.reduce();
+        this.getOps().forEach(opa -> opAG.addOp(opa.copy()));
+        opAG.updateOpStatus();
         return opAG;
     }
 
@@ -89,19 +88,22 @@ public class OpAG extends BaseOpG<OpAnalysis>{
      * This method will reduce itself and return itself
      * @return
      */
-    public OpAG reduce(){
+    public void reduce(){
         reducer.reduce(this);
+        updateOpStatus();
+    }
+
+    private void updateOpStatus(){
         OpStatus = new HashMap<>();
         getOps().forEach(opa -> {
             if (opa.state == OpAnalysis.STATE.ACTIVE) OpStatus.put(opa, OpAnalysis.STATE.ACTIVE);
             else OpStatus.putIfAbsent(opa, opa.getState());
         });
-        return this;
     }
 
 
     private OpCtxG toOpCtx(OpAG opAG){
-        var opaG = this;
+        var opaG = opAG;
         Map<OpOspf, OpCtxG> merge = new HashMap<>();
         for(var opa: opaG.getOps()){
             var ctxOp = opa.getCtxOp().getOp();

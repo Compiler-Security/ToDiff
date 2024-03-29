@@ -1,22 +1,16 @@
 package org.generator.lib.generator.pass;
 
-import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpCtx;
-import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.lib.reducer.semantic.OverideRedexDef;
+import org.generator.lib.reducer.semantic.OverrideRedexDef;
 import org.generator.lib.reducer.semantic.UnsetRedexDef;
 import org.generator.util.collections.Pair;
-import org.generator.util.net.ID;
-import org.generator.util.net.IPRange;
 import org.generator.util.ran.ranHelper;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class actionRulePass {
     public enum ActionType{
@@ -93,42 +87,22 @@ public class actionRulePass {
      * We change OpA's
      * @param opA
      */
-    private static OpAnalysis mutate(OpAnalysis opA){
-        //TODO we can use other type of op to override
-        var op = opA.getOp();
-        var new_op = op.copy();
-        var args =  op.getOpCtx().getFormmat().getLexDef().Args;
-        var argsRange = op.getOpCtx().getFormmat().getLexDef().ArgsRange;
-        var redex_def = OverideRedexDef.getRdcDef(op.Type());
-        if (redex_def.targetOps.isEmpty()) return null;
-        var target_opType = redex_def.targetOps.get(0);
-        var equal_args = redex_def.getEqualArgs().get(0);
-
-        if (args.isEmpty()) return null;
-        for(var arg: args){
-            if (!equal_args.contains(arg)){
-                switch (arg){
-                    case "ID" -> {new_op.setID(ranHelper.randomID());}
-                    case "IPRANGE" -> {new_op.setIPRANGE(ranHelper.randomIpRange());}
-                    case "IP" -> {new_op.setIP(ranHelper.randomIP());}
-                    case "NUM" -> {new_op.setNUM(getRanIntNum(argsRange, "NUM"));}
-                    case "NUM2" -> {new_op.setNUM2(getRanIntNum(argsRange, "NUM2"));}
-                    case "NUM3" -> {new_op.setNUM3(getRanIntNum(argsRange, "NUM3"));}
-                    case "LONGNUM" -> {new_op.setLONGNUM(getRanLongNum(argsRange, "LONGNUM"));}
-                    case "NAME" -> {new_op.setNAME(getRanName(argsRange, "NAME"));}
-                    case "NAME2" -> {new_op.setNAME(getRanName(argsRange, "NAME2"));}
-                    //case "NUM" -> {new_op.setNUM(argsRange.get("NUM"));}
-                    default -> {
-                        assert false : "mutate TODO";
-                    }
-                }
-            }
+    public static OpAnalysis mutate(OpAnalysis opA){
+        //first choose one unset_op type
+        var override_list = OverrideRedexDef.getOverrideType(opA.getOp().Type());
+        if (override_list.isEmpty()) return null;
+        if (generate.ran){
+            Collections.shuffle(override_list);
         }
-        if (new_op.equals(op)) return null;
-        assert !new_op.equals(op) : "mutate should not be same";
-        var res = OpAnalysis.of(new_op);
-        res.setCtxOp(opA.getCtxOp());
-        return res;
+        for(var overrideType: override_list){
+            //second generate unset_op
+            var new_op = genOpPass.genRanOpOfType(overrideType);
+            //third make unset_equal fields to be the same
+            genOpPass.copyFileds(new_op.getOperation(), opA.getOp(), OverrideRedexDef.getOverrideEqualArg(opA.op.Type(), overrideType));
+            if (new_op.getOpOspf().equals(opA.getOp())) continue;
+            else return OpAnalysis.of(new_op.getOpOspf(), opA.getCtxOp());
+        }
+        return null;
     }
 
     private static OpAnalysis broken(OpAnalysis opA){
@@ -161,25 +135,21 @@ public class actionRulePass {
         return res;
     }
 
-    private static OpAnalysis unset(OpAnalysis opA){
-        var new_op = opA.getOp().copy();
-        if (new_op.Type().isUnsetOp()) return null;
-        var unset_list = UnsetRedexDef.getUnsetType(new_op.Type());
+    public static OpAnalysis unset(OpAnalysis opA){
+        //first choose one unset_op type
+        var unset_list = UnsetRedexDef.getUnsetType(opA.getOp().Type());
         if (unset_list.isEmpty()) return null;
-        OpType unsetType;
+        var unsetType = unset_list.get(0);
         if (generate.ran){
             unsetType = ranHelper.randomElemOfList(unset_list);
         }
-        unsetType = unset_list.get(0);
-        new_op.setType(unsetType);
-        new_op.getOpCtx().setFormmat(OpCtx.Format.of(unsetType, 0));
-        if (generate.ran) {
-            new_op.getOpCtx().setFormmat(OpCtx.Format.of(unsetType, ranHelper.randomInt(0, LexDef.getLexDefNum(unsetType) - 1)));
-        }
-        var res = OpAnalysis.of(new_op);
-        res.setCtxOp(opA.getCtxOp());
-        return res;
+        //second generate unset_op
+        var new_op = genOpPass.genRanOpOfType(unsetType);
+        //third make unset_equal fields to be the same
+        genOpPass.copyFileds(new_op.getOperation(), opA.getOp(), UnsetRedexDef.getUnsetEqualArg(opA.op.Type(), unsetType));
+        return OpAnalysis.of(new_op.getOpOspf(), opA.getCtxOp());
     }
+
     /**
      * we add a new  OpA to opAG considering actionType
      * @param opAG

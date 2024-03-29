@@ -28,18 +28,13 @@ public class ospfDaemonExecPass extends baseExecPass {
                 return ExecStat.SUCC;
             }
             case RABRTYPE -> {
-                return OSPF.ABR_TYPE.of(op.getNAME())
-                        .stream().peek(cur_ospf::setAbrType)
-                        .findAny()
-                        .map(__ -> ExecStat.SUCC)
-                        .orElse(ExecStat.FAIL);
+                assert OSPF.ABR_TYPE.of(op.getNAME()).isPresent() : "abr type name not right %s".formatted(op.getNAME());
+                cur_ospf.setAbrType(OSPF.ABR_TYPE.of(op.getNAME()).get());
+                return ExecStat.SUCC;
             }
             case PASSIVEINTFDEFUALT -> {
-                return topo.getOSPFIntfOfRouter(cur_rname).stream()
-                        .peek(x -> x.setPassive(true))
-                        .findFirst()
-                        .map(__ -> ExecStat.SUCC)
-                        .orElse(ExecStat.MISS);
+                topo.getOSPFIntfOfRouter(cur_rname).forEach(ospfIntf -> {ospfIntf.setPassive(true);});
+                return ExecStat.SUCC;
             }
 
             case TIMERSTHROTTLESPF -> {

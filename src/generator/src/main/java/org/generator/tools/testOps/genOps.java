@@ -3,12 +3,18 @@ package org.generator.tools.testOps;
 import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.driver.generate;
+import org.generator.lib.generator.pass.actionRulePass;
+import org.generator.lib.generator.pass.genOpPass;
+import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.topo.node.NodeGen;
 import org.generator.lib.reducer.semantic.UnsetRedexDef;
+import org.generator.tools.frontend.ConfReader;
+import org.generator.tools.frontend.OspfConfWriter;
 import org.generator.util.collections.Pair;
+import org.generator.util.net.ID;
 import org.generator.util.ran.ranHelper;
 
 import java.util.*;
@@ -22,6 +28,9 @@ public class genOps {
         allOp = new ArrayList<>();
         for (var op_type: OpType.values()){
             if (op_type == OpType.AreaVLink) continue;
+            if (op_type == OpType.NETAREAID) continue;
+            if (op_type == OpType.IpOspfArea) continue;
+            if (op_type == OpType.IPAddr) continue;
             if (op_type.inOSPFINTF()){intfOp.add(op_type); allOp.add(op_type);}
             else if (op_type.inOSPFAREA() || op_type.inOSPFDAEMON() || op_type.inOSPFRouterWithTopo()){
                 OspfOp.add(op_type);
@@ -128,22 +137,13 @@ public class genOps {
     }
 
     private static OpOspf unset(OpOspf op){
-        if (op.Type().isUnsetOp()) return null;
-        var unset_list = UnsetRedexDef.getUnsetType(op.Type());
-        if (unset_list.isEmpty()) return null;
-        OpType unsetType;
-        unsetType = ranHelper.randomElemOfList(unset_list);
-        op.setType(unsetType);
-        op.getOpCtx().setFormmat(OpCtx.Format.of(unsetType, ranHelper.randomInt(0, LexDef.getLexDefNum(unsetType) - 1)));
-        return op;
+        return actionRulePass.unset(OpAnalysis.of(op)).getOp();
     }
 
     OpCtx genOp(OpType op_type){
-        var op = OpOspf.of(op_type);
-        var ctxOp = OpCtx.of(op, ranHelper.randomInt(0, LexDef.getLexDefNum(op_type) - 1));
-        mutate(op);
-        return ctxOp;
+        return genOpPass.genRanOpOfType(op_type);
     }
+
     OpCtx genRanOpByControl(boolean onlyIntf, boolean onlyOSPF){
         OpType op_type;
         if (onlyIntf){
@@ -204,6 +204,12 @@ public class genOps {
         }else assert false :"one ctx num should > 0";
         return -1;
     }
+
+    private OpOspf addOp(OpCtxG opCtxG, OpType typ){
+        var opCtx = genOpPass.genRanOpOfType(typ);
+        opCtxG.addOp(opCtx);
+        return opCtx.getOpOspf();
+    }
     boolean all;
     public OpCtxG genRandom(int inst_num, double router_ospf_ratio, double intf_ratio, int interface_num, float no_ratio, double merge_ratio, String r_name){
         ran = new Random();
@@ -259,6 +265,13 @@ public class genOps {
         for(var opg:opgs){
             res.addOps(opg.getOps());
             //System.out.printf("%s %d\n", opg.getCtxOp(), opg.getOps().size());
+        }
+        for(int i = 0; i < interface_num; i++){
+            var intf = addOp(res, OpType.IntfName);
+            intf.setNAME(NodeGen.getIntfName(r_name, i));
+            var ip = addOp(res, OpType.IPAddr);
+            var area = addOp(res, OpType.IpOspfArea);
+            area.setID(ID.of(ranHelper.randomInt(0, 3)));
         }
         return res;
     }

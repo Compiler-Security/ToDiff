@@ -48,7 +48,7 @@ public class applyRulePass {
 
 
     private static List<OpAnalysis> conflictOps(OpAG opAG, OpAnalysis target_opa){
-        opAG.reduce();
+        //opAG.reduce();
         return opAG.activeSetView().getOps().stream().filter(opa -> reducePass.isConflict(opa, target_opa)).toList();
     }
     /**
@@ -61,7 +61,7 @@ public class applyRulePass {
     public static OpAG solve(OpAG opAG, OpAnalysis target_opa, RuleType ruleType) {
         var opAG_new = opAG.copy();
         //IF target meet, return current opAGNew
-        System.out.println(ruleType);
+        //System.out.println(ruleType);
         switch (ruleType){
             case Keep -> {
                 actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.COPY);

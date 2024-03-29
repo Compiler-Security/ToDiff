@@ -92,6 +92,16 @@ public class OpCtx {
     }
 
     /**
+     * create new OpCtx of OpOspf
+     * @param type
+     * @param lex_idx
+     * @return
+     */
+    public static OpCtx of(OpType type, int lex_idx){
+        return of(new OpOspf(type), lex_idx);
+    }
+
+    /**
      * This function create the OpCtx with init format of first LexDef
      * @param op Operation interface
      * @return OpCtx
@@ -112,5 +122,17 @@ public class OpCtx {
         var opCtx = OpCtx.of(op);
         opCtx.format = format.copy();
         return opCtx;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public OpOspf getOpOspf(){
+        return (OpOspf) getOperation();
+    }
+
+    public OpPhy getOpPhy(){
+        return (OpPhy) getOperation();
     }
 }

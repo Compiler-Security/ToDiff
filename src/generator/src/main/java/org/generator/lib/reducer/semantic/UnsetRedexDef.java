@@ -2,6 +2,7 @@ package org.generator.lib.reducer.semantic;
 
 import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.frontend.lexical.OpType;
+import org.generator.util.collections.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,15 +32,19 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOSOCKETBUFFERRECV, new OpType[]{SOCKETBUFFERRECV}},
                 {NOSOCKETBUFFERALL, new OpType[]{SOCKETBUFFERALL}},
                 {NONOSOCKETPERINTERFACE, new OpType[]{NOSOCKETPERINTERFACE}},
+
                 {NOAreaRange, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
-                {NOAreaRangeNoAd, new OpType[]{AreaRangeNoAd}},
-                {NOAreaRangeSub, new OpType[]{AreaRangeSub}},
-                //FIXME is this no lexical right?
-                {NOAreaRangeCost, new OpType[]{AreaRangeCost}},
+                {NOAreaRangeNoAd, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
+                {NOAreaRangeSub, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
+                {NOAreaRangeCost, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
+
+
                 {NOAreaVLink, new OpType[]{AreaVLink}},
                 {NOAreaShortcut, new OpType[]{AreaShortcut}},
-                //FIXME is this no target right, apply it to areaStubTotal?
-                {NOAreaStub, new OpType[]{AreaStub}},
+
+                {NOAreaStub, new OpType[]{AreaStub, AreaStubTotal}},
+
+                //FIXME NoAreaStubTotal will create a new AreaStub
                 {NOAreaStubTotal, new OpType[]{AreaStubTotal}},
                 {NOAreaNSSA, new OpType[]{AreaNSSA}},
                 {NOIPAddr, new OpType[]{IPAddr}},
@@ -58,7 +63,15 @@ public class UnsetRedexDef extends BaseRedexDef{
         var seeds = new ArrayList<Object[]>();
         for (var item : reduce_seed) {
             var opType = (OpType) item[0];
-            seeds.add(new Object[]{item[0], item[1], LexDef.getLexDef(opType).get(0).Args.size()});
+            switch (opType){
+                case NOAreaRangeSub,NOAreaRangeCost,NOAreaRangeNoAd,NOAreaRange -> {
+                    seeds.add(new Object[]{item[0], item[1], 2});
+                }
+                default -> {
+                    seeds.add(new Object[]{item[0], item[1], LexDef.getLexDef(opType).get(0).Args.size()});
+                }
+            }
+
         }
         preprocess = new HashMap<>();
         parse(seeds, preprocess);
@@ -78,6 +91,18 @@ public class UnsetRedexDef extends BaseRedexDef{
         }
         return res;
     }
+
+    public static List<String> getUnsetEqualArg(OpType set_op_type, OpType unset_op_type){
+        var rdcDef = getRdcDef(unset_op_type);
+        for(int i = 0; i < rdcDef.getEqualArgs().size(); i++){
+            if (rdcDef.targetOps.get(i) == set_op_type){
+                return rdcDef.equalArgs.get(i);
+            }
+        }
+        assert false: "not have this set_op %s , unset_op %s pair ".formatted(set_op_type, unset_op_type);
+        return null;
+    }
+
     public static BaseRedexDef getRdcDef(OpType opType) {
         assert preprocess.containsKey(opType) : opType;
         return preprocess.get(opType);

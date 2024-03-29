@@ -26,28 +26,23 @@ def kill_pid(pid:int):
         log.error(f"pid {pid} can't be killed")
 
 #export PYTHONPATH="$PYTHONPATH:$PWD"
-import functools
+import json
 def simpleTest():
     topo = Topo()
     frr = FrrNode
-    r1 = topo.addHost("r1", cls=frr)
-    r2 = topo.addHost("r2", cls=frr)
-    r3 = topo.addHost("r3", cls=frr)
-    topo.addLink(r1, r2)
-    topo.addLink(r2, r3)
+    r1 = topo.addHost("r1", cls=frr, ip = None)
+    s1 = topo.addHost("s1", ip = None)
+    topo.addLink(r1, s1)
+    topo.addLink(r1, s1)
+    topo.addLink(r1, s1)
     #build network
     net = Mininet(topo)
     net.nameToNode["r1"].load_frr(daemons=["zebra", "ospfd"], conf_dir=WORK_DIR, universe = True)
-    net.nameToNode["r2"].load_frr(daemons=["zebra", "ospfd"], conf_dir=WORK_DIR)
-    net.nameToNode["r3"].load_frr(daemons=["zebra", "ospfd"], conf_dir=WORK_DIR)
     try:
         net.start()
-        print(net.nameToNode["r1"].daemon_cmds(["show ip ospf json"]))
-        sleep(10)
-        print(net.nameToNode["r1"].daemon_cmds(["show ip ospf route"]))
-        net.delLinkBetween(net.nameToNode["r1"],  net.nameToNode["r2"])
-        sleep(10)
-        print(net.nameToNode["r1"].daemon_cmds(["show ip ospf route"]))
+        with open('./test/conf_test/data/out.json', 'w') as f:
+            data = net.nameToNode["r1"].dump_info_to_json()
+            f.write(data)
         net.stop()
     except BaseException as e:
         log.error(f"{e}\n")

@@ -37,7 +37,20 @@ public class OpAnalysis{
         opA.op = opOspf;
         opA.state = STATE.INIT;
         opA.unsetLine();
+        opA.ctxOp = null;
         return opA;
+    }
+
+    /**
+     *
+     * @param opOspf
+     * @param ctxOp
+     * @return
+     */
+    public static OpAnalysis of(OpOspf opOspf, OpAnalysis ctxOp){
+        var opa = OpAnalysis.of(opOspf);
+        opa.setCtxOp(ctxOp);
+        return opa;
     }
 
     /**
@@ -100,9 +113,14 @@ public class OpAnalysis{
 
     public OpAnalysis ctxOp;
 
-    //FIXME this is not elegant
+
+    public boolean ctxOpEqual(OpAnalysis a, OpAnalysis b){
+        if (a == null && b == null) return true;
+        if (a == null || b == null) return false;
+        return a.getCtxOp().getOp().equals(b.getCtxOp().getOp());
+    }
     /**
-     * Two OpA is equal if it's opCtx is equal,
+     * Two OpA is equal iff it's op and ctxOp is equal,
      * @param o
      * @return
      */
@@ -111,25 +129,26 @@ public class OpAnalysis{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OpAnalysis that = (OpAnalysis) o;
-        if (CtxOpDef.isCtxOp(this.op.Type())) return Objects.equals(op, that.op);
-        return Objects.equals(op, that.op) && Objects.equals(ctxOp, that.ctxOp);
+        return Objects.equals(op, that.op) && ctxOpEqual(getCtxOp(), that.getCtxOp());
     }
 
     //FIXME this is not elegant
     @Override
     public int hashCode() {
-        if (CtxOpDef.isCtxOp(this.op.Type())) return Objects.hash(op, null);
-        else return Objects.hash(op, ctxOp);
+        if (ctxOp == null) return Objects.hash(op, null);
+        else return Objects.hash(op, ctxOp.getOp());
     }
 
     /**
-     * Copy no ctxOp
-     * This copy will deep copy ospfOp, ctxOp, others to init
+     * Copy Opa
+     * Op is shallow copy
      * @return
      */
     public OpAnalysis copy(){
-        var opa = OpAnalysis.of(this.op.copy());
+        var opa = OpAnalysis.of(this.op);
         opa.setCtxOp(ctxOp);
+        opa.setState(this.state);
+        opa.setLineNo(this.lineNo);
         return opa;
     }
 

@@ -18,9 +18,12 @@ public class reducer {
      * @param opAG
      * @return rOpAG
      */
+    public static int s = 0;
     public static void reduce(OpAG opAG){
+        s += 1;
         var r = new reducePass();
         r.solve(opAG);
+        //System.out.printf("reducer count %d, opg size %d %d\n", s, opAG.activeSetView().getOps().size(), opAG.getOps().size());
     }
 
     public static OpAG reduce(OpCtxG opCtxG){
