@@ -66,7 +66,7 @@ public class LexDef {
                 {IpOspfNet, "ip ospf network {NAME(broadcast,non-broadcast)}"},
                 {IpOspfPriority, "ip ospf priority {NUM(0-255)}"},
                 {IpOspfRetransInter, "ip ospf retransmit-interval {NUM(1-65535)}"},
-                {IpOspfTransDealy, "ip ospf transmit-dealy {NUM(1-65535)}"},
+                {IpOspfTransDealy, "ip ospf transmit-delay {NUM(1-65535)}"},
                 {IpOspfPassive, "ip ospf passive"},
 
 
@@ -103,7 +103,7 @@ public class LexDef {
                 {NOIpOspfNet, "no ip ospf network | no ip ospf network {NAME(broadcast,non-broadcast)}"},
                 {NOIpOspfPriority, "no ip ospf priority | no ip ospf priority {NUM(0-255)}"},
                 {NOIpOspfRetransInter, "ip ospf retransmit-interval | ip ospf retransmit-interval {NUM(1-65535)}"},
-                {NOIpOspfTransDealy, "no ip ospf transmit-dealy | no ip ospf transmit-dealy {NUM(1-65535)}"},
+                {NOIpOspfTransDealy, "no ip ospf transmit-delay | no ip ospf transmit-delay {NUM(1-65535)}"},
                 {NOIpOspfPassive, "no ip ospf passive"},
 
 

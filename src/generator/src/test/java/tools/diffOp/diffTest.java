@@ -7,6 +7,7 @@ import org.generator.lib.item.topo.node.phy.Intf;
 import org.generator.lib.item.topo.node.phy.Router;
 import org.generator.lib.reducer.driver.reducer;
 import org.generator.tools.diffOp.diffFrr;
+import org.generator.tools.diffOp.genOps;
 import org.generator.tools.diffOp.readFrr;
 import org.generator.tools.frontend.ConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
@@ -38,34 +39,39 @@ public class diffTest {
     }
     @Test
     public void readJson(){
-        String test_st =
-                """
-                        interface r1-eth0
-                          ip address 10.0.3.1/24
-                          ip ospf cost 10
-                          ip ospf area 0
-                                                
-                        interface r1-eth1
-                          ip address 10.2.0.1/24
-                          ip ospf cost 20
-                          ip ospf area 1
-                                                
-                        interface r1-eth2
-                          ip address 10.3.0.1/24
-                          ip ospf cost 30
-                          ip ospf priority 5
-                          ip ospf area 6
-                                                
-                        router ospf
-                          ospf router-id 172.16.0.1
-                          area 1.1.1.1 stub
-                        """;
-        var frr = new readFrr();
-        var g = frr.solve("/Users/shuibing/PycharmProjects/topo-fuzz/src/generator/src/test/java/tools/diffOp/frrDump.json", "r1");
-        var ori_use = new ConfReader().read(test_st);
-        var confg = getSetConfG(ori_use);
+        while (true) {
+            var frr = new readFrr();
+            var g = frr.solve("/Users/shuibing/PycharmProjects/topo-fuzz/src/generator/src/test/java/tools/diffOp/frrDump1.json", "r1");
+            var ori_use = new ConfReader().read(new File("/Users/shuibing/PycharmProjects/topo-fuzz/src/generator/src/test/java/tools/diffOp/r1_debug.conf"));
+            if (reducer.reduceToCore(ori_use).getOps().size() == 3){
+                break;
+            }
+            //System.out.println(reducer.reduceToCore(ori_use));
+        }
+//        var confg = getSetConfG(ori_use);
+//        System.out.println(g);
+//        System.out.println(confg);
+        //diffFrr.solve(g, confg, "r1");
+    }
+
+    @Test
+    public void readJso1(){
+            var frr = new readFrr();
+            var g = frr.solve("/Users/shuibing/PycharmProjects/topo-fuzz/src/generator/src/test/java/tools/diffOp/frrDump1.json", "r1");
+            var ori_use = new ConfReader().read(new File("/Users/shuibing/PycharmProjects/topo-fuzz/src/generator/src/test/java/tools/diffOp/r1.conf"));
+
+            System.out.println(reducer.reduceToCore(ori_use));
+
+  var confg = getSetConfG(ori_use);
         System.out.println(g);
         System.out.println(confg);
         diffFrr.solve(g, confg, "r1");
+    }
+
+    @Test
+    public void genSt(){
+        var genOp = new genOps();
+        var ori = genOp.genRandom(1000, 0.2, 0.6, 4, 0, 1, "r1");
+        System.out.println(ori);
     }
 }
