@@ -1,8 +1,6 @@
-package org.generator.tools.testOps;
+package org.generator.tools.diffOp;
 
-import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.lib.generator.driver.generate;
 import org.generator.lib.generator.pass.actionRulePass;
 import org.generator.lib.generator.pass.genOpPass;
 import org.generator.lib.item.IR.OpAnalysis;
@@ -10,9 +8,6 @@ import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.topo.node.NodeGen;
-import org.generator.lib.reducer.semantic.UnsetRedexDef;
-import org.generator.tools.frontend.ConfReader;
-import org.generator.tools.frontend.OspfConfWriter;
 import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
 import org.generator.util.ran.ranHelper;

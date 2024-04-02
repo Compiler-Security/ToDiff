@@ -21,7 +21,7 @@ import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.reducer.pass.reducePass;
 import org.generator.tools.frontend.ConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
-import org.generator.tools.testOps.genOps;
+import org.generator.tools.diffOp.genOps;
 import org.generator.util.net.ID;
 import org.generator.util.net.IPRange;
 import org.junit.Test;

@@ -144,7 +144,7 @@ public class OSPFIntf extends AbstractNode {
         retansInter = 5; //timerRetransmitSecs
         transDelay = 1; //transmitDelaySecs
 
-        helloMulti = 0;
+        helloMulti = 1;
         GRHelloDelay = 10; //grHelloDelaySecs
         netType = OSPFNetType.BROADCAST;
         priority = 1; //priority
