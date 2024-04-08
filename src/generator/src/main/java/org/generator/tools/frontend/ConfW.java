@@ -15,9 +15,12 @@ public interface ConfW{
     }
 
     default  void write(OpCtxG opCtxG, File file){
-        assert file.canWrite(): "file should be writable!";
+        file.setWritable(true);
+        //assert file.canWrite(): "file should be writable!";
         try {
-            new FileWriter(file).write(write(opCtxG));
+            var fw = new FileWriter(file);
+            fw.write(write(opCtxG));
+            fw.close();
         }catch (IOException e){
             e.printStackTrace();
             assert false;

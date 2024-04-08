@@ -7,7 +7,7 @@ import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
-import org.generator.lib.item.topo.node.NodeGen;
+import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
 import org.generator.util.ran.ranHelper;

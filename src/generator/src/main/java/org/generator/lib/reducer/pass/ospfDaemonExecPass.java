@@ -2,14 +2,13 @@ package org.generator.lib.reducer.pass;
 
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.item.IR.Op;
-import org.generator.lib.item.topo.graph.ConfGraph;
-import org.generator.lib.item.topo.node.NodeGen;
-import org.generator.lib.item.topo.node.NodeType;
-import org.generator.lib.item.topo.node.ospf.OSPF;
-import org.generator.lib.item.topo.node.ospf.OSPFAreaSum;
+import org.generator.lib.item.conf.graph.ConfGraph;
+import org.generator.lib.item.conf.node.NodeGen;
+import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.ospf.OSPF;
+import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
 import org.generator.util.exec.ExecStat;
 import org.generator.util.net.ID;
-import org.generator.util.net.IPBase;
 import org.generator.util.net.IPRange;
 import org.jetbrains.annotations.NotNull;
 

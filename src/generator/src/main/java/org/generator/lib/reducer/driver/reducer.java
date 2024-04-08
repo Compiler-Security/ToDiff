@@ -1,16 +1,10 @@
 package org.generator.lib.reducer.driver;
 
-import org.generator.lib.generator.pass.genCorePass;
-import org.generator.lib.item.IR.OpCtx;
-import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpCtxG;
-import org.generator.lib.item.topo.graph.ConfGraph;
+import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.reducer.pass.ospfArgPass;
 import org.generator.lib.reducer.pass.reducePass;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class reducer {
     /**

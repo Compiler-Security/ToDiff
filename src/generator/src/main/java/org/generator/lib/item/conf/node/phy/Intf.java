@@ -1,11 +1,8 @@
-package org.generator.lib.item.topo.node.phy;
+package org.generator.lib.item.conf.node.phy;
 
-import org.generator.lib.item.topo.node.NodeType;
+import org.generator.lib.item.conf.node.NodeType;
 import org.generator.util.net.IP;
-import org.generator.util.net.IPBase;
-import org.generator.lib.item.topo.node.AbstractNode;
-
-import java.util.Objects;
+import org.generator.lib.item.conf.node.AbstractNode;
 
 public class Intf extends AbstractNode {
     public Intf(String name){

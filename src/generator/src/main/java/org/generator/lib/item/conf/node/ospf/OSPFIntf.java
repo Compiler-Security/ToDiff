@@ -1,14 +1,12 @@
-package org.generator.lib.item.topo.node.ospf;
+package org.generator.lib.item.conf.node.ospf;
 
-import org.generator.lib.item.topo.node.NodeType;
-import org.generator.lib.item.topo.node.AbstractNode;
+import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.AbstractNode;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
 import org.generator.util.net.ID;
-import org.generator.util.net.IPBase;
 
 import java.util.Arrays;
-import java.util.Objects;
 import java.util.Optional;
 
 public class OSPFIntf extends AbstractNode {

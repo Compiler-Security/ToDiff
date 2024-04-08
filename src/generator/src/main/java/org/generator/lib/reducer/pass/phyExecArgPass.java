@@ -3,12 +3,12 @@ package org.generator.lib.reducer.pass;
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.item.IR.Op;
 import org.generator.lib.item.IR.OpPhy;
-import org.generator.lib.item.topo.graph.ConfGraph;
-import org.generator.lib.item.topo.node.NodeGen;
-import org.generator.lib.item.topo.node.ospf.OSPF;
-import org.generator.lib.item.topo.node.phy.Intf;
-import org.generator.lib.item.topo.edge.RelationEdge;
-import org.generator.lib.item.topo.node.NodeType;
+import org.generator.lib.item.conf.graph.ConfGraph;
+import org.generator.lib.item.conf.node.NodeGen;
+import org.generator.lib.item.conf.node.ospf.OSPF;
+import org.generator.lib.item.conf.node.phy.Intf;
+import org.generator.lib.item.conf.edge.RelationEdge;
+import org.generator.lib.item.conf.node.NodeType;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.exec.ExecStat;
 

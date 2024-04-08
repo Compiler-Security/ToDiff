@@ -1,16 +1,15 @@
 package org.generator.tools.diffOp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.generator.lib.item.topo.graph.ConfGraph;
-import org.generator.lib.item.topo.node.NodeGen;
-import org.generator.lib.item.topo.node.NodeType;
-import org.generator.lib.item.topo.node.ospf.OSPF;
-import org.generator.lib.item.topo.node.ospf.OSPFDaemon;
-import org.generator.lib.item.topo.node.phy.Router;
+import org.generator.lib.item.conf.graph.ConfGraph;
+import org.generator.lib.item.conf.node.NodeGen;
+import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.ospf.OSPF;
+import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
+import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 
-import java.awt.geom.Area;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;

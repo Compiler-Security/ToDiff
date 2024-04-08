@@ -1,7 +1,7 @@
-package org.generator.lib.item.topo.node.phy;
+package org.generator.lib.item.conf.node.phy;
 
-import org.generator.lib.item.topo.node.NodeType;
-import org.generator.lib.item.topo.node.AbstractNode;
+import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.AbstractNode;
 
 public class Switch extends AbstractNode {
 

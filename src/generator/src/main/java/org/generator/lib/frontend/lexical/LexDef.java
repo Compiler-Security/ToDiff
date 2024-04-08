@@ -78,7 +78,7 @@ public class LexDef {
                 {NOPASSIVEINTFDEFUALT, "no passive-interface default"},
                 {NOTIMERSTHROTTLESPF, "no timers throttle spf|no timers throttle spf {NUM(0-600000)} {NUM2(0-600000)} {NUM3(0-600000)}"},
                 {NOMAXIMUMPATHS, "no maximum-paths|no maximum-paths {NUM(1-64)}"},
-                {NOWRITEMULTIPLIER, "no write-multiplier|no write-multiplier {NUM(1-100)}"},
+                {NOWRITEMULTIPLIER, "no write-multiplier {NUM(1-100)}"},
                 {NOSOCKETBUFFERSEND, "no socket buffer send|no socket buffer send {LONGNUM(1-4000000000)}"},
                 {NOSOCKETBUFFERRECV, "no socket buffer recv|no socket buffer recv {LONGNUM(1-4000000000)}"},
                 {NOSOCKETBUFFERALL, "no socket buffer all|no socket buffer all {LONGNUM(1-4000000000)}"},
@@ -102,7 +102,7 @@ public class LexDef {
                 {NOIpOspfGRHelloDelay, "no ip ospf graceful-restart hello-delay | no ip ospf graceful-restart hello-delay {NUM(1-1800)}"},
                 {NOIpOspfNet, "no ip ospf network | no ip ospf network {NAME(broadcast,non-broadcast)}"},
                 {NOIpOspfPriority, "no ip ospf priority | no ip ospf priority {NUM(0-255)}"},
-                {NOIpOspfRetransInter, "ip ospf retransmit-interval | ip ospf retransmit-interval {NUM(1-65535)}"},
+                {NOIpOspfRetransInter, "no ip ospf retransmit-interval | no ip ospf retransmit-interval {NUM(1-65535)}"},
                 {NOIpOspfTransDealy, "no ip ospf transmit-delay | no ip ospf transmit-delay {NUM(1-65535)}"},
                 {NOIpOspfPassive, "no ip ospf passive"},
 

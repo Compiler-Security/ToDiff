@@ -1,9 +1,7 @@
-package org.generator.lib.item.topo.node.ospf;
+package org.generator.lib.item.conf.node.ospf;
 
-import org.generator.lib.item.topo.node.NodeType;
-import org.generator.lib.item.topo.node.AbstractNode;
-
-import java.util.Objects;
+import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.AbstractNode;
 
 public class OSPFDaemon extends AbstractNode {
     public OSPFDaemon(String name){

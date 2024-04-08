@@ -5,9 +5,10 @@ import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.lang.Integer.min;
 
 public class ranHelper {
     /**
@@ -31,11 +32,11 @@ public class ranHelper {
     }
 
     static public IP randomIP(){
-        return IP.of(randomLong(0, 0xffffffffL), randomInt(1, 32));
+        return IP.of(randomLong(0, 0xffffffffL), randomInt(1, 31));
     }
 
     static public IPRange randomIpRange(){
-        return IPRange.of(randomLong(0,0xffffffffL), randomInt(1, 32));
+        return IPRange.of(randomLong(0,0xffffffffL), randomInt(1, 31));
     }
 
     private static String getRandomString2(int length){
@@ -76,6 +77,18 @@ public class ranHelper {
         if (elems.isEmpty()) return null;
         return elems.get(ranHelper.randomInt(0, elems.size() - 1));
      }
+
+     public static <T> List<T> randomElemsOfList(List<T> elems){
+         return randomElemsOfList(elems, elems.size());
+     }
+
+    public static <T> List<T> randomElemsOfList(List<T> elems, int bound){
+        assert !elems.isEmpty();
+         if (elems.isEmpty()) return null;
+        var tmp = new ArrayList<>(elems);
+        Collections.shuffle(tmp);
+        return new ArrayList<>(tmp.subList(0, min(elems.size(), ranHelper.randomInt(1, bound))));
+    }
     private static String getRanNoName(Map<String, Object> argRange, String field){
         return ranHelper.randomStr();
     }

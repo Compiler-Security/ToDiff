@@ -1,17 +1,15 @@
-package org.generator.lib.item.topo.graph;
+package org.generator.lib.item.conf.graph;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.generator.lib.item.topo.edge.RelationEdge;
-import org.generator.lib.item.topo.node.AbstractNode;
-import org.generator.lib.item.topo.node.NodeGen;
-import org.generator.lib.item.topo.node.NodeType;
-import org.generator.lib.item.topo.node.ospf.OSPFAreaSum;
-import org.generator.lib.item.topo.node.ospf.OSPFIntf;
-import org.generator.lib.item.topo.node.phy.Intf;
-import org.generator.lib.item.topo.node.phy.Router;
+import org.generator.lib.item.conf.edge.RelationEdge;
+import org.generator.lib.item.conf.node.AbstractNode;
+import org.generator.lib.item.conf.node.NodeGen;
+import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
+import org.generator.lib.item.conf.node.ospf.OSPFIntf;
+import org.generator.lib.item.conf.node.phy.Intf;
+import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.util.collections.Pair;
 import org.generator.util.exec.ExecStat;
 import org.graphstream.graph.Graph;

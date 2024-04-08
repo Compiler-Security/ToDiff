@@ -1,6 +1,5 @@
-package org.generator.lib.item.topo.node;
+package org.generator.lib.item.conf.node;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
