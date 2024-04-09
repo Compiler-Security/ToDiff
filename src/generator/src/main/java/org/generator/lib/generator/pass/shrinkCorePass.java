@@ -6,9 +6,8 @@ package org.generator.lib.generator.pass;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.generator.lib.item.opg.OpCtxG;
-import org.generator.lib.item.topo.graph.ConfGraph;
+import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.reducer.driver.reducer;
-import org.generator.util.diff.differ;
 
 import java.util.List;
 

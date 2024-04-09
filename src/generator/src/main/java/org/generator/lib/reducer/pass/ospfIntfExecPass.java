@@ -1,8 +1,8 @@
 package org.generator.lib.reducer.pass;
 
 import org.generator.lib.item.IR.Op;
-import org.generator.lib.item.topo.graph.ConfGraph;
-import org.generator.lib.item.topo.node.ospf.OSPFIntf;
+import org.generator.lib.item.conf.graph.ConfGraph;
+import org.generator.lib.item.conf.node.ospf.OSPFIntf;
 import org.generator.util.exec.ExecStat;
 import org.jetbrains.annotations.NotNull;
 
