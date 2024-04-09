@@ -55,7 +55,7 @@ class ranConnect{
         }
         List<Intf> choseIntfs = new ArrayList<>();
         for(var subId: choseGraphs){
-            choseIntfs.addAll(ranHelper.randomElemsOfList(subgraphIntfs.get(subId).stream().toList()));
+            choseIntfs.addAll(ranHelper.randomElemsOfList(subgraphIntfs.get(subId).stream().toList(), 1));
         }
         //1 2 or 3...
         for(var intf: choseIntfs){
@@ -101,8 +101,8 @@ class ranConnect{
     Map<Router, Integer> routerToId;
     Map<Integer, Router> idToRouter;
 }
-public class ranGen implements genBase{
-    public ranGen(){}
+public class ranBaseGen implements genBase{
+    public ranBaseGen(){}
     public int networkId;
 
     List<Router> getRoutersOfArea(int area){

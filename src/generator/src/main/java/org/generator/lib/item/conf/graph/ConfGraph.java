@@ -10,6 +10,7 @@ import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
 import org.generator.lib.item.conf.node.ospf.OSPFIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
+import org.generator.lib.item.conf.node.phy.Switch;
 import org.generator.util.collections.Pair;
 import org.generator.util.exec.ExecStat;
 import org.graphstream.graph.Graph;
@@ -67,6 +68,31 @@ public class ConfGraph extends AbstractRelationGraph {
             intf_new.setUp(intf.isUp());
             g.addNode(intf_new);
             g.addIntfRelation(intf.getName(), r_name);
+        }
+        return g;
+    }
+
+    public ConfGraph viewConfGraphOfRouter(String r_name){
+        var g = new ConfGraph(r_name);
+        g.addNode(getNodeNotNull(r_name));
+        var ospf_name = NodeGen.getOSPFName(r_name);
+        var ospf_daemon_name = NodeGen.getOSPFDaemonName(ospf_name);
+        if (containsNode(ospf_name)){
+            g.addNode(getNodeNotNull(ospf_name));
+            g.addOSPFRelation(ospf_name, r_name);
+        }
+        if (containsNode(ospf_daemon_name)){
+            g.addNode(getNodeNotNull(ospf_daemon_name));
+            g.addOSPFDaemonRelation(ospf_daemon_name, r_name);
+        }
+        for(var intf: getIntfsOfRouter(r_name)){
+            g.addNode(intf);
+            g.addIntfRelation(intf.getName(), r_name);
+            var ospf_intf_name = NodeGen.getOSPFIntfName(intf.getName());
+            if (containsNode(ospf_intf_name)){
+                g.addNode(getNodeNotNull(ospf_intf_name));
+                g.addOSPFIntfRelation(ospf_intf_name, intf.getName());
+            }
         }
         return g;
     }
@@ -158,6 +184,11 @@ public class ConfGraph extends AbstractRelationGraph {
         return ExecStat.SUCC;
     }
 
+    public void addIntfLink(String intf1_name, String intf2_name){
+        addEdge(intf1_name, intf2_name, RelationEdge.EdgeType.LINK);
+        addEdge(intf2_name, intf1_name, RelationEdge.EdgeType.LINK);
+    }
+
     public ExecStat addOSPFAreaSumRelation(String areaSum_name, String ospf_name){
         var res1 = addEdge(areaSum_name, ospf_name, RelationEdge.EdgeType.OSPF);
         var res2 = addEdge(ospf_name, areaSum_name, RelationEdge.EdgeType.OSPFAREASUM);
@@ -176,6 +207,13 @@ public class ConfGraph extends AbstractRelationGraph {
         return this.containsNode(NodeGen.getOSPFName(r_name));
     }
 
+    public List<Switch> getSwitches(){
+        return getNodes().stream().filter(node -> node.getNodeType() == NodeType.Switch).map(node -> (Switch)node).collect(Collectors.toList());
+    }
+
+    public <T> List<T> getNodesByType(NodeType type){
+        return getNodes().stream().filter(node -> node.getNodeType().equals(type)).map(node-> (T) node).collect(Collectors.toList());
+    }
     @Override
     public String toDot(boolean verbose) {
         Graph graph = new SingleGraph("RelationGraph");

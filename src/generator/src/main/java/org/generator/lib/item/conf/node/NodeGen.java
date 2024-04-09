@@ -26,6 +26,10 @@ public class NodeGen {
         return String.format("%s-OSPF", r_name);
     }
 
+    static public String getSwitchName(int id){
+        return "s%d".formatted(id);
+    }
+
     static public String getPhyNodeNameFromIntfName(String intf_name){
         Pattern pattern = Pattern.compile("(\\w+)-\\w+");
         Matcher matcher = pattern.matcher(intf_name);
@@ -36,6 +40,8 @@ public class NodeGen {
         }
         return "";
     }
+
+    static public String getRouterName(int id){ return "r%d".formatted(id);}
 
     static public String getOSPFDaemonName(String ospf_name){
         return String.format("%s-daemon", ospf_name);
