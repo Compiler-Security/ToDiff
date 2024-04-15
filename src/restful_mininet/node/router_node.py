@@ -54,7 +54,10 @@ class FrrNode(Node):
         if (universe):
             conf_path = path.join(conf_dir, f"{self.name}.conf")
             self.cmds_error(["cp", conf_path, "/etc/frr/frr.conf"])
-            self.cmds_error(["vtysh", "-b"])
+            try:
+                self.cmds_error(["vtysh", "-b"])
+            except:
+                pass
             infoaln("ls /etc/frr", self.cmds(["ls", "/etc/frr"]))
         if DEBUG:
             self.log_load_frr()
@@ -94,7 +97,8 @@ class FrrNode(Node):
     def stop_frr(self):
         for v in self.daemon_dict.values():
             kill_pid(v["daemon_pid"])
-        self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
+        if self.log_path != None:
+            self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
         log.info("cleaned\n")
 
     def terminate(self):
@@ -111,6 +115,7 @@ class FrrNode(Node):
         if c != 0:
             raise Exception((cmds, e))
         return res
+    
 
     def daemon_cmd(self, cmd:str, daemon_name=None):
         cmds_list = ["vtysh"]

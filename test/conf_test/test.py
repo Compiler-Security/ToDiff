@@ -2,7 +2,9 @@ from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.node import  Node
 from mininet.log import setLogLevel
+from src.restful_mininet.net import testnet
 from src.restful_mininet.node.router_node import FrrNode
+from src.restful_mininet.api.inst import MininetInst
 from time import sleep
 import os
 from mininet import log
@@ -48,7 +50,36 @@ def simpleTest():
         log.error(f"{e}\n")
         net.stop()
 
-
+def inst_test():
+    net = testnet.TestNet()
+    ctx = {"intf":{}}
+    MininetInst("node r1 add", net, "", ctx).run()
+    MininetInst("node s1 add", net, "", ctx).run()
+    MininetInst("node r2 add", net, "", ctx).run()
+    print(MininetInst("link r1-eth0 s1-eth0 add", net, "", ctx).run())
+    print(MininetInst("link r2-eth0 s1-eth1 add", net, "", ctx).run())
+    print(MininetInst("node r1 set OSPF up", net, WORK_DIR, ctx).run())
+    print(MininetInst("node r2 set OSPF up", net, WORK_DIR, ctx).run())
+    try:
+        net.start_net()
+        # print(net.net.hosts)
+        # sleep(5)
+        # print(net.run_frr_cmd("r1", "show ip ospf"))
+        # print(net.run_frr_cmd("r2", "show ip ospf"))
+        # CLI(net.net)
+        # print(MininetInst("link r1-eth0 r2-eth0 down", net, "", ctx).run())
+        # CLI(net.net)
+        # print(MininetInst("link r1-eth0 r2-eth0 up", net, "", ctx).run())
+        # CLI(net.net)
+        #print(MininetInst("intf r1-eth0 down", net, "", ctx).run())
+        #CLI(net.net)
+        #print(MininetInst("intf r1-eth0 up", net, "", ctx).run())
+        CLI(net.net)
+        net.stop_net()
+    except BaseException as e:
+        log.error(f"{e}\n")
+        net.stop_net()
 if __name__ == "__main__":
     setLogLevel('info')
-    simpleTest()
+    #simpleTest()
+    inst_test()
