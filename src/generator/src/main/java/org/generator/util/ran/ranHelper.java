@@ -28,11 +28,12 @@ public class ranHelper {
     }
 
     static public ID randomID(){
-        return ID.of(randomLong(0, 0xffffffffL));
+        return ID.of(randomLong(0, 0xE0000000L));
     }
 
+        //< 254.0.0.0
     static public IP randomIP(){
-        return IP.of(randomLong(0, 0xffffffffL), randomInt(1, 31));
+        return IP.of(randomLong(0, 0xE0000000L), randomInt(1, 31));
     }
 
     static public IPRange randomIpRange(){
@@ -91,5 +92,22 @@ public class ranHelper {
     }
     private static String getRanNoName(Map<String, Object> argRange, String field){
         return ranHelper.randomStr();
+    }
+
+    public static <T> List<List<T>> randomSplitElemsCanEmpty(List<T> elems, int splitPart){
+         //TODO random split
+         //assert  elems.size() >= splitPart;
+         int n = elems.size();
+         List<Integer> split_points = new ArrayList<>();
+         for(int i = 0; i < splitPart - 1; i++) split_points.add(ranHelper.randomInt(0, n));
+         split_points.add(n);
+         Collections.sort(split_points);
+         List<List<T>> res = new ArrayList<>();
+         int start = 0;
+         for(int i = 0; i < splitPart; i++){
+             res.add(elems.subList(start, split_points.get(i)));
+             start = split_points.get(i);
+         }
+         return res;
     }
 }
