@@ -143,7 +143,14 @@ class FrrNode(Node):
     
     def dump_info(self):
         j = {}
-        j["ospf-daemon"] = json.loads(self.daemon_cmds(["show ip ospf json"]))
+        #print("=======")
+        #print(self.daemon_cmds(["show ip ospf json"]))
+        #print("=======")
+        st = self.daemon_cmds(["show ip ospf json"])
+        if st == "":
+            j["ospf-daemon"] = {}
+        else:
+            j["ospf-daemon"] = json.loads(self.daemon_cmds(["show ip ospf json"]))
         j["intfs"] = json.loads(self.daemon_cmds(["show interface json"]))
         j["ospf-intfs"] = json.loads(self.daemon_cmds(["show ip ospf interface json"]))
         j['neighbors'] = json.loads(self.daemon_cmds(["show ip ospf neighbor json"]))

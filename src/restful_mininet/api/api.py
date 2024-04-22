@@ -2,6 +2,7 @@
 from src.restful_mininet.net import testnet
 from src.restful_mininet.api.inst import MininetInst
 from os import path
+from mininet.cli import CLI
 import os
 import json
 import time
@@ -34,16 +35,18 @@ class executor:
     
     def init_ospf(self, router_name, ospf_commands):
         conf_name = f"{router_name}.conf"
-        with open(conf_name, 'w') as fp:
-            for op in ospf_commands:
-                fp.write(op)
-                fp.write('\n')
+        with open(path.join(self.tmp_file_dir, conf_name), 'w') as fp:
+            for opa in ospf_commands:
+                for op in opa.split(";"):
+                    fp.write(op)
+                    fp.write('\n')
           
     def test(self):
         res = {}
         start = time.time()
+        res['result'] = []
         for i in range(0, self.round_num):
-            res['result'][i] = self.run(i)
+            res['result'].append(self.run(i))
         stop = time.time()
         res['total_test_time'] = stop - start
         self.conf['test'] = res
@@ -58,6 +61,7 @@ class executor:
         print(commands)
         res = []
         for i in range(0, self.step_nums[r]):
+            print(i)
             ospf_res = {}
             if i == 0:
                 for j in range(0, len(self.routers)):
@@ -68,7 +72,7 @@ class executor:
                 for j in range(0, len(self.routers)):
                     router_name = self.routers[j]
                     ospf_ops = commands[i]['ospf'][j]
-                    tmp = self.run_ospf(net, ctx, ospf_ops)
+                    tmp = self.run_ospf(net, router_name, ospf_ops)
                     ospf_res[router_name] = tmp
     
             phy_res = self.run_phy(net, ctx, commands[i]['phy'])
@@ -82,10 +86,10 @@ class executor:
             sleep_time = commands[i]['waitTime']
             if sleep_time == -1:
                 #FIXME this should check shrink
-                time.sleep(5)
+                time.sleep(10)
             else:
                 time.sleep(sleep_time)
-
+            CLI(net.net)
             res[i]['watch'] = {}
             for r_name in self.routers:
                 res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
@@ -93,5 +97,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/all.conf", "/home/frr/topo-fuzz/test/excutor_test/frr_conf")
+    t = executor("/home/frr/a/topo-fuzz/test/excutor_test/frr_conf/all.conf", "/home/frr/a/topo-fuzz/test/excutor_test/frr_conf")
     t.test()
