@@ -17,6 +17,8 @@ public enum OpType {
     LINKUP,
     LINKDOWN,
     LINKREMOVE,
+    OSPFUP,
+
 
     //Don't change this!
     OSPFCONF,
@@ -142,8 +144,7 @@ public enum OpType {
     NOIpOspfPriority,
     NOIpOspfRetransInter,
     NOIpOspfTransDealy,
-    NOIpOspfPassive,
-    ;
+    NOIpOspfPassive;
 
     public static boolean inPhy(@NotNull OpType typ) {
         return typ.ordinal() >= NODEADD.ordinal() && typ.ordinal() <= LINKREMOVE.ordinal();

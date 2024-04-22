@@ -27,9 +27,10 @@ public class LexDef {
                 {NODESETOSPFRE, "node {NAME} set ospf restart"},
                 {INTFUP, "intf {NAME} up"},
                 {INTFDOWN, "intf {NAME} down"},
-                {LINKUP, "link {NAME} {NAME2} up"},
+                {LINKUP, "link {NAME} {NAME2} add"},
                 {LINKDOWN, "link {NAME} {NAME2} down"},
                 {LINKREMOVE, "link {NAME} {NAME2} remove"},
+                {OSPFUP, "node {NAME} set OSPF up"},
                 {OSPFCONF, "ROSPFCONF"},
 
                 {ROSPF, "router ospf"},
