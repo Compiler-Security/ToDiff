@@ -9,7 +9,7 @@ from mininet.node import  Node
 from mininet.log import setLogLevel
 from src.restful_mininet.net import testnet
 from src.restful_mininet.node.router_node import FrrNode
-from src.restful_mininet.api.inst import MininetInst
+from src.restful_mininet.exec.inst import MininetInst
 from time import sleep
 import os
 from mininet import log
