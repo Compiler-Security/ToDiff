@@ -1,3 +1,8 @@
+import sys
+from os import path
+path_to_add = "/home/frr/a/topo-fuzz"
+if path_to_add not in sys.path:
+    sys.path.append(path_to_add)
 from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.node import  Node

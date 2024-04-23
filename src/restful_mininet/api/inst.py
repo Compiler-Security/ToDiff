@@ -136,7 +136,7 @@ class MininetInst(BaseInst):
             up_node: FrrNode = self._get_node(node_name)
             if up_node is None:
                 return self.EXEC_MISS
-            return self._run_cmd(up_node.load_frr, ["zebra", "ospfd"], conf_dir=self.workdir, universe=True)
+            return self._run_cmd(up_node.load_frr, ["zebra", "ospfd", "mgmtd"], conf_dir=self.workdir, universe=True)
 
         if _cmds_equal_prefix(op_args, ["router", "set", "OSPF", "down"]):
             up_node: FrrNode = self._get_node(node_name)

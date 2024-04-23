@@ -1,14 +1,21 @@
+import sys
+from os import path
+path_to_add = path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
+if path_to_add not in sys.path:
+    sys.path.append(path_to_add)
 
 from src.restful_mininet.net import testnet
 from src.restful_mininet.api.inst import MininetInst
-from os import path
+from src.restful_mininet.util.log import *
 from mininet.cli import CLI
 import os
 import json
 import time
+
 class executor:
 
     def __init__(self, conf_path, output_dir_str) -> None:
+        setLogLevel('warning')
         self.conf_path = conf_path
         self.output_dir = output_dir_str
         with open(self.conf_path) as fp:
@@ -20,6 +27,8 @@ class executor:
         os.makedirs(self.output_dir, exist_ok=True)
         self.tmp_file_dir = path.join(self.output_dir, 'tmp')
         os.makedirs(self.tmp_file_dir, exist_ok=True)
+        os.system("mn -c 2> /dev/null")
+        os.system("ulimit -n 65535")
     
     def run_phy(self, net, ctx, phy_commands):
         res = []
@@ -42,26 +51,30 @@ class executor:
                     fp.write('\n')
           
     def test(self):
-        res = {}
-        start = time.time()
-        res['result'] = []
-        for i in range(0, self.round_num):
-            res['result'].append(self.run(i))
-        stop = time.time()
-        res['total_test_time'] = stop - start
-        self.conf['test'] = res
-        result_path = path.join(self.output_dir, f"{self.conf_name}_res.json")
-        with open(result_path, "w") as fp:
-            json.dump(self.conf, fp)
+        try:
+            res = {}
+            start = time.time()
+            res['result'] = []
+            for i in range(0, self.round_num):
+                res['result'].append(self.run(i))
+            stop = time.time()
+            res['total_test_time'] = stop - start
+            self.conf['test'] = res
+            result_path = path.join(self.output_dir, f"{self.conf_name}_res.json")
+            with open(result_path, "w") as fp:
+                json.dump(self.conf, fp)
+        except Exception as e:
+            print(e)
+            os.system("mn -c")
 
     def run(self, r):
+        warnaln("round ", r)
         net = testnet.TestNet()
         ctx = {"intf":{}}
         commands = self.conf['commands'][r]
-        print(commands)
         res = []
         for i in range(0, self.step_nums[r]):
-            print(i)
+            warnaln("step ", i)
             ospf_res = {}
             if i == 0:
                 for j in range(0, len(self.routers)):
@@ -89,7 +102,7 @@ class executor:
                 time.sleep(10)
             else:
                 time.sleep(sleep_time)
-            CLI(net.net)
+            #CLI(net.net)
             res[i]['watch'] = {}
             for r_name in self.routers:
                 res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
