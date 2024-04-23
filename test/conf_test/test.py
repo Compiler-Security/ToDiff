@@ -1,10 +1,15 @@
+import sys
+from os import path
+path_to_add = "/home/frr/a/topo-fuzz"
+if path_to_add not in sys.path:
+    sys.path.append(path_to_add)
 from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.node import  Node
 from mininet.log import setLogLevel
 from src.restful_mininet.net import testnet
 from src.restful_mininet.node.router_node import FrrNode
-from src.restful_mininet.api.inst import MininetInst
+from src.restful_mininet.exec.inst import MininetInst
 from time import sleep
 import os
 from mininet import log
@@ -79,7 +84,44 @@ def inst_test():
     except BaseException as e:
         log.error(f"{e}\n")
         net.stop_net()
+
+def inst_test2():
+    phySt = """
+	node r0 add
+	node r2 add
+	node r1 add
+	node s0 add
+	node s4 add
+	node s1 add
+	node s6 add
+	node s5 add
+	node s2 add
+	node s7 add
+	node s3 add
+	link r1-eth1 s4-eth0 add
+	link r2-eth1 s4-eth1 add
+	link r1-eth2 s6-eth0 add
+	link r1-eth0 s0-eth0 add
+	link r0-eth1 s2-eth0 add
+	link r0-eth3 s7-eth0 add
+	link r2-eth2 s7-eth1 add
+	link r2-eth0 s3-eth0 add
+	link r0-eth2 s5-eth0 add
+	link r0-eth0 s1-eth0 add
+	node r0 set OSPF up
+	node r2 set OSPF up
+	node r1 set OSPF up
+    """
+    net = testnet.TestNet()
+    ctx = {"intf":{}}
+    for st in phySt.split('\n'):
+        cmd = st.strip()
+        print(MininetInst(cmd, net, WORK_DIR, ctx).run())
+    net.start_net()
+    CLI(net.net)
+    net.stop_net()
+
 if __name__ == "__main__":
     setLogLevel('info')
     #simpleTest()
-    inst_test()
+    inst_test2()

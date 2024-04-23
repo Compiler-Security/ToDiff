@@ -1,9 +1,12 @@
 package tools.topo;
 
+import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.topo.pass.attri.ranAttriGen;
 import org.generator.lib.topo.pass.base.ranBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
+import org.generator.tools.diffOp.genOps;
 import org.generator.tools.diffTopo.diffTopo;
+import org.generator.tools.frontend.OspfConfWriter;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.file.FileSinkDOT;
@@ -64,5 +67,24 @@ public class baseGenTest {
     public void testDiffTopo(){
         var d = new diffTopo();
         d.main();
+    }
+
+    @Test
+    public void testRanSplit() {
+        var genOp = new genOps();
+        var ori = genOp.genRandom(2, 0.2, 0.6, 4, 0, 1, "r1");
+        var res = diffTopo.ranSplitConf(ori, 10);
+        for(var opctxg: res){
+            System.out.println("=======");
+            System.out.println(new OspfConfWriter().write(opctxg));
+            System.out.println("=======");
+            //opg.addOps(opctxg.getOps());
+        }
+    }
+
+    @Test
+    public void testGen() {
+        var diff = new diffTopo();
+        diff.gen(3, 20, 10, 2);
     }
 }

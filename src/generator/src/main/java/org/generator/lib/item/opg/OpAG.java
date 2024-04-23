@@ -32,6 +32,12 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         return new OpAG();
     }
 
+    public static OpAG of(List<OpAnalysis> opags){
+        var opag = OpAG.of();
+        opag.getOps().addAll(opags);
+        return opag;
+    }
+
     /**
      * This will create a new OpAG from this
      * Each OpA is copied, however, OspfOp is not copied

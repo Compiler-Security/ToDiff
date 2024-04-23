@@ -137,8 +137,26 @@ class FrrNode(Node):
         j[router]["ospf-daemon"] = json.loads(self.daemon_cmds(["show ip ospf json"]))
         j[router]["intfs"] = json.loads(self.daemon_cmds(["show interface json"]))
         j[router]["ospf-intfs"] = json.loads(self.daemon_cmds(["show ip ospf interface json"]))
+        j[router]['neighbors'] = json.loads(self.daemon_cmds(["show ip ospf neighbor json"]))
+        j[router]['routing-table'] = json.loads(self.daemon_cmds(['show ip ospf route json']))
         return json.dumps(j, indent=4)
-
+    
+    def dump_info(self):
+        j = {}
+        #print("=======")
+        #print(self.daemon_cmds(["show ip ospf json"]))
+        #print("=======")
+        st = self.daemon_cmds(["show ip ospf json"])
+        if st == "":
+            j["ospf-daemon"] = {}
+        else:
+            j["ospf-daemon"] = json.loads(self.daemon_cmds(["show ip ospf json"]))
+        j["intfs"] = json.loads(self.daemon_cmds(["show interface json"]))
+        j["ospf-intfs"] = json.loads(self.daemon_cmds(["show ip ospf interface json"]))
+        j['neighbors'] = json.loads(self.daemon_cmds(["show ip ospf neighbor json"]))
+        j['routing-table'] = json.loads(self.daemon_cmds(['show ip ospf route json']))
+        j['running-config'] = self.daemon_cmds(["show running-config"])
+        return j
 
 if __name__ == "__main__":
     setLogLevel('info')

@@ -30,7 +30,7 @@ public class ranAttriGen implements genAttri {
             g.addNode(new OSPFDaemon(ospf_daemon_name));
             g.addOSPFRelation(ospf_name, r_name);
             g.addOSPFDaemonRelation(ospf_daemon_name, r_name);
-            ospf.setRouterId(ID.of(i));
+            ospf.setRouterId(ID.of(i + 1)); //router id is not allowed to 0.0.0.0
             for(int j = 0; j < r.intfs.size(); j++){
                 var intf_name  = NodeGen.getIntfName(r_name, j);
                 var ospf_intf_name = NodeGen.getOSPFIntfName(intf_name);

@@ -20,6 +20,7 @@ public class genPhyCorePass {
             var op = new OpPhy(OpType.NODEADD);
             op.setNAME(r.getName());
             opctxg.addOp(OpCtx.of(op));
+            var op1 = new OpPhy(OpType.OSPFUP);
         }
         var intfs = g.<Intf> getNodesByType(NodeType.Intf);
         for(var intf: intfs){
@@ -30,6 +31,12 @@ public class genPhyCorePass {
                 op.setNAME2(target_intf.getName());
                 opctxg.addOp(OpCtx.of(op));
             }
+        }
+        for(var r: nodes){
+            if (r.getNodeType() != NodeType.Router) continue;
+            var op = new OpPhy(OpType.OSPFUP);
+            op.setNAME(r.getName());
+            opctxg.addOp(OpCtx.of(op));
         }
         return opctxg;
     }
