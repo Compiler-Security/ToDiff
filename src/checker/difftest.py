@@ -52,20 +52,65 @@ class diffTest:
                 del item["databaseSummaryListCounter"]
         return new_dict
 
+    def shrink_ospfDaemon(self, n_dict:dict):
+        key_set = ["routerId", "tosRoutesOnly", "rfc2328Conform", "holdtimeMinMsecs", "holdtimeMaxMsecs", "spfScheduleDelayMsecs", "maximumPaths", "writeMultiplier", "abrType", "attachedAreaCounter"]
+        new_dict = {x:n_dict[x] for x in key_set}
+        new_dict["areas"] = {}
+        for (area, val) in n_dict["areas"].items():
+            if "backbone" in val.keys():
+                key_set = ["backbone"]
+            else:
+                key_set = ["shortcuttingMode", "sBitConcensus"]
+            key_set += ["areaIfTotalCounter", "areaIfActiveCounter", "nbrFullAdjacentCounter", "lsaNumber", "lsaRouterNumber", "lsaNetworkNumber", "lsaSummaryNumber", "lsaAsbrNumber", "lsaNssaNumber"]
+            new_dict["areas"][area] = {x:val[x] for x in key_set}
+        return new_dict
+    
+    def shrink_ospfIntfs(self, n_dict:dict):
+        new_dict1 = copy.deepcopy(n_dict)
+        for new_dict in new_dict1.values():
+            del new_dict["timerHelloInMsecs"]
+            for val in new_dict["interfaceIp"].values():
+                del val["timerHelloInMsecs"]
+        return new_dict1
 
     def check_neighbors(self, rt):
         for i in range(1, self.round_num):
             diff = util.dict_diff(self.shrink_neighbors(self.neighbors(i - 1, self.step_nums[i - 1] - 1, rt)), self.shrink_neighbors(self.neighbors(i, self.step_nums[i] - 1, rt)))
             if (diff != {}):
-                print(f"round {i-1} {i}")
+                print(f"round {i-1} {i} neighbors")
+                print(json.dumps(diff, indent=4))
+
+    def check_routingTable(self, rt):
+        for i in range(1, self.round_num):
+            diff = util.dict_diff(self.routingTable(i - 1, self.step_nums[i - 1] - 1, rt),self.routingTable(i, self.step_nums[i] - 1, rt))
+            if (diff != {}):
+                print(f"round {i-1} {i} routing table")
+                print(json.dumps(diff, indent=4))
+    
+    def check_ospfDaemon(self, rt):
+        for i in range(1, self.round_num):
+            diff = util.dict_diff(self.shrink_ospfDaemon(self.ospfDaemon(i - 1, self.step_nums[i - 1] - 1, rt)), self.shrink_ospfDaemon(self.ospfDaemon(i, self.step_nums[i] - 1, rt)))
+            if (diff != {}):
+                print(f"round {i-1} {i} ospf-daemon")
+                print(json.dumps(diff, indent=4))
+
+    def check_ospfIntfs(self, rt):
+        for i in range(1, self.round_num):
+            diff = util.dict_diff(self.shrink_ospfIntfs(self.ospfIntfs(i - 1, self.step_nums[i - 1] - 1, rt)), self.shrink_ospfIntfs(self.ospfIntfs(i, self.step_nums[i] - 1, rt)))
+            if (diff != {}):
+                print(f"round {i-1} {i} ospf-intfs")
                 print(json.dumps(diff, indent=4))
 
     def check(self):
             i = 0
             for rt in self.routers:
-                print(f"router {rt}")
+                print(f"check router {rt}")
+                self.check_ospfIntfs(rt)
                 self.check_neighbors(rt)
-                #print(self.runningConfig(rd, self.step_nums[rd] - 1, "r1"))
+                self.check_routingTable(rt)
+                self.check_ospfDaemon(rt)
+            # for rd in range(0, self.round_num):
+            #     print(json.dumps(self.ospfIntfs(rd, self.step_nums[rd] - 1, "r1"), indent=4))
 
 if __name__ == "__main__":
     d = diffTest("/home/frr/a/topo-fuzz/test/excutor_test/frr_conf/test1_res.json")
