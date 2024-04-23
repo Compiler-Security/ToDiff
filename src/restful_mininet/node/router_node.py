@@ -155,6 +155,7 @@ class FrrNode(Node):
         j["ospf-intfs"] = json.loads(self.daemon_cmds(["show ip ospf interface json"]))
         j['neighbors'] = json.loads(self.daemon_cmds(["show ip ospf neighbor json"]))
         j['routing-table'] = json.loads(self.daemon_cmds(['show ip ospf route json']))
+        j['running-config'] = self.daemon_cmds(["show running-config"])
         return j
 
 if __name__ == "__main__":

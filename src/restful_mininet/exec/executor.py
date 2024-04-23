@@ -73,7 +73,6 @@ class executor:
         commands = self.conf['commands'][r]
         res = []
         for i in range(0, self.step_nums[r]):
-            warnaln("step ", i)
             ospf_res = {}
             if i == 0:
                 for j in range(0, len(self.routers)):
@@ -94,11 +93,12 @@ class executor:
             res[i]['exec'] = {}
             res[i]['exec']['phy'] = phy_res
             res[i]['exec']['ospf'] = ospf_res
-
+            warnaln("step ", i)
             sleep_time = commands[i]['waitTime']
+            
             if sleep_time == -1:
                 #FIXME this should check shrink
-                time.sleep(10)
+                time.sleep(20)
             else:
                 time.sleep(sleep_time)
             #CLI(net.net)
@@ -109,5 +109,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/a/topo-fuzz/test/excutor_test/frr_conf/all.conf", "/home/frr/a/topo-fuzz/test/excutor_test/frr_conf")
+    t = executor("/home/frr/a/topo-fuzz/test/excutor_test/frr_conf/all1.conf", "/home/frr/a/topo-fuzz/test/excutor_test/frr_conf")
     t.test()
