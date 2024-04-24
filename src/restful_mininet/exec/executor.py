@@ -15,7 +15,7 @@ import time
 class executor:
 
     def __init__(self, conf_path, output_dir_str) -> None:
-        setLogLevel('warning')
+        setLogLevel('info')
         self.conf_path = conf_path
         self.output_dir = output_dir_str
         with open(self.conf_path) as fp:
@@ -33,12 +33,16 @@ class executor:
         res = []
         for op in phy_commands:
             res.append(MininetInst(op, net, self.tmp_file_dir, ctx).run())
+        warnaln("phy exec res: ", res)
         return res
     
     def run_ospf(self, net:testnet.TestNet, router_name, ospf_commands):
         res = []
         for op in ospf_commands:
-            res.append(net.run_frr_cmds(router_name, ['configure terminal'] + op.split(";")))
+            if op == "clear ip ospf process":
+                res.append(net.run_frr_cmds(router_name, [op]))
+            else:
+                res.append(net.run_frr_cmds(router_name, ['configure terminal'] + op.split(";")))
         return res
     
     def init_ospf(self, router_name, ospf_commands):
@@ -66,6 +70,15 @@ class executor:
             print(e)
             os.system("mn -c")
 
+    def check_converge(self, net:testnet.TestNet):
+        for r_name in self.routers:
+            res = net.net.nameToNode[r_name].dump_info()
+            for val in res['neighbors']['neighbors'].values():
+                for val1 in val:
+                    if (val1['converged'] != 'Full' or val1['linkStateRetransmissionListCounter'] > 0):
+                        return False
+        return True
+    
     def run(self, r):
         warnaln("round ", r)
         net = testnet.TestNet()
@@ -95,13 +108,17 @@ class executor:
             res[i]['exec']['ospf'] = ospf_res
             warnaln("step ", i)
             sleep_time = commands[i]['waitTime']
-            
+            #CLI(net.net)
             if sleep_time == -1:
                 #FIXME this should check shrink
-                time.sleep(20)
+                while(not self.check_converge(net)): time.sleep(5)
+                time.sleep(400)
+                #time.sleep(80)
+                for r_name in self.routers:
+                    print(net.net.nameToNode[r_name].daemon_cmds(["show ip ospf neighbor"]))
             else:
                 time.sleep(sleep_time)
-            #CLI(net.net)
+            
             res[i]['watch'] = {}
             for r_name in self.routers:
                 res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
@@ -109,5 +126,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/a/topo-fuzz/test/excutor_test/frr_conf/all1.conf", "/home/frr/a/topo-fuzz/test/excutor_test/frr_conf")
+    t = executor("/home/frr/a/topo-fuzz/test/excutor_test/frr_conf/all8.conf", "/home/frr/a/topo-fuzz/test/excutor_test/frr_conf")
     t.test()
