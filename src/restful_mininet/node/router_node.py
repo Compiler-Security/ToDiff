@@ -71,13 +71,13 @@ class FrrNode(Node):
         infoaln("ls run", self.cmds(["ls", "/run/frr"]))
 
     def _load_daemon(self, daemon_name, work_dir: str, universe=False):
-        if path.exists(self.log_path):
-            shutil.rmtree(self.log_path)
-        assert (not path.exists(self.log_path))
+        # if path.exists(self.log_path):
+        #     shutil.rmtree(self.log_path)
+        # assert (not path.exists(self.log_path))
 
-        os.makedirs(self.log_path)
+        os.makedirs(self.log_path, exist_ok=True)
         assert (path.exists(self.log_path))
-        assert (len(os.listdir(self.log_path)) == 0)
+        #assert (len(os.listdir(self.log_path)) == 0)
         pid_path = path.join(self.log_path, f"{self.name}_{daemon_name}.pid")
         log_path = path.join(self.log_path, f"{self.name}_{daemon_name}.log")
         conf_path = path.join(work_dir, f"{self.name}_{daemon_name}.conf")
