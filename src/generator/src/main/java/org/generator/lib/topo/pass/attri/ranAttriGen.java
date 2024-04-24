@@ -29,7 +29,7 @@ public class ranAttriGen implements genAttri {
             g.addNode(ospf);
             g.addNode(new OSPFDaemon(ospf_daemon_name));
             g.addOSPFRelation(ospf_name, r_name);
-            g.addOSPFDaemonRelation(ospf_daemon_name, r_name);
+            g.addOSPFDaemonRelation(ospf_name, ospf_daemon_name);
             ospf.setRouterId(ID.of(i + 1)); //router id is not allowed to 0.0.0.0
             for(int j = 0; j < r.intfs.size(); j++){
                 var intf_name  = NodeGen.getIntfName(r_name, j);
@@ -55,5 +55,22 @@ public class ranAttriGen implements genAttri {
             }
         }
         //TODO mutate other conf fields
+        generatePart2(g);
+    }
+
+    void generatePart2(ConfGraph g){
+        for(var r: g.getRouters()){
+            var ospf = g.getOspfOfRouter(r.getName());
+            ospf.setInitDelay(0);
+            ospf.setMinHoldTime(0);
+            ospf.setMaxHoldTime(0);
+            for(var ospf_intf: g.getOSPFIntfOfRouter(r.getName())){
+                ospf_intf.setHelloMulti(10);
+                ospf_intf.setDeadInterval(1);
+                ospf_intf.setHelloInterval(0);
+                ospf_intf.setPriority(ranHelper.randomInt(0, 255));
+                //ospf_intf.setCost(ranHelper.randomInt(1, 1000));
+            }
+        }
     }
 }
