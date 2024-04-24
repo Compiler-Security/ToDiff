@@ -15,7 +15,7 @@ import org.generator.lib.topo.driver.topo;
 import org.generator.tools.frontend.OspfConfWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.generator.util.ran.ranHelper;
-
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +38,9 @@ public class diffTopo {
     OpCtxG getConfOfRouter(String r_name, ConfGraph g){
         var confg = g.viewConfGraphOfRouter(r_name);
         confg.setR_name(r_name);
-        return generate.generateCore(confg);
+        var opCtxG = generate.generateEqualOfCore(generate.generateCore(confg), 1);
+        System.out.println(opCtxG);
+        return opCtxG;
     }
 
     OpCtxG getConfOfPhy(ConfGraph g){
@@ -61,7 +63,7 @@ public class diffTopo {
     public void gen(int router_count, int max_step, int max_step_time, int round_num){
         Map<String, Object> conf = new HashMap<>();
         //FIXME
-        conf.put("conf_name", "test");
+        conf.put("conf_name", "test%d".formatted(Instant.now().getEpochSecond()));
         List<Integer> step_nums = new ArrayList<>();
         step_nums.add(1);
         for(int i = 1; i < round_num; i++)
@@ -100,12 +102,20 @@ public class diffTopo {
                     var opctxg = split_confs.get(r).get(step);
                     List<String> a = new ArrayList<>();
                     ops.add(a);
+                    var front_ctx = "";
                     //FIXME this condition we can't generate OpAnalysis without ctxOp
                     for(var op: opctxg.getOps()){
                         if (CtxOpDef.isCtxOp(op.getOpOspf().Type())){
                             a.add(IO.writeOp(op));
+                            front_ctx = a.getLast();
                         }else{
                             a.set(a.size() - 1, a.get(a.size() -1) + ';' + IO.writeOp(op));
+                            //This is for ospf router-id command, it should use clear ip ospf process after this command
+                            //FIXME we can random add some control command like clear ip ospf database like this
+                            if (op.getOpOspf().Type() == OpType.RID || op.getOpOspf().Type() == OpType.NORID){
+                                a.add("clear ip ospf process");
+                                a.add(front_ctx);
+                            }
                         }
                     }
                 }

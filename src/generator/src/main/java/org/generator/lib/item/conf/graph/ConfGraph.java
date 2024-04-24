@@ -6,6 +6,7 @@ import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.node.AbstractNode;
 import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.ospf.OSPF;
 import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
 import org.generator.lib.item.conf.node.ospf.OSPFIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
@@ -141,6 +142,10 @@ public class ConfGraph extends AbstractRelationGraph {
         return getEdgesByType(nodes, typ).stream().map(s->(T) s.getDst()).collect(Collectors.toSet());
      }
 
+     public OSPF getOspfOfRouter(String r_name){
+        return this.<OSPF>getDstsByType(r_name, RelationEdge.EdgeType.OSPF).stream().findFirst().get();
+     }
+
      public Set<Intf> getIntfsOfRouter(String r_name){
         return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF);
      }
@@ -209,6 +214,10 @@ public class ConfGraph extends AbstractRelationGraph {
 
     public List<Switch> getSwitches(){
         return getNodes().stream().filter(node -> node.getNodeType() == NodeType.Switch).map(node -> (Switch)node).collect(Collectors.toList());
+    }
+
+    public List<Router> getRouters(){
+        return getNodesByType(NodeType.Router);
     }
 
     public <T> List<T> getNodesByType(NodeType type){
