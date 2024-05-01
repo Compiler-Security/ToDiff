@@ -1,8 +1,8 @@
 package org.generator.tools.diffOp;
 
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.lib.generator.pass.actionRulePass;
-import org.generator.lib.generator.pass.genOpPass;
+import org.generator.lib.generator.ospf.pass.actionRulePass;
+import org.generator.lib.generator.ospf.pass.genOpPass;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;

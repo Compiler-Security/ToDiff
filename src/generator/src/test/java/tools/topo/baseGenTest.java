@@ -85,6 +85,6 @@ public class baseGenTest {
     @Test
     public void testGen() {
         var diff = new diffTopo();
-        diff.gen(3, 20, 10, 2);
+        diff.gen(3, 7, 10, 2);
     }
 }

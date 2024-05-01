@@ -1,4 +1,4 @@
-package org.generator.lib.generator.pass;
+package org.generator.lib.generator.ospf.pass;
 
 import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.frontend.lexical.OpType;
@@ -6,7 +6,6 @@ import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.Op;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;
-import org.generator.lib.item.opg.OpCtxG;
 import org.generator.util.collections.Pair;
 import org.generator.util.ran.ranHelper;
 

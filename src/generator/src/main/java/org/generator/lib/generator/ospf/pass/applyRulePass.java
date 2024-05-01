@@ -20,7 +20,7 @@
  *
  * 5. We can demonstrate that the max num of rules of the rule graph is limited, so the algorithm always terminates
  */
-package org.generator.lib.generator.pass;
+package org.generator.lib.generator.ospf.pass;
 
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;

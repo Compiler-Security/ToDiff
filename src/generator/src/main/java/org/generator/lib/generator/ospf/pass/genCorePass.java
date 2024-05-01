@@ -1,7 +1,7 @@
 /**
  * This pass will gen Core OpGA from ConfGraph
  */
-package org.generator.lib.generator.pass;
+package org.generator.lib.generator.ospf.pass;
 
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.driver.generate;

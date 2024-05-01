@@ -1,10 +1,10 @@
 /**
  * This pass will give a normal controller of target OPAG, and return a generate OPAG
  */
-package org.generator.lib.generator.pass;
+package org.generator.lib.generator.ospf.pass;
 
-import org.generator.lib.generator.controller.CapacityController;
-import org.generator.lib.generator.controller.NormalController;
+import org.generator.lib.generator.ospf.controller.CapacityController;
+import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;

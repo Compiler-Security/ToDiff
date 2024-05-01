@@ -1,11 +1,11 @@
 package org.generator.lib.generator.driver;
 
-import org.generator.lib.generator.controller.CapacityController;
-import org.generator.lib.generator.controller.NormalController;
-import org.generator.lib.generator.pass.genCorePass;
-import org.generator.lib.generator.pass.genEqualPass;
-import org.generator.lib.generator.pass.genPhyCorePass;
-import org.generator.lib.generator.pass.shrinkCorePass;
+import org.generator.lib.generator.ospf.controller.CapacityController;
+import org.generator.lib.generator.ospf.controller.NormalController;
+import org.generator.lib.generator.ospf.pass.genCorePass;
+import org.generator.lib.generator.ospf.pass.genEqualPass;
+import org.generator.lib.generator.phy.pass.genPhyCorePass;
+import org.generator.lib.generator.ospf.pass.shrinkCorePass;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.reducer.driver.reducer;

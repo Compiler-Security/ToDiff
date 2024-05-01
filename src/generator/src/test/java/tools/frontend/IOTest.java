@@ -2,12 +2,12 @@ package tools.frontend;
 
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.lib.generator.controller.CapacityController;
-import org.generator.lib.generator.controller.NormalController;
+import org.generator.lib.generator.ospf.controller.CapacityController;
+import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.driver.generate;
-import org.generator.lib.generator.pass.actionRulePass;
-import org.generator.lib.generator.pass.genEqualPass;
-import org.generator.lib.generator.pass.genOpPass;
+import org.generator.lib.generator.ospf.pass.actionRulePass;
+import org.generator.lib.generator.ospf.pass.genEqualPass;
+import org.generator.lib.generator.ospf.pass.genOpPass;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;

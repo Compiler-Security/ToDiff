@@ -1,4 +1,4 @@
-package org.generator.lib.generator.controller;
+package org.generator.lib.generator.ospf.controller;
 
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
