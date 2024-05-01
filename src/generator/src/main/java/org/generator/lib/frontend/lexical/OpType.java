@@ -17,7 +17,6 @@ public enum OpType {
     LINKUP,
     LINKDOWN,
     LINKREMOVE,
-    OSPFUP,
 
 
     //Don't change this!
