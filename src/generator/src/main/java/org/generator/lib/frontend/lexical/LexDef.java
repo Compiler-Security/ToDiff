@@ -30,7 +30,7 @@ public class LexDef {
                 {LINKUP, "link {NAME} {NAME2} add"},
                 {LINKDOWN, "link {NAME} {NAME2} down"},
                 {LINKREMOVE, "link {NAME} {NAME2} remove"},
-                {OSPFUP, "node {NAME} set OSPF up"},
+                {NODESETOSPFUP, "node {NAME} set OSPF up"},
                 {OSPFCONF, "ROSPFCONF"},
 
                 {ROSPF, "router ospf"},
