@@ -1,6 +1,9 @@
 package tools.topo;
 
+import org.generator.lib.generator.driver.generate;
+import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.opg.OpCtxG;
+import org.generator.lib.topo.driver.topo;
 import org.generator.lib.topo.pass.attri.ranAttriGen;
 import org.generator.lib.topo.pass.base.ranBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
@@ -86,5 +89,18 @@ public class baseGenTest {
     public void testGen() {
         var diff = new diffTopo();
         diff.gen(3, 7, 10, 2);
+    }
+
+    OpCtxG getConfOfPhy(ConfGraph g){
+        return generate.generatePhyCore(g);
+    }
+    @Test
+    public void testPhyEqual(){
+        var router_count =3;
+        var confg = topo.genGraph(router_count, 3, 4, 3, true);
+        var phyConf = getConfOfPhy(confg);
+        var phyEqualConf = generate.generateEqualOfPhyCore(phyConf, 0.4, 1);
+        System.out.println(phyConf);
+        System.out.println(phyEqualConf);
     }
 }

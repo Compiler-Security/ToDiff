@@ -87,7 +87,7 @@ public class phyExecArgPass extends  baseExecPass{
                 intf.setUp(false);
                 return ExecStat.SUCC;
             }
-            case LINKUP -> {
+            case LINKADD -> {
                 var intf1_name = op.getNAME();
                 var intf2_name = op.getNAME2();
 

@@ -6,6 +6,7 @@ import org.generator.lib.generator.ospf.pass.genCorePass;
 import org.generator.lib.generator.ospf.pass.genEqualPass;
 import org.generator.lib.generator.phy.pass.genPhyCorePass;
 import org.generator.lib.generator.ospf.pass.shrinkCorePass;
+import org.generator.lib.generator.phy.pass.genPhyEqualPass;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.reducer.driver.reducer;
@@ -36,8 +37,14 @@ public class generate {
         return gen_opag.toOpCtxGLeaner();
     }
 
-
+    public static OpCtxG generateEqualOfPhyCore(OpCtxG opCtxG, double ratio, int maxRound){
+        var r = new genPhyEqualPass();
+        return r.solve(opCtxG, ratio, maxRound);
+    }
 
     //FIXME(should turn to true when running)
     public static final boolean ran = true;
+
+    //FIXME(should turn to true when testing)
+    public static final boolean phyRan = false;
 }

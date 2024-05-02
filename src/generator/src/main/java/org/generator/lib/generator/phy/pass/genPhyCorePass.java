@@ -25,7 +25,7 @@ public class genPhyCorePass {
         for(var intf: intfs){
             var target_intf = g.<Intf>getDstsByType(intf.getName(), RelationEdge.EdgeType.LINK).stream().findAny().get();
             if (intf.getName().compareTo(target_intf.getName()) < 0){
-                var op = new OpPhy(OpType.LINKUP);
+                var op = new OpPhy(OpType.LINKADD);
                 op.setNAME(intf.getName());
                 op.setNAME2(target_intf.getName());
                 opctxg.addOp(OpCtx.of(op));

@@ -27,7 +27,7 @@ public class LexDef {
                 {NODESETOSPFRE, "node {NAME} set ospf restart"},
                 {INTFUP, "intf {NAME} up"},
                 {INTFDOWN, "intf {NAME} down"},
-                {LINKUP, "link {NAME} {NAME2} add"},
+                {LINKADD, "link {NAME} {NAME2} add"},
                 {LINKDOWN, "link {NAME} {NAME2} down"},
                 {LINKREMOVE, "link {NAME} {NAME2} remove"},
                 {NODESETOSPFUP, "node {NAME} set OSPF up"},
