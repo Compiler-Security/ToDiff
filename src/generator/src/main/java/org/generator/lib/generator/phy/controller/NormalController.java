@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class NormalController {
 
@@ -29,6 +30,15 @@ public class NormalController {
         return curType;
     }
 
+    public OpType getFinalType() {
+        return finalType;
+    }
+
+    public void setFinalType(OpType finalType) {
+        this.finalType = finalType;
+    }
+
+    public OpType finalType;
     CType cType;
     List<Integer> counter;
     Map<Integer, OpType> intToType;
@@ -36,17 +46,18 @@ public class NormalController {
     Map<OpType, Integer> typeToInt;
 
     public boolean equalName(String name){
-        return (this.name == null && name == null) || (this.name != null && this.name.equals(name));
+        return (this.name == null && name == null) || (this.name != null && this.name.matches(name));
     }
 
     public boolean partialEqualName2(String name2){
-        return (name2 == null) || (this.name2 != null && this.name2.equals(name2));
+        return (name2 == null) || (this.name2 != null && this.name2.matches(name2));
     }
     public NormalController(List<Integer> counter, List<OpType> opTypes, String name, String name2, OpType curType, CType cType){
         this.counter = new ArrayList<>();
         this.counter.addAll(counter);
         intToType = new HashMap<>();
         typeToInt = new HashMap<>();
+        finalType = curType;
         this.name = name;
         this.name2 = name2;
         this.curType = curType;
@@ -79,13 +90,17 @@ public class NormalController {
         return counter.get(typeToInt.get(opType));
     }
 
+    public List<OpType> getAllTypes(){
+        return typeToInt.keySet().stream().toList();
+    }
     public void setCurType(OpType opType){
         curType = opType;
     }
 
     public void deltaTypeNum(OpType type, int deltaNum){
+        if (type == null) return;
         int idx = typeToInt.get(type);
-        counter.set(idx, counter.get(idx) + 1);
+        counter.set(idx, counter.get(idx) + deltaNum);
     }
     public void deltaAllTypeNum(int deltaNum){
         for(int i = 0; i < counter.size(); i++){
@@ -93,7 +108,17 @@ public class NormalController {
         }
     }
     public List<OpType> getPossibleTypes(){
-        return typeToInt.keySet().stream().filter(typ -> getCounterOfType(typ) > 0).collect(Collectors.toList());
+        var l = typeToInt.keySet().stream().filter(typ -> (getCounterOfType(typ) > 1 && typ == getFinalType()) || (getCounterOfType(typ) > 0 && typ != getFinalType())).collect(Collectors.toList());
+        if (!l.isEmpty()){
+            if (cType == CType.LINK){
+                if (getCounterOfType(OpType.LINKADD) == 1){
+                    return l.stream().filter(x -> x != OpType.LINKREMOVE).collect(Collectors.toList());
+                }
+            }
+            return l;
+        }
+        if (getCounterOfType(finalType) > 0) return Stream.of(finalType).toList();
+        else return new ArrayList<>();
     }
 
     public void consumeOneType(OpType opType){
@@ -116,6 +141,7 @@ public class NormalController {
     static public NormalController getOSPFCatg(int up, int re, int shutDown, String name, OpType type, CType cType){
         return new NormalController(List.of(up, re, shutDown), List.of(OpType.NODESETOSPFUP, OpType.NODESETOSPFRE, OpType.NODESETOSPFSHUTDOWN), name, null, type, cType);
     }
+
 
     @Override
     public String toString() {

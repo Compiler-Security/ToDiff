@@ -29,6 +29,9 @@ public class genPhyCorePass {
                 op.setNAME(intf.getName());
                 op.setNAME2(target_intf.getName());
                 opctxg.addOp(OpCtx.of(op));
+                var op1 = new OpPhy(OpType.INTFUP);
+                op1.setNAME(intf.getName());
+                opctxg.addOp(OpCtx.of(op1));
             }
         }
         for(var r: nodes){

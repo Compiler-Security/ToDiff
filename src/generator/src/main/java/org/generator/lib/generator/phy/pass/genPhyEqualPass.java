@@ -19,34 +19,35 @@ public class genPhyEqualPass {
             var op = op_.getOpPhy();
             switch (op.Type()){
                 case NODEADD -> {
-                    slots.add(NormalController.getNodeCatg(1, 0, op.getNAME(), OpType.NODEADD, NormalController.CType.NODE));
+                    slots.add(NormalController.getNodeCatg(0, 0, op.getNAME(), OpType.NODEADD, NormalController.CType.NODE));
+
                 }
                 case NODEDEL -> {
-                    slots.add(NormalController.getNodeCatg(0, 1, op.getNAME(), OpType.NODEDEL, NormalController.CType.NODE));
+                    slots.add(NormalController.getNodeCatg(0, 0, op.getNAME(), OpType.NODEDEL, NormalController.CType.NODE));
                 }
                 case NODESETOSPFUP -> {
-                    slots.add(NormalController.getOSPFCatg(1, 0, 0, op.getNAME(), OpType.NODESETOSPFUP, NormalController.CType.OSPF));
+                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETOSPFUP, NormalController.CType.OSPF));
                 }
                 case NODESETOSPFSHUTDOWN -> {
-                    slots.add(NormalController.getOSPFCatg(0, 0, 1, op.getNAME(), OpType.NODESETOSPFSHUTDOWN, NormalController.CType.OSPF));
+                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETOSPFSHUTDOWN, NormalController.CType.OSPF));
                 }
                 case NODESETOSPFRE -> {
-                    slots.add(NormalController.getOSPFCatg(0, 1, 0, op.getNAME(), OpType.NODESETOSPFRE, NormalController.CType.OSPF));
+                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETOSPFRE, NormalController.CType.OSPF));
                 }
                 case INTFUP -> {
-                    slots.add(NormalController.getIntfCatg(1, 0, op.getNAME(), OpType.INTFUP, NormalController.CType.INTF));
+                    slots.add(NormalController.getIntfCatg(0, 0, op.getNAME(), OpType.INTFUP, NormalController.CType.INTF));
                 }
                 case INTFDOWN -> {
-                    slots.add(NormalController.getIntfCatg(0, 1, op.getNAME(), OpType.INTFDOWN, NormalController.CType.INTF));
+                    slots.add(NormalController.getIntfCatg(0, 0, op.getNAME(), OpType.INTFDOWN, NormalController.CType.INTF));
                 }
                 case LINKADD -> {
-                    slots.add(NormalController.getLinkCatg(1, 0, 0, op.getNAME(), op.getNAME2(), OpType.LINKADD, NormalController.CType.LINK));
+                    slots.add(NormalController.getLinkCatg(0, 0, 0, op.getNAME(), op.getNAME2(), OpType.LINKADD, NormalController.CType.LINK));
                 }
                 case LINKDOWN -> {
-                    slots.add(NormalController.getLinkCatg(0, 1, 0, op.getNAME(), op.getNAME2(), OpType.LINKDOWN, NormalController.CType.LINK));
+                    slots.add(NormalController.getLinkCatg(0, 0, 0, op.getNAME(), op.getNAME2(), OpType.LINKDOWN, NormalController.CType.LINK));
                 }
                 case LINKREMOVE -> {
-                    slots.add(NormalController.getLinkCatg(0, 0, 1, op.getNAME(), op.getNAME2(), OpType.LINKREMOVE, NormalController.CType.LINK));
+                    slots.add(NormalController.getLinkCatg(0, 0, 0, op.getNAME(), op.getNAME2(), OpType.LINKREMOVE, NormalController.CType.LINK));
                 }
                 default -> {
                     assert false: "error op %s".formatted(op.toString());
@@ -65,13 +66,14 @@ public class genPhyEqualPass {
 
     boolean checkPreCondition(OpPhy targetOp, NormalController slot){
         switch (targetOp.Type()){
-            case LINKADD, LINKREMOVE->{
-                var b1 = getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
-                var b2 = getSlot(NormalController.CType.NODE, targetOp.getNAME2(), null).getCurType() == OpType.NODEADD;
+            //FIXME linkdown handle is not right
+            case LINKADD, LINKREMOVE ->{
+                var b1 = getSlot(NormalController.CType.NODE, Arrays.stream(targetOp.getNAME().split("-")).toList().getFirst(), null).getCurType() == OpType.NODEADD;
+                var b2 = getSlot(NormalController.CType.NODE, Arrays.stream(targetOp.getNAME2().split("-")).toList().getFirst(), null).getCurType() == OpType.NODEADD;
                 return b1 && b2;
             }
             case LINKDOWN -> {
-                return slot.getCurType() == OpType.LINKADD;
+                return slot.getCurType() == OpType.LINKADD || slot.getCurType() == OpType.LINKDOWN;
             }
             case INTFUP, INTFDOWN -> {
                 var opType =  getSlot(NormalController.CType.LINK, targetOp.getNAME(), null).getCurType();
@@ -88,8 +90,15 @@ public class genPhyEqualPass {
     void handleAfterAffects(OpPhy targetOp){
         switch (targetOp.Type()){
             case NODEDEL-> {
-                var slot = getSlot(NormalController.CType.LINK, targetOp.getNAME(), null);
-                slot.deltaTypeNum(slot.getCurType(), 1);
+                var slot = getSlot(NormalController.CType.LINK, "%s-eth[0-9]+".formatted(targetOp.getNAME()), null);
+                if (slot.getCurType() == OpType.LINKADD) slot.deltaTypeNum(slot.getCurType(), 1);
+                if (slot.getCurType() == OpType.LINKDOWN){
+                    slot.deltaTypeNum(OpType.LINKADD, 1);
+                    slot.deltaTypeNum(OpType.LINKDOWN, 1);
+                }
+                if (slot.getCurType() == OpType.LINKREMOVE){
+                    slot.deltaTypeNum(OpType.LINKREMOVE, -1);
+                }
                 slot.setCurType(null);
             }
             case LINKREMOVE -> {
@@ -108,8 +117,10 @@ public class genPhyEqualPass {
             phy_op.setNAME(slot.getName());
             phy_op.setNAME2(slot.getName2());
             if (checkPreCondition(phy_op, slot)){
+                //System.out.println(slot);
                 gen.addOp(OpCtx.of(phy_op, 0));
                 slot.setCurType(opType);
+                slot.deltaTypeNum(opType, -1);
                 handleAfterAffects(phy_op);
                 return true;
             }
@@ -124,8 +135,8 @@ public class genPhyEqualPass {
         for(var slot: slots){
             if (ranHelper.randomInt(0, 10) <= tmp){
                 //we don't change  switch node
-                if (slot.getCurType() == OpType.NODEADD && slot.getName().charAt(0) == 's') continue;
-                slot.deltaAllTypeNum(ranHelper.randomInt(1, mxRound));
+                if (slot.getcType() == NormalController.CType.NODE && slot.getName().charAt(0) == 's') continue;
+                slot.deltaAllTypeNum(ranHelper.randomInt(0, mxRound));
             }
         }
 
@@ -136,12 +147,14 @@ public class genPhyEqualPass {
             if (generate.phyRan){
                 Collections.shuffle(active_slots);
             }
-            active_slots = getActiveSlots();
             boolean canMove = false;
+           // System.out.println(active_slots);
             for(var slot: active_slots){
                 if (genOneOp(slot)) {canMove = true;break;}
             }
-            assert canMove: "can't move! %s".formatted(active_slots);
+            active_slots = getActiveSlots();
+            assert canMove: "can't move! %s\n%s\n%s".formatted(slots, active_slots, gen);
+            //System.out.println(active_slots);
         }
         return gen;
     }

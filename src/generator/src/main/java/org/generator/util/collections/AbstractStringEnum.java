@@ -8,12 +8,14 @@ public class AbstractStringEnum implements  StringEnum{
         this.template = template;
     }
 
+    public AbstractStringEnum(String template1, int b) {this.template = template1;}
     @Override
     public boolean match(String st) {
         Pattern pattern = Pattern.compile(template);
         Matcher matcher = pattern.matcher(st);
         return matcher.matches();
     }
+
 
     String template;
 }

@@ -69,10 +69,12 @@ public class AbstractGraph<N, E extends Edge<N>> implements Graph<N, E>{
 
     @Override
     public void delnode(N node) {
-        for (var nex: getSuccsOf(node)){
+        var nexs = getSuccsOf(node).stream().toList();
+        for (var nex: nexs){
             delEdge(node, nex);
         }
-        for (var pre: getPredsOf(node)){
+        var pres = getPredsOf(node).stream().toList();
+        for (var pre: pres){
             delEdge(pre, node);
         }
         preds.remove(node);

@@ -3,13 +3,16 @@ package tools.topo;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.opg.OpCtxG;
+import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.topo.driver.topo;
 import org.generator.lib.topo.pass.attri.ranAttriGen;
 import org.generator.lib.topo.pass.base.ranBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
 import org.generator.tools.diffOp.genOps;
 import org.generator.tools.diffTopo.diffTopo;
+import org.generator.tools.frontend.ConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
+import org.generator.tools.frontend.PhyConfReader;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.file.FileSinkDOT;
@@ -94,13 +97,85 @@ public class baseGenTest {
     OpCtxG getConfOfPhy(ConfGraph g){
         return generate.generatePhyCore(g);
     }
+
+    @Test
+    public void testPhyEqualDebug(){
+        var router_count = 3;
+        var string_st = """
+        node r0 add
+        node r1 add
+        node r2 add
+        node s1 add
+        node s2 add
+        node s6 add
+        node s7 add
+        node s0 add
+        node s5 add
+        node s3 add
+        node s8 add
+        node s4 add
+        link r1-eth2 s2-eth0 add
+        link r1-eth4 s7-eth0 add
+        link r2-eth1 s5-eth1 add
+        link r2-eth2 s8-eth0 add
+        link r0-eth2 s5-eth0 add
+        link r2-eth0 s7-eth1 add
+        link r1-eth3 s6-eth0 add
+        link r1-eth1 s1-eth0 add
+        link r0-eth1 s3-eth0 add
+        link r0-eth0 s4-eth0 add
+        link r1-eth0 s0-eth0 add
+        intf r0-eth0 up
+        intf r0-eth1 up
+        intf r0-eth2 up
+        intf r1-eth0 up
+        intf r1-eth1 up
+        intf r1-eth2 up
+        intf r1-eth3 up
+        intf r1-eth4 up
+        intf r2-eth0 up
+        intf r2-eth1 up
+        intf r2-eth2 up
+        node r0 set OSPF up
+        node r1 set OSPF up
+        node r2 set OSPF up""";
+        var a = new PhyConfReader();
+        var phyConf = a.read(string_st);
+        //while(true) {
+        var phyEqualConf = generate.generateEqualOfPhyCore(phyConf, 0.4, 1);
+        var totalConf = OpCtxG.Of();
+        totalConf.addOps(phyConf.getOps());
+        totalConf.addOps(phyEqualConf.getOps());
+        var confg = new ConfGraph();
+        var confg1 = new ConfGraph();
+        phyArgPass.solve(phyConf, confg);
+        System.out.println(totalConf);
+        phyArgPass.solve(totalConf, confg1);
+        assert confg.equals(confg1);
+//        System.out.println(confg);
+//        System.out.println(confg1);
+//        //}
+//        System.out.println(phyEqualConf);
+    }
+
     @Test
     public void testPhyEqual(){
-        var router_count =3;
-        var confg = topo.genGraph(router_count, 3, 4, 3, true);
-        var phyConf = getConfOfPhy(confg);
-        var phyEqualConf = generate.generateEqualOfPhyCore(phyConf, 0.4, 1);
-        System.out.println(phyConf);
-        System.out.println(phyEqualConf);
+        while(true) {
+            var router_count = 5;
+            var confg = topo.genGraph(router_count, 3, 4, 3, true);
+            var phyConf = getConfOfPhy(confg);
+            System.out.println(phyConf.toString());
+            var phyEqualConf = generate.generateEqualOfPhyCore(phyConf, 0.4, 1);
+            // var phyEqualConf = generate.generateEqualOfPhyCore(phyConf, 0.4, 1);
+            var totalConf = OpCtxG.Of();
+            totalConf.addOps(phyConf.getOps());
+            totalConf.addOps(phyEqualConf.getOps());
+            var confg0 = new ConfGraph();
+            var confg1 = new ConfGraph();
+            phyArgPass.solve(phyConf, confg0);
+            System.out.println(totalConf);
+            phyArgPass.solve(totalConf, confg1);
+            assert confg0.equals(confg1);
+        }
     }
 }

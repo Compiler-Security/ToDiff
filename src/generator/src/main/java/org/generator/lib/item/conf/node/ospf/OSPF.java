@@ -20,6 +20,7 @@ public class OSPF extends AbstractNode {
         INIT,
         Restart,
         UP,
+        SHUTDOWN,
     }
 
     public enum ABR_TYPE implements StringEnum{

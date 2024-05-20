@@ -6,4 +6,5 @@ public class OpPhy extends OpBase{
     public OpPhy(OpType type) {
         super(type);
     }
+    public static OpPhy Of(){return new OpPhy(OpType.INVALID);}
 }

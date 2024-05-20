@@ -46,5 +46,5 @@ public class generate {
     public static final boolean ran = true;
 
     //FIXME(should turn to true when testing)
-    public static final boolean phyRan = false;
+    public static final boolean phyRan = true;
 }
