@@ -48,7 +48,7 @@ class FrrNode(Node):
         assert (len(os.listdir("/etc/frr")) != 0)
 
     def load_frr(self, daemons, conf_dir, universe=False):
-        self.log_path = path.join("/home/frr/log", self.name)
+        self.log_path = path.join(path.dirname(conf_dir), "log", self.name)
         if path.exists(self.log_path):
             shutil.rmtree(self.log_path)
         assert (not path.exists(self.log_path))
@@ -93,11 +93,17 @@ class FrrNode(Node):
             self.daemon_dict[daemon_name]["daemon_pid"] = daemon_pid
 
     def stop_frr(self):
+        infoaln("hahahah", self.log_path)
         for v in self.daemon_dict.values():
             kill_pid(v["daemon_pid"])
         if self.log_path != None:
+            self.daemon_cmds(["write memory"])
             self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
+            self.cmds_error(["cp", "-r", "/etc/frr/frr.conf", path.join(self.log_path, "run", "frr.conf")])
         log.info("cleaned\n")
+
+    def reload_frr(self):
+        pass
 
     def terminate(self):
         self.stop_frr()

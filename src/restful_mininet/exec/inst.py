@@ -22,7 +22,7 @@ class BaseInst:
         self.net = net
         self.workdir = workdir
         self.ctx = ctx
-
+    
     def run(self):
         pass
 
@@ -150,6 +150,13 @@ class MininetInst(BaseInst):
             if up_node is None:
                 return self.EXEC_MISS
             return self._run_cmd(up_node.stop_frr)
+        
+        if _cmds_equal_prefix(op_args, ["router", "set", "OSPF", "restart"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
+            return self._run_cmd(up_node.stop_frr)
+        
 
         raise InstErrorException("[mininet] node inst not right")
 
