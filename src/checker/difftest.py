@@ -123,5 +123,5 @@ class diffTest:
             #     print(json.dumps(self.ospfIntfs(rd, self.step_nums[rd] - 1, "r1"), indent=4))
 
 if __name__ == "__main__":
-    d = diffTest("/home/frr/a/topo-fuzz/test/excutor_test/frr_conf/test1713954086_res.json")
+    d = diffTest("/home/frr/a/topo-fuzz/test/excutor_test/frr_conf/test1713955500_res.json")
     d.check()
