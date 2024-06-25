@@ -8,6 +8,7 @@ import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.NodeType;
 import org.generator.lib.item.conf.node.ospf.OSPF;
 import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
+import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
 import org.generator.lib.item.conf.node.ospf.OSPFIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
@@ -158,6 +159,10 @@ public class ConfGraph extends AbstractRelationGraph {
      }
     public OSPFIntf getOSPFIntf(String nodeName) {
         return (OSPFIntf) getNode(nodeName).get();
+    }
+
+    public OSPFDaemon getOSPFDaemonOfOSPF(String ospf_name){
+        return this.<OSPFDaemon>getDstsByType(ospf_name, RelationEdge.EdgeType.OSPFDAEMON).stream().findFirst().get();
     }
 
     public Intf getIntf(String nodeName){

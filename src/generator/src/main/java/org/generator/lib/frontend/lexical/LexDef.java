@@ -139,7 +139,6 @@ public class LexDef {
         while (matcher.find()) {
             String name = matcher.group(1);
             String value = matcher.group(2);
-
             if (value != null) {
                 if (value.contains("NUM")){
                     argsRange.put(name, true);
