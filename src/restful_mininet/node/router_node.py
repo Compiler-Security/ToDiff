@@ -81,6 +81,7 @@ class FrrNode(Node):
         conf_path = path.join(work_dir, f"{self.name}_{daemon_name}.conf")
         self.daemon_dict[daemon_name] = {"pid_path": pid_path, "log_path": log_path, "conf_path": conf_path}
         if (not universe):
+            assert False, 'halt and graceful shutdown must use universal config'
             self.cmds(
             [f"{BIN_DIR}/{daemon_name}", "-u", "root", "-f", conf_path, "-d", "-i", pid_path, "--log-level", "debug",
              "--log", f"file:{log_path}"])
@@ -93,7 +94,7 @@ class FrrNode(Node):
             self.daemon_dict[daemon_name]["daemon_pid"] = daemon_pid
 
     def stop_frr(self):
-        infoaln("hahahah", self.log_path)
+        #infoaln("hahahah", self.log_path)
         for v in self.daemon_dict.values():
             kill_pid(v["daemon_pid"])
         if self.log_path != None:
