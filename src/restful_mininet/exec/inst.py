@@ -142,7 +142,7 @@ class MininetInst(BaseInst):
             if up_node is None:
                 return self.EXEC_MISS
             res = self._run_cmd(up_node.load_frr, ["zebra", "ospfd", "mgmtd"], conf_dir=self.workdir, universe=True)
-            self._run_cmd(up_node.log_load_frr)
+            #self._run_cmd(up_node.log_load_frr)
             return res
         
         if _cmds_equal_prefix(op_args, ["router", "set", "OSPF", "down"]):
