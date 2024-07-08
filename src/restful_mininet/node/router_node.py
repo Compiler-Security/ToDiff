@@ -14,7 +14,7 @@ import shutil
 import functools
 
 BIN_DIR = "/usr/lib/frr"
-DEBUG = True
+DEBUG = False
 
 
 def halt():
@@ -63,8 +63,9 @@ class FrrNode(Node):
                 self.cmds_error(["vtysh", "-b"])
             except:
                 pass
-            infoaln("ls /etc/frr", self.cmds(["ls", "/etc/frr"]))
-        if DEBUG:
+            if DEBUG == True:
+                infoaln("ls /etc/frr", self.cmds(["ls", "/etc/frr"]))
+        if DEBUG == True:
             self.log_load_frr()
 
     def log_load_frr(self):
@@ -86,9 +87,11 @@ class FrrNode(Node):
             [f"{BIN_DIR}/{daemon_name}", "-u", "root", "-f", conf_path, "-d", "-i", pid_path, "--log-level", "debug",
              "--log", f"file:{log_path}"])
         else:
-             self.cmds(
+            ress = self.cmds(
             [f"{BIN_DIR}/{daemon_name}", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
              "--log", f"file:{log_path}"])
+            if (ress[:2] != "20"):
+                erroraln(f"load daemon {daemon_name} res error\n", ress) 
         with open(pid_path, "r") as file:
             daemon_pid = int(file.read())
             self.daemon_dict[daemon_name]["daemon_pid"] = daemon_pid

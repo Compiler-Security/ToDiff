@@ -32,8 +32,16 @@ class executor:
     def run_phy(self, net, ctx, phy_commands):
         res = []
         for op in phy_commands:
-            res.append(MininetInst(op, net, self.conf_file_dir, ctx).run())
+            if 'OSPF' in op and 'r0' in op:
+                print("ok")
+            ress = MininetInst(op, net, self.conf_file_dir, ctx).run()
+            res.append(ress)
+            if (ress != 0):
+                erroraln(f"phy exec <{op}> wrong! exit the test: \n", ress)
+                assert False
+            
         warnaln("phy exec res: ", res)
+               
         return res
     
     def run_ospf(self, net:testnet.TestNet, router_name, ospf_commands):
