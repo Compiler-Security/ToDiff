@@ -49,10 +49,11 @@ class FrrNode(Node):
 
     def load_frr(self, daemons, conf_dir, universe=False):
         self.log_path = path.join(path.dirname(conf_dir), "log", self.name)
-        if path.exists(self.log_path):
-            shutil.rmtree(self.log_path)
-        assert (not path.exists(self.log_path))
-        os.makedirs(self.log_path)
+        if len(self.daemon_dict.keys()) == 0:
+            if path.exists(self.log_path):
+                shutil.rmtree(self.log_path)
+            assert (not path.exists(self.log_path))
+            os.makedirs(self.log_path)
         assert (path.exists(self.log_path))
         for daemon in daemons:
             self._load_daemon(daemon, conf_dir, universe)
@@ -77,6 +78,9 @@ class FrrNode(Node):
         infoaln("ls run", self.cmds(["ls", "/run/frr"]))
 
     def _load_daemon(self, daemon_name, work_dir: str, universe=False):
+        #if daemon is already running, we don't need to run it again
+        if daemon_name in self.daemon_dict:
+            return
         pid_path = path.join(self.log_path, f"{self.name}_{daemon_name}.pid")
         log_path = path.join(self.log_path, f"{self.name}_{daemon_name}.log")
         conf_path = path.join(work_dir, f"{self.name}_{daemon_name}.conf")
@@ -105,7 +109,15 @@ class FrrNode(Node):
             self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
             self.cmds_error(["cp", "-r", "/etc/frr/frr.conf", path.join(self.log_path, "run", "frr.conf")])
         log.info("cleaned\n")
-
+    
+    def stop_ospfd(self, conf_dir):
+        if "ospfd" in self.daemon_dict:
+            self.daemon_cmds(["write memory"])
+            kill_pid(self.daemon_dict["ospfd"]["daemon_pid"])
+            os.remove(self.daemon_dict["ospfd"]["pid_path"])
+            del self.daemon_dict["ospfd"]
+            self.cmds_error(["cp", "-r", "/etc/frr/frr.conf", path.join(conf_dir,f"{self.name}.conf")])
+    
     def reload_frr(self):
         pass
 
@@ -142,11 +154,16 @@ class FrrNode(Node):
         j = dict()
         router = self.name
         j[router] = dict()
-        j[router]["ospf-daemon"] = json.loads(self.daemon_cmds(["show ip ospf json"]))
+        if "ospfd" in self.daemon_dict:
+            j[router]["ospf-up"] = True
+            j[router]["ospf-intfs"] = json.loads(self.daemon_cmds(["show ip ospf interface json"]))
+            j[router]['neighbors'] = json.loads(self.daemon_cmds(["show ip ospf neighbor json"]))
+            j[router]['routing-table'] = json.loads(self.daemon_cmds(['show ip ospf route json']))
+            j[router]["ospf-daemon"] = json.loads(self.daemon_cmds(["show ip ospf json"]))
+        else:
+            j[router]["ospf-up"] = False
         j[router]["intfs"] = json.loads(self.daemon_cmds(["show interface json"]))
-        j[router]["ospf-intfs"] = json.loads(self.daemon_cmds(["show ip ospf interface json"]))
-        j[router]['neighbors'] = json.loads(self.daemon_cmds(["show ip ospf neighbor json"]))
-        j[router]['routing-table'] = json.loads(self.daemon_cmds(['show ip ospf route json']))
+      
         return json.dumps(j, indent=4)
     
     def dump_info(self):
@@ -154,16 +171,16 @@ class FrrNode(Node):
         #print("=======")
         #print(self.daemon_cmds(["show ip ospf json"]))
         #print("=======")
-        st = self.daemon_cmds(["show ip ospf json"])
-        if st == "":
-            j["ospf-daemon"] = {}
+        if "ospfd" not in self.daemon_dict:
+            j["ospf-up"] = False
         else:
+            j["ospf-up"] = True
             j["ospf-daemon"] = json.loads(self.daemon_cmds(["show ip ospf json"]))
-        j["intfs"] = json.loads(self.daemon_cmds(["show interface json"]))
-        j["ospf-intfs"] = json.loads(self.daemon_cmds(["show ip ospf interface json"]))
-        j['neighbors'] = json.loads(self.daemon_cmds(["show ip ospf neighbor json"]))
-        j['routing-table'] = json.loads(self.daemon_cmds(['show ip ospf route json']))
+            j["ospf-intfs"] = json.loads(self.daemon_cmds(["show ip ospf interface json"]))
+            j['neighbors'] = json.loads(self.daemon_cmds(["show ip ospf neighbor json"]))
+            j['routing-table'] = json.loads(self.daemon_cmds(['show ip ospf route json']))
         j['running-config'] = self.daemon_cmds(["show running-config"])
+        j["intfs"] = json.loads(self.daemon_cmds(["show interface json"]))
         return j
 
 if __name__ == "__main__":

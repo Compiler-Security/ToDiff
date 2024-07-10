@@ -25,6 +25,7 @@ class executor:
         self.output_dir = path.join(output_dir_str, self.conf_name)
         self.routers = self.conf['routers']
         os.makedirs(self.output_dir, exist_ok=True)
+        ###attention conf_dir is used to Temporarily store the configuration before loading /etc/frr.conf. When ospf is closed, memory will be written and the result of the write will be copied here.
         self.conf_file_dir = path.join(self.output_dir, 'conf')
         os.makedirs(self.conf_file_dir, exist_ok=True)
         os.system("mn -c 2> /dev/null")
@@ -139,5 +140,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/all8.conf", "/home/frr/topo-fuzz/test/excutor_test/frr_conf")
+    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/testhalt.conf", "/home/frr/topo-fuzz/test/excutor_test/frr_conf")
     t.test()

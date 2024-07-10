@@ -149,7 +149,7 @@ class MininetInst(BaseInst):
             up_node: FrrNode = self._get_node(node_name)
             if up_node is None:
                 return self.EXEC_MISS
-            return self._run_cmd(up_node.stop_frr)
+            return self._run_cmd(up_node.stop_ospfd, conf_dir=self.workdir)
         
         if _cmds_equal_prefix(op_args, ["router", "set", "OSPF", "restart"]):
             up_node: FrrNode = self._get_node(node_name)
