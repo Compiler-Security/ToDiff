@@ -246,6 +246,7 @@ public class genCorePass {
     private List<OpCtxG> handleAreas(){
         var ospf_name = NodeGen.getOSPFName(r_name);
         List<OpCtxG> opgs = new ArrayList<>();
+        System.out.println(confg.toDot(false));
         for(var areaSum: confg.getOSPFAreaSumOfOSPF(ospf_name)){
             var opctxg = handleArea(areaSum);
             opgs.add(opctxg);

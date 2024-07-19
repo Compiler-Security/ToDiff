@@ -5,6 +5,7 @@ import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.lib.item.conf.node.phy.Switch;
 import org.generator.util.exception.Unimplemented;
+import org.generator.util.net.ID;
 import org.generator.util.net.IPBase;
 
 import java.util.regex.Matcher;
@@ -51,8 +52,8 @@ public class NodeGen {
         return String.format("%s-eth%d", r_name, port);
     }
 
-    static  public String getOSPFAreaName(IPBase area){
-        return String.format("area%d", area.IDtoLong());
+    static  public String getOSPFAreaName(String ospf_name, ID area){
+        return String.format("%s-area-%s", ospf_name, area.toString());
     }
     static public String getOSPFAreaSumName(String ospf_name, String area_name){
         return String.format("%s-%s", ospf_name, area_name);

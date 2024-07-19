@@ -82,6 +82,10 @@ public class ConfGraph extends AbstractRelationGraph {
         if (containsNode(ospf_name)){
             g.addNode(getNodeNotNull(ospf_name));
             g.addOSPFRelation(ospf_name, r_name);
+            for(var areaSum: getOSPFAreaSumOfOSPF(ospf_name)){
+                g.addNode(areaSum);
+                g.addOSPFAreaSumRelation(areaSum.getName(), ospf_name);
+            }
         }
         if (containsNode(ospf_daemon_name)){
             g.addNode(getNodeNotNull(ospf_daemon_name));

@@ -1,6 +1,5 @@
 package org.generator.lib.topo.pass.attri;
 
-import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
@@ -15,7 +14,6 @@ import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
 import org.generator.util.ran.ranHelper;
 
-import java.awt.geom.Area;
 import java.util.*;
 
 public class ranAttriGen implements genAttri {
@@ -24,13 +22,82 @@ public class ranAttriGen implements genAttri {
     List<OSPF> ospfs;
     Map<IPRange, List<OSPFIntf>> networkToOSPFIntfs;
 
-    class areaAttri{
-        public List<OSPF> ospfs;
-        public List<Intf> intfs;
+    Map<ID, AreaAttri> areas;
+
+    Map<OSPF, Boolean> isABR;
+
+    class AreaAttri {
+        public AreaAttri(ID area_id){
+            ospfs = new HashSet<>();
+            intfs = new HashSet<>();
+            this.area_id = area_id;
+        }
+        public Set<OSPF> ospfs;
+        public Set<Intf> intfs;
         public ID area_id;
         public boolean stub;
         public boolean noSummary;
         public boolean nssa;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            AreaAttri areaAttri = (AreaAttri) o;
+            return Objects.equals(area_id, areaAttri.area_id);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(area_id);
+        }
+    }
+
+    public void generate_OSPFAreaSums(ConfGraph confG){
+        for(var areaAttri: areas.values()){
+            generate_OSPFAreaSum(areaAttri, confG);
+        }
+    }
+    private void generate_OSPFAreaSum(AreaAttri areaAttri, ConfGraph confG){
+        //each area has an areaAttri
+        //each ospf has multiple areaSum, one areaSum represents one area
+        for(var ospf: areaAttri.ospfs){
+            if (isABR.get(ospf)){
+                // FIXME we can set not ABR abr instruction
+                // || (!isABR.get(ospf) && ranHelper.randomInt(0, 10) == 0)){
+                var areaSum = new OSPFAreaSum(NodeGen.getOSPFAreaName(ospf.getName(), areaAttri.area_id));
+                //each abr ospf has different areaSum because of areaSumEntry
+                //TODO 1. set areaSum attri
+                areaSum.setStub(areaAttri.stub);
+                areaSum.setNosummary(areaAttri.noSummary);
+                areaSum.setNssa(areaAttri.nssa);
+                areaSum.setArea(areaAttri.area_id);
+                //TODO 2. add areaSumEntries
+                Set<IPRange> ips = new HashSet<>();
+                //FIXME for simplicity we don't merge ips
+                for(var intf: areaAttri.intfs){
+                    var ip = intf.getIp();
+                    ips.add(IPRange.of(ip.toNetString()));
+                }
+                for(var ipRange: ips){
+                    var areaSumEntry = new OSPFAreaSum.OSPFAreaSumEntry();
+                    areaSumEntry.setRange(ipRange);
+                    areaSumEntry.setAdvertise(ranHelper.randomInt(0, 10) > 0);
+                    if (areaSumEntry.isAdvertise()) {
+                        areaSumEntry.setCost(ranHelper.randomInt(0, 65535));
+                        areaSumEntry.setSubstitute(ranHelper.randomIP());
+                    }
+                    //TODO set a proper chance to set areaSumEntry
+                    if (ranHelper.randomInt(0, 1) == 0){
+                        areaSum.getSumEntries().put(areaSumEntry.getRange().toString(), areaSumEntry);
+                    }
+                }
+
+                confG.addNode(areaSum);
+                confG.addOSPFAreaSumRelation(areaSum.getName(), ospf.getName());
+                assert  !confG.getOSPFAreaSumOfOSPF(ospf.getName()).isEmpty();
+            }
+        }
     }
     private void generate_OSPF(OSPF ospf){
         //self, we don't think about status of ospf
@@ -110,6 +177,8 @@ public class ranAttriGen implements genAttri {
         ospf_daemons = new ArrayList<>();
         networkToOSPFIntfs = new HashMap<>();
         ospfs = new ArrayList<>();
+        areas = new HashMap<>();
+        isABR = new HashMap<>();
         //build each router and fill area, router_id
         for(int i = 0; i < routers.size(); i++){
             var r = routers.get(i);
@@ -125,6 +194,7 @@ public class ranAttriGen implements genAttri {
             g.addOSPFRelation(ospf_name, r_name);
             g.addOSPFDaemonRelation(ospf_daemon_name, r_name);
             ospf.setRouterId(ID.of(i + 1)); //router id is not allowed to 0.0.0.0
+            isABR.put(ospf, false);
             for(int j = 0; j < r.intfs.size(); j++){
                 var intf_name  = NodeGen.getIntfName(r_name, j);
                 var ospf_intf_name = NodeGen.getOSPFIntfName(intf_name);
@@ -132,7 +202,18 @@ public class ranAttriGen implements genAttri {
                 g.addNode(ospf_intf);
                 g.addOSPFIntfRelation(ospf_intf_name, intf_name);
                 //TODO we should use random area
+                var area_id = ID.of(r.intfs.get(j).area);
                 ospf_intf.setArea(ID.of(r.intfs.get(j).area));
+
+                if (area_id.toLong() == 0L){
+                    isABR.put(ospf, true);
+                }
+
+                if (!areas.containsKey(area_id)){
+                    areas.put(area_id, new AreaAttri(area_id));
+                }
+                areas.get(area_id).intfs.add(g.getIntf(intf_name));
+                areas.get(area_id).ospfs.add(ospf);
             }
         }
         //fill each network IP
@@ -155,5 +236,7 @@ public class ranAttriGen implements genAttri {
         generate_OSPF_Daemons();
         generate_OSPF_Intfs();
         generate_OSPFS();
+        generate_OSPFAreaSums(g);
+        System.out.println(g.toDot(false));
     }
 }
