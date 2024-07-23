@@ -89,6 +89,7 @@ public class genPhyEqualPass {
 
     void handleAfterAffects(OpPhy targetOp){
         switch (targetOp.Type()){
+            //FIXME Q? Does NODEDEL need to handle node OSPF up/down also?
             case NODEDEL-> {
                 var slot = getSlot(NormalController.CType.LINK, "%s-eth[0-9]+".formatted(targetOp.getNAME()), null);
                 if (slot.getCurType() == OpType.LINKADD) slot.deltaTypeNum(slot.getCurType(), 1);
@@ -137,6 +138,9 @@ public class genPhyEqualPass {
                 //we don't change  switch node
                 if (slot.getcType() == NormalController.CType.NODE && slot.getName().charAt(0) == 's') continue;
                 slot.deltaAllTypeNum(ranHelper.randomInt(0, mxRound));
+                if (slot.getcType() == NormalController.CType.OSPF){
+                    slot.deltaTypeNum(OpType.NODESETOSPFRE, -slot.getCounterOfType(OpType.NODESETOSPFRE));
+                }
             }
         }
 

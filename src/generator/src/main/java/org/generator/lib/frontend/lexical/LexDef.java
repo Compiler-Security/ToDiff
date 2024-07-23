@@ -31,7 +31,7 @@ public class LexDef {
                 {LINKDOWN, "link {NAME} {NAME2} down"},
                 {LINKREMOVE, "link {NAME} {NAME2} remove"},
                 {NODESETOSPFUP, "node {NAME} set OSPF up"},
-                {NODESETOSPFSHUTDOWN, "node {NAME} set OSPF shutdown"},
+                {NODESETOSPFSHUTDOWN, "node {NAME} set OSPF down"},
                 {NODESETOSPFRE, "node {NAME} set OSPF restart"},
                 {OSPFCONF, "ROSPFCONF"},
 

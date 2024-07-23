@@ -51,6 +51,7 @@ public class diffTopo {
     Pair<OpCtxG, OpCtxG> getConfOfPhy(ConfGraph g){
         var ori_phyg = generate.generatePhyCore(g);
         var equal_phyg = generate.generateEqualOfPhyCore(ori_phyg, 0.4, 1);
+        System.out.println(equal_phyg);
         return new Pair<>(ori_phyg, equal_phyg);
     }
 
