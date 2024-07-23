@@ -84,8 +84,14 @@ public class ranAttriGen implements genAttri {
                     areaSumEntry.setRange(ipRange);
                     areaSumEntry.setAdvertise(ranHelper.randomInt(0, 10) > 0);
                     if (areaSumEntry.isAdvertise()) {
-                        areaSumEntry.setCost(ranHelper.randomInt(0, 65535));
-                        areaSumEntry.setSubstitute(ranHelper.randomIP());
+                        if (ranHelper.randomInt(0, 1) > 0) {
+                            if (ranHelper.randomInt(0, 1) > 0) {
+                                areaSumEntry.setCost(ranHelper.randomInt(0, 65535));
+                            }
+                            if (ranHelper.randomInt(0, 1) > 0) {
+                                areaSumEntry.setSubstitute(ranHelper.randomIP());
+                            }
+                        }
                     }
                     //TODO set a proper chance to set areaSumEntry
                     if (ranHelper.randomInt(0, 1) == 0){

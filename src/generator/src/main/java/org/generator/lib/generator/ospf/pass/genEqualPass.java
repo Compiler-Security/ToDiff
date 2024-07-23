@@ -135,7 +135,7 @@ public class genEqualPass {
             assert succ: "all op can not move!";
 
         }
-        System.out.println(opag);
+        //System.out.println(opag);
         //System.out.printf("total move time %d\n", s);
         return opag;
     }
