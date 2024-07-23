@@ -27,10 +27,12 @@ public class LexDef {
                 {NODESETOSPFRE, "node {NAME} set ospf restart"},
                 {INTFUP, "intf {NAME} up"},
                 {INTFDOWN, "intf {NAME} down"},
-                {LINKUP, "link {NAME} {NAME2} add"},
+                {LINKADD, "link {NAME} {NAME2} add"},
                 {LINKDOWN, "link {NAME} {NAME2} down"},
                 {LINKREMOVE, "link {NAME} {NAME2} remove"},
-                {OSPFUP, "node {NAME} set OSPF up"},
+                {NODESETOSPFUP, "node {NAME} set OSPF up"},
+                {NODESETOSPFSHUTDOWN, "node {NAME} set OSPF down"},
+                {NODESETOSPFRE, "node {NAME} set OSPF restart"},
                 {OSPFCONF, "ROSPFCONF"},
 
                 {ROSPF, "router ospf"},
@@ -137,7 +139,6 @@ public class LexDef {
         while (matcher.find()) {
             String name = matcher.group(1);
             String value = matcher.group(2);
-
             if (value != null) {
                 if (value.contains("NUM")){
                     argsRange.put(name, true);

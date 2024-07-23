@@ -1,4 +1,4 @@
-package org.generator.lib.generator.pass;
+package org.generator.lib.generator.ospf.pass;
 
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;

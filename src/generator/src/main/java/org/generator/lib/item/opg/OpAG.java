@@ -1,7 +1,6 @@
 package org.generator.lib.item.opg;
 
-import org.generator.lib.frontend.driver.IO;
-import org.generator.lib.generator.pass.genCorePass;
+import org.generator.lib.generator.ospf.pass.genCorePass;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.reducer.driver.reducer;

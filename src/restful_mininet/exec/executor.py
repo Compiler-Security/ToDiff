@@ -15,35 +15,48 @@ import time
 class executor:
 
     def __init__(self, conf_path, output_dir_str) -> None:
-        setLogLevel('warning')
+        setLogLevel('info')
         self.conf_path = conf_path
-        self.output_dir = output_dir_str
         with open(self.conf_path) as fp:
              self.conf = json.load(fp)
         self.step_nums = self.conf['step_nums']
         self.conf_name = self.conf['conf_name']
         self.round_num = self.conf['round_num']
+        self.output_dir = path.join(output_dir_str, self.conf_name)
         self.routers = self.conf['routers']
         os.makedirs(self.output_dir, exist_ok=True)
-        self.tmp_file_dir = path.join(self.output_dir, 'tmp')
-        os.makedirs(self.tmp_file_dir, exist_ok=True)
+        ###attention conf_dir is used to Temporarily store the configuration before loading /etc/frr.conf. When ospf is closed, memory will be written and the result of the write will be copied here.
+        self.conf_file_dir = path.join(self.output_dir, 'conf')
+        os.makedirs(self.conf_file_dir, exist_ok=True)
         os.system("mn -c 2> /dev/null")
     
     def run_phy(self, net, ctx, phy_commands):
         res = []
         for op in phy_commands:
-            res.append(MininetInst(op, net, self.tmp_file_dir, ctx).run())
+            if 'OSPF' in op and 'r0' in op:
+                print("ok")
+            ress = MininetInst(op, net, self.conf_file_dir, ctx).run()
+            res.append(ress)
+            if (ress != 0):
+                erroraln(f"phy exec <{op}> wrong! exit the test: \n", ress)
+                assert False
+            
+        warnaln("phy exec res: ", res)
+               
         return res
     
     def run_ospf(self, net:testnet.TestNet, router_name, ospf_commands):
         res = []
         for op in ospf_commands:
-            res.append(net.run_frr_cmds(router_name, ['configure terminal'] + op.split(";")))
+            if op in ["clear ip ospf process", "write terminal"]:
+                res.append(net.run_frr_cmds(router_name, [op]))
+            else:
+                res.append(net.run_frr_cmds(router_name, ['configure terminal'] + op.split(";")))
         return res
     
     def init_ospf(self, router_name, ospf_commands):
         conf_name = f"{router_name}.conf"
-        with open(path.join(self.tmp_file_dir, conf_name), 'w') as fp:
+        with open(path.join(self.conf_file_dir, conf_name), 'w') as fp:
             for opa in ospf_commands:
                 for op in opa.split(";"):
                     fp.write(op)
@@ -66,6 +79,15 @@ class executor:
             print(e)
             os.system("mn -c")
 
+    def check_converge(self, net:testnet.TestNet):
+        for r_name in self.routers:
+            res = net.net.nameToNode[r_name].dump_info()
+            for val in res['neighbors']['neighbors'].values():
+                for val1 in val:
+                    if (val1['converged'] != 'Full' or val1['linkStateRetransmissionListCounter'] > 0):
+                        return False
+        return True
+    
     def run(self, r):
         warnaln("round ", r)
         net = testnet.TestNet()
@@ -80,12 +102,12 @@ class executor:
                     ospf_ops = commands[i]['ospf'][j]
                     self.init_ospf(router_name, ospf_ops)
             else:
-                for j in range(0, len(self.routers)):
+                for j in range(len(self.routers) -1, -1, -1):
                     router_name = self.routers[j]
                     ospf_ops = commands[i]['ospf'][j]
                     tmp = self.run_ospf(net, router_name, ospf_ops)
                     ospf_res[router_name] = tmp
-    
+
             phy_res = self.run_phy(net, ctx, commands[i]['phy'])
             if i == 0:    
                 net.start_net()
@@ -95,13 +117,22 @@ class executor:
             res[i]['exec']['ospf'] = ospf_res
             warnaln("step ", i)
             sleep_time = commands[i]['waitTime']
-            
+            #CLI(net.net)
             if sleep_time == -1:
                 #FIXME this should check shrink
-                time.sleep(20)
+                #time.sleep(20)
+                #while(not self.check_converge(net)): time.sleep(5)
+          
+                #CLI(net.net)
+                #time.sleep(80)
+                #time.sleep(80)
+                for r_name in self.routers:
+                    print(net.net.nameToNode[r_name].daemon_cmds(["show ip ospf neighbor"]))
+                    print(net.net.nameToNode[r_name].daemon_cmds(["show running-config"]))
             else:
+                #CLI(net.net)
                 time.sleep(sleep_time)
-            #CLI(net.net)
+            
             res[i]['watch'] = {}
             for r_name in self.routers:
                 res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
@@ -109,5 +140,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/a/topo-fuzz/test/excutor_test/frr_conf/all1.conf", "/home/frr/a/topo-fuzz/test/excutor_test/frr_conf")
+    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/testhalt.conf", "/home/frr/topo-fuzz/test/excutor_test/frr_conf")
     t.test()

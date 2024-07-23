@@ -47,7 +47,7 @@ public class phyExecArgPass extends  baseExecPass{
 
                 //new ospf
                 OSPF ospf = NodeGen.new_OSPF(ospf_name);
-                ospf.setStatus(OSPF.OSPF_STATUS.INIT);
+                ospf.setStatus(OSPF.OSPF_STATUS.UP);
                 topo.addNode(ospf);
 
                 // new relation edge
@@ -61,7 +61,20 @@ public class phyExecArgPass extends  baseExecPass{
 
                 //change ospf status
                 var ospf = (OSPF) topo.getNode(ospf_name).get();
-                ospf.setStatus(OSPF.OSPF_STATUS.Restart);
+                ospf.setStatus(OSPF.OSPF_STATUS.UP);
+
+                return ExecStat.SUCC;
+            }
+            case NODESETOSPFSHUTDOWN -> {
+                var r_name = op.getNAME();
+                var ospf_name = NodeGen.getOSPFName(r_name);
+                //check condition
+                if (!topo.containsNode(ospf_name)) return ExecStat.MISS;
+
+
+                //delete ospf
+                var ospf = (OSPF) topo.getNode(ospf_name).get();
+                topo.delNode(ospf);
 
                 return ExecStat.SUCC;
             }
@@ -87,7 +100,7 @@ public class phyExecArgPass extends  baseExecPass{
                 intf.setUp(false);
                 return ExecStat.SUCC;
             }
-            case LINKUP -> {
+            case LINKADD -> {
                 var intf1_name = op.getNAME();
                 var intf2_name = op.getNAME2();
 
@@ -125,12 +138,12 @@ public class phyExecArgPass extends  baseExecPass{
                 if (!topo.containsNode(intf1_name) || !topo.containsNode(intf2_name)) return ExecStat.MISS;
 
 
-                var op1 = new OpPhy(OpType.INTFDOWN);
-                op1.setNAME(op.getNAME());
-                var op2 = new OpPhy(OpType.INTFDOWN);
-                op2.setNAME(op.getNAME());
-                execOp(op1, topo);
-                execOp(op2, topo);
+//                var op1 = new OpPhy(OpType.INTFDOWN);
+//                op1.setNAME(op.getNAME());
+//                var op2 = new OpPhy(OpType.INTFDOWN);
+//                op2.setNAME(op.getNAME());
+//                execOp(op1, topo);
+//                execOp(op2, topo);
                 return ExecStat.SUCC;
             }
             case LINKREMOVE -> {

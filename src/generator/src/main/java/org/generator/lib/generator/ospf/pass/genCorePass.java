@@ -1,7 +1,7 @@
 /**
  * This pass will gen Core OpGA from ConfGraph
  */
-package org.generator.lib.generator.pass;
+package org.generator.lib.generator.ospf.pass;
 
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.driver.generate;
@@ -246,6 +246,7 @@ public class genCorePass {
     private List<OpCtxG> handleAreas(){
         var ospf_name = NodeGen.getOSPFName(r_name);
         List<OpCtxG> opgs = new ArrayList<>();
+        System.out.println(confg.toDot(false));
         for(var areaSum: confg.getOSPFAreaSumOfOSPF(ospf_name)){
             var opctxg = handleArea(areaSum);
             opgs.add(opctxg);

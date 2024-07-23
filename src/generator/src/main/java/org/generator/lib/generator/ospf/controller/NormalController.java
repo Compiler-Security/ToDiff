@@ -1,4 +1,4 @@
-package org.generator.lib.generator.controller;
+package org.generator.lib.generator.ospf.controller;
 
 import org.generator.lib.item.IR.OpAnalysis;
 
@@ -78,6 +78,30 @@ public  class NormalController {
             state = target_state;
         }
 
+        /**
+         * state A -> state B (A != B)
+         * set cur_state = state B
+         * B -> A ++
+         * @param target_state
+         */
+        public void reverseToState(OpAnalysis.STATE target_state){
+            switch (state){
+                case REMOVED -> {
+                    switch (target_state){
+                        case REMOVED -> {assert  rr >= 0;}
+                        case ACTIVE -> {ar++; assert  ar >= 0;}
+                    }
+                }
+                case ACTIVE -> {
+                    switch (target_state){
+                        case REMOVED -> {ra++; assert ra >= 0;}
+                        case ACTIVE -> {assert  aa >= 0;}
+                    }
+                }
+            }
+            state = target_state;
+        }
+
         public boolean canMove(){
             return !getValidMoveStates().isEmpty();
         }
@@ -124,6 +148,10 @@ public  class NormalController {
 
     public void moveToStateOfOpa(OpAnalysis opa, OpAnalysis.STATE target_state){
         configMap.get(opa).moveToState(target_state);
+    }
+
+    public void reverseToStateOfOpa(OpAnalysis opa, OpAnalysis.STATE target_state){
+        configMap.get(opa).reverseToState(target_state);
     }
 
     public boolean canMoveOfOpa(OpAnalysis opa){

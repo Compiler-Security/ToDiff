@@ -19,3 +19,8 @@ def warnln(msg, *args, **kwargs):
 def warnaln(attri, msg, *args, **kwargs):
     warn("*** \033[1;34m" + attri + "\033[0m")
     warnln(msg, *args, **kwargs)
+
+def erroraln(attri, msg, *args, **kwargs):
+    warn("*** \033[1;31m" + attri + "\033[0m")
+    warnln(msg, *args, **kwargs)
+

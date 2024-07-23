@@ -1,7 +1,7 @@
 /**
  * This pass will random shrink Core pass to the minimal form
  */
-package org.generator.lib.generator.pass;
+package org.generator.lib.generator.ospf.pass;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -40,6 +40,7 @@ public class shrinkCorePass {
             var opCtxG = genCorePass.mergeOpCtxgToOne(opCtxGs);
             var g = confG.copyPhyGraph();
             reducer.reduceToConfG(opCtxG, g);
+            System.out.println(opCtxG);
             System.out.println(compareJson(confG.toJson(),g.toJson()).toPrettyString());
             assert false:"genCorePass's core is not equal to confG";
         }

@@ -9,9 +9,8 @@ Output:
 
 ATTENTION: this pass may add multiple opA to OpAG, and may change other OpA's states in the OpAG' by the rules
  */
-package org.generator.lib.generator.pass;
+package org.generator.lib.generator.ospf.pass;
 
-import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.util.collections.Pair;

@@ -11,6 +11,7 @@ from src.restful_mininet.node.router_node import FrrNode
 from src.restful_mininet.util.log import *
 from os import path
 import os
+import shutil
 class TestNet:
     def __init__(self):
         self.net = Mininet(Topo())
@@ -18,15 +19,22 @@ class TestNet:
         self.host_nodes = []
         self.switch_nodes = []
         self.CONF_DIR = ""
+        self.log_path = "/home/frr/log"
+        if path.exists(self.log_path):
+            shutil.rmtree(self.log_path)
+        assert (not path.exists(self.log_path))
+        os.mkdir(self.log_path)
+        
+        
 
     def start_net(self):
         #first start net
         self.net.start()
         #then start frr
-        for node in self.router_nodes:
-            #FIXME
-            self._get_node_by_name(node).load_frr(daemons=["zebra", "ospfd"], conf_dir=self.CONF_DIR)
-            self._get_node_by_name(node).log_load_frr()
+        # for node in self.router_nodes:
+        #     #FIXME
+        #     self._get_node_by_name(node).load_frr(daemons=["zebra", "ospfd"], conf_dir=self.CONF_DIR)
+        #     self._get_node_by_name(node).log_load_frr()
 
     def stop_net(self):
         self.net.stop()

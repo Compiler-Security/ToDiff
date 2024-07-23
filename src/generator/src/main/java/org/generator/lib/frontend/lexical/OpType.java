@@ -1,23 +1,19 @@
 package org.generator.lib.frontend.lexical;
 
-import org.generator.util.collections.Pair;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public enum OpType {
     NODEADD,
     NODEDEL,
     NODESETOSPFUP,
     NODESETOSPFRE,
+    NODESETOSPFSHUTDOWN,
+
     INTFUP,
     INTFDOWN,
-    LINKUP,
+    LINKADD,
     LINKDOWN,
     LINKREMOVE,
-    OSPFUP,
 
 
     //Don't change this!

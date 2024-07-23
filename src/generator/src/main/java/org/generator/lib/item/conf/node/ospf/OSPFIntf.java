@@ -99,6 +99,7 @@ public class OSPFIntf extends AbstractNode {
 
     public enum OSPFNetType implements StringEnum {
         BROADCAST("broadcast"),
+        POINTTOPOINT("point-to-point"),
         NONBROADCAST("non-broadcast");
 
 

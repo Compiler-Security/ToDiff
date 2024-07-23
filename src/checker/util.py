@@ -140,6 +140,11 @@ def deep_compare(d1, d2):
     else:
         return d1 == d2
 
+import difflib
+def str_diff(st1, st2):
+    d = difflib.Differ()
+    return [x for x in list(d.compare(st1.splitlines(), st2.splitlines())) if x.startswith("- ") or x.startswith("+ ")]
+
 def dict_diff(d1, d2):
     """
     Recursively diff two dictionaries, including nested structures.
