@@ -375,8 +375,8 @@ public class IOTest {
             i++;
             System.out.printf("testCase %d\n", i);
             var genOp = new genOps();
-            //var ori = genOp.genRandom(1000, 0.2, 0.6, 4, 0, 1, "r1");
-            var ori = new ConfReader().read(test_st);
+            var ori = genOp.genRandom(1000, 0.2, 0.6, 4, 0, 1, "r1");
+            //var ori = new ConfReader().read(test_st);
 
             var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
             System.out.println(ori_use);

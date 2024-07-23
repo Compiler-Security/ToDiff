@@ -90,8 +90,10 @@ public class baseGenTest {
 
     @Test
     public void testGen() {
-        var diff = new diffTopo();
-        diff.gen(10, 1, 1, 1);
+        //while(true) {
+            var diff = new diffTopo();
+            diff.gen(10, 1, 1, 1);
+        //}
     }
 
     OpCtxG getConfOfPhy(ConfGraph g){

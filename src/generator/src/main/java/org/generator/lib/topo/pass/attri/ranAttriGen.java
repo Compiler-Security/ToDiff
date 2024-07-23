@@ -237,6 +237,6 @@ public class ranAttriGen implements genAttri {
         generate_OSPF_Intfs();
         generate_OSPFS();
         generate_OSPFAreaSums(g);
-        System.out.println(g.toDot(false));
+        //System.out.println(g.toDot(false));
     }
 }

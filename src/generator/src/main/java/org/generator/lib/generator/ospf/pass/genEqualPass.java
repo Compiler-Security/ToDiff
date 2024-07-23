@@ -51,10 +51,18 @@ public class genEqualPass {
                 }
             }
             if (controller.hasConfigOfOpa(opa)){
-                controller.moveToStateOfOpa(opa, current_state);
+                if (opa.equals(target_opa)) {
+                    controller.moveToStateOfOpa(opa, current_state);
+                }else{
+                    controller.reverseToStateOfOpa(opa, current_state);
+                }
             }else{
                 if (tmp_controller.hasConfigOfOpa(opa)){
-                    tmp_controller.moveToStateOfOpa(opa, current_state);
+                    if (opa.equals(target_opa)) {
+                        tmp_controller.moveToStateOfOpa(opa, current_state);
+                    }else{
+                        tmp_controller.reverseToStateOfOpa(opa, current_state);
+                    }
                 }else{
                     tmp_controller.addConfig(opa);
                 }
@@ -96,24 +104,38 @@ public class genEqualPass {
                         var possible_opag = movePass.solve(opag, actionOpa, List.of(rule));
                         s++;
                         if (possible_opag == null) continue;
-                        if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
-                            updateController(possible_opag, controller, tmp_controller, actionOpa);
+                        //if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
+                        updateController(possible_opag, controller, tmp_controller, actionOpa);
                             //System.out.printf("%s %s\n", rule, actionOpa);
-                            opag = possible_opag;
-                            succ = true;
-                            break;
-                        }
+                        opag = possible_opag;
+                        succ = true;
+                        break;
+                       // }
                     }
                     if (succ) break;
                 }
                 if (succ) break;
             }
-            //System.out.println(opag);
-//            System.out.println(controller);
-//            System.out.println(tmp_controller);
+
+            if(!succ){
+
+                System.out.println(action_list);
+                List<OpAnalysis.STATE> actionStates;
+                var actionOpa = action_list.getFirst();
+                if (controller.hasConfigOfOpa(actionOpa)) {
+                    actionStates = controller.getValidMoveStatesOfOpa(actionOpa);
+                } else {
+                    actionStates = tmp_controller.getValidMoveStatesOfOpa(actionOpa);
+                }
+                System.out.println(actionStates);
+                System.out.println(opag);
+                //System.out.println(controller);
+                //System.out.println(tmp_controller);
+            }
             assert succ: "all op can not move!";
 
         }
+        System.out.println(opag);
         //System.out.printf("total move time %d\n", s);
         return opag;
     }
