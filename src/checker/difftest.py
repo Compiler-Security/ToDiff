@@ -54,7 +54,7 @@ class diffTest:
 
     def shrink_ospfDaemon(self, n_dict:dict):
         key_set = ["routerId", "tosRoutesOnly", "rfc2328Conform", "holdtimeMinMsecs", "holdtimeMaxMsecs", "spfScheduleDelayMsecs", "maximumPaths", "writeMultiplier", "abrType", "attachedAreaCounter"]
-        new_dict = {x:n_dict[x] for x in key_set}
+        new_dict = {x:n_dict[x] for x in key_set if x in n_dict}
         new_dict["areas"] = {}
         for (area, val) in n_dict["areas"].items():
             if "backbone" in val.keys():
@@ -62,7 +62,7 @@ class diffTest:
             else:
                 key_set = ["shortcuttingMode", "sBitConcensus"]
             key_set += ["areaIfTotalCounter", "areaIfActiveCounter", "nbrFullAdjacentCounter", "lsaNumber", "lsaRouterNumber", "lsaNetworkNumber", "lsaSummaryNumber", "lsaAsbrNumber", "lsaNssaNumber"]
-            new_dict["areas"][area] = {x:val[x] for x in key_set}
+            new_dict["areas"][area] = {x:val[x] for x in key_set if x in val}
         return new_dict
     
     def shrink_ospfIntfs(self, n_dict:dict):
@@ -101,17 +101,27 @@ class diffTest:
                 print(f"round {i-1} {i} ospf-intfs")
                 print(json.dumps(diff, indent=4))
 
+    def check_runningConfig(self, rt):
+        for i in range(1, self.round_num):
+            diff = util.str_diff(self.runningConfig(i-1, self.step_nums[i-1] - 1, rt), self.runningConfig(i, self.step_nums[i] - 1, rt))
+            if (len(diff) > 0):
+                print(f"round {i-1} {i} ospf-intfs")
+                print(json.dumps(diff, indent=4))
+                
     def check(self):
             i = 0
             for rt in self.routers:
                 print(f"check router {rt}")
+                # for rd in range(0, self.round_num):
+                #     print(self.routingTable(rd, self.step_nums[rd] - 1, rt).keys())
                 self.check_ospfIntfs(rt)
                 self.check_neighbors(rt)
                 self.check_routingTable(rt)
                 self.check_ospfDaemon(rt)
+                self.check_runningConfig(rt)
             # for rd in range(0, self.round_num):
             #     print(json.dumps(self.ospfIntfs(rd, self.step_nums[rd] - 1, "r1"), indent=4))
 
 if __name__ == "__main__":
-    d = diffTest("/home/frr/a/topo-fuzz/test/excutor_test/frr_conf/test1_res.json")
+    d = diffTest("/home/frr/a/topo-fuzz/test/excutor_test/frr_conf/test1713955500_res.json")
     d.check()

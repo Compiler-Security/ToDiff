@@ -1,3 +1,8 @@
+import sys
+from os import path
+path_to_add = "/home/frr/a/topo-fuzz"
+if path_to_add not in sys.path:
+    sys.path.append(path_to_add)
 from src.restful_mininet.net.testnet import TestNet
 from src.restful_mininet.node.router_node import FrrNode
 from functools import partial, partialmethod
@@ -17,7 +22,7 @@ class BaseInst:
         self.net = net
         self.workdir = workdir
         self.ctx = ctx
-
+    
     def run(self):
         pass
 
@@ -136,13 +141,22 @@ class MininetInst(BaseInst):
             up_node: FrrNode = self._get_node(node_name)
             if up_node is None:
                 return self.EXEC_MISS
-            return self._run_cmd(up_node.load_frr, ["zebra", "ospfd", "mgmtd"], conf_dir=self.workdir, universe=True)
-
+            res = self._run_cmd(up_node.load_frr, ["zebra", "ospfd", "mgmtd"], conf_dir=self.workdir, universe=True)
+            #self._run_cmd(up_node.log_load_frr)
+            return res
+        
         if _cmds_equal_prefix(op_args, ["router", "set", "OSPF", "down"]):
             up_node: FrrNode = self._get_node(node_name)
             if up_node is None:
                 return self.EXEC_MISS
+            return self._run_cmd(up_node.stop_ospfd, conf_dir=self.workdir)
+        
+        if _cmds_equal_prefix(op_args, ["router", "set", "OSPF", "restart"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
             return self._run_cmd(up_node.stop_frr)
+        
 
         raise InstErrorException("[mininet] node inst not right")
 
@@ -287,7 +301,7 @@ class MininetInst(BaseInst):
 class FRRInst(BaseInst):
     pass
 
-
+from mininet.cli import CLI
 if __name__ == "__main__":
     net = TestNet()
     ctx = {"intf":[]}
@@ -303,5 +317,6 @@ if __name__ == "__main__":
     # node: Host = net.net["r1"]
     # print(node.cmd("ifconfig"))
     net.net.start()
+    CLI(net.net)
     print(net.net.hosts)
     net.net.stop()
