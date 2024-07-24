@@ -161,7 +161,6 @@ RUN if [ "$build_mode" = "full" ]; then \
        --enable-vty-group=frrvty \
        --enable-snmp=agentx \
        --enable-scripting \
-       --enable-address-sanitizer \
        --disable-doc \
        --disable-ripd \
        --disable-ripngd \
@@ -176,6 +175,7 @@ RUN if [ "$build_mode" = "full" ]; then \
         --disable-fabricd \
         --disable-vrrpd \
         --disable-pathd \
+        --enable-address-sanitizer \
        --with-pkg-extra-version=-my-manual-build && \
     make -j $(nproc) && \
     sudo make install ; \

@@ -33,16 +33,12 @@ class executor:
     def run_phy(self, net, ctx, phy_commands):
         res = []
         for op in phy_commands:
-            if 'OSPF' in op and 'r0' in op:
-                print("ok")
             ress = MininetInst(op, net, self.conf_file_dir, ctx).run()
             res.append(ress)
             if (ress != 0):
                 erroraln(f"phy exec <{op}> wrong! exit the test: \n", ress)
                 assert False
-            
-        warnaln("phy exec res: ", res)
-               
+        warnaln("   PHY commands result:", res)
         return res
     
     def run_ospf(self, net:testnet.TestNet, router_name, ospf_commands):
@@ -89,12 +85,17 @@ class executor:
         return True
     
     def run(self, r):
-        warnaln("round ", r)
+        erroraln(f"\n\n======round{r}======","")
+        erroraln("+ mininet init", "")
         net = testnet.TestNet()
+        erroraln("- mininet init", "")
         ctx = {"intf":{}}
         commands = self.conf['commands'][r]
         res = []
         for i in range(0, self.step_nums[r]):
+            erroraln(f"\n\n>>>> + step{i} <<<<", "")
+            
+            erroraln(f"+ OSPF commands", "")
             ospf_res = {}
             if i == 0:
                 for j in range(0, len(self.routers)):
@@ -107,16 +108,21 @@ class executor:
                     ospf_ops = commands[i]['ospf'][j]
                     tmp = self.run_ospf(net, router_name, ospf_ops)
                     ospf_res[router_name] = tmp
-
+            erroraln(f"- OSPF commands", "")
+            
+            erroraln(f"+ PHY commands", "")
             phy_res = self.run_phy(net, ctx, commands[i]['phy'])
+            erroraln(f"- PHY commands", "")
+
             if i == 0:    
                 net.start_net()
             res.append({})
             res[i]['exec'] = {}
             res[i]['exec']['phy'] = phy_res
             res[i]['exec']['ospf'] = ospf_res
-            warnaln("step ", i)
+            
             sleep_time = commands[i]['waitTime']
+            erroraln(f"wait {sleep_time} s ", "")
             #CLI(net.net)
             if sleep_time == -1:
                 #FIXME this should check shrink
@@ -133,9 +139,11 @@ class executor:
                 #CLI(net.net)
                 time.sleep(sleep_time)
             
+            erroraln("+ collect result", "")
             res[i]['watch'] = {}
             for r_name in self.routers:
                 res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
+            erroraln("- collect result", "")
         net.stop_net()
         return res
     

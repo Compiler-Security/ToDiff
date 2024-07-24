@@ -32,7 +32,11 @@ services:
         - build_mode=interested
         - frr_check=false
         - nproc=16
-        - proxy=http://114.212.83.50:7890
+        - proxy=http://114.212.86.78:9981
+      ulimits:
+        nofile:
+          soft: 2048  # Soft limit
+          hard: 4096  # Hard limit
       init: true
       privileged: true
       user: root
