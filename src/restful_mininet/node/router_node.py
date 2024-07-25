@@ -93,9 +93,13 @@ class FrrNode(Node):
                 [f"{BIN_DIR}/{daemon_name}", "-u", "root", "-f", conf_path, "-d", "-i", pid_path, "--log-level", "debug",
                     "--log", f"file:{log_path}"])
             else:
+                #we set asan_logs to /var/run/frr/{daemon_name}.asan
                 ress = self.cmds(
-                [f"{BIN_DIR}/{daemon_name}", "--limit-fds", "64", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
+                [f"export ASAN_OPTIONS=log_path=/var/run/frr/{daemon_name}.asan && ", f"{BIN_DIR}/{daemon_name}", "--limit-fds", "64", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
                 "--log", f"file:{log_path}"])
+                # ress = self.cmds(
+                # [f"{BIN_DIR}/{daemon_name}", "--limit-fds", "64", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
+                # "--log", f"file:{log_path}"])
                 if(path.exists(pid_path)):
                     break
                 else:

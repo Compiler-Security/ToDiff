@@ -148,5 +148,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/testhalt.conf", "/home/frr/topo-fuzz/test/excutor_test/frr_conf")
+    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/test_asan.conf", "/home/frr/topo-fuzz/test/excutor_test/tmp")
     t.test()
