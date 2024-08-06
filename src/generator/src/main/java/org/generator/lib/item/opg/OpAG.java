@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Normal OpAG
@@ -88,6 +89,10 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         return OpStatus.keySet().stream().filter(opa -> opa.op.Type().isSetOp()).toList();
     }
 
+    public Map<OpAnalysis, OpAnalysis.STATE> getOpStatus() {
+        return OpStatus;
+    }
+
     Map<OpAnalysis, OpAnalysis.STATE> OpStatus;
     /**
      * This method will reduce itself and return itself
@@ -144,6 +149,19 @@ public class OpAG extends BaseOpG<OpAnalysis>{
             opCtxg.addOp(opa.getOp().getOpCtx());
         }
         return opCtxg;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OpAG opAG = (OpAG) o;
+        return Objects.equals(OpStatus, opAG.OpStatus);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(OpStatus);
     }
 
     @Override

@@ -14,9 +14,11 @@ package org.generator.lib.generator.ospf.pass;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.util.collections.Pair;
+import org.generator.util.ran.ranHelper;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class movePass {
 
@@ -47,6 +49,50 @@ public class movePass {
         List<applyRulePass.RuleType> possibleRules;
         return new ArrayList<>(List.of(getRules(current_state, target_opa.state)));
     }
+
+    private  static boolean checkEqual(OpAG currentOpAG, OpAG targetOpAG){
+        currentOpAG.reduce();
+        targetOpAG.reduce();
+        return  currentOpAG.getOpStatus().equals(targetOpAG.getOpStatus());
+    }
+    public static void random_insert(OpAG targetOpAG, OpAG currentOpAG, List<OpAnalysis> remainOps){
+        var move_op = remainOps.removeFirst();
+
+        var totalOpAG = currentOpAG.copy();
+        totalOpAG.addOps(remainOps);
+
+        var r = currentOpAG.getOps().size();
+        var move_max = r;
+        var l = -1;
+        var mid = r;
+        while(l + 1 < r){
+            mid = (l + r) / 2;
+            //contact opAG
+            totalOpAG.getOps().add(mid, move_op);
+            if (checkEqual(totalOpAG, targetOpAG)){
+                r = mid;
+            }else{
+                l = mid + 1;
+            }
+            totalOpAG.getOps().remove(mid);
+        }
+
+        var move_min = r;
+        //System.out.printf("%d %d\n", move_min, move_max);
+        //can move index range is [move_min, move_max]
+        //random move
+        currentOpAG.getOps().add(ranHelper.randomInt(move_min, move_max), move_op);
+    }
+    public static OpAG random_inserts(OpAG targetOpAG, OpAG oriOpAG){
+        //get All the new generate Op
+        var newOpAs = new ArrayList<>(targetOpAG.getOps().subList(oriOpAG.getOps().size(), targetOpAG.getOps().size()));
+        var opAG = oriOpAG.copy();
+        while(!newOpAs.isEmpty()) {
+            random_insert(targetOpAG, opAG, newOpAs);
+        }
+        opAG.reduce();
+        return opAG;
+    }
     /**
      * move one step given by target_opa, don't change opAG
      * @param opAG
@@ -63,10 +109,14 @@ public class movePass {
         //System.out.printf("%s %s->%s\n", target_opa.toString(), current_state, target_opa.state);
         if (allowed_ruleType != null) possibleRules = new ArrayList<>(Arrays.stream(getRules(current_state, target_opa.state)).toList()).stream().filter(x -> allowed_ruleType.contains(x)).toList();
         else possibleRules = new ArrayList<>(List.of(getRules(current_state, target_opa.state)));
-        for(var rule: possibleRules){
-           // System.out.println(rule);
+        for(var rule: possibleRules) {
+            // System.out.println(rule);
             var opAG_new = applyRulePass.solve(opAG, target_opa, rule);
-            if (opAG_new != null) return opAG_new;
+            if (opAG_new != null){
+                var opAG_random_new = random_inserts(opAG_new, opAG);
+                return opAG_random_new;
+                //return opAG_new;
+            }
         }
         return null;
     }
