@@ -11,6 +11,7 @@ ATTENTION: this pass may add multiple opA to OpAG, and may change other OpA's st
  */
 package org.generator.lib.generator.ospf.pass;
 
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.util.collections.Pair;
@@ -113,9 +114,9 @@ public class movePass {
             // System.out.println(rule);
             var opAG_new = applyRulePass.solve(opAG, target_opa, rule);
             if (opAG_new != null){
-                var opAG_random_new = random_inserts(opAG_new, opAG);
-                return opAG_random_new;
-                //return opAG_new;
+                if (generate.insertRan) {
+                    return random_inserts(opAG_new, opAG);
+                }else return opAG_new;
             }
         }
         return null;

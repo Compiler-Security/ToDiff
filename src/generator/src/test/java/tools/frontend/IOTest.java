@@ -368,21 +368,21 @@ public class IOTest {
                 int r1-eth3
                 	ip address 117.132.165.79/15
                 	ip ospf area 0.0.0.0
-                router ospf            
+                router ospf    
+                    network 1.1.1.1/10 area 2
                 """;
         int i = 0;
         while(true) {
             i++;
             System.out.printf("testCase %d\n", i);
             var genOp = new genOps();
-            var ori = genOp.genRandom(1000, 0.2, 0.6, 4, 0, 1, "r1");
+            var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
             //var ori = new ConfReader().read(test_st);
 
             var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
-            System.out.println(ori_use);
+            //System.out.println(ori_use);
             var confg = getSetConfG(ori_use);
             var gen = generate.generateCore(confg);
-            System.out.println(gen.getOps().size());
             //var gen = new ConfReader().read(test_st1);
             //System.out.println(gen.getOps().size());
             //System.out.println(reducer.reduceToCore(ori));
@@ -397,15 +397,15 @@ public class IOTest {
                 //System.out.println(confg_core.toJson().toPrettyString());
             }
             assert confg_core.equals(confg) : "CORE WRONG";
-//            reducer.s = 0;
-//            var gen_equal = generate.generateEqualOfCore(gen, 1);
-//            //System.out.println(gen_equal);
-//            var confg_equal = getSetConfG(gen_equal);
-//            if (!confg_equal.equals(confg)){
-//                System.out.println(gen_equal);
-//                System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
-//            }
-//            assert confg_equal.equals(confg) : "MUTATE WRONG";
+            reducer.s = 0;
+            var gen_equal = generate.generateEqualOfCore(gen, 1);
+            //System.out.println(gen_equal);
+            var confg_equal = getSetConfG(gen_equal);
+            if (!confg_equal.equals(confg)){
+                System.out.println(gen_equal);
+                System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
+            }
+            assert confg_equal.equals(confg) : "MUTATE WRONG";
             //break;
         }
     }
