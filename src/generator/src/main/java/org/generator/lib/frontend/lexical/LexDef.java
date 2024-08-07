@@ -54,7 +54,7 @@ public class LexDef {
                 {AreaRangeNoAd, "area {ID(NUM)} range {IPRANGE} not-advertise"},
                 {AreaRangeSub, "area {ID(NUM)} range {IPRANGE} substitute {IP}"},
                 {AreaRangeCost, "area {ID(NUM)} range {IPRANGE} cost {NUM(0-16777215)}|area {ID(NUM)} range {IPRANGE} advertise cost {NUM(0-16777215)}"},
-                {AreaVLink, "area {ID(NUM)} virtual-link {ID2}"},
+                //{AreaVLink, "area {ID(NUM)} virtual-link {ID2}"},
                 {AreaShortcut, "area {ID(NUM)} shortcut {NAME(enable,disable,default)}"},
                 {AreaStub, "area {ID(NUM)} stub"},
                 {AreaStubTotal, "area {ID(NUM)} stub no-summary"},
