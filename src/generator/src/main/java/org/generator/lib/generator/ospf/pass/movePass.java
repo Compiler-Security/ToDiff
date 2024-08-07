@@ -88,11 +88,14 @@ public class movePass {
         //get All the new generate Op
         var newOpAs = new ArrayList<>(targetOpAG.getOps().subList(oriOpAG.getOps().size(), targetOpAG.getOps().size()));
         var opAG = oriOpAG.copy();
-        while(!newOpAs.isEmpty()) {
-            random_insert(targetOpAG, opAG, newOpAs);
-        }
-        opAG.reduce();
-        return opAG;
+        //We only use random insert if we should insert >=2 instructions
+        if (newOpAs.size() > 1) {
+            while (!newOpAs.isEmpty()) {
+                random_insert(targetOpAG, opAG, newOpAs);
+            }
+            opAG.reduce();
+            return opAG;
+        }else return targetOpAG;
     }
     /**
      * move one step given by target_opa, don't change opAG
