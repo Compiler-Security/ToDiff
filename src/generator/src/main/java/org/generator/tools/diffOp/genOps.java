@@ -22,7 +22,8 @@ public class genOps {
         OspfOp = new ArrayList<>();
         allOp = new ArrayList<>();
         for (var op_type: OpType.values()){
-            if (op_type == OpType.AreaVLink) continue;
+            //FIXME areaVLINK
+            //if (op_type == OpType.AreaVLink) continue;
             if (op_type == OpType.NETAREAID) continue;
             if (op_type == OpType.IpOspfArea) continue;
             if (op_type == OpType.IPAddr) continue;
