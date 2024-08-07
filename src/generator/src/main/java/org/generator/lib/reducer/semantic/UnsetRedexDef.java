@@ -44,8 +44,8 @@ public class UnsetRedexDef extends BaseRedexDef{
 
                 {NOAreaStub, new OpType[]{AreaStub, AreaStubTotal}},
 
-                //FIXME NoAreaStubTotal will create a new AreaStub
-                {NOAreaStubTotal, new OpType[]{AreaStubTotal}},
+                //FIXME simple fix of NOAreaStubTotal
+               //{NOAreaStubTotal, new OpType[]{AreaStubTotal}},
                 {NOAreaNSSA, new OpType[]{AreaNSSA}},
                 {NOIPAddr, new OpType[]{IPAddr}},
                 {NOIpOspfArea, new OpType[]{IpOspfArea}},

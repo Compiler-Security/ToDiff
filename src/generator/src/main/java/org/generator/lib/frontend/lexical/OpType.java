@@ -127,7 +127,8 @@ public enum OpType {
     NOAreaVLink,
     NOAreaShortcut,
     NOAreaStub,
-    NOAreaStubTotal,
+    //FIXME simple fix of NOAreaStubTotal
+    //NOAreaStubTotal,
     NOAreaNSSA,
     NOIPAddr,
     NOIpOspfArea,

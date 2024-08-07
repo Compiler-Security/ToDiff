@@ -94,7 +94,9 @@ public class LexDef {
                 {NOAreaVLink, "no area {ID(NUM)} virtual-link {ID2}"},
                 {NOAreaShortcut, "no area {ID(NUM)} shortcut {NAME(enable,disable,default)}"},
                 {NOAreaStub, "no area {ID(NUM)} stub"},
-                {NOAreaStubTotal, "no area {ID(NUM)} stub no-summary"},
+
+                //FIXME simple fix of NOAreaStubTotal
+                //{NOAreaStubTotal, "no area {ID(NUM)} stub no-summary"},
                 {NOAreaNSSA, "no area {ID(NUM)} nssa"},
                 {NOIPAddr, "no ip address {IP}"},
                 {NOIpOspfArea, "no ip ospf area | no ip ospf area {ID(NUM)}"},
