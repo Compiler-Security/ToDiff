@@ -30,7 +30,8 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOWRITEMULTIPLIER, new OpType[]{WRITEMULTIPLIER}},
                 {NOSOCKETBUFFERSEND, new OpType[]{SOCKETBUFFERSEND}},
                 {NOSOCKETBUFFERRECV, new OpType[]{SOCKETBUFFERRECV}},
-                {NOSOCKETBUFFERALL, new OpType[]{SOCKETBUFFERALL}},
+                //FIXME SOCKETBUFFERALL
+                //{NOSOCKETBUFFERALL, new OpType[]{SOCKETBUFFERALL}},
                 {NONOSOCKETPERINTERFACE, new OpType[]{NOSOCKETPERINTERFACE}},
 
                 {NOAreaRange, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},

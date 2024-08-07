@@ -74,12 +74,13 @@ public class ospfDaemonExecPass extends baseExecPass {
                 ospf_daemon.setBufferrecv(num);
                 return ExecStat.SUCC;
             }
-            case SOCKETBUFFERALL -> {
-                var num = op.getLONGNUM();
-                ospf_daemon.setBuffersend(num);
-                ospf_daemon.setBufferrecv(num);
-                return ExecStat.SUCC;
-            }
+            //FIXME SOCKETBUFFERALL
+//            case SOCKETBUFFERALL -> {
+//                var num = op.getLONGNUM();
+//                ospf_daemon.setBuffersend(num);
+//                ospf_daemon.setBufferrecv(num);
+//                return ExecStat.SUCC;
+//            }
             case NOSOCKETPERINTERFACE -> {
                 ospf_daemon.setSocketPerInterface(false);
                 return ExecStat.SUCC;
