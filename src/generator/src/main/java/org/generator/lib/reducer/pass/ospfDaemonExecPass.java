@@ -149,10 +149,11 @@ public class ospfDaemonExecPass extends baseExecPass {
             //FIXME Is these commands should be used only in ABR?
             var areaSum = getAreaSum(op.getID(), topo);
             switch (op.Type()){
-                case AreaVLink -> {
-                    //FIXME(VLINK) currently we don't handle this
-                    assert false : "AreaVlink not implemented";
-                }
+                //FIXME areaVLINK
+//                case AreaVLink -> {
+//                    //FIXME(VLINK) currently we don't handle this
+//                    assert false : "AreaVlink not implemented";
+//                }
                 case AreaShortcut -> {
                     if (op.getNAME().equals("enable")) {
                         areaSum.setShortcut(OSPFAreaSum.shortCutType.Enable);

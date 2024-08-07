@@ -67,7 +67,8 @@ public enum OpType {
     AreaRangeCost,
 
     //FIXME area can have multiple virtual-link
-    AreaVLink,
+    //FIXME areaVLINK
+    //AreaVLink,
 
     AreaShortcut,
     AreaStub,

@@ -38,8 +38,8 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOAreaRangeSub, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
                 {NOAreaRangeCost, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
 
-
-                {NOAreaVLink, new OpType[]{AreaVLink}},
+                //FIXME areaVLINK
+                //{NOAreaVLink, new OpType[]{AreaVLink}},
                 {NOAreaShortcut, new OpType[]{AreaShortcut}},
 
                 {NOAreaStub, new OpType[]{AreaStub, AreaStubTotal}},
