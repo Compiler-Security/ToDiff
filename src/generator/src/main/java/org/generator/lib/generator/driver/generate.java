@@ -46,11 +46,18 @@ public class generate {
         }
         List<OpAnalysis> ctxOps = ctxOps_set.stream().toList();
         var totalIrrOps = (int) opas.getOps().size() * irrOpRatio;
+        Set<OpAnalysis> currentOpAs = new HashSet<>();
+        currentOpAs.addAll(controller.getOpas());
         for(int i = 0; i < totalIrrOps; i++){
-            var ctxOpa = ranHelper.randomElemOfList(ctxOps);
-            var op = genOpPass.genRanOpByControl(ctxOpa.getOp().Type() == OpType.IntfName);
-            var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
-            controller.addConfig(opa, expand_ratio - 1, expand_ratio, expand_ratio, 0);
+            while(true) {
+                var ctxOpa = ranHelper.randomElemOfList(ctxOps);
+                var op = genOpPass.genRanOpByControl(ctxOpa.getOp().Type() == OpType.IntfName);
+                var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
+                if (currentOpAs.contains(opa)) continue;
+                System.out.println(opa);
+                controller.addConfig(opa, expand_ratio - 1, expand_ratio, expand_ratio, expand_ratio - 1);
+                break;
+            }
         }
     }
     public static OpCtxG generateEqualOfCore(OpCtxG opCtxG){
