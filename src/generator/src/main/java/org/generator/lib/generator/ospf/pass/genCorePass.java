@@ -187,12 +187,13 @@ public class genCorePass {
             op.setNAME(areaSum.getShortcut().toString());
         }
         //virtual link
-        if (areaSum.getVirtualLink() != null){
-            var op = addOp(opCtxG, OpType.AreaVLink);
-            op.setID(area_id);
-            //FIXME(VLINK)
-            assert false:"virtual link don't implemented";
-        }
+        //FIXME areaVLINK
+//        if (areaSum.getVirtualLink() != null){
+//            var op = addOp(opCtxG, OpType.AreaVLink);
+//            op.setID(area_id);
+//            //FIXME(VLINK)
+//            assert false:"virtual link don't implemented";
+//        }
         //stub nosummary
         if (areaSum.isNosummary()){
             var op = addOp(opCtxG, OpType.AreaStubTotal);
