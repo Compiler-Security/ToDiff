@@ -49,7 +49,7 @@ public class LexDef {
                 {SOCKETBUFFERSEND, "socket buffer send {LONGNUM(1-4000000000)}"},
                 {SOCKETBUFFERRECV, "socket buffer recv {LONGNUM(1-4000000000)}"},
                 //FIXME SOCKETBUFFERALL
-                //{SOCKETBUFFERALL, "socket buffer all {LONGNUM(1-4000000000)}"},
+                {SOCKETBUFFERALL, "socket buffer all {LONGNUM(1-4000000000)}"},
                 {NOSOCKETPERINTERFACE, "no socket-per-interface"},
                 {AreaRange, "area {ID(NUM)} range {IPRANGE}|area {ID(NUM)} range {IPRANGE} advertise"},
                 {AreaRangeNoAd, "area {ID(NUM)} range {IPRANGE} not-advertise"},
