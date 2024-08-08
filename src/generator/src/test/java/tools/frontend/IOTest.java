@@ -398,10 +398,12 @@ public class IOTest {
             }
             assert confg_core.equals(confg) : "CORE WRONG";
             reducer.s = 0;
-            var gen_equal = generate.generateEqualOfCore(gen, 1);
+            var gen_equal = generate.generateEqualOfCore(gen);
             //System.out.println(gen_equal);
             var confg_equal = getSetConfG(gen_equal);
             if (!confg_equal.equals(confg)){
+                System.out.println(gen);
+                System.out.println("===============");
                 System.out.println(gen_equal);
                 System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
             }
@@ -432,7 +434,7 @@ public class IOTest {
             normal_controller.addConfig(opa, 1, 2, 1, 1);
         }
         var tmp_controller = CapacityController.of(6, 0, 0, 1, 0);
-        var gen_opag = genEqualPass.solve(normal_controller, tmp_controller);
+        var gen_opag = genEqualPass.solve(normal_controller);
         gen_opag = reducePass.expandOpAG(gen_opag);
         var print_ctx = OpCtxG.Of();
         gen_opag.getOps().forEach(opa -> print_ctx.addOp(opa.getOp().getOpCtx()));

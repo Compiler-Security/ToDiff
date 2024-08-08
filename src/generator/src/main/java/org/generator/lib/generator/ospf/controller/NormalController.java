@@ -126,6 +126,13 @@ public  class NormalController {
         return true;
     }
 
+    public boolean addConfig(OpAnalysis opa, int rr, int ra, int ar, int aa, OpAnalysis.STATE state){
+        configMap.put(opa, new GenConfig(rr, ra, ar, aa));
+        configMap.get(opa).state = state;
+        return true;
+    }
+
+
     public List<OpAnalysis > getOpas(){
         return configMap.keySet().stream().toList();
     }

@@ -7,10 +7,8 @@ import org.generator.lib.reducer.driver.reducer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Normal OpAG
@@ -52,6 +50,13 @@ public class OpAG extends BaseOpG<OpAnalysis>{
     }
 
     /**
+     * get different opAnalysis
+     * @return
+     */
+    public Set<OpAnalysis> getSlots(){
+        return new HashSet<>(OpStatus.keySet());
+    }
+    /**
      * find the  opA == given opA(in)
      * If not found, return null
      * @param opA
@@ -63,13 +68,23 @@ public class OpAG extends BaseOpG<OpAnalysis>{
     }
 
     /**
+     * check if opag has opa
+     * @param opA
+     * @return
+     */
+    public boolean hasOpA(OpAnalysis opA){
+        return findOpA(opA) != null;
+    }
+
+    /**
      * find the given opA status, if the opA not in OpAG, return INIT
      * @param opA
      * @return
      */
-    public OpAnalysis.STATE getOpAStatus(OpAnalysis opA){
-        return OpStatus.getOrDefault(opA, OpAnalysis.STATE.INIT);
+    public OpAnalysis.STATE getOpAState(OpAnalysis opA){
+        return OpStatus.getOrDefault(opA, OpAnalysis.STATE.REMOVED);
     }
+
     //FIXME this is not elegant
     /**
      * This function filter the active ops, not include unset op, not COPY!
@@ -104,6 +119,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
     }
 
     private void updateOpStatus(){
+        //FIXME !!! IS THIS RIGHT?
         OpStatus = new HashMap<>();
         getOps().forEach(opa -> {
             if (opa.state == OpAnalysis.STATE.ACTIVE) OpStatus.put(opa, OpAnalysis.STATE.ACTIVE);
