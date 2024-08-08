@@ -54,7 +54,7 @@ public class generate {
                 var op = genOpPass.genRanOpByControl(ctxOpa.getOp().Type() == OpType.IntfName);
                 var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
                 if (currentOpAs.contains(opa)) continue;
-                System.out.println(opa);
+                //System.out.println(opa);
                 controller.addConfig(opa, expand_ratio - 1, expand_ratio, expand_ratio, expand_ratio - 1);
                 break;
             }
@@ -92,7 +92,7 @@ public class generate {
     //FIXME(should turn to true when testing)
     public static final boolean phyRan = true;
 
-    public static final boolean insertRan = true;
+    public static final boolean insertRan = false;
 
     //insert irrOp, the number is irrOpRatio of activeOp
     public static double irrOpRatio = 0.4;

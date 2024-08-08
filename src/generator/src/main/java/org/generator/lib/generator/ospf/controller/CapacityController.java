@@ -30,6 +30,7 @@ public class CapacityController extends NormalController {
     public boolean addConfig(OpAnalysis opa) {
         if (getOpas().size() < cap) {
             super.addConfig(opa, new_config.rr, new_config.ra, new_config.ar, new_config.aa);
+            getConfigOfOpa(opa).state = OpAnalysis.STATE.ACTIVE;
             return true;
         }
         else if (getActiveOpas().size() < cap){
@@ -37,6 +38,7 @@ public class CapacityController extends NormalController {
                 delConfig(getREMOVEDOpas().get(ranHelper.randomInt(0, getREMOVEDOpas().size() - 1)));
             }else delConfig(getREMOVEDOpas().get(0));
             super.addConfig(opa, new_config.rr, new_config.ra, new_config.ar, new_config.aa);
+            getConfigOfOpa(opa).state = OpAnalysis.STATE.ACTIVE;
             return true;
         } else return false;
     }

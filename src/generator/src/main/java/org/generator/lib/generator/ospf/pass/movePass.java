@@ -104,23 +104,16 @@ public class movePass {
      * @param allowed_ruleType null, or List contains allowed_ruleType
      * @return opAG_new, null if move fail
      */
-    public static  OpAG solve(OpAG opAG, OpAnalysis target_opa, @Nullable List<applyRulePass.RuleType> allowed_ruleType){
+    public static  OpAG solve(OpAG opAG, OpAnalysis target_opa, applyRulePass.RuleType possibleRule){
         /*
         TDOO For simplicity we only use dfs and currently not build condition graph
         */
-        var current_state = opAG.getOpAStatus(target_opa);
-        List<applyRulePass.RuleType> possibleRules;
-        //System.out.printf("%s %s->%s\n", target_opa.toString(), current_state, target_opa.state);
-        if (allowed_ruleType != null) possibleRules = new ArrayList<>(Arrays.stream(getRules(current_state, target_opa.state)).toList()).stream().filter(x -> allowed_ruleType.contains(x)).toList();
-        else possibleRules = new ArrayList<>(List.of(getRules(current_state, target_opa.state)));
-        for(var rule: possibleRules) {
-            // System.out.println(rule);
-            var opAG_new = applyRulePass.solve(opAG, target_opa, rule);
-            if (opAG_new != null){
-                if (generate.insertRan) {
-                    return random_inserts(opAG_new, opAG);
-                }else return opAG_new;
-            }
+        // System.out.println(rule);
+        var opAG_new = applyRulePass.solve(opAG, target_opa, possibleRule);
+        if (opAG_new != null){
+            if (generate.insertRan) {
+                return random_inserts(opAG_new, opAG);
+            }else return opAG_new;
         }
         return null;
     }

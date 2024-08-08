@@ -76,7 +76,7 @@ public class applyRulePass {
                     }
                     var expect_opa = handle_opa.copy();
                     expect_opa.setState(OpAnalysis.STATE.REMOVED);
-                    var opa_next = movePass.solve(opAG_new, expect_opa, Arrays.stream(new RuleType[]{RuleType.UnsetOp, RuleType.UnsetCtx}).toList());
+                    var opa_next = movePass.solve(opAG_new, expect_opa, RuleType.UnsetOp);
                     if (opa_next != null){
                         opAG_new = opa_next;
                         conflict_ops = conflictOps(opAG_new, target_opa);

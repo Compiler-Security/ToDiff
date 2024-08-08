@@ -7,6 +7,7 @@ import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.reducer.driver.reducer;
 import org.generator.tools.diffOp.genOps;
+import org.generator.tools.frontend.ConfReader;
 import org.junit.Test;
 
 import static org.generator.util.diff.differ.compareJson;
@@ -37,14 +38,21 @@ public class generateTest {
     }
     @Test
     public void IrrOpTest(){
+        var st = """
+                router ospf
+                	area 50.176.152.190 range 194.53.178.207/10
+                	timers throttle spf 46245 496092 416801
+                	ospf router-id 199.5.230.48
+                """;
         int i = 0;
         while(true){
             i++;
             System.out.printf("testCase %d\n", i);
             var genOp = new genOps();
             //original ops
-            var ori = genOp.genRandom(3, 1, 0, 0, 0, 1, "r1");
-            ori = reducer.reduceToCore(ori);
+            //var ori = genOp.genRandom(3, 1, 0, 0, 0, 1, "r1");
+            //ori = reducer.reduceToCore(ori);
+            var ori = new ConfReader().read(st);
             var confg = getSetConfG(ori);
             generate.irrOpRatio = 0;
             //equal ops without IRR Op inserted

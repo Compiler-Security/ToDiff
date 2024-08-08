@@ -3,6 +3,7 @@
  */
 package org.generator.lib.generator.ospf.pass;
 
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.ospf.controller.CapacityController;
 import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.driver.generate;
@@ -16,16 +17,9 @@ public class genEqualPass {
     static boolean checkOpAG(OpAG opAG, NormalController controller, CapacityController tmp_controller, OpAnalysis target_opa){
         for(var opa: opAG.setList()){
             var current_state = opAG.getOpAStatus(opa);
-            if (!opa.equals(target_opa)){continue;}
-            if (controller.hasConfigOfOpa(opa)){
-                if (!controller.canMoveStateOfOpa(opa, current_state)) return false;
-            }else{
-                if (tmp_controller.hasConfigOfOpa(opa)){
-                    if (!tmp_controller.canMoveStateOfOpa(opa, current_state)) return false;
-                }else{
-                    if (!tmp_controller.canAddConfig()){
-                        return false;
-                    }
+            if (!controller.hasConfigOfOpa(opa) && !tmp_controller.hasConfigOfOpa(opa)){
+                if (!tmp_controller.canAddConfig()) {
+                    return false;
                 }
             }
         }
@@ -94,7 +88,7 @@ public class genEqualPass {
                         Collections.shuffle(possibleRules);
                     }
                     for(var rule: possibleRules){
-                        var possible_opag = movePass.solve(opag, actionOpa, List.of(rule));
+                        var possible_opag = movePass.solve(opag, actionOpa, rule);
                         s++;
                         if (possible_opag == null) continue;
                         if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
@@ -102,6 +96,7 @@ public class genEqualPass {
                             //System.out.printf("%s %s\n", rule, actionOpa);
                             opag = possible_opag;
                             succ = true;
+                            //System.out.println(actionOpa);
                             break;
                         }
                     }
@@ -111,24 +106,29 @@ public class genEqualPass {
             }
 
             if(!succ){
-
+                System.out.println("===============");
                 System.out.println(action_list);
-                List<OpAnalysis.STATE> actionStates;
-                var actionOpa = action_list.getFirst();
-                if (controller.hasConfigOfOpa(actionOpa)) {
-                    actionStates = controller.getValidMoveStatesOfOpa(actionOpa);
-                } else {
-                    actionStates = tmp_controller.getValidMoveStatesOfOpa(actionOpa);
-                }
-                System.out.println(actionStates);
-                System.out.println(opag);
-                //System.out.println(controller);
-                //System.out.println(tmp_controller);
+//                System.out.println("===============");
+//                List<OpAnalysis.STATE> actionStates;
+//                var actionOpa = action_list.getFirst();
+//                if (controller.hasConfigOfOpa(actionOpa)) {
+//                    actionStates = controller.getValidMoveStatesOfOpa(actionOpa);
+//                } else {
+//                    actionStates = tmp_controller.getValidMoveStatesOfOpa(actionOpa);
+//                }
+//                System.out.println(actionStates);
+                System.out.println("===============");
+                System.out.println(controller);
+                System.out.println("===============");
+                System.out.println(tmp_controller);
+                System.out.println("===============");
+                System.out.println(opag.toOpCtxGActiveSet());
             }
             assert succ: "all op can not move!";
 
         }
-        //System.out.println(opag);
+        //System.out.println(controller);
+        //System.out.println(tmp_controller);
         //System.out.printf("total move time %d\n", s);
         return opag;
     }
