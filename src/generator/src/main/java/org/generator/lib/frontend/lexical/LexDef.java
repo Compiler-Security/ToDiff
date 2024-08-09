@@ -48,13 +48,14 @@ public class LexDef {
                 {WRITEMULTIPLIER, "write-multiplier {NUM(1-100)}"},
                 {SOCKETBUFFERSEND, "socket buffer send {LONGNUM(1-4000000000)}"},
                 {SOCKETBUFFERRECV, "socket buffer recv {LONGNUM(1-4000000000)}"},
+                //FIXME SOCKETBUFFERALL
                 {SOCKETBUFFERALL, "socket buffer all {LONGNUM(1-4000000000)}"},
                 {NOSOCKETPERINTERFACE, "no socket-per-interface"},
                 {AreaRange, "area {ID(NUM)} range {IPRANGE}|area {ID(NUM)} range {IPRANGE} advertise"},
                 {AreaRangeNoAd, "area {ID(NUM)} range {IPRANGE} not-advertise"},
                 {AreaRangeSub, "area {ID(NUM)} range {IPRANGE} substitute {IP}"},
                 {AreaRangeCost, "area {ID(NUM)} range {IPRANGE} cost {NUM(0-16777215)}|area {ID(NUM)} range {IPRANGE} advertise cost {NUM(0-16777215)}"},
-                {AreaVLink, "area {ID(NUM)} virtual-link {ID2}"},
+                //{AreaVLink, "area {ID(NUM)} virtual-link {ID2}"},
                 {AreaShortcut, "area {ID(NUM)} shortcut {NAME(enable,disable,default)}"},
                 {AreaStub, "area {ID(NUM)} stub"},
                 {AreaStubTotal, "area {ID(NUM)} stub no-summary"},
@@ -84,7 +85,8 @@ public class LexDef {
                 {NOWRITEMULTIPLIER, "no write-multiplier {NUM(1-100)}"},
                 {NOSOCKETBUFFERSEND, "no socket buffer send|no socket buffer send {LONGNUM(1-4000000000)}"},
                 {NOSOCKETBUFFERRECV, "no socket buffer recv|no socket buffer recv {LONGNUM(1-4000000000)}"},
-                {NOSOCKETBUFFERALL, "no socket buffer all|no socket buffer all {LONGNUM(1-4000000000)}"},
+                //SOCKETBUFFERALL
+                //{NOSOCKETBUFFERALL, "no socket buffer all|no socket buffer all {LONGNUM(1-4000000000)}"},
                 {NONOSOCKETPERINTERFACE, "no socket-per-interface"},
                 {NOAreaRange, "no area {ID(NUM)} range {IPRANGE}|no area {ID(NUM)} range {IPRANGE} advertise"},
                 {NOAreaRangeNoAd, "no area {ID(NUM)} range {IPRANGE} not-advertise"},
@@ -94,7 +96,9 @@ public class LexDef {
                 {NOAreaVLink, "no area {ID(NUM)} virtual-link {ID2}"},
                 {NOAreaShortcut, "no area {ID(NUM)} shortcut {NAME(enable,disable,default)}"},
                 {NOAreaStub, "no area {ID(NUM)} stub"},
-                {NOAreaStubTotal, "no area {ID(NUM)} stub no-summary"},
+
+                //FIXME simple fix of NOAreaStubTotal
+                //{NOAreaStubTotal, "no area {ID(NUM)} stub no-summary"},
                 {NOAreaNSSA, "no area {ID(NUM)} nssa"},
                 {NOIPAddr, "no ip address {IP}"},
                 {NOIpOspfArea, "no ip ospf area | no ip ospf area {ID(NUM)}"},

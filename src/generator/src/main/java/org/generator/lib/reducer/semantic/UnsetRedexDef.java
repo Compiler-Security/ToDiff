@@ -30,7 +30,8 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOWRITEMULTIPLIER, new OpType[]{WRITEMULTIPLIER}},
                 {NOSOCKETBUFFERSEND, new OpType[]{SOCKETBUFFERSEND}},
                 {NOSOCKETBUFFERRECV, new OpType[]{SOCKETBUFFERRECV}},
-                {NOSOCKETBUFFERALL, new OpType[]{SOCKETBUFFERALL}},
+                //FIXME SOCKETBUFFERALL
+                //{NOSOCKETBUFFERALL, new OpType[]{SOCKETBUFFERALL}},
                 {NONOSOCKETPERINTERFACE, new OpType[]{NOSOCKETPERINTERFACE}},
 
                 {NOAreaRange, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
@@ -38,14 +39,14 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOAreaRangeSub, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
                 {NOAreaRangeCost, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
 
-
-                {NOAreaVLink, new OpType[]{AreaVLink}},
+                //FIXME areaVLINK
+                //{NOAreaVLink, new OpType[]{AreaVLink}},
                 {NOAreaShortcut, new OpType[]{AreaShortcut}},
 
                 {NOAreaStub, new OpType[]{AreaStub, AreaStubTotal}},
 
-                //FIXME NoAreaStubTotal will create a new AreaStub
-                {NOAreaStubTotal, new OpType[]{AreaStubTotal}},
+                //FIXME simple fix of NOAreaStubTotal
+               //{NOAreaStubTotal, new OpType[]{AreaStubTotal}},
                 {NOAreaNSSA, new OpType[]{AreaNSSA}},
                 {NOIPAddr, new OpType[]{IPAddr}},
                 {NOIpOspfArea, new OpType[]{IpOspfArea}},

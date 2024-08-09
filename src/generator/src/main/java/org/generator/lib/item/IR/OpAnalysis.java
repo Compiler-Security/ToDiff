@@ -132,7 +132,7 @@ public class OpAnalysis{
         return Objects.equals(op, that.op) && ctxOpEqual(getCtxOp(), that.getCtxOp());
     }
 
-    //FIXME this is not elegant
+    //XXX this is not elegant
     @Override
     public int hashCode() {
         if (ctxOp == null) return Objects.hash(op, null);

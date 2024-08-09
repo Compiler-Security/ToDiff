@@ -51,6 +51,8 @@ public enum OpType {
     WRITEMULTIPLIER,
     SOCKETBUFFERSEND,
     SOCKETBUFFERRECV,
+
+    //FIXME SOCKETBUFFERALL
     SOCKETBUFFERALL,
     NOSOCKETPERINTERFACE,
 
@@ -67,7 +69,8 @@ public enum OpType {
     AreaRangeCost,
 
     //FIXME area can have multiple virtual-link
-    AreaVLink,
+    //FIXME areaVLINK
+    //AreaVLink,
 
     AreaShortcut,
     AreaStub,
@@ -118,6 +121,7 @@ public enum OpType {
     NOWRITEMULTIPLIER,
     NOSOCKETBUFFERSEND,
     NOSOCKETBUFFERRECV,
+    //FIXME SOCKETBUFFERALL
     NOSOCKETBUFFERALL,
     NONOSOCKETPERINTERFACE,
     NOAreaRange,
@@ -127,7 +131,8 @@ public enum OpType {
     NOAreaVLink,
     NOAreaShortcut,
     NOAreaStub,
-    NOAreaStubTotal,
+    //FIXME simple fix of NOAreaStubTotal
+    //NOAreaStubTotal,
     NOAreaNSSA,
     NOIPAddr,
     NOIpOspfArea,

@@ -41,8 +41,8 @@ public class OverrideRedexDef extends BaseRedexDef {
                 {AreaRange, new OpType[]{AreaRange, AreaRangeNoAd}, 2},
                 {AreaRangeSub, new OpType[]{AreaRange, AreaRangeSub, AreaRangeNoAd}, 2},
                 {AreaRangeCost, new OpType[]{AreaRange, AreaRangeCost, AreaRangeNoAd}, 2},
-
-                {AreaVLink, new OpType[]{AreaVLink}, 1},
+                //FIXME areaVLINK
+                //{AreaVLink, new OpType[]{AreaVLink}, 1},
                 {AreaShortcut, new OpType[]{AreaShortcut}, 1},
 
                 {AreaStub, new OpType[]{AreaStub, AreaStubTotal, AreaNSSA}, 1},

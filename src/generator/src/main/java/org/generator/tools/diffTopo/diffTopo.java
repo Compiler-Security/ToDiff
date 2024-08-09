@@ -43,7 +43,7 @@ public class diffTopo {
     OpCtxG getConfOfRouter(String r_name, ConfGraph g){
         var confg = g.viewConfGraphOfRouter(r_name);
         confg.setR_name(r_name);
-        var opCtxG = generate.generateEqualOfCore(generate.generateCore(confg), 1);
+        var opCtxG = generate.generateEqualOfCore(generate.generateCore(confg));
         System.out.println(opCtxG);
         return opCtxG;
     }
@@ -56,7 +56,7 @@ public class diffTopo {
     }
 
     public void main(){
-        var router_count =3;
+        var router_count =10;
         var confg = topo.genGraph(router_count, 3, 4, 3, true);
         System.out.println("phy");
         //System.out.println(new OspfConfWriter().write(getConfOfPhy(confg)));

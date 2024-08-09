@@ -16,14 +16,7 @@ public class genEqualPass {
     static boolean checkOpAG(OpAG opAG, NormalController controller, CapacityController tmp_controller, OpAnalysis target_opa){
         for(var opa: opAG.setList()){
             var current_state = opAG.getOpAStatus(opa);
-            if (!opa.equals(target_opa)){
-                if (controller.hasConfigOfOpa(opa)){
-                    if (controller.getConfigStateOfOpa(opa) == current_state) continue;
-                }
-                if (tmp_controller.hasConfigOfOpa(opa)){
-                    if (tmp_controller.getConfigStateOfOpa(opa) == current_state) continue;
-                }
-            }
+            if (!opa.equals(target_opa)){continue;}
             if (controller.hasConfigOfOpa(opa)){
                 if (!controller.canMoveStateOfOpa(opa, current_state)) return false;
             }else{
@@ -104,13 +97,13 @@ public class genEqualPass {
                         var possible_opag = movePass.solve(opag, actionOpa, List.of(rule));
                         s++;
                         if (possible_opag == null) continue;
-                        //if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
-                        updateController(possible_opag, controller, tmp_controller, actionOpa);
+                        if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
+                            updateController(possible_opag, controller, tmp_controller, actionOpa);
                             //System.out.printf("%s %s\n", rule, actionOpa);
-                        opag = possible_opag;
-                        succ = true;
-                        break;
-                       // }
+                            opag = possible_opag;
+                            succ = true;
+                            break;
+                        }
                     }
                     if (succ) break;
                 }
