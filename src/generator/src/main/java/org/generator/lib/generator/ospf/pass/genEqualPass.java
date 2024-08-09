@@ -8,6 +8,7 @@ import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
+import org.generator.lib.reducer.driver.reducer;
 
 import java.util.*;
 
@@ -16,34 +17,28 @@ public class genEqualPass {
 
     static boolean checkPreCondition(List<OpAnalysis> new_opas, OpAG new_opag){
         //all the new_opas should be active
+        if (new_opas.isEmpty()) return false;
         for(var new_opa : new_opas){
-            if (new_opag.getOpAState(new_opa) != OpAnalysis.STATE.ACTIVE) return false;
+            if (new_opag.getOpAState(new_opa) != OpAnalysis.STATE.ACTIVE){
+                System.out.println("--------");
+                System.out.println(new_opa);
+                return false;
+            }
         }
         return true;
     }
 
-    static boolean handleAfterEffects(List<OpAnalysis> new_opas, OpAG new_opag, OpAG cur_opag, NormalController slots){
-        //handle op in cur_opag but not in new_opas, these ops should be totally in slots
-        for(var cur_opa: slots.getOpas()) assert cur_opag.hasOpA(cur_opa): "slots > genOpAG";
-        for(var cur_opa: cur_opag.getSlots()) assert  slots.hasConfigOfOpa(cur_opa): "slots < genOpAG";
-        for(var cur_opa: cur_opag.getSlots()){
-            //in cur_opag but not in new_opas;
-            if (new_opas.contains(cur_opa)) continue;
-
-            var new_state = new_opag.getOpAState(cur_opa);
-            var old_state = slots.getConfigStateOfOpa(cur_opa);
-            if (old_state != new_state){
-                slots.reverseToStateOfOpa(cur_opa, new_state);
+    static boolean handleAfterEffects(OpAnalysis triggle_opa, List<OpAnalysis> new_opas, OpAG new_opag,NormalController slots){
+        for(var slot: slots.getOpas()){
+            if (slot.equals(triggle_opa)){
+                slots.moveToStateOfOpa(slot, triggle_opa.getState());
+            }else{
+                slots.reverseToStateOfOpa(slot, new_opag.getOpAState(slot));
             }
         }
-        for(var new_opa: new_opas){
-            var new_state = new_opag.getOpAState(new_opa);
-            if (slots.hasConfigOfOpa(new_opa)){
-                //if new_opa in slots, we move it to new_state, with cost 1
-                slots.moveToStateOfOpa(new_opa, new_state);
-            }else{
-                //if new_opa not in slots, we should keep it in active
-                slots.addConfig(new_opa, 0, 0, 0, 0, OpAnalysis.STATE.ACTIVE);
+        for(var opa: new_opas){
+            if (!slots.hasConfigOfOpa(opa) && opa.getOp().Type().isSetOp()){
+                slots.addConfig(opa, 0, 0, 0, 0, OpAnalysis.STATE.ACTIVE);
             }
         }
         return true;
@@ -66,11 +61,10 @@ public class genEqualPass {
                     Collections.shuffle(dstStates);
                 }
                 var srcState = slots.getConfigStateOfOpa(actionOpa);
-                for(var dstState: slots.getValidMoveStatesOfOpa(actionOpa)){
+                for(var dstState: dstStates){
                     //enumerate target state
                     for(var rule: movePass.getRules(srcState, dstState)){
                         //enumerate generated op by different rules
-
                         var actionSlot = actionOpa.copy();
                         actionSlot.setState(dstState);
                         //these opas are supposed to be active
@@ -82,7 +76,7 @@ public class genEqualPass {
                         if (!checkPreCondition(new_opas, new_opag)) continue;
 
                         //if ok, handle after effects
-                        handleAfterEffects(new_opas, new_opag, cur_opag, slots);
+                        handleAfterEffects(actionSlot, new_opas, new_opag,  slots);
                         //then randomly insert opas to gen_opag
                         if (generate.insertRan){
                             cur_opag = movePass.random_inserts(new_opag, cur_opag);
@@ -101,7 +95,7 @@ public class genEqualPass {
                 System.out.println("===============");
                 System.out.println(slots);
                 System.out.println("===============");
-                System.out.println(cur_opag.toOpCtxGActiveSet());
+                System.out.println(reducer.reduceToCore(cur_opag.toOpCtxGActiveSet()));
             }
             assert succ: "all ops can not move!";
         }

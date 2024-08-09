@@ -121,10 +121,11 @@ public class OpAG extends BaseOpG<OpAnalysis>{
     private void updateOpStatus(){
         //FIXME !!! IS THIS RIGHT?
         OpStatus = new HashMap<>();
-        getOps().forEach(opa -> {
-            if (opa.state == OpAnalysis.STATE.ACTIVE) OpStatus.put(opa, OpAnalysis.STATE.ACTIVE);
-            else OpStatus.putIfAbsent(opa, opa.getState());
-        });
+//        getOps().forEach(opa -> {
+//            if (opa.state == OpAnalysis.STATE.ACTIVE) OpStatus.put(opa, OpAnalysis.STATE.ACTIVE);
+//            else OpStatus.putIfAbsent(opa, opa.getState());
+//        });
+        getOps().forEach(opa -> {OpStatus.put(opa, opa.getState());});
     }
 
 
