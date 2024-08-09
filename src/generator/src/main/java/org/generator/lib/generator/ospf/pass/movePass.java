@@ -27,9 +27,9 @@ public class movePass {
      * other DisCard
      */
     private static final Map<Pair<OpAnalysis.STATE, OpAnalysis.STATE>, applyRulePass.RuleType[]> TranstionStateMap = new HashMap<>(){{
-        put(new Pair<>(OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.REMOVED), new applyRulePass.RuleType[]{applyRulePass.RuleType.UnsetOp, applyRulePass.RuleType.UnsetCtx});
+        put(new Pair<>(OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.REMOVED), new applyRulePass.RuleType[]{applyRulePass.RuleType.UnsetOp, applyRulePass.RuleType.UnsetCtx}); //FIXME if we want override, we should insert some mutate ops(final state is dead)
         put(new Pair<>(OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.ACTIVE), new applyRulePass.RuleType[]{applyRulePass.RuleType.Keep});
-        put(new Pair<>(OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE), new applyRulePass.RuleType[]{applyRulePass.RuleType.Keep});
+        put(new Pair<>(OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE), new applyRulePass.RuleType[]{applyRulePass.RuleType.Keep}); //FIXME if we want the op(final state is dead) to be active, we should use SolveConflict instead
         put(new Pair<>(OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED), new applyRulePass.RuleType[]{applyRulePass.RuleType.SYNWrong});
     }};
 

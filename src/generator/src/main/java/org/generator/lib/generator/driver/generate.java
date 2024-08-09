@@ -55,7 +55,7 @@ public class generate {
                 var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
                 if (currentOpAs.contains(opa)) continue;
                 //System.out.println(opa);
-                controller.addConfig(opa, expand_ratio - 1, expand_ratio, expand_ratio, expand_ratio - 1, OpAnalysis.STATE.REMOVED);
+                controller.addConfig(opa, expand_ratio - 1, expand_ratio, expand_ratio, expand_ratio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                 break;
             }
         }
@@ -67,7 +67,7 @@ public class generate {
         //we add active instructions to the normal_controller
         //these commands will be active in the final
         for(var opa: opas.getOps()){
-            normal_controller.addConfig(opa, expand_ratio - 1, expand_ratio + 1, expand_ratio, expand_ratio - 1, OpAnalysis.STATE.REMOVED);
+            normal_controller.addConfig(opa, expand_ratio - 1, expand_ratio + 1, expand_ratio, expand_ratio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
         }
 
 
@@ -92,7 +92,7 @@ public class generate {
     //FIXME(should turn to true when testing)
     public static final boolean phyRan = true;
 
-    public static final boolean insertRan = false;
+    public static final boolean insertRan = true;
 
     //insert irrOp, the number is irrOpRatio of activeOp
     public static double irrOpRatio = 0.4;

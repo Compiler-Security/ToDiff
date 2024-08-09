@@ -23,7 +23,7 @@ public  class NormalController {
 
     public class GenConfig{
         int ra, rr, ar, aa;
-        OpAnalysis.STATE state;
+        OpAnalysis.STATE state, finalState;
         GenConfig(int rr, int ra, int ar, int aa){
             this.rr = rr;
             this.ra = ra;
@@ -126,9 +126,10 @@ public  class NormalController {
         return true;
     }
 
-    public boolean addConfig(OpAnalysis opa, int rr, int ra, int ar, int aa, OpAnalysis.STATE state){
+    public boolean addConfig(OpAnalysis opa, int rr, int ra, int ar, int aa, OpAnalysis.STATE cur_state, OpAnalysis.STATE final_state){
         configMap.put(opa, new GenConfig(rr, ra, ar, aa));
-        configMap.get(opa).state = state;
+        configMap.get(opa).state = cur_state;
+        configMap.get(opa).finalState = final_state;
         return true;
     }
 
@@ -143,6 +144,11 @@ public  class NormalController {
     public OpAnalysis.STATE getConfigStateOfOpa(OpAnalysis opa){
         assert configMap.containsKey(opa);
         return configMap.get(opa).state;
+    }
+
+    public OpAnalysis.STATE getConfigFinalStateOfOpa(OpAnalysis opa){
+        assert configMap.containsKey(opa);
+        return configMap.get(opa).finalState;
     }
 
     public List<OpAnalysis.STATE> getValidMoveStatesOfOpa(OpAnalysis opa){

@@ -19,9 +19,8 @@ public class genEqualPass {
         //all the new_opas should be active
         if (new_opas.isEmpty()) return false;
         for(var new_opa : new_opas){
+            assert  new_opag.getOpAState(new_opa) != OpAnalysis.STATE.INIT: "op state should be active/removed";
             if (new_opag.getOpAState(new_opa) != OpAnalysis.STATE.ACTIVE){
-                System.out.println("--------");
-                System.out.println(new_opa);
                 return false;
             }
         }
@@ -38,7 +37,7 @@ public class genEqualPass {
         }
         for(var opa: new_opas){
             if (!slots.hasConfigOfOpa(opa) && opa.getOp().Type().isSetOp()){
-                slots.addConfig(opa, 0, 0, 0, 0, OpAnalysis.STATE.ACTIVE);
+                slots.addConfig(opa, 0, 0, 0, 0, OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.ACTIVE);
             }
         }
         return true;
@@ -90,14 +89,23 @@ public class genEqualPass {
                 if (succ) break;
             }
             if(!succ){
-                System.out.println("===============");
-                System.out.println(actionOpas);
-                System.out.println("===============");
-                System.out.println(slots);
-                System.out.println("===============");
-                System.out.println(reducer.reduceToCore(cur_opag.toOpCtxGActiveSet()));
+                List<NormalController.GenConfig> wrongOps = new ArrayList<>();
+                for(var opa: actionOpas){
+                    assert slots.hasConfigOfOpa(opa);
+                    if (slots.getConfigStateOfOpa(opa) != slots.getConfigFinalStateOfOpa(opa)){
+                        wrongOps.add(slots.getConfigOfOpa(opa));
+                    }
+                }
+                if (!wrongOps.isEmpty()) {
+                    assert false: "all ops can not move!";
+                    System.out.println("=====wrong_slots========");
+                    System.out.println(wrongOps);
+                    System.out.println("=====cur_opag_core=======");
+                    System.out.println(reducer.reduceToCore(cur_opag.toOpCtxGActiveSet()));
+                } else{
+                    break;
+                }
             }
-            assert succ: "all ops can not move!";
         }
         return cur_opag;
     }
