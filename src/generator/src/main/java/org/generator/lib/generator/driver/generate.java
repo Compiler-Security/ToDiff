@@ -54,8 +54,8 @@ public class generate {
                 var op = genOpPass.genRanOpByControl(ctxOpa.getOp().Type() == OpType.IntfName);
                 var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
                 if (currentOpAs.contains(opa)) continue;
-                System.out.println(opa);
-                controller.addConfig(opa, expand_ratio - 1, expand_ratio, expand_ratio, expand_ratio - 1);
+                //System.out.println(opa);
+                controller.addConfig(opa, expand_ratio - 1, expand_ratio, expand_ratio, expand_ratio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                 break;
             }
         }
@@ -67,7 +67,7 @@ public class generate {
         //we add active instructions to the normal_controller
         //these commands will be active in the final
         for(var opa: opas.getOps()){
-            normal_controller.addConfig(opa, expand_ratio - 1, expand_ratio + 1, expand_ratio, expand_ratio - 1);
+            normal_controller.addConfig(opa, expand_ratio - 1, expand_ratio + 1, expand_ratio, expand_ratio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
         }
 
 
@@ -77,7 +77,7 @@ public class generate {
 
 
         var tmp_controller = CapacityController.of(opas.getOps().size(), 0, 0, 1, 0);
-        var gen_opag = genEqualPass.solve(normal_controller, tmp_controller);
+        var gen_opag = genEqualPass.solve(normal_controller);
         return gen_opag.toOpCtxGLeaner();
     }
 

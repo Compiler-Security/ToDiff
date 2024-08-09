@@ -11,42 +11,35 @@ ATTENTION: this pass may add multiple opA to OpAG, and may change other OpA's st
  */
 package org.generator.lib.generator.ospf.pass;
 
-import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.util.collections.Pair;
 import org.generator.util.ran.ranHelper;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class movePass {
 
 
     /**
-     * INIT,REMOVED -> REMOVED SYNWRONG, GenConf (may not ok), NoCtx (may not ok)
-     * INIT,REMOVED -> ACTIVE SolveConflict
-     * ACTIVE-> REMOVED UnsetOp | UnsetCtx | Overrided
+     * ACTIVE-> REMOVED UnsetOp | UnsetCtx
      * ACTIVE-> ACTIVE Keep
      * other DisCard
      */
     private static final Map<Pair<OpAnalysis.STATE, OpAnalysis.STATE>, applyRulePass.RuleType[]> TranstionStateMap = new HashMap<>(){{
-        put(new Pair<>(OpAnalysis.STATE.INIT, OpAnalysis.STATE.REMOVED), new applyRulePass.RuleType[]{applyRulePass.RuleType.SYNWrong, applyRulePass.RuleType.GenConflict, applyRulePass.RuleType.NoCtx});
-        put(new Pair<>(OpAnalysis.STATE.INIT, OpAnalysis.STATE.ACTIVE), new applyRulePass.RuleType[]{applyRulePass.RuleType.SolveConflict});
-        put(new Pair<>(OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.REMOVED), new applyRulePass.RuleType[]{applyRulePass.RuleType.UnsetOp, applyRulePass.RuleType.Overrided, applyRulePass.RuleType.UnsetCtx});
+        put(new Pair<>(OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.REMOVED), new applyRulePass.RuleType[]{applyRulePass.RuleType.UnsetOp, applyRulePass.RuleType.UnsetCtx}); //FIXME if we want override, we should insert some mutate ops(final state is dead)
         put(new Pair<>(OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.ACTIVE), new applyRulePass.RuleType[]{applyRulePass.RuleType.Keep});
-        put(new Pair<>(OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE), new applyRulePass.RuleType[]{applyRulePass.RuleType.SolveConflict});
-        put(new Pair<>(OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED), new applyRulePass.RuleType[]{applyRulePass.RuleType.SYNWrong, applyRulePass.RuleType.GenConflict, applyRulePass.RuleType.NoCtx});
+        put(new Pair<>(OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE), new applyRulePass.RuleType[]{applyRulePass.RuleType.Keep}); //FIXME if we want the op(final state is dead) to be active, we should use SolveConflict instead
+        put(new Pair<>(OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED), new applyRulePass.RuleType[]{applyRulePass.RuleType.SYNWrong});
     }};
 
-    private static applyRulePass.RuleType[] getRules(OpAnalysis.STATE from, OpAnalysis.STATE to){
+    public static applyRulePass.RuleType[] getRules(OpAnalysis.STATE from, OpAnalysis.STATE to){
         return TranstionStateMap.getOrDefault(new Pair<>(from, to), new applyRulePass.RuleType[]{applyRulePass.RuleType.DisCard});
     }
 
 
     public  static List<applyRulePass.RuleType> getPossibleRules(OpAG opAG, OpAnalysis target_opa){
-        var current_state = opAG.getOpAStatus(target_opa);
+        var current_state = opAG.getOpAState(target_opa);
         List<applyRulePass.RuleType> possibleRules;
         return new ArrayList<>(List.of(getRules(current_state, target_opa.state)));
     }
@@ -84,6 +77,10 @@ public class movePass {
         //random move
         currentOpAG.getOps().add(ranHelper.randomInt(move_min, move_max), move_op);
     }
+
+    public static List<OpAnalysis> getNewOpas(OpAG targetOpAG, OpAG oriOpAG){
+        return new ArrayList<>(targetOpAG.getOps().subList(oriOpAG.getOps().size(), targetOpAG.getOps().size()));
+    }
     public static OpAG random_inserts(OpAG targetOpAG, OpAG oriOpAG){
         //get All the new generate Op
         var newOpAs = new ArrayList<>(targetOpAG.getOps().subList(oriOpAG.getOps().size(), targetOpAG.getOps().size()));
@@ -104,24 +101,12 @@ public class movePass {
      * @param allowed_ruleType null, or List contains allowed_ruleType
      * @return opAG_new, null if move fail
      */
-    public static  OpAG solve(OpAG opAG, OpAnalysis target_opa, @Nullable List<applyRulePass.RuleType> allowed_ruleType){
+    public static  Pair<List<OpAnalysis>, OpAG> solve(OpAG opAG, OpAnalysis target_opa, applyRulePass.RuleType possibleRule){
         /*
         TDOO For simplicity we only use dfs and currently not build condition graph
         */
-        var current_state = opAG.getOpAStatus(target_opa);
-        List<applyRulePass.RuleType> possibleRules;
-        //System.out.printf("%s %s->%s\n", target_opa.toString(), current_state, target_opa.state);
-        if (allowed_ruleType != null) possibleRules = new ArrayList<>(Arrays.stream(getRules(current_state, target_opa.state)).toList()).stream().filter(x -> allowed_ruleType.contains(x)).toList();
-        else possibleRules = new ArrayList<>(List.of(getRules(current_state, target_opa.state)));
-        for(var rule: possibleRules) {
-            // System.out.println(rule);
-            var opAG_new = applyRulePass.solve(opAG, target_opa, rule);
-            if (opAG_new != null){
-                if (generate.insertRan) {
-                    return random_inserts(opAG_new, opAG);
-                }else return opAG_new;
-            }
-        }
-        return null;
+        var opAG_new = applyRulePass.solve(opAG, target_opa, possibleRule);
+        if (opAG_new == null) return  new Pair<>(new ArrayList<>(), null);
+        return new Pair<>(getNewOpas(opAG_new, opAG), opAG_new);
     }
 }

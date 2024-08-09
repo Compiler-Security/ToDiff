@@ -3,133 +3,109 @@
  */
 package org.generator.lib.generator.ospf.pass;
 
-import org.generator.lib.generator.ospf.controller.CapacityController;
 import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
+import org.generator.lib.reducer.driver.reducer;
 
 import java.util.*;
 
 public class genEqualPass {
 
-    static boolean checkOpAG(OpAG opAG, NormalController controller, CapacityController tmp_controller, OpAnalysis target_opa){
-        for(var opa: opAG.setList()){
-            var current_state = opAG.getOpAStatus(opa);
-            if (!opa.equals(target_opa)){continue;}
-            if (controller.hasConfigOfOpa(opa)){
-                if (!controller.canMoveStateOfOpa(opa, current_state)) return false;
-            }else{
-                if (tmp_controller.hasConfigOfOpa(opa)){
-                    if (!tmp_controller.canMoveStateOfOpa(opa, current_state)) return false;
-                }else{
-                    if (!tmp_controller.canAddConfig()){
-                        return false;
-                    }
-                }
+
+    static boolean checkPreCondition(List<OpAnalysis> new_opas, OpAG new_opag){
+        //all the new_opas should be active
+        if (new_opas.isEmpty()) return false;
+        for(var new_opa : new_opas){
+            assert  new_opag.getOpAState(new_opa) != OpAnalysis.STATE.INIT: "op state should be active/removed";
+            if (new_opag.getOpAState(new_opa) != OpAnalysis.STATE.ACTIVE){
+                return false;
             }
         }
         return true;
     }
 
-    static void updateController(OpAG opAG, NormalController controller, CapacityController tmp_controller, OpAnalysis target_opa){
-        for(var opa: opAG.setList()){
-            var current_state = opAG.getOpAStatus(opa);
-            if (!opa.equals(target_opa)){
-                if (controller.hasConfigOfOpa(opa)){
-                    if (controller.getConfigStateOfOpa(opa) == current_state) continue;
-                }
-                if (tmp_controller.hasConfigOfOpa(opa)){
-                    if (tmp_controller.getConfigStateOfOpa(opa) == current_state) continue;
-                }
-            }
-            if (controller.hasConfigOfOpa(opa)){
-                if (opa.equals(target_opa)) {
-                    controller.moveToStateOfOpa(opa, current_state);
-                }else{
-                    controller.reverseToStateOfOpa(opa, current_state);
-                }
+    static boolean handleAfterEffects(OpAnalysis triggle_opa, List<OpAnalysis> new_opas, OpAG new_opag,NormalController slots){
+        for(var slot: slots.getOpas()){
+            if (slot.equals(triggle_opa)){
+                slots.moveToStateOfOpa(slot, triggle_opa.getState());
             }else{
-                if (tmp_controller.hasConfigOfOpa(opa)){
-                    if (opa.equals(target_opa)) {
-                        tmp_controller.moveToStateOfOpa(opa, current_state);
-                    }else{
-                        tmp_controller.reverseToStateOfOpa(opa, current_state);
-                    }
-                }else{
-                    tmp_controller.addConfig(opa);
-                }
+                slots.revertToStateOfOpa(slot, new_opag.getOpAState(slot));
             }
         }
+        for(var opa: new_opas){
+            if (!slots.hasConfigOfOpa(opa) && opa.getOp().Type().isSetOp()){
+                slots.addConfig(opa, 0, 0, 0, 0, OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.ACTIVE);
+            }
+        }
+        return true;
     }
 
     //FIXME(should turn to true when running)
-    public static OpAG solve(NormalController controller, CapacityController tmp_controller){
-        var opag = OpAG.of();
+    public static OpAG solve(NormalController slots){
+        var cur_opag = OpAG.of();
         int s = 0;
-        while(!controller.getCanMoveOpas().isEmpty() || !tmp_controller.getCanMoveOpas().isEmpty()){
-            var action_list = controller.getCanMoveOpas();
-            action_list.addAll(tmp_controller.getCanMoveOpas());
-            //System.out.println(action_list.size());
-            if (generate.ran) {
-                Collections.shuffle(action_list);
+        while(!slots.getCanMoveOpas().isEmpty()){
+            var actionOpas = slots.getCanMoveOpas();
+            if (generate.ran){
+                Collections.shuffle(actionOpas);
             }
             boolean succ = false;
-            for(var actionOpa_old: action_list){
-                var actionOpa = actionOpa_old.copy();
-                List<OpAnalysis.STATE> actionStates;
-                if (controller.hasConfigOfOpa(actionOpa)) {
-                    actionStates = controller.getValidMoveStatesOfOpa(actionOpa);
-                } else {
-                    actionStates = tmp_controller.getValidMoveStatesOfOpa(actionOpa);
-                }
+            for(var actionOpa: actionOpas){
+                //enumerate slot to move
+                var dstStates = slots.getValidMoveStatesOfOpa(actionOpa);
                 if (generate.ran){
-                    Collections.shuffle(actionStates);
+                    Collections.shuffle(dstStates);
                 }
-                for (var action_state : actionStates) {
-                    actionOpa.setState(action_state);
-                    //FIXME This is a bug, we should try different when do possible_opag, set this to 20 is safe I think
-                    var possibleRules = movePass.getPossibleRules(opag, actionOpa);
-                    if (generate.ran){
-                        Collections.shuffle(possibleRules);
-                    }
-                    for(var rule: possibleRules){
-                        var possible_opag = movePass.solve(opag, actionOpa, List.of(rule));
-                        s++;
-                        if (possible_opag == null) continue;
-                        if (checkOpAG(possible_opag, controller, tmp_controller, actionOpa)) {
-                            updateController(possible_opag, controller, tmp_controller, actionOpa);
-                            //System.out.printf("%s %s\n", rule, actionOpa);
-                            opag = possible_opag;
-                            succ = true;
-                            break;
+                var srcState = slots.getConfigStateOfOpa(actionOpa);
+                for(var dstState: dstStates){
+                    //enumerate target state
+                    for(var rule: movePass.getRules(srcState, dstState)){
+                        //enumerate generated op by different rules
+                        var actionSlot = actionOpa.copy();
+                        actionSlot.setState(dstState);
+                        //these opas are supposed to be active
+                        var tmp= movePass.solve(cur_opag, actionSlot, rule);
+                        var new_opas = tmp.first();
+                        var new_opag = tmp.second();
+
+                        //check precondition
+                        if (!checkPreCondition(new_opas, new_opag)) continue;
+
+                        //if ok, handle after effects
+                        handleAfterEffects(actionSlot, new_opas, new_opag,  slots);
+                        //then randomly insert opas to gen_opag
+                        if (generate.insertRan){
+                            cur_opag = movePass.random_inserts(new_opag, cur_opag);
                         }
+                        else cur_opag = new_opag;
+                        succ = true;
+                        break;
                     }
                     if (succ) break;
                 }
                 if (succ) break;
             }
-
             if(!succ){
-
-                System.out.println(action_list);
-                List<OpAnalysis.STATE> actionStates;
-                var actionOpa = action_list.getFirst();
-                if (controller.hasConfigOfOpa(actionOpa)) {
-                    actionStates = controller.getValidMoveStatesOfOpa(actionOpa);
-                } else {
-                    actionStates = tmp_controller.getValidMoveStatesOfOpa(actionOpa);
+                List<NormalController.GenConfig> wrongOps = new ArrayList<>();
+                for(var opa: actionOpas){
+                    assert slots.hasConfigOfOpa(opa);
+                    if (slots.getConfigStateOfOpa(opa) != slots.getConfigFinalStateOfOpa(opa)){
+                        wrongOps.add(slots.getConfigOfOpa(opa));
+                    }
                 }
-                System.out.println(actionStates);
-                System.out.println(opag);
-                //System.out.println(controller);
-                //System.out.println(tmp_controller);
+                if (!wrongOps.isEmpty()) {
+                    assert false: "all ops can not move!";
+                    System.out.println("=====wrong_slots========");
+                    System.out.println(wrongOps);
+                    System.out.println("=====cur_opag_core=======");
+                    System.out.println(reducer.reduceToCore(cur_opag.toOpCtxGActiveSet()));
+                } else{
+                    break;
+                }
             }
-            assert succ: "all op can not move!";
-
         }
-        //System.out.println(opag);
-        //System.out.printf("total move time %d\n", s);
-        return opag;
+        return cur_opag;
     }
 }

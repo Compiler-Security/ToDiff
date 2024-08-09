@@ -30,8 +30,7 @@ public class ConflictRedexDef extends  BaseRedexDef{
                 {AreaRange, new OpType[]{AreaRangeSub, AreaRangeCost}, 2},
 
                 //{IpOspfDeadInter, new OpType[]{IpOspfDeadInterMulti}, 0},
-                //FIXME this is a bug
-                {IpOspfHelloInter, new OpType[]{IpOspfDeadInterMulti}, 0},
+                //{IpOspfHelloInter, new OpType[]{IpOspfDeadInterMulti}, 0},
                 // Other instruction
                 // {XXX, [], 0}
         };
