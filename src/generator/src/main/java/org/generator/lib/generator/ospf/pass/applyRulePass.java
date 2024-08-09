@@ -34,11 +34,8 @@ import java.util.List;
 public class applyRulePass {
 
     public enum RuleType{
-        SolveConflict, //after solve conflict, we then add target_op like keep
-        GenConflict,
         UnsetOp,
         UnsetCtx,
-        Overrided,
         Keep,
         SYNWrong,
         NoCtx,
@@ -67,30 +64,6 @@ public class applyRulePass {
                 actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.COPY);
                 return opAG_new;
             }
-            case SolveConflict -> {
-                var conflict_ops = conflictOps(opAG_new, target_opa);
-                while(!conflict_ops.isEmpty()){
-                    var handle_opa = conflict_ops.get(0);
-                    if (generate.ran){
-                        handle_opa = ranHelper.randomElemOfList(conflict_ops);
-                    }
-                    var expect_opa = handle_opa.copy();
-                    expect_opa.setState(OpAnalysis.STATE.REMOVED);
-                    var opa_next = movePass.solve(opAG_new, expect_opa, Arrays.stream(new RuleType[]{RuleType.UnsetOp, RuleType.UnsetCtx}).toList());
-                    if (opa_next != null){
-                        opAG_new = opa_next;
-                        conflict_ops = conflictOps(opAG_new, target_opa);
-                    }else{
-                        assert false: "conflict should always be solved";
-                    }
-                }
-                actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.COPY);
-                return opAG_new;
-            }
-            case GenConflict -> {
-                //TODO currently we don't use this rule
-                return null;
-            }
             case UnsetOp -> {
                 actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.UNSET);
                 return opAG_new;
@@ -100,13 +73,6 @@ public class applyRulePass {
                     //unset IntfName
                     return null;
                 }else return opAG_new; //unset ROSPF
-            }
-            case Overrided -> {
-                if (!actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.MUTATE)){
-                    //some instruction don't have args
-                    return null;
-                }
-                return opAG_new;
             }
             case SYNWrong -> {
                 if (!actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.BREAK)){
