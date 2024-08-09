@@ -3,7 +3,6 @@
  */
 package org.generator.lib.generator.ospf.pass;
 
-import org.generator.lib.generator.ospf.controller.CapacityController;
 import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
@@ -32,7 +31,7 @@ public class genEqualPass {
             if (slot.equals(triggle_opa)){
                 slots.moveToStateOfOpa(slot, triggle_opa.getState());
             }else{
-                slots.reverseToStateOfOpa(slot, new_opag.getOpAState(slot));
+                slots.revertToStateOfOpa(slot, new_opag.getOpAState(slot));
             }
         }
         for(var opa: new_opas){

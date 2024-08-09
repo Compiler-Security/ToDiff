@@ -40,6 +40,7 @@ public  class NormalController {
                     ", ar=" + ar +
                     ", aa=" + aa +
                     ", state=" + state +
+                    ", final_state=" + finalState +
                     "}\n";
 
         }
@@ -84,17 +85,27 @@ public  class NormalController {
          * B -> A ++
          * @param target_state
          */
-        public void reverseToState(OpAnalysis.STATE target_state){
+        public void revertToState(OpAnalysis.STATE target_state){
             switch (state){
                 case REMOVED -> {
                     switch (target_state){
                         case REMOVED -> {assert  rr >= 0;}
-                        case ACTIVE -> {ar++; assert  ar >= 0;}
+                        case ACTIVE -> {
+                            if (ra > 0) ra--;
+                            if (ar == 0 && finalState == OpAnalysis.STATE.REMOVED){
+                                ar++;
+                            }
+                        }
                     }
                 }
                 case ACTIVE -> {
                     switch (target_state){
-                        case REMOVED -> {ra++; assert ra >= 0;}
+                        case REMOVED -> {
+                            if (ar > 0) ar--;
+                            if (ra == 0 && finalState == OpAnalysis.STATE.ACTIVE) {
+                                ra++;
+                            }
+                        }
                         case ACTIVE -> {assert  aa >= 0;}
                     }
                 }
@@ -163,8 +174,8 @@ public  class NormalController {
         configMap.get(opa).moveToState(target_state);
     }
 
-    public void reverseToStateOfOpa(OpAnalysis opa, OpAnalysis.STATE target_state){
-        configMap.get(opa).reverseToState(target_state);
+    public void revertToStateOfOpa(OpAnalysis opa, OpAnalysis.STATE target_state){
+        configMap.get(opa).revertToState(target_state);
     }
 
     public boolean canMoveOfOpa(OpAnalysis opa){

@@ -50,9 +50,9 @@ public class generateTest {
             System.out.printf("testCase %d\n", i);
             //original ops
             var genOp = new genOps();
-            //var ori = genOp.genRandom(10, 0.6, 0.4, 2, 1, 1, "r1");
+            var ori = genOp.genRandom(100, 0.6, 0.4, 2, 1, 1, "r1");
             //ori = reducer.reduceToCore(ori);
-            var ori = new ConfReader().read(st);
+            //var ori = new ConfReader().read(st);
 
             System.out.println("=====ori========");
             System.out.println(ori);
