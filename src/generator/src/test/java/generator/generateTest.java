@@ -48,25 +48,27 @@ public class generateTest {
         while(true){
             i++;
             System.out.printf("testCase %d\n", i);
-            var genOp = new genOps();
             //original ops
-            //var ori = genOp.genRandom(3, 1, 0, 0, 0, 1, "r1");
+            var genOp = new genOps();
+            //var ori = genOp.genRandom(10, 0.6, 0.4, 2, 1, 1, "r1");
             //ori = reducer.reduceToCore(ori);
             var ori = new ConfReader().read(st);
+
+            System.out.println("=====ori========");
+            System.out.println(ori);
+
             var confg = getSetConfG(ori);
             generate.irrOpRatio = 0;
             //equal ops without IRR Op inserted
             var gen_equal_wo_irrOp = generate.generateEqualOfCore(ori);
             var confg_equal_wo_irrOp = getSetConfG(gen_equal_wo_irrOp);
             if (!confg_equal_wo_irrOp.equals(confg)){
+                System.out.println("======compare=======");
                 System.out.println(compareJson(confg.toJson(), confg_equal_wo_irrOp.toJson()));
-                System.out.println("===============");
-                System.out.println(ori);
-                System.out.println("===============");
+                System.out.println("======gen_equal_wo_irrOp_core=======");
                 System.out.println(reducer.reduceToCore(gen_equal_wo_irrOp));
-                System.out.println("===============");
+                System.out.println("=======gen_equal_wo_irrOp========");
                 System.out.println(gen_equal_wo_irrOp);
-
                 assert  false: "Equal OP WRONG";
             }
 
@@ -74,16 +76,15 @@ public class generateTest {
             var gen_equal = generate.generateEqualOfCore(ori);
             var confg_equal = getSetConfG(gen_equal);
             if (!confg_equal.equals(confg)){
+                System.out.println("======compare=======");
                 System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
-                System.out.println("===============");
-                System.out.println(ori);
-                System.out.println("===============");
+                System.out.println("=====gen_equal_core========");
                 System.out.println(reducer.reduceToCore(gen_equal));
-                System.out.println("===============");
+                System.out.println("=======gen_equal========");
                 System.out.println(gen_equal);
                 assert  false: "Irrelevant OP WRONG";
             }
-            //break;
+            break;
         }
     }
 }
