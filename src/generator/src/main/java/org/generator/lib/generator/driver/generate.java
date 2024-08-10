@@ -3,14 +3,10 @@ package org.generator.lib.generator.driver;
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.ospf.controller.CapacityController;
 import org.generator.lib.generator.ospf.controller.NormalController;
-import org.generator.lib.generator.ospf.pass.genCorePass;
-import org.generator.lib.generator.ospf.pass.genEqualPass;
-import org.generator.lib.generator.ospf.pass.genOpPass;
+import org.generator.lib.generator.ospf.pass.*;
 import org.generator.lib.generator.phy.pass.genPhyCorePass;
-import org.generator.lib.generator.ospf.pass.shrinkCorePass;
 import org.generator.lib.generator.phy.pass.genPhyEqualPass;
 import org.generator.lib.item.IR.OpAnalysis;
-import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.graph.ConfGraph;
@@ -18,7 +14,6 @@ import org.generator.lib.reducer.driver.reducer;
 import org.generator.lib.reducer.semantic.CtxOpDef;
 import org.generator.util.ran.ranHelper;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -37,7 +32,7 @@ public class generate {
         return reducer.reduceToCore(genCorePass.mergeOpCtxgToOne(res1));
     }
 
-    public static void addIrrOpToController(OpAG opas, NormalController controller){
+    public static void addRemovedOpToController(OpAG opas, NormalController controller){
         Set<OpAnalysis> ctxOps_set = new HashSet<>();
         for(var opa: opas.getOps()){
             if (opa.getCtxOp() != null && CtxOpDef.isSetCtxOp(opa.getCtxOp().getOp().Type())){
@@ -46,17 +41,29 @@ public class generate {
         }
         List<OpAnalysis> ctxOps = ctxOps_set.stream().toList();
         var totalIrrOps = (int) opas.getOps().size() * irrOpRatio;
-        Set<OpAnalysis> currentOpAs = new HashSet<>();
-        currentOpAs.addAll(controller.getOpas());
+        Set<OpAnalysis> activeOpAs = new HashSet<>();
+        activeOpAs.addAll(controller.getOpas());
+        //add totally irrelevant ops
         for(int i = 0; i < totalIrrOps; i++){
             while(true) {
                 var ctxOpa = ranHelper.randomElemOfList(ctxOps);
                 var op = genOpPass.genRanOpByControl(ctxOpa.getOp().Type() == OpType.IntfName);
                 var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
-                if (currentOpAs.contains(opa)) continue;
+                if (activeOpAs.contains(opa)) continue;
                 //System.out.println(opa);
                 controller.addConfig(opa, expand_ratio - 1, expand_ratio, expand_ratio, expand_ratio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                 break;
+            }
+        }
+        var mutateOpNum = (int) opas.getOps().size() * mutateOpRatio;
+        //add some mutate op of active op
+        for(int i = 0; i < mutateOpNum; i++){
+            while(true) {
+                var ori_opa = ranHelper.randomElemOfList(opas.getOps());
+                assert ori_opa != null : "opa to mutate is supposed to be not null";
+                var mutate_opa = actionRulePass.mutate(ori_opa);
+                if (mutate_opa != null) controller.addConfig(mutate_opa, expand_ratio - 1, expand_ratio, expand_ratio, expand_ratio - 1);
+                else break;
             }
         }
     }
@@ -71,9 +78,11 @@ public class generate {
         }
 
 
-        //we then add other irrelevant instructions to the normal_controller
-        //these commands will be dead in the final
-        addIrrOpToController(opas, normal_controller);
+        //we then add other removed instructions to the normal_controller
+        //these operations will be removed in the final
+        //a. some totally irrelevant instructions
+        //b. some mutate op of active op
+        addRemovedOpToController(opas, normal_controller);
 
 
         var tmp_controller = CapacityController.of(opas.getOps().size(), 0, 0, 1, 0);
@@ -97,6 +106,7 @@ public class generate {
     //insert irrOp, the number is irrOpRatio of activeOp
     public static double irrOpRatio = 0.4;
 
-
+    //insert mutateOp, the number is mutateRatio of activeOp
+    public static double mutateOpRatio = 0.4;
     public static int expand_ratio = 1;
 }
