@@ -109,6 +109,15 @@ public class ranBaseGen implements genBase{
         return routers.stream().filter(router -> router.getAreas().contains(area)).collect(Collectors.toList());
     }
     List<Router> routers;
+
+    /**
+     * we generate cost, area, network connection of routers/interfaces here
+     * @param totalRouter
+     * @param areaCount
+     * @param mxDegree
+     * @param abrRatio
+     * @return
+     */
     public List<Router> generate(int totalRouter, int areaCount, int mxDegree, int abrRatio){
         routers = new ArrayList<>();
         networkId = 0;
@@ -129,6 +138,9 @@ public class ranBaseGen implements genBase{
                 }else{
                     intf.area = ranHelper.randomInt(1, areaCount);
                 }
+
+                intf.cost = ranHelper.randomInt(1, 65535);
+
                 actualArea.add(intf.area);
                 r.intfs.add(intf);
             }

@@ -1,5 +1,8 @@
 package org.generator.lib.topo.driver;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import org.apache.commons.cli.*;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.topo.item.base.Router;
 import org.generator.lib.topo.pass.attri.ranAttriGen;
@@ -15,20 +18,21 @@ import java.util.List;
 
 public class topo {
 
-    public static void printGraph(List<Router> routers, ranBaseGen ran){
+    public static String dumpGraph(List<Router> routers, ranBaseGen ran){
         Graph graph = new MultiGraph("BaseGraph");
         for(int i = 0; i < routers.size(); i++){
             graph.addNode("r%d".formatted(i));
         }
         for(int i = 0; i < ran.networkId; i++){
-            graph.addNode("n%d".formatted(i));
+            var n = graph.addNode("n%d".formatted(i));
+            n.setAttribute("shape", "square");
         }
         for(int i = 0; i < routers.size(); i++){
             var r = routers.get(i);
             int j = 0;
             for(var intf: r.intfs){
                 var gedge = graph.addEdge("r%d->n%d(%d)".formatted(i, intf.networkId, j), "r%d".formatted(i), "n%d".formatted(intf.networkId));
-                gedge.setAttribute("label", "%d".formatted(intf.area));
+                gedge.setAttribute("label", "%d:%d:%d".formatted(intf.area, j, intf.cost));
                 j++;
             }
         }
@@ -49,22 +53,37 @@ public class topo {
         }catch (IOException e){
             e.printStackTrace();
         }
-        System.out.println(stringWriter.toString());
+
+        return stringWriter.toString();
     }
-    public static ConfGraph genGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose){
+
+    public static ConfGraph genGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, ObjectNode dumpInfo){
         var ran = new ranBaseGen();
         var routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
+        var baseGraphStr = dumpGraph(routers, ran);
+        if (dumpInfo != null) dumpInfo.put("routerGraph", TextNode.valueOf(baseGraphStr));
         if (verbose){
-            printGraph(routers, ran);
+            System.out.println(baseGraphStr);
         }
         var b = new topoBuild();
         var confg = b.solve(routers);
-        if (verbose){
-            System.out.println("phy graph");
-            System.out.println(confg.toDot(false));
-        }
         var c = new ranAttriGen();
         c.generate(confg, routers);
+        var confgAttrStr = confg.toString();
+        if (dumpInfo != null){
+            dumpInfo.put("configGraph", confg.toDot(false));
+            dumpInfo.put("configGraphAttr", confg.toString());
+        }
+        if (verbose){
+            System.out.println("config graph");
+            System.out.println(confgAttrStr);
+        }
         return confg;
     }
+
+    public static int areaCount = 3;
+    public static int mxDegree = 3;
+
+    /** 0-10**/
+    public static int abrRatio = 4;
 }
