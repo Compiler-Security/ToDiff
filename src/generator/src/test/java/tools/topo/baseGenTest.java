@@ -10,7 +10,6 @@ import org.generator.lib.topo.pass.base.ranBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
 import org.generator.tools.diffOp.genOps;
 import org.generator.tools.diffTopo.diffTopo;
-import org.generator.tools.frontend.ConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
 import org.generator.tools.frontend.PhyConfReader;
 import org.graphstream.graph.Graph;
@@ -79,7 +78,7 @@ public class baseGenTest {
     public void testRanSplit() {
         var genOp = new genOps();
         var ori = genOp.genRandom(2, 0.2, 0.6, 4, 0, 1, "r1");
-        var res = diffTopo.ranSplitConf(ori, 10);
+        var res = diffTopo.ranSplitOspfConf(ori, 10);
         for(var opctxg: res){
             System.out.println("=======");
             System.out.println(new OspfConfWriter().write(opctxg));
@@ -92,7 +91,7 @@ public class baseGenTest {
     public void testGen() {
         //while(true) {
             var diff = new diffTopo();
-            diff.gen(10, 1, 1, 1);
+            diff.gen(1, 1, 1, 1);
         //}
     }
 
@@ -164,7 +163,7 @@ public class baseGenTest {
     public void testPhyEqual(){
         while(true) {
             var router_count = 5;
-            var confg = topo.genGraph(router_count, 3, 4, 3, true);
+            var confg = topo.genGraph(router_count, 3, 4, 3, true, null);
             var phyConf = getConfOfPhy(confg);
             System.out.println(phyConf.toString());
             var phyEqualConf = generate.generateEqualOfPhyCore(phyConf, 0.4, 1);

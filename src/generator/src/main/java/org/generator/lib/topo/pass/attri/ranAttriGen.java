@@ -1,5 +1,6 @@
 package org.generator.lib.topo.pass.attri;
 
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
@@ -108,9 +109,15 @@ public class ranAttriGen implements genAttri {
     private void generate_OSPF(OSPF ospf){
         //self, we don't think about status of ospf
         //FIXME for testing we must choose some proper value such as 0 etc.
-        ospf.setInitDelay(ranHelper.randomInt(0, 600000));
-        ospf.setMinHoldTime(ranHelper.randomInt(0, 600000));
-        ospf.setMaxHoldTime(ranHelper.randomInt(0, 600000));
+        if (generate.fastConvergence){
+            ospf.setInitDelay(0);
+            ospf.setMaxHoldTime(0);
+            ospf.setMinHoldTime(0);
+        }else{
+            ospf.setInitDelay(ranHelper.randomInt(0, 600000));
+            ospf.setMinHoldTime(ranHelper.randomInt(0, 600000));
+            ospf.setMaxHoldTime(ranHelper.randomInt(0, 600000));
+        }
         //FIXME we should think ABR_TYPE
     }
 
@@ -151,12 +158,16 @@ public class ranAttriGen implements genAttri {
         for(var ospfIntf: ospfIntfs){
             //self
             //FIXME for testing this ratio should be considered
-            ospfIntf.setPassive(ranHelper.randomInt(0, 1) != 0);
+            ospfIntf.setPassive(ranHelper.randomInt(0, 5) != 0);
             ospfIntf.setCost(ranHelper.randomInt(1, 65535));
             ospfIntf.setPriority(ranHelper.randomInt(0, 255));
-            //FIXME we should set helloMulti for testing
+            //we should set helloMulti for testing
             //network
-            ospfIntf.setHelloMulti(ranHelper.randomInt(1, 20));
+            if (generate.fastConvergence){
+                ospfIntf.setHelloMulti(10);
+            }else {
+                ospfIntf.setHelloMulti(ranHelper.randomInt(1, 20));
+            }
             if (ospfIntf.getHelloMulti() == 1) {
                 //IF we don't set hello multiplier
                 ospfIntf.setHelloInterval(helloInterval);

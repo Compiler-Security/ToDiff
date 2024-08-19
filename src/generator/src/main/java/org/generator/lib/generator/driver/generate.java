@@ -51,7 +51,7 @@ public class generate {
                 var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
                 if (activeOpAs.contains(opa)) continue;
                 //System.out.println(opa);
-                controller.addConfig(opa, expand_ratio - 1, expand_ratio, expand_ratio, expand_ratio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
+                controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                 break;
             }
         }
@@ -62,7 +62,7 @@ public class generate {
                 var ori_opa = ranHelper.randomElemOfList(opas.getOps());
                 assert ori_opa != null : "opa to mutate is supposed to be not null";
                 var mutate_opa = actionRulePass.mutate(ori_opa);
-                if (mutate_opa != null) controller.addConfig(mutate_opa, expand_ratio - 1, expand_ratio, expand_ratio, expand_ratio - 1);
+                if (mutate_opa != null) controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1);
                 else break;
             }
         }
@@ -74,7 +74,7 @@ public class generate {
         //we add active instructions to the normal_controller
         //these commands will be active in the final
         for(var opa: opas.getOps()){
-            normal_controller.addConfig(opa, expand_ratio - 1, expand_ratio + 1, expand_ratio, expand_ratio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
+            normal_controller.addConfig(opa, expandRatio - 1, expandRatio + 1, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
         }
 
 
@@ -108,5 +108,11 @@ public class generate {
 
     //insert mutateOp, the number is mutateRatio of activeOp
     public static double mutateOpRatio = 0.4;
-    public static int expand_ratio = 1;
+    public static int expandRatio = 1;
+
+    //when this is true, we will set
+        //timer throttle spf 1 1 1
+        //ip ospf dead-interval multiplier 10
+    //this is worked by set topo Attribute
+    public static final boolean fastConvergence = true;
 }

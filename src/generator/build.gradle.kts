@@ -17,6 +17,7 @@ dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:2.16.1")
     implementation("com.fasterxml.jackson.core:jackson-databind:2.16.1")
     implementation("org.jgrapht:jgrapht-core:1.5.2")
+    implementation("commons-cli:commons-cli:1.9.0")
     testImplementation(platform("org.junit:junit-bom:5.9.1"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.testng:testng:7.7.0")
