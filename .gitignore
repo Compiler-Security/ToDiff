@@ -166,3 +166,5 @@ cython_debug/
 **/._.DS_Store
 
 test/conf_test/data/*.json
+
+test/excutor_test/tmp

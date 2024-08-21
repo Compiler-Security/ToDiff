@@ -81,24 +81,34 @@ class FrrNode(Node):
         #if daemon is already running, we don't need to run it again
         if daemon_name in self.daemon_dict:
             return
+        warnaln(f"  + load daemon {daemon_name}", "")
         pid_path = path.join(self.log_path, f"{self.name}_{daemon_name}.pid")
         log_path = path.join(self.log_path, f"{self.name}_{daemon_name}.log")
         conf_path = path.join(work_dir, f"{self.name}_{daemon_name}.conf")
         self.daemon_dict[daemon_name] = {"pid_path": pid_path, "log_path": log_path, "conf_path": conf_path}
-        if (not universe):
-            assert False, 'halt and graceful shutdown must use universal config'
-            self.cmds(
-            [f"{BIN_DIR}/{daemon_name}", "-u", "root", "-f", conf_path, "-d", "-i", pid_path, "--log-level", "debug",
-             "--log", f"file:{log_path}"])
-        else:
-            ress = self.cmds(
-            [f"{BIN_DIR}/{daemon_name}", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
-             "--log", f"file:{log_path}"])
-            if (ress[:2] != "20"):
-                erroraln(f"load daemon {daemon_name} res error\n", ress) 
+        for i in range(0, 5):
+            if (not universe):
+                assert False, 'halt and graceful shutdown must use universal config'
+                self.cmds(
+                [f"{BIN_DIR}/{daemon_name}", "-u", "root", "-f", conf_path, "-d", "-i", pid_path, "--log-level", "debug",
+                    "--log", f"file:{log_path}"])
+            else:
+                #we set asan_logs to /var/run/frr/{daemon_name}.asan
+                ress = self.cmds(
+                [f"export ASAN_OPTIONS=log_path=/var/run/frr/{daemon_name}.asan && ", f"{BIN_DIR}/{daemon_name}", "--limit-fds", "64", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
+                "--log", f"file:{log_path}"])
+                # ress = self.cmds(
+                # [f"{BIN_DIR}/{daemon_name}", "--limit-fds", "64", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
+                # "--log", f"file:{log_path}"])
+                if(path.exists(pid_path)):
+                    break
+                else:
+                    warnaln(f"      load daemon {daemon_name} res error, try again...\n", ress[:ress.find("\n")]) 
+                    
         with open(pid_path, "r") as file:
             daemon_pid = int(file.read())
             self.daemon_dict[daemon_name]["daemon_pid"] = daemon_pid
+        warnaln(f"  - load daemon {daemon_name}", "")
 
     def stop_frr(self):
         #infoaln("hahahah", self.log_path)
@@ -166,21 +176,27 @@ class FrrNode(Node):
       
         return json.dumps(j, indent=4)
     
+    def collect_info(self, j, item, cmds):
+        warnaln(f"  + collect {item}", "")
+        j[item] = self.daemon_cmds([cmds])
+        warnaln(f"  - collect {item}", "")
     def dump_info(self):
         j = {}
         #print("=======")
         #print(self.daemon_cmds(["show ip ospf json"]))
         #print("=======")
+        #warnaln("start dump ospf json", "")
         if "ospfd" not in self.daemon_dict:
             j["ospf-up"] = False
         else:
             j["ospf-up"] = True
-            j["ospf-daemon"] = json.loads(self.daemon_cmds(["show ip ospf json"]))
-            j["ospf-intfs"] = json.loads(self.daemon_cmds(["show ip ospf interface json"]))
-            j['neighbors'] = json.loads(self.daemon_cmds(["show ip ospf neighbor json"]))
-            j['routing-table'] = json.loads(self.daemon_cmds(['show ip ospf route json']))
-        j['running-config'] = self.daemon_cmds(["show running-config"])
-        j["intfs"] = json.loads(self.daemon_cmds(["show interface json"]))
+            self.collect_info(j, "ospf-daemon", "show ip ospf json")
+            self.collect_info(j, "ospf-intfs", "show ip ospf interface json")
+            self.collect_info(j, "neighbors", "show ip ospf neighbor json")
+            self.collect_info(j, "routing-table", "show ip ospf route json")
+        self.collect_info(j, "running-config", "show running-config")
+        self.collect_info(j, "intfs", "show interface json")
+        #warnaln("end dump ospf json", "")
         return j
 
 if __name__ == "__main__":
