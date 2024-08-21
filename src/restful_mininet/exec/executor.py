@@ -86,7 +86,7 @@ class executor:
                         return False
         return True
     
-    def run(self, r):
+    def _run(self, r):
         erroraln(f"\n\n======round{r}======","")
         erroraln("+ mininet init", "")
         net = testnet.TestNet()
@@ -113,7 +113,7 @@ class executor:
             erroraln(f"- OSPF commands", "")
             
             erroraln(f"+ PHY commands", "")
-            phy_res = self.run_phy(net, ctx, commands[i]['phy'])
+            phy_res = self._run_phy(net, ctx, commands[i]['phy'])
             erroraln(f"- PHY commands", "")
 
             if i == 0:    
