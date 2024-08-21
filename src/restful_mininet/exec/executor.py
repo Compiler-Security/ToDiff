@@ -129,14 +129,15 @@ class executor:
             if sleep_time == -1:
                 #FIXME this should check shrink
                 #time.sleep(20)
-                #while(not self.check_converge(net)): time.sleep(5)
+                time.sleep(20)
+                #while(not self._check_converge(net)): time.sleep(5)
           
                 #CLI(net.net)
                 #time.sleep(80)
                 #time.sleep(80)
-                for r_name in self.routers:
-                    print(net.net.nameToNode[r_name].daemon_cmds(["show ip ospf neighbor"]))
-                    print(net.net.nameToNode[r_name].daemon_cmds(["show running-config"]))
+                # for r_name in self.routers:
+                #     print(net.net.nameToNode[r_name].daemon_cmds(["show ip ospf neighbor"]))
+                #     print(net.net.nameToNode[r_name].daemon_cmds(["show running-config"]))
             else:
                 #CLI(net.net)
                 time.sleep(sleep_time)
@@ -150,5 +151,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/test_asan.conf", "/home/frr/topo-fuzz/test/excutor_test/tmp")
+    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/all8.conf", "/home/frr/topo-fuzz/test/excutor_test/tmp")
     t.test()
