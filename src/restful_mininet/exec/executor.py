@@ -30,7 +30,7 @@ class executor:
         os.makedirs(self.conf_file_dir, exist_ok=True)
         os.system("mn -c 2> /dev/null")
     
-    def run_phy(self, net, ctx, phy_commands):
+    def _run_phy(self, net, ctx, phy_commands):
         res = []
         for op in phy_commands:
             if 'OSPF' in op and 'r0' in op:
@@ -45,7 +45,7 @@ class executor:
                
         return res
     
-    def run_ospf(self, net:testnet.TestNet, router_name, ospf_commands):
+    def _run_ospf(self, net:testnet.TestNet, router_name, ospf_commands):
         res = []
         for op in ospf_commands:
             if op in ["clear ip ospf process", "write terminal"]:
@@ -54,7 +54,7 @@ class executor:
                 res.append(net.run_frr_cmds(router_name, ['configure terminal'] + op.split(";")))
         return res
     
-    def init_ospf(self, router_name, ospf_commands):
+    def _init_ospf(self, router_name, ospf_commands):
         conf_name = f"{router_name}.conf"
         with open(path.join(self.conf_file_dir, conf_name), 'w') as fp:
             for opa in ospf_commands:
@@ -68,18 +68,20 @@ class executor:
             start = time.time()
             res['result'] = []
             for i in range(0, self.round_num):
-                res['result'].append(self.run(i))
+                res['result'].append(self._run(i))
             stop = time.time()
             res['total_test_time'] = stop - start
             self.conf['test'] = res
             result_path = path.join(self.output_dir, f"{self.conf_name}_res.json")
             with open(result_path, "w") as fp:
                 json.dump(self.conf, fp)
+            return 0
         except Exception as e:
             print(e)
             os.system("mn -c")
+            return -1
 
-    def check_converge(self, net:testnet.TestNet):
+    def _check_converge(self, net:testnet.TestNet):
         for r_name in self.routers:
             res = net.net.nameToNode[r_name].dump_info()
             for val in res['neighbors']['neighbors'].values():
@@ -88,7 +90,7 @@ class executor:
                         return False
         return True
     
-    def run(self, r):
+    def _run(self, r):
         warnaln("round ", r)
         net = testnet.TestNet()
         ctx = {"intf":{}}
@@ -100,15 +102,15 @@ class executor:
                 for j in range(0, len(self.routers)):
                     router_name = self.routers[j]
                     ospf_ops = commands[i]['ospf'][j]
-                    self.init_ospf(router_name, ospf_ops)
+                    self._init_ospf(router_name, ospf_ops)
             else:
                 for j in range(len(self.routers) -1, -1, -1):
                     router_name = self.routers[j]
                     ospf_ops = commands[i]['ospf'][j]
-                    tmp = self.run_ospf(net, router_name, ospf_ops)
+                    tmp = self._run_ospf(net, router_name, ospf_ops)
                     ospf_res[router_name] = tmp
 
-            phy_res = self.run_phy(net, ctx, commands[i]['phy'])
+            phy_res = self._run_phy(net, ctx, commands[i]['phy'])
             if i == 0:    
                 net.start_net()
             res.append({})
@@ -140,5 +142,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/testhalt.conf", "/home/frr/topo-fuzz/test/excutor_test/frr_conf")
+    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/all.conf", "/home/frr/topo-fuzz/test/excutor_test/frr_conf")
     t.test()
