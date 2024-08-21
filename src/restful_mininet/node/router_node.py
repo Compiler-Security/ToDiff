@@ -176,9 +176,17 @@ class FrrNode(Node):
       
         return json.dumps(j, indent=4)
     
-    def collect_info(self, j, item, cmds):
+    def collect_info(self, j, item, cmds, isjson):
         warnaln(f"  + collect {item}", "")
-        j[item] = self.daemon_cmds([cmds])
+        if isjson == True:
+            info = self.daemon_cmds([cmds])
+            if (item == "ospf-daemon" and info == ""):
+                #we should handle special case of "ospf-daemon"
+                j[item] = json.loads("{}")
+            else:
+                j[item] = json.loads(self.daemon_cmds([cmds]))
+        else:
+            j[item] = self.daemon_cmds([cmds])
         warnaln(f"  - collect {item}", "")
     def dump_info(self):
         j = {}
@@ -186,16 +194,18 @@ class FrrNode(Node):
         #print(self.daemon_cmds(["show ip ospf json"]))
         #print("=======")
         #warnaln("start dump ospf json", "")
+        warnaln(f"+ collect {self.name}", "")
         if "ospfd" not in self.daemon_dict:
             j["ospf-up"] = False
         else:
             j["ospf-up"] = True
-            self.collect_info(j, "ospf-daemon", "show ip ospf json")
-            self.collect_info(j, "ospf-intfs", "show ip ospf interface json")
-            self.collect_info(j, "neighbors", "show ip ospf neighbor json")
-            self.collect_info(j, "routing-table", "show ip ospf route json")
-        self.collect_info(j, "running-config", "show running-config")
-        self.collect_info(j, "intfs", "show interface json")
+            self.collect_info(j, "ospf-daemon", "show ip ospf json", True)
+            self.collect_info(j, "ospf-intfs", "show ip ospf interface json", True)
+            self.collect_info(j, "neighbors", "show ip ospf neighbor json", True)
+            self.collect_info(j, "routing-table", "show ip ospf route json", True)
+        self.collect_info(j, "running-config", "show running-config", False)
+        self.collect_info(j, "intfs", "show interface json", True)
+        warnaln(f"- collect {self.name}", "")
         #warnaln("end dump ospf json", "")
         return j
 
