@@ -145,7 +145,10 @@ class executor:
                     #when r == 0, this means the topo is not change and in the final state, so we just wait convergence
                     #the check convergence algorithm is:
                         #1.First we check all the interfaces' neighbor list, when find all the neighbor's state is full
-
+                        #2.Then we wait for T_WAIT_MAX to get watch value
+                        #3.Then we wait for T_WAIT_MAX to check equality
+                        #4.if equal, then exit
+                        #  else wait for T_WAIT_MAX*2, goto 2 
                     pass
                 else:
                     pass
