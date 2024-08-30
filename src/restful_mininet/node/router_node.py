@@ -32,9 +32,10 @@ def kill_pid(pid: int):
 
 class FrrNode(Node):
     def __init__(self, name, inNamespace=True, **params):
-        super().__init__(name, privateDirs=["/var/run/frr", "/etc/frr"], **params)
+        super().__init__(name, privateDirs=["/run/frr", "/etc/frr"], **params)
         self.daemon_dict = {}
         self.log_path = None
+        self.daemons = []
         if path.exists("/etc/frr"):
             shutil.rmtree("/etc/frr")
         assert (not path.exists("/etc/frr"))
@@ -45,6 +46,7 @@ class FrrNode(Node):
 
         self.cmds_error(["touch", "/etc/frr/vtysh.conf"])
         self.cmd('''echo "service integrated-vtysh-config" >> /etc/frr/vtysh.conf''')
+        self.cmd("ulimit -n 512")
         assert (len(os.listdir("/etc/frr")) != 0)
 
     def load_frr(self, daemons, conf_dir, universe=False):
@@ -55,6 +57,7 @@ class FrrNode(Node):
             assert (not path.exists(self.log_path))
             os.makedirs(self.log_path)
         assert (path.exists(self.log_path))
+        self.daemons = daemons
         for daemon in daemons:
             self._load_daemon(daemon, conf_dir, universe)
         if (universe):
@@ -64,8 +67,8 @@ class FrrNode(Node):
                 self.cmds_error(["vtysh", "-b"])
             except:
                 pass
-            if DEBUG == True:
-                infoaln("ls /etc/frr", self.cmds(["ls", "/etc/frr"]))
+            
+            #erroraln("cat /etc/frr/frr.conf", self.cmds(["cat", "/etc/frr/frr.conf"]))
         if DEBUG == True:
             self.log_load_frr()
 
@@ -86,7 +89,7 @@ class FrrNode(Node):
         log_path = path.join(self.log_path, f"{self.name}_{daemon_name}.log")
         conf_path = path.join(work_dir, f"{self.name}_{daemon_name}.conf")
         self.daemon_dict[daemon_name] = {"pid_path": pid_path, "log_path": log_path, "conf_path": conf_path}
-        for i in range(0, 5):
+        while True:
             if (not universe):
                 assert False, 'halt and graceful shutdown must use universal config'
                 self.cmds(
@@ -95,7 +98,7 @@ class FrrNode(Node):
             else:
                 #we set asan_logs to /var/run/frr/{daemon_name}.asan
                 ress = self.cmds(
-                [f"export ASAN_OPTIONS=log_path=/var/run/frr/{daemon_name}.asan && ", f"{BIN_DIR}/{daemon_name}", "--limit-fds", "64", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
+                [f"export ASAN_OPTIONS=log_path=/run/frr/{daemon_name}.asan && ", f"{BIN_DIR}/{daemon_name}", "--limit-fds", "64", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
                 "--log", f"file:{log_path}"])
                 # ress = self.cmds(
                 # [f"{BIN_DIR}/{daemon_name}", "--limit-fds", "64", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
@@ -103,6 +106,7 @@ class FrrNode(Node):
                 if(path.exists(pid_path)):
                     break
                 else:
+                    sleep(1)
                     warnaln(f"      load daemon {daemon_name} res error, try again...\n", ress[:ress.find("\n")]) 
                     
         with open(pid_path, "r") as file:
@@ -120,6 +124,11 @@ class FrrNode(Node):
             self.cmds_error(["cp", "-r", "/etc/frr/frr.conf", path.join(self.log_path, "run", "frr.conf")])
         log.info("cleaned\n")
     
+    def check_asan(self):
+        warnln("+ check asan", "")
+        #for d in os.listdir("/run/frr"):
+        #    if ()
+        
     def stop_ospfd(self, conf_dir):
         if "ospfd" in self.daemon_dict:
             self.daemon_cmds(["write memory"])
@@ -148,17 +157,26 @@ class FrrNode(Node):
     
 
     def daemon_cmd(self, cmd:str, daemon_name=None):
-        cmds_list = ["vtysh"]
-        if daemon_name is not None:
-            cmds_list = cmds_list + ["-d", daemon_name]
-        cmds_list = cmds_list + [f'-c "{cmd}"']
-        return self.cmds(cmds_list)
+        while(True):
+            cmds_list = ["vtysh"]
+            if daemon_name is not None:
+                cmds_list = cmds_list + ["-d", daemon_name]
+            cmds_list = cmds_list + [f'-c "{cmd}"']
+            res = self.cmds(cmds_list)
+            if ("AddressSanitizer" in res): continue
+            else: break
+        return res
+    
     def daemon_cmds(self, cmds:list, daemon_name=None):
-        cmds_list = ["vtysh"]
-        if daemon_name is not None:
-            cmds_list = cmds_list + ["-d", daemon_name]
-        cmds_list = cmds_list + [f'-c "{cmd}"' for cmd in cmds]
-        return self.cmds(cmds_list)
+        while(True):
+            cmds_list = ["vtysh"]
+            if daemon_name is not None:
+                cmds_list = cmds_list + ["-d", daemon_name]
+            cmds_list = cmds_list + [f'-c "{cmd}"' for cmd in cmds]
+            res =  self.cmds(cmds_list)
+            if ("AddressSanitizer" in res): continue
+            else: break
+        return res
     
     def dump_info_to_json(self):
         j = dict()
@@ -176,10 +194,18 @@ class FrrNode(Node):
       
         return json.dumps(j, indent=4)
     
-    def collect_info(self, j, item, cmds):
-        warnaln(f"  + collect {item}", "")
-        j[item] = self.daemon_cmds([cmds])
+    def collect_info(self, j, item, cmds, is_json=True):
+        st = self.daemon_cmds([cmds])
+        warnaln(f"  + collect {item}\n", st[:10])
+        if is_json:
+            try:
+                j[item] = json.loads(st)    
+            except:
+                j[item] = st
+        else:
+            j[item] = st
         warnaln(f"  - collect {item}", "")
+
     def dump_info(self):
         j = {}
         #print("=======")
@@ -194,7 +220,7 @@ class FrrNode(Node):
             self.collect_info(j, "ospf-intfs", "show ip ospf interface json")
             self.collect_info(j, "neighbors", "show ip ospf neighbor json")
             self.collect_info(j, "routing-table", "show ip ospf route json")
-        self.collect_info(j, "running-config", "show running-config")
+        self.collect_info(j, "running-config", "show running-config", False)
         self.collect_info(j, "intfs", "show interface json")
         #warnaln("end dump ospf json", "")
         return j

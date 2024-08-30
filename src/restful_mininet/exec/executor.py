@@ -109,11 +109,11 @@ class executor:
                     tmp = self.run_ospf(net, router_name, ospf_ops)
                     ospf_res[router_name] = tmp
             erroraln(f"- OSPF commands", "")
-            
+
             erroraln(f"+ PHY commands", "")
             phy_res = self.run_phy(net, ctx, commands[i]['phy'])
             erroraln(f"- PHY commands", "")
-
+            
             if i == 0:    
                 net.start_net()
             res.append({})
@@ -140,9 +140,15 @@ class executor:
                 time.sleep(sleep_time)
             
             erroraln("+ collect result", "")
+            warnaln("   + collect from daemons", "")
             res[i]['watch'] = {}
             for r_name in self.routers:
                 res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
+            warnaln("   - collect from daemons", "")
+            warnaln("   + collect from asan", "")
+            for r_name in self.routers:
+                net.net.nameToNode[r_name].check_asan()
+            warnaln("   - collect from asan", "")
             erroraln("- collect result", "")
         net.stop_net()
         return res
