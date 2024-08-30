@@ -157,9 +157,15 @@ class executor:
                 time.sleep(sleep_time)
             
             erroraln("+ collect result", "")
+            warnaln("   + collect from daemons", "")
             res[i]['watch'] = {}
             for r_name in self.routers:
                 res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
+            warnaln("   - collect from daemons", "")
+            warnaln("   + collect from asan", "")
+            for r_name in self.routers:
+                net.net.nameToNode[r_name].check_asan()
+            warnaln("   - collect from asan", "")
             erroraln("- collect result", "")
         net.stop_net()
         return res
