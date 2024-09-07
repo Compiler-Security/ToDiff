@@ -6,10 +6,12 @@ if path_to_add not in sys.path:
 import argparse
 from src.restful_mininet.exec.executor import executor
 
+#python3 main.py -t /home/frr/topo-fuzz/test/excutor_test/frr_conf/all8.conf -o /home/frr/topo-fuzz/test/excutor_test/frr_conf/tmp -w 60
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-t", "--testFile", type=str, required = True, help = "path of the test file")
     parser.add_argument("-o", "--outputDir", type=str, required = True, help = "dir of test output")
+    parser.add_argument("-w", "--maxWaitTime", type=int, required= False, default= 120, help = "max wait time default 60")
     args = parser.parse_args()
-    e = executor(args.testFile, args.outputDir)
+    e = executor(args.testFile, args.outputDir, args.maxWaitTime)
     exit(e.test())

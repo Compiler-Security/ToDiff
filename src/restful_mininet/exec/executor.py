@@ -14,9 +14,10 @@ import time
 
 class executor:
 
-    def __init__(self, conf_path, output_dir_str) -> None:
+    def __init__(self, conf_path, output_dir_str, maxWaitTime) -> None:
         setLogLevel('info')
         self.conf_path = conf_path
+        self.maxWaitTime = maxWaitTime
         with open(self.conf_path) as fp:
              self.conf = json.load(fp)
         self.step_nums = self.conf['step_nums']
@@ -127,21 +128,7 @@ class executor:
             erroraln(f"wait {sleep_time} s ", "")
             #CLI(net.net)
             if sleep_time == -1:
-                #FIXME this should check shrink
-                #time.sleep(20)
-                #time.sleep(20)
-                #while(not self._check_converge(net)): time.sleep(5)
-          
-                #CLI(net.net)
-                time.sleep(1)
-                #time.sleep(80)
-                # for r_name in self.routers:
-                #     print(net.net.nameToNode[r_name].daemon_cmds(["show ip ospf neighbor"]))
-                #     print(net.net.nameToNode[r_name].daemon_cmds(["show running-config"]))
-
-
                 #handle convergence
-                if r == 0:
                     #when r == 0, this means the topo is not change and in the final state, so we just wait convergence
                     #the check convergence algorithm is:
                         #1.First we check all the interfaces' neighbor list, when find all the neighbor's state is full
@@ -149,9 +136,10 @@ class executor:
                         #3.Then we wait for T_WAIT_MAX to check equality
                         #4.if equal, then exit
                         #  else wait for T_WAIT_MAX*2, goto 2 
-                    pass
-                else:
-                    pass
+                while True:
+                    time.sleep(self.maxWaitTime)
+                    if self._check_converge(net):
+                        break
             else:
                 #CLI(net.net)
                 time.sleep(sleep_time)
@@ -171,5 +159,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/testhalt.conf", "/home/frr/topo-fuzz/test/excutor_test/tmp")
+    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/all.conf", "/home/frr/topo-fuzz/test/excutor_test/tmp", 20)
     t.test()
