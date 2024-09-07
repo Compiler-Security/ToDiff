@@ -168,3 +168,4 @@ cython_debug/
 test/conf_test/data/*.json
 
 test/excutor_test/tmp
+test/topo_test/data
