@@ -1,12 +1,17 @@
 plugins {
     id("java")
+    id("application")
 }
 
 group = "org.example"
-version = "1.0-SNAPSHOT"
+version = "2.1.2"
 
 repositories {
     mavenCentral()
+}
+
+application {
+    mainClass = "org.generator.tools.diffTopo.main"
 }
 
 dependencies {
