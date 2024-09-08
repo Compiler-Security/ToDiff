@@ -26,7 +26,7 @@ def launchTestContainers(grid):
     assert _run_test_sh(f"run_test.sh {grid}")== 0, "runContainers fail"
 
 def getAllConfs():
-    confDir = path.join(dataDir, "testConf")
+    confDir = path.join(dataDir, "data", "testConf")
     return os.listdir(confDir)
 
 def choseConf(confName):
@@ -48,7 +48,7 @@ if __name__ == "__main__":
     #prepare for test
     #   1.run test containers
     buildTestContainers()
-    launchTestContainers()
+    launchTestContainers(gridNum)
     #   2.get all test confs
     test_confs = [conf for conf in getAllConfs() if choseConf(conf) == True]
     #   3.split all confs by grid
