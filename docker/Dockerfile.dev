@@ -140,7 +140,7 @@ RUN if [ "$build_mode" = "full" ]; then \
        --enable-vty-group=frrvty \
        --enable-snmp=agentx \
        --enable-scripting \
-       --enable-address-sanitizer \
+       #--enable-address-sanitizer \
        --with-pkg-extra-version=-my-manual-build && \
     make -j $(nproc) && \
     sudo make install  ;\
@@ -161,7 +161,6 @@ RUN if [ "$build_mode" = "full" ]; then \
        --enable-vty-group=frrvty \
        --enable-snmp=agentx \
        --enable-scripting \
-       --enable-address-sanitizer \
        --disable-doc \
        --disable-ripd \
        --disable-ripngd \
@@ -201,15 +200,19 @@ COPY docker/dev/sshd_config /etc/ssh/sshd_config
 #copy docker-start
 COPY docker/docker-start /usr/sbin/docker-start
 
+
+
 CMD ["/usr/sbin/docker-start"]
 
-COPY docker/requirements.txt /home/frr/py/requirements.txt
+
 
 
 #for dev
 USER root
 
-RUN pip3 install -r /home/frr/py/requirements.txt
+#COPY docker/requirements.txt /home/frr/py/requirements.txt
+
+#RUN pip3 install -r /home/frr/py/requirements.txt
 RUN echo 'root:frr' | chpasswd
 RUN usermod -a -G frrvty root
 RUN usermod -a -G frr root && chown :frr /home/frr
