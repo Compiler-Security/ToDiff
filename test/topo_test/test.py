@@ -41,6 +41,10 @@ def launch_test(testName, idx):
 def worker_test(testNames, idx):
     for testName in testNames:
         result = launch_test(testName, idx)
+        with open(path.join(dataDir, "data", "running", testName.replace("json", "txt")), "w") as fp:
+            fp.write(result.stdout)
+            fp.write("\n")
+            fp.write(result.stderr)
         #TODO handle result
 
 import threading
@@ -51,6 +55,7 @@ if __name__ == "__main__":
     launchTestContainers(gridNum)
     #   2.get all test confs
     test_confs = [conf for conf in getAllConfs() if choseConf(conf) == True]
+    print(test_confs)
     #   3.split all confs by grid
     worker_length = len(test_confs) // gridNum
     worker_test_confs = []
@@ -64,7 +69,7 @@ if __name__ == "__main__":
     #   1.prepare threads
     threads = []
     for i in range(0, gridNum):
-        thread = threading.Thread(target=worker_test, args=[worker_test_confs[i], i])
+        thread = threading.Thread(target=worker_test, args=[worker_test_confs[i], i + 1])
         threads.append(thread)
     #   2.launch threads
     for thread in threads:
