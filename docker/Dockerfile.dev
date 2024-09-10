@@ -97,7 +97,7 @@ RUN echo 'frr:frr' | chpasswd
 USER frr:frr
 
 #download mininet, build and install mininet
-RUN cd && pwd && ls -al && git clone https://github.com/mininet/mininet && \
+RUN cd && pwd && ls -al && git clone https://github.com/Shbinging/mininet.git && \
     cd /home/frr/mininet && \
     sudo PYTHON=python3 util/install.sh -nfv
 
