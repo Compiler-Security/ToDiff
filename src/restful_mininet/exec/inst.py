@@ -189,6 +189,8 @@ class MininetInst(BaseInst):
         raise InstErrorException("[mininet] intf inst not right")
 
     def _save_intf_to_ctx(self, intf: Intf):
+        if intf.name not in self.ctx["intf"]:
+            self.ctx["intf"][intf.name] = {}
         self.ctx["intf"][intf.name]["mac"] = intf.mac
         # self.ctx["intf"][intf.name]["ip"] = intf.ip
         # if self._get_node_type_from_name(self._get_node_name_from_intf_name(intf.name)) != "switch":
@@ -246,6 +248,8 @@ class MininetInst(BaseInst):
                 l: Link = self.net.net.addLink(node1, node2, intfName1=intfname1, intfName2=intfname2, cls=TCLink)
                 self._load_intf_to_ctx(l.intf1)
                 self._load_intf_to_ctx(l.intf2)
+                self._save_intf_to_ctx(l.intf1)
+                self._save_intf_to_ctx(l.intf2)
                 return self.EXEC_DONE
 
 

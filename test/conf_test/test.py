@@ -1,6 +1,6 @@
 import sys
 from os import path
-path_to_add = "/home/frr/a/topo-fuzz"
+path_to_add = "/home/frr/topo-fuzz"
 if path_to_add not in sys.path:
     sys.path.append(path_to_add)
 from mininet.topo import Topo
@@ -121,7 +121,24 @@ def inst_test2():
     CLI(net.net)
     net.stop_net()
 
+def inst_test3():
+    phySt = """node r2 add
+	node s6 add
+    link r2-eth2 s6-eth1 add
+	node r2 del
+    node r2 add
+    link r2-eth2 s6-eth1 add
+    """
+    net = testnet.TestNet()
+    ctx = {"intf":{}}
+    for st in phySt.split('\n'):
+        cmd = st.strip()
+        print(cmd)
+        print(MininetInst(cmd, net, WORK_DIR, ctx).run())
+    net.start_net()
+    net.stop_net()
+
 if __name__ == "__main__":
     setLogLevel('info')
     #simpleTest()
-    inst_test2()
+    inst_test3()
