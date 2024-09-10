@@ -116,6 +116,7 @@ class FrrNode(Node):
 
     def stop_frr(self):
         #infoaln("hahahah", self.log_path)
+        #FIXME this kill_pid is duplicated and can be removed
         for v in self.daemon_dict.values():
             kill_pid(v["daemon_pid"])
         if self.log_path != None:
@@ -168,14 +169,11 @@ class FrrNode(Node):
         return res
     
     def daemon_cmds(self, cmds:list, daemon_name=None):
-        while(True):
-            cmds_list = ["vtysh"]
-            if daemon_name is not None:
-                cmds_list = cmds_list + ["-d", daemon_name]
-            cmds_list = cmds_list + [f'-c "{cmd}"' for cmd in cmds]
-            res =  self.cmds(cmds_list)
-            if ("AddressSanitizer" in res): continue
-            else: break
+        cmds_list = ["vtysh"]
+        if daemon_name is not None:
+            cmds_list = cmds_list + ["-d", daemon_name]
+        cmds_list = cmds_list + [f'-c "{cmd}"' for cmd in cmds]
+        res =  self.cmds(cmds_list)
         return res
     
     def dump_info_to_json(self):

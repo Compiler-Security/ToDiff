@@ -135,7 +135,7 @@ class MininetInst(BaseInst):
             down_node = node
             if down_node is None:
                 return self.EXEC_MISS
-            return self._run_cmd(self.net.net.delNode, down_node)
+            return self._run_cmd(self.net.net.delNode, node = down_node)
 
         if _cmds_equal_prefix(op_args, ["router", "set", "OSPF", "up"]):
             up_node: FrrNode = self._get_node(node_name)
@@ -176,6 +176,7 @@ class MininetInst(BaseInst):
 
         if _cmds_equal_prefix(op_args, ["down"]):
             if intf is None:
+                assert False, "intf is None"
                 return self.EXEC_MISS
             return self._run_cmd(intf.ifconfig, "down")
 

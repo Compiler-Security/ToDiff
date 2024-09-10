@@ -37,7 +37,7 @@ class executor:
             ress = MininetInst(op, net, self.conf_file_dir, ctx).run()
             res.append(ress)
             if (ress != 0):
-                erroraln(f"phy exec <{op}> wrong! exit the test: \n", ress)
+                erroraln(f"phy exec <{op}> wrong! exit the test, reason is:\n", ress)
                 assert False
         warnaln("   PHY commands result:", res)
         return res
@@ -159,5 +159,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/excutor_test/frr_conf/all.conf", "/home/frr/topo-fuzz/test/excutor_test/tmp", 20)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1725799276.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 20)
     t.test()
