@@ -119,6 +119,7 @@ class FrrNode(Node):
         #FIXME this kill_pid is duplicated and can be removed
         for v in self.daemon_dict.values():
             kill_pid(v["daemon_pid"])
+        self.daemon_dict = {}
         if self.log_path != None:
             self.daemon_cmds(["write memory"])
             self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
@@ -219,8 +220,9 @@ class FrrNode(Node):
             self.collect_info(j, "ospf-intfs", "show ip ospf interface json", True)
             self.collect_info(j, "neighbors", "show ip ospf neighbor json", True)
             self.collect_info(j, "routing-table", "show ip ospf route json", True)
-        self.collect_info(j, "running-config", "show running-config", False)
-        self.collect_info(j, "intfs", "show interface json", True)
+        if "zebra" in self.daemon_dict:
+            self.collect_info(j, "running-config", "show running-config", False)
+            self.collect_info(j, "intfs", "show interface json", True)
         warnaln(f"- collect {self.name}", "")
         #warnaln("end dump ospf json", "")
         return j
