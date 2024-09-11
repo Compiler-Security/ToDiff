@@ -40,11 +40,13 @@ def launch_test(testName, idx):
 
 def worker_test(testNames, idx):
     for testName in testNames:
+        print(f"+test {testName} start")
         result = launch_test(testName, idx)
         with open(path.join(dataDir, "data", "running", testName.replace("json", "txt")), "w") as fp:
             fp.write(result.stdout)
             fp.write("\n")
             fp.write(result.stderr)
+        print(f"-test {testName} done")
         #TODO handle result
 
 import threading
