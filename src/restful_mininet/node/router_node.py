@@ -6,7 +6,7 @@ import os
 import json
 from src.restful_mininet.util.log import *
 from time import sleep
-
+import traceback
 from mininet import log
 from os import path
 import signal
@@ -205,6 +205,16 @@ class FrrNode(Node):
         else:
             j[item] = self.daemon_cmds([cmds])
         warnaln(f"  - collect {item}", "")
+    
+
+    def dump_neighbor_info(self):
+        info = self.daemon_cmds(["show ip ospf neighbor json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
+        
     def dump_info(self):
         j = {}
         #print("=======")

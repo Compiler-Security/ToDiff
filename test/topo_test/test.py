@@ -8,7 +8,7 @@ dockerDir = up(up(up(path.abspath(__file__))))
 dataDir = up(path.abspath(__file__))
 
 gridNum = 5
-mxWaitTime = 10
+mxWaitTime = 20
 
 
 def getContainerName(num):

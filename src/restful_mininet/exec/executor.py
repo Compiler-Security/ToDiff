@@ -1,4 +1,5 @@
 import sys
+import traceback
 from os import path
 path_to_add = path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
 if path_to_add not in sys.path:
@@ -74,17 +75,23 @@ class executor:
                 json.dump(self.conf, fp)
             return 0
         except Exception as e:
-            print(e)
+            traceback.print_exception(e)
             os.system("mn -c")
             return -1
 
     def _check_converge(self, net:testnet.TestNet):
         for r_name in self.routers:
-            res = net.net.nameToNode[r_name].dump_info()
-            for val in res['neighbors']['neighbors'].values():
+            warnln(f"    +check router {r_name}")
+            res = net.net.nameToNode[r_name].dump_neighbor_info()
+            if res == None:
+                warnln(f"    -check router {r_name}")
+                return False
+            for val in res['neighbors'].values():
                 for val1 in val:
                     if (val1['converged'] != 'Full' or val1['linkStateRetransmissionListCounter'] > 0):
+                        warnln(f"    -check router {r_name}")
                         return False
+            warnln(f"    -check router {r_name}")
         return True
     
     def _run(self, r):
@@ -136,10 +143,17 @@ class executor:
                         #3.Then we wait for T_WAIT_MAX to check equality
                         #4.if equal, then exit
                         #  else wait for T_WAIT_MAX*2, goto 2 
-                while True:
+                erroraln("+ check convergence", "")
+                for j in range(0, 3):
                     time.sleep(self.maxWaitTime)
                     if self._check_converge(net):
+                        res[i]['exec']['convergence'] = True
+                        warnaln("   + convergence!", "")
                         break
+                else:
+                    res[i]['exec']['convergence'] = False
+                    warnaln("   + not convergence!", "")
+                erroraln("- check convergence", "")
             else:
                 #CLI(net.net)
                 time.sleep(sleep_time)
@@ -159,5 +173,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726034477.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 20)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036738.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 20)
     t.test()
