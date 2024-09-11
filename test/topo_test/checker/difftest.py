@@ -68,9 +68,11 @@ class diffTest:
     def shrink_ospfIntfs(self, n_dict:dict):
         new_dict1 = copy.deepcopy(n_dict)
         for new_dict in new_dict1.values():
-            del new_dict["timerHelloInMsecs"]
+            if "timerHelloInMsecs" in new_dict:
+                del new_dict["timerHelloInMsecs"]
             for val in new_dict["interfaceIp"].values():
-                del val["timerHelloInMsecs"]
+                if "timerHelloInMsecs" in new_dict:
+                    del new_dict["timerHelloInMsecs"]
         return new_dict1
 
     def check_neighbors(self, rt):
@@ -123,5 +125,5 @@ class diffTest:
             #     print(json.dumps(self.ospfIntfs(rd, self.step_nums[rd] - 1, "r1"), indent=4))
 
 if __name__ == "__main__":
-    d = diffTest("/home/binshui/topo-fuzz/test/topo_test/data/result/test1726036741/test1726036741_res.json")
+    d = diffTest("/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744/test1726036744_res.json")
     d.check()
