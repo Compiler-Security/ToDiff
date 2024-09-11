@@ -106,6 +106,12 @@ public class genPhyEqualPass {
                     }
                     slot.setCurType(null);
                 }
+                //every router NODE should have OSPF
+                var slot = getSlot(NormalController.CType.OSPF, targetOp.getNAME(), null);
+                if (slot.getCurType() == OpType.NODESETOSPFUP) {
+                    slot.deltaTypeNum(OpType.NODESETOSPFUP, 1);
+                    slot.setCurType(OpType.NODESETOSPFSHUTDOWN);
+                }
             }
             case LINKREMOVE -> {
                 var slot = getSlot(NormalController.CType.INTF, targetOp.getNAME(), null);
