@@ -8,8 +8,8 @@ dockerDir = up(up(up(path.abspath(__file__))))
 dataDir = up(path.abspath(__file__))
 
 gridNum = 5
-mxWaitTime = 20
-
+mxWaitTime = 60
+minWaitTime = 20
 
 def getContainerName(num):
     return f"docker_topo-fuzz-test_{num}"
@@ -34,7 +34,7 @@ def choseConf(confName):
 
 import subprocess
 def launch_test(testName, idx):
-    command = f"docker exec -it docker_topo-fuzz-test_{idx} python3 topo-fuzz/src/restful_mininet/main.py -t /home/frr/topo-fuzz/test/topo_test/data/testConf/{testName} -o /home/frr/topo-fuzz/test/topo_test/data/result -w 10"
+    command = f"docker exec -it docker_topo-fuzz-test_{idx} python3 topo-fuzz/src/restful_mininet/main.py -t /home/frr/topo-fuzz/test/topo_test/data/testConf/{testName} -o /home/frr/topo-fuzz/test/topo_test/data/result -w {mxWaitTime} -m {minWaitTime}"
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     return result
 

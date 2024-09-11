@@ -15,10 +15,11 @@ import time
 
 class executor:
 
-    def __init__(self, conf_path, output_dir_str, maxWaitTime) -> None:
+    def __init__(self, conf_path, output_dir_str, minWaitTime, maxWaitTime) -> None:
         setLogLevel('info')
         self.conf_path = conf_path
         self.maxWaitTime = maxWaitTime
+        self.minWaitTime = minWaitTime
         with open(self.conf_path) as fp:
              self.conf = json.load(fp)
         self.step_nums = self.conf['step_nums']
@@ -136,26 +137,24 @@ class executor:
             #CLI(net.net)
             if sleep_time == -1:
                 #handle convergence
-                    #when r == 0, this means the topo is not change and in the final state, so we just wait convergence
-                    #the check convergence algorithm is:
-                        #1.First we check all the interfaces' neighbor list, when find all the neighbor's state is full
-                        #2.Then we wait for T_WAIT_MAX to get watch value
-                        #3.Then we wait for T_WAIT_MAX to check equality
-                        #4.if equal, then exit
-                        #  else wait for T_WAIT_MAX*2, goto 2 
+                    #min(_check_convergence() + minWaitTime, maxWaitTime)
+                    #for simplicity, maxWaitTime % minWaitTime == 0
                 erroraln("+ check convergence", "")
-                for j in range(0, 3):
-                    time.sleep(self.maxWaitTime)
+                begin_t = time.mktime()
+                while True:
                     if self._check_converge(net):
+                        time.sleep(self.minWaitTime)
                         res[i]['exec']['convergence'] = True
                         warnaln("   + convergence!", "")
                         break
-                else:
-                    res[i]['exec']['convergence'] = False
-                    warnaln("   + not convergence!", "")
-                erroraln("- check convergence", "")
+                    else:
+                        if time.mktime() - begin_t >= self.maxWaitTime:
+                            res[i]['exec']['convergence'] = False
+                            warnaln("   + not convergence!", "")
+                            break
+                        else:
+                            time.sleep(self.minWaitTime)
             else:
-                #CLI(net.net)
                 time.sleep(sleep_time)
             
             erroraln("+ collect result", "")
@@ -173,5 +172,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036738.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 20)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036738.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 20, 60)
     t.test()
