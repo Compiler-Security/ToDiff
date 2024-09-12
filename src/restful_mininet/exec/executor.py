@@ -140,7 +140,7 @@ class executor:
                     #min(_check_convergence() + minWaitTime, maxWaitTime)
                     #for simplicity, maxWaitTime % minWaitTime == 0
                 erroraln("+ check convergence", "")
-                begin_t = time.mktime()
+                begin_t = time.time()
                 while True:
                     if self._check_converge(net):
                         time.sleep(self.minWaitTime)
@@ -148,7 +148,7 @@ class executor:
                         warnaln("   + convergence!", "")
                         break
                     else:
-                        if time.mktime() - begin_t >= self.maxWaitTime:
+                        if time.time() - begin_t >= self.maxWaitTime:
                             res[i]['exec']['convergence'] = False
                             warnaln("   + not convergence!", "")
                             break
