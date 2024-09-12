@@ -25,7 +25,6 @@ class diffTest:
     def neighbors(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "neighbors")["neighbors"]
 
-    
 
     def runningConfig(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "running-config")
