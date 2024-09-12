@@ -14,14 +14,14 @@ class watchTest:
     
     def _watchOfPhy(self, rd, step):
         return self.conf["commands"][rd][step]["phy"]
+    
 
-
-    def watchPhyOfRouter(self, rd):
+    def watchPhyOfRound(self, rd):
         step_num = self.step_nums[rd]
         for step in range(step_num):
             print(f"step {step}")
             print(self._watchOfPhy(rd, step))
 
 if __name__ == "__main__":
-    w = watchTest("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036736.json")
-    w.watchPhyOfRouter(2)
+    w = watchTest("/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744/test1726036744_res.json")
+    w.watchPhyOfRound(1)

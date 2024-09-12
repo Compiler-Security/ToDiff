@@ -13,7 +13,7 @@ import os
 import json
 import time
 
-class executor:
+class executorDe:
 
     def __init__(self, conf_path, output_dir_str, minWaitTime, maxWaitTime) -> None:
         setLogLevel('info')
@@ -118,8 +118,6 @@ class executor:
                     router_name = self.routers[j]
                     ospf_ops = commands[i]['ospf'][j]
                     tmp = self._run_ospf(net, router_name, ospf_ops)
-                    if j == 0:
-                        print(tmp)
                     ospf_res[router_name] = tmp
             erroraln(f"- OSPF commands", "")
             
@@ -163,15 +161,10 @@ class executor:
             warnaln("   + collect from daemons", "")
             res[i]['watch'] = {}
             for r_name in self.routers:
-                #some routers may be deleted
-                if r_name not in net.net.nameToNode:
-                    continue
                 res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
             warnaln("   - collect from daemons", "")
             warnaln("   + collect from asan", "")
             for r_name in self.routers:
-                if r_name not in net.net.nameToNode:
-                    continue
                 net.net.nameToNode[r_name].check_asan()
             warnaln("   - collect from asan", "")
             erroraln("- collect result", "")
@@ -179,5 +172,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test17260367.json", "/home/frr/topo-fuzz/test/topo_test/data/result" 1, 2)
+    t = executorDe("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036738.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 20, 60)
     t.test()

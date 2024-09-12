@@ -123,6 +123,12 @@ class diffTest:
             # for rd in range(0, self.round_num):
             #     print(json.dumps(self.ospfIntfs(rd, self.step_nums[rd] - 1, "r1"), indent=4))
 
+    def print_diff_running_config(self):
+        i = 0
+        for rt in self.routers:
+            print(f"check router {rt}")
+            self.check_runningConfig(rt)
+
     def check_item(self, rt, item):
         i = 0
         print(f"check router {rt}")
@@ -139,5 +145,5 @@ class diffTest:
 
 
 if __name__ == "__main__":
-    d = diffTest("/home/binshui/topo-fuzz/test/topo_test/data/result/test1726036744/test1726036744_res.json")
-    d.check()
+    d = diffTest("/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744/test1726036744_res.json")
+    d.print_diff_running_config()
