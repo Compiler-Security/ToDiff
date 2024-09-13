@@ -50,7 +50,20 @@ class executor:
             if op in ["clear ip ospf process", "write terminal"]:
                 res.append(net.run_frr_cmds(router_name, [op]))
             else:
-                res.append(net.run_frr_cmds(router_name, ['configure terminal'] + op.split(";")))
+                resStr = ""
+                sub_ops = op.split(";")
+                ctx_op = sub_ops[0]
+                #single ctx_op eg. router ospf
+                if (len(sub_ops) == 1):
+                    res.append(net.run_frr_cmds( router_name, ['configure terminal', ctx_op]))
+                else:
+                    sub_ops = sub_ops[1:]
+                    for sub_op in sub_ops:
+                        r = net.run_frr_cmds(router_name, ['configure terminal', ctx_op, sub_op])
+                        if r != "":
+                            resStr += sub_op + "<-" + r + ";"
+                    res.append(resStr)
+        warnaln("   OSPF commands result:", res)
         return res
     
     def _init_ospf(self, router_name, ospf_commands):
@@ -179,5 +192,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1726036744_r1.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 2)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036744.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 20, 60)
     t.test()
