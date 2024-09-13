@@ -179,5 +179,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test17260367.json", "/home/frr/topo-fuzz/test/topo_test/data/result" 1, 2)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1726036744_r1.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 2)
     t.test()
