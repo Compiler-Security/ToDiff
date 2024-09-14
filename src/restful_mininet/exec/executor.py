@@ -158,7 +158,10 @@ class executor:
                 begin_t = time.time()
                 while True:
                     if self._check_converge(net):
-                        time.sleep(self.minWaitTime)
+                        if (i == 1):
+                            time.sleep(3600)
+                        else:
+                            time.sleep(self.minWaitTime)
                         res[i]['exec']['convergence'] = True
                         warnaln("   + convergence!", "")
                         break
@@ -192,5 +195,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036744.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 20, 60)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036744.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 600, 1200)
     t.test()

@@ -70,8 +70,8 @@ class diffTest:
             if "timerHelloInMsecs" in new_dict:
                 del new_dict["timerHelloInMsecs"]
             for val in new_dict["interfaceIp"].values():
-                if "timerHelloInMsecs" in new_dict:
-                    del new_dict["timerHelloInMsecs"]
+                if "timerHelloInMsecs" in val:
+                    del val["timerHelloInMsecs"]
         return new_dict1
 
     def check_neighbors(self, rt):
@@ -91,15 +91,16 @@ class diffTest:
     def check_ospfDaemon(self, rt):
         for i in range(1, self.round_num):
             diff = util.dict_diff(self.shrink_ospfDaemon(self.ospfDaemon(i - 1, self.step_nums[i - 1] - 1, rt)), self.shrink_ospfDaemon(self.ospfDaemon(i, self.step_nums[i] - 1, rt)))
-            if (diff != {}):
-                print(f"round {i-1} {i} ospf-daemon")
-                print(json.dumps(diff, indent=4))
+            # if (diff != {}):
+            #     print(f"round {i-1} {i} ospf-daemon")
+            #     print(json.dumps(diff, indent=4))
 
     def check_ospfIntfs(self, rt):
         for i in range(1, self.round_num):
             diff = util.dict_diff(self.shrink_ospfIntfs(self.ospfIntfs(i - 1, self.step_nums[i - 1] - 1, rt)), self.shrink_ospfIntfs(self.ospfIntfs(i, self.step_nums[i] - 1, rt)))
             if (diff != {}):
                 print(f"round {i-1} {i} ospf-intfs")
+                print(self.shrink_ospfIntfs(self.ospfIntfs(i - 1, self.step_nums[i - 1] - 1, rt)))
                 print(json.dumps(diff, indent=4))
 
     def check_runningConfig(self, rt):
@@ -137,7 +138,7 @@ class diffTest:
         if item == "nb":
             self.check_neighbors(rt)
         if item == "rt":
-            self.check_neighbors(rt)
+            self.check_routingTable(rt)
         if item == "od":
             self.check_ospfDaemon(rt)
         if item == "rc":
@@ -146,4 +147,9 @@ class diffTest:
 
 if __name__ == "__main__":
     d = diffTest("/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744/test1726036744_res.json")
-    d.print_diff_running_config()
+    #d.print_diff_running_config()
+    d.check()
+    rd = 0
+    #print(d.runningConfig(0, d.step_nums[rd] - 1, "r3"))
+    #for rt in d.routers:
+    #   d.check_item(rt, "oi")
