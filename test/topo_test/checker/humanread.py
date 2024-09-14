@@ -63,12 +63,21 @@ class humandReader():
                 res.write(f"        result: '{command_res}'\n\n")
         self.dump_to_file(new_name, res.getvalue())
     
+    def readCore(self, router_name):
+        new_name = path.basename(self.file_path)
+        #test298239_ospf_core_rt1.txt
+        new_name = new_name.split(".")[0] + f"_ospf_core_rt{router_name[1:]}.txt"
+        res = self.data["genInfo"]["core_commands"][router_name]
+        self.dump_to_file(new_name, res)
+    
     def readAll(self):
         for rd in range(self.round_num):
             self.readPhyOfRound(rd)
         for rd in range(self.round_num):
             for rt in range(len(self.routers)):
                 self.readOspfOfRoundOfRouter(rd, rt)
+        for router_name in self.routers:
+            self.readCore(router_name)
 
 
 # def human_read_phy(rd, rt, file_path):
