@@ -64,6 +64,9 @@ public class genPhyEqualPass {
         return slots.stream().filter(slot -> slot.getcType() == cType && slot.equalName(name) && slot.partialEqualName2(name2)).findFirst().get();
     }
 
+    List<NormalController> getSlots( NormalController.CType cType, String name, String name2) {
+        return slots.stream().filter(slot -> slot.getcType() == cType && slot.equalName(name) && slot.partialEqualName2(name2)).toList();
+    }
     boolean checkPreCondition(OpPhy targetOp, NormalController slot){
         switch (targetOp.Type()){
             //FIXME linkdown handle is not right
@@ -91,16 +94,24 @@ public class genPhyEqualPass {
         switch (targetOp.Type()){
             //FIXME Q? Does NODEDEL need to handle node OSPF up/down also?
             case NODEDEL-> {
-                var slot = getSlot(NormalController.CType.LINK, "%s-eth[0-9]+".formatted(targetOp.getNAME()), null);
-                if (slot.getCurType() == OpType.LINKADD) slot.deltaTypeNum(slot.getCurType(), 1);
-                if (slot.getCurType() == OpType.LINKDOWN){
-                    slot.deltaTypeNum(OpType.LINKADD, 1);
-                    slot.deltaTypeNum(OpType.LINKDOWN, 1);
+                var slots = getSlots(NormalController.CType.LINK, "%s-eth[0-9]+".formatted(targetOp.getNAME()), null);
+                for(var slot: slots) {
+                    if (slot.getCurType() == OpType.LINKADD) slot.deltaTypeNum(slot.getCurType(), 1);
+                    if (slot.getCurType() == OpType.LINKDOWN) {
+                        slot.deltaTypeNum(OpType.LINKADD, 1);
+                        slot.deltaTypeNum(OpType.LINKDOWN, 1);
+                    }
+                    if (slot.getCurType() == OpType.LINKREMOVE) {
+                        slot.deltaTypeNum(OpType.LINKREMOVE, -1);
+                    }
+                    slot.setCurType(null);
                 }
-                if (slot.getCurType() == OpType.LINKREMOVE){
-                    slot.deltaTypeNum(OpType.LINKREMOVE, -1);
+                //every router NODE should have OSPF
+                var slot = getSlot(NormalController.CType.OSPF, targetOp.getNAME(), null);
+                if (slot.getCurType() == OpType.NODESETOSPFUP) {
+                    slot.deltaTypeNum(OpType.NODESETOSPFUP, 1);
+                    slot.setCurType(OpType.NODESETOSPFSHUTDOWN);
                 }
-                slot.setCurType(null);
             }
             case LINKREMOVE -> {
                 var slot = getSlot(NormalController.CType.INTF, targetOp.getNAME(), null);

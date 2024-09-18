@@ -13,7 +13,7 @@ import os
 import json
 import time
 
-class executor:
+class executorDe:
 
     def __init__(self, conf_path, output_dir_str, minWaitTime, maxWaitTime) -> None:
         setLogLevel('info')
@@ -50,20 +50,7 @@ class executor:
             if op in ["clear ip ospf process", "write terminal"]:
                 res.append(net.run_frr_cmds(router_name, [op]))
             else:
-                resStr = ""
-                sub_ops = op.split(";")
-                ctx_op = sub_ops[0]
-                #single ctx_op eg. router ospf
-                if (len(sub_ops) == 1):
-                    res.append(net.run_frr_cmds( router_name, ['configure terminal', ctx_op]))
-                else:
-                    sub_ops = sub_ops[1:]
-                    for sub_op in sub_ops:
-                        r = net.run_frr_cmds(router_name, ['configure terminal', ctx_op, sub_op])
-                        if r != "":
-                            resStr += sub_op + "<-" + r + ";"
-                    res.append(resStr)
-        warnaln("   OSPF commands result:", res)
+                res.append(net.run_frr_cmds(router_name, ['configure terminal'] + op.split(";")))
         return res
     
     def _init_ospf(self, router_name, ospf_commands):
@@ -131,8 +118,6 @@ class executor:
                     router_name = self.routers[j]
                     ospf_ops = commands[i]['ospf'][j]
                     tmp = self._run_ospf(net, router_name, ospf_ops)
-                    if j == 0:
-                        print(tmp)
                     ospf_res[router_name] = tmp
             erroraln(f"- OSPF commands", "")
             
@@ -158,10 +143,7 @@ class executor:
                 begin_t = time.time()
                 while True:
                     if self._check_converge(net):
-                        if (i == 1):
-                            time.sleep(3600)
-                        else:
-                            time.sleep(self.minWaitTime)
+                        time.sleep(self.minWaitTime)
                         res[i]['exec']['convergence'] = True
                         warnaln("   + convergence!", "")
                         break
@@ -179,15 +161,10 @@ class executor:
             warnaln("   + collect from daemons", "")
             res[i]['watch'] = {}
             for r_name in self.routers:
-                #some routers may be deleted
-                if r_name not in net.net.nameToNode:
-                    continue
                 res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
             warnaln("   - collect from daemons", "")
             warnaln("   + collect from asan", "")
             for r_name in self.routers:
-                if r_name not in net.net.nameToNode:
-                    continue
                 net.net.nameToNode[r_name].check_asan()
             warnaln("   - collect from asan", "")
             erroraln("- collect result", "")
@@ -195,5 +172,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036744.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 600, 1200)
+    t = executorDe("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036738.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 20, 60)
     t.test()

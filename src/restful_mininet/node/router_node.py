@@ -6,7 +6,7 @@ import os
 import json
 from src.restful_mininet.util.log import *
 from time import sleep
-
+import traceback
 from mininet import log
 from os import path
 import signal
@@ -49,7 +49,46 @@ class FrrNode(Node):
         self.cmd("ulimit -n 512")
         assert (len(os.listdir("/etc/frr")) != 0)
 
+        self.raw_conf_check = None
+
+    #################### util ########################################
+    def cmds(self, cmds, verbose=False):
+        cmd_str = " ".join(cmds)
+        res = self.cmd(cmd_str, verbose=verbose, printPid=True)
+        return res
+
+    def cmds_error(self, cmds, verbose=False):
+        res, e, c = self.pexec(cmds)
+        if c != 0:
+            raise Exception((cmds, e))
+        return res
+    
+
+    def daemon_cmd(self, cmd:str, daemon_name=None):
+        cmds_list = ["vtysh"]
+        if daemon_name is not None:
+            cmds_list = cmds_list + ["-d", daemon_name]
+        cmds_list = cmds_list + [f'-c "{cmd}"']
+        res = self.cmds(cmds_list)
+        return res
+    
+    def daemon_cmds(self, cmds:list, daemon_name=None):
+        cmds_list = ["vtysh"]
+        if daemon_name is not None:
+            cmds_list = cmds_list + ["-d", daemon_name]
+        cmds_list = cmds_list + [f'-c "{cmd}"' for cmd in cmds]
+        res =  self.cmds(cmds_list)
+        return res
+    
+
+    ####################### load/stop ########################
+    #testname/conf/r1.conf
+    def _getConfPath(self):
+        return path.join(self.conf_dir, f"{self.name}.conf")
+    
+    #conf_dir testname/conf
     def load_frr(self, daemons, conf_dir, universe=False):
+        self.conf_dir = conf_dir
         self.log_path = path.join(path.dirname(conf_dir), "log", self.name)
         if len(self.daemon_dict.keys()) == 0:
             if path.exists(self.log_path):
@@ -61,18 +100,23 @@ class FrrNode(Node):
         for daemon in daemons:
             self._load_daemon(daemon, conf_dir, universe)
         if (universe):
-            conf_path = path.join(conf_dir, f"{self.name}.conf")
+            conf_path = self._getConfPath()
             self.cmds_error(["cp", conf_path, "/etc/frr/frr.conf"])
+            if self.raw_conf_check != None:
+                with open("/etc/frr/frr.conf", "r") as fp:
+                    raw_conf_now = fp.read()
+                assert raw_conf_now == self.raw_conf_check.replace("\r\n", "\n"), "new conf not right!"
             try:
                 self.cmds_error(["vtysh", "-b"])
             except:
+                #FIXME
                 pass
             
             #erroraln("cat /etc/frr/frr.conf", self.cmds(["cat", "/etc/frr/frr.conf"]))
         if DEBUG == True:
-            self.log_load_frr()
+            self._log_load_frr()
 
-    def log_load_frr(self):
+    def _log_load_frr(self):
         infoaln("daemon_dict", self.daemon_dict)
         infoaln("zebra_log", self.cmds(["cat", self.daemon_dict["zebra"]["log_path"]]))
         infoaln("ospf_log", self.cmds(["cat", self.daemon_dict["ospfd"]["log_path"]]))
@@ -114,14 +158,23 @@ class FrrNode(Node):
             self.daemon_dict[daemon_name]["daemon_pid"] = daemon_pid
         warnaln(f"  - load daemon {daemon_name}", "")
 
+    def save_frr_conf(self):
+        warnaln(f"+save frr conf ", self.name)
+        raw_conf = self.daemon_cmds(["show running-config"])
+        raw_conf = raw_conf[raw_conf.find("!"):]
+        self.raw_conf_check = raw_conf
+        with open(path.join(self._getConfPath()), "w") as fp:
+            fp.write(raw_conf)
+        warnaln(f"-save frr conf ", self.name)
+
     def stop_frr(self):
         #infoaln("hahahah", self.log_path)
+        #FIXME this kill_pid is duplicated and can be removed
+        self.save_frr_conf()
+        self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
         for v in self.daemon_dict.values():
             kill_pid(v["daemon_pid"])
-        if self.log_path != None:
-            self.daemon_cmds(["write memory"])
-            self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
-            self.cmds_error(["cp", "-r", "/etc/frr/frr.conf", path.join(self.log_path, "run", "frr.conf")])
+        self.daemon_dict = {}
         log.info("cleaned\n")
     
     def check_asan(self):
@@ -131,69 +184,20 @@ class FrrNode(Node):
         
     def stop_ospfd(self, conf_dir):
         if "ospfd" in self.daemon_dict:
-            self.daemon_cmds(["write memory"])
+            self.save_frr_conf()
             kill_pid(self.daemon_dict["ospfd"]["daemon_pid"])
             os.remove(self.daemon_dict["ospfd"]["pid_path"])
             del self.daemon_dict["ospfd"]
-            self.cmds_error(["cp", "-r", "/etc/frr/frr.conf", path.join(conf_dir,f"{self.name}.conf")])
-    
-    def reload_frr(self):
-        pass
 
     def terminate(self):
+        erroraln("+ stop router ", self.name)
         self.stop_frr()
         super().terminate()
+        erroraln("- stop router ", self.name)
 
-    def cmds(self, cmds, verbose=False):
-        cmd_str = " ".join(cmds)
-        res = self.cmd(cmd_str, verbose=verbose, printPid=True)
-        return res
-
-    def cmds_error(self, cmds, verbose=False):
-        res, e, c = self.pexec(cmds)
-        if c != 0:
-            raise Exception((cmds, e))
-        return res
+  
     
-
-    def daemon_cmd(self, cmd:str, daemon_name=None):
-        while(True):
-            cmds_list = ["vtysh"]
-            if daemon_name is not None:
-                cmds_list = cmds_list + ["-d", daemon_name]
-            cmds_list = cmds_list + [f'-c "{cmd}"']
-            res = self.cmds(cmds_list)
-            if ("AddressSanitizer" in res): continue
-            else: break
-        return res
-    
-    def daemon_cmds(self, cmds:list, daemon_name=None):
-        while(True):
-            cmds_list = ["vtysh"]
-            if daemon_name is not None:
-                cmds_list = cmds_list + ["-d", daemon_name]
-            cmds_list = cmds_list + [f'-c "{cmd}"' for cmd in cmds]
-            res =  self.cmds(cmds_list)
-            if ("AddressSanitizer" in res): continue
-            else: break
-        return res
-    
-    def dump_info_to_json(self):
-        j = dict()
-        router = self.name
-        j[router] = dict()
-        if "ospfd" in self.daemon_dict:
-            j[router]["ospf-up"] = True
-            j[router]["ospf-intfs"] = json.loads(self.daemon_cmds(["show ip ospf interface json"]))
-            j[router]['neighbors'] = json.loads(self.daemon_cmds(["show ip ospf neighbor json"]))
-            j[router]['routing-table'] = json.loads(self.daemon_cmds(['show ip ospf route json']))
-            j[router]["ospf-daemon"] = json.loads(self.daemon_cmds(["show ip ospf json"]))
-        else:
-            j[router]["ospf-up"] = False
-        j[router]["intfs"] = json.loads(self.daemon_cmds(["show interface json"]))
-      
-        return json.dumps(j, indent=4)
-    
+    ################################### DUMP #################################
     def collect_info(self, j, item, cmds, isjson):
         warnaln(f"  + collect {item}", "")
         if isjson == True:
@@ -206,12 +210,10 @@ class FrrNode(Node):
         else:
             j[item] = self.daemon_cmds([cmds])
         warnaln(f"  - collect {item}", "")
+    
+        
     def dump_info(self):
         j = {}
-        #print("=======")
-        #print(self.daemon_cmds(["show ip ospf json"]))
-        #print("=======")
-        #warnaln("start dump ospf json", "")
         warnaln(f"+ collect {self.name}", "")
         if "ospfd" not in self.daemon_dict:
             j["ospf-up"] = False
@@ -221,11 +223,20 @@ class FrrNode(Node):
             self.collect_info(j, "ospf-intfs", "show ip ospf interface json", True)
             self.collect_info(j, "neighbors", "show ip ospf neighbor json", True)
             self.collect_info(j, "routing-table", "show ip ospf route json", True)
-        self.collect_info(j, "running-config", "show running-config", False)
-        self.collect_info(j, "intfs", "show interface json", True)
+        if "zebra" in self.daemon_dict:
+            self.collect_info(j, "running-config", "show running-config", False)
+            self.collect_info(j, "intfs", "show interface json", True)
         warnaln(f"- collect {self.name}", "")
         #warnaln("end dump ospf json", "")
         return j
+    
+    def dump_neighbor_info(self):
+        info = self.daemon_cmds(["show ip ospf neighbor json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
 
 if __name__ == "__main__":
     setLogLevel('info')

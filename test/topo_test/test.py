@@ -8,8 +8,8 @@ dockerDir = up(up(up(path.abspath(__file__))))
 dataDir = up(path.abspath(__file__))
 
 gridNum = 5
-mxWaitTime = 10
-
+mxWaitTime = 60
+minWaitTime = 20
 
 def getContainerName(num):
     return f"docker_topo-fuzz-test_{num}"
@@ -34,17 +34,20 @@ def choseConf(confName):
 
 import subprocess
 def launch_test(testName, idx):
-    command = f"docker exec -it docker_topo-fuzz-test_{idx} python3 topo-fuzz/src/restful_mininet/main.py -t /home/frr/topo-fuzz/test/topo_test/data/testConf/{testName} -o /home/frr/topo-fuzz/test/topo_test/data/result -w 10"
+    #FIXME the PATH should be relative
+    command = f"docker exec -it docker_topo-fuzz-test_{idx} python3 topo-fuzz/src/restful_mininet/main.py -t /home/frr/topo-fuzz/test/topo_test/data/testConf/{testName} -o /home/frr/topo-fuzz/test/topo_test/data/result -w {mxWaitTime} -m {minWaitTime}"
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     return result
 
 def worker_test(testNames, idx):
     for testName in testNames:
+        print(f"+test {testName} start")
         result = launch_test(testName, idx)
         with open(path.join(dataDir, "data", "running", testName.replace("json", "txt")), "w") as fp:
             fp.write(result.stdout)
             fp.write("\n")
             fp.write(result.stderr)
+        print(f"-test {testName} done")
         #TODO handle result
 
 import threading

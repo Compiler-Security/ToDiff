@@ -10,7 +10,7 @@ from os import path
 from mininet.node import Node, Intf, Host
 from mininet.link import Link
 from mininet.link import TCLink
-
+import traceback
 class BaseInst:
     EXEC_DONE = 0
     EXEC_MISS = 1
@@ -135,7 +135,7 @@ class MininetInst(BaseInst):
             down_node = node
             if down_node is None:
                 return self.EXEC_MISS
-            return self._run_cmd(self.net.net.delNode, down_node)
+            return self._run_cmd(self.net.net.delNode, node = down_node)
 
         if _cmds_equal_prefix(op_args, ["router", "set", "OSPF", "up"]):
             up_node: FrrNode = self._get_node(node_name)
@@ -176,6 +176,7 @@ class MininetInst(BaseInst):
 
         if _cmds_equal_prefix(op_args, ["down"]):
             if intf is None:
+                assert False, "intf is None"
                 return self.EXEC_MISS
             return self._run_cmd(intf.ifconfig, "down")
 
@@ -188,6 +189,8 @@ class MininetInst(BaseInst):
         raise InstErrorException("[mininet] intf inst not right")
 
     def _save_intf_to_ctx(self, intf: Intf):
+        if intf.name not in self.ctx["intf"]:
+            self.ctx["intf"][intf.name] = {}
         self.ctx["intf"][intf.name]["mac"] = intf.mac
         # self.ctx["intf"][intf.name]["ip"] = intf.ip
         # if self._get_node_type_from_name(self._get_node_name_from_intf_name(intf.name)) != "switch":
@@ -226,13 +229,11 @@ class MininetInst(BaseInst):
         if _cmds_equal_prefix(op_args, ["add"]):
             if node1 is None or node2 is None:
                 return self.EXEC_MISS
-            if (intf1 is not None) and (intf2 is not None):
-                if self._get_pair_intf(intf1, "L") == intf2:
-                    self.net.net.delLink(intf1.link)
-                    l: Link = self.net.net.addLink(node1, node2, intfName1=intfname1, intfName2=intfname2, cls=TCLink)
-                    self._load_intf_to_ctx(l.intf1)
-                    self._load_intf_to_ctx(l.intf2)
-                    return self.EXEC_DONE
+            #if already have link-intf1-intf2, then we set the link  linked
+            if (intf1 is not None) and (intf2 is not None) and self._get_pair_intf(intf1, "L") == intf2:
+                intf1.config(bw = 1000, loss=0)
+                intf2.config(bw = 1000, loss=0)
+                return self.EXEC_DONE
             else:
                 if intf1 is not None:
                     self._save_intf_to_ctx(intf1)
@@ -245,28 +246,31 @@ class MininetInst(BaseInst):
                 l: Link = self.net.net.addLink(node1, node2, intfName1=intfname1, intfName2=intfname2, cls=TCLink)
                 self._load_intf_to_ctx(l.intf1)
                 self._load_intf_to_ctx(l.intf2)
+                self._save_intf_to_ctx(l.intf1)
+                self._save_intf_to_ctx(l.intf2)
                 return self.EXEC_DONE
 
 
-        if _cmds_equal_prefix(op_args, ["del"]):
+        if _cmds_equal_prefix(op_args, ["remove"]):
             if node1 is None or node2 is None:
                 return self.EXEC_MISS
             if (intf1 is not None) and (intf2 is not None):
                 if self._get_pair_intf(intf1, "L") == intf2:
                     self.net.net.delLink(intf1.link)
                     return self.EXEC_DONE
-            return self.EXEC_MISS
+            #we assign it with generator
+            return self.EXEC_DONE
 
-        if _cmds_equal_prefix(op_args, ["up"]):
-            if node1 is None or node2 is None:
-                return self.EXEC_MISS
-            if (intf1 is not None) and (intf2 is not None):
-                if self._get_pair_intf(intf1, "L") == intf2:
-                    #ATTENTION mininet has some bug, so we must set bw not to 0 in order to set loss to 0
-                    intf1.config(bw = 1000, loss=0)
-                    intf2.config(bw = 1000, loss=0)
-                    return self.EXEC_DONE
-            return self.EXEC_MISS
+        # if _cmds_equal_prefix(op_args, ["up"]):
+        #     if node1 is None or node2 is None:
+        #         return self.EXEC_MISS
+        #     if (intf1 is not None) and (intf2 is not None):
+        #         if self._get_pair_intf(intf1, "L") == intf2:
+        #             #ATTENTION mininet has some bug, so we must set bw not to 0 in order to set loss to 0
+        #             intf1.config(bw = 1000, loss=0)
+        #             intf2.config(bw = 1000, loss=0)
+        #             return self.EXEC_DONE
+        #     return self.EXEC_MISS
         
         if _cmds_equal_prefix(op_args, ["down"]):
             if node1 is None or node2 is None:

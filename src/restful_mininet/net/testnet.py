@@ -60,8 +60,6 @@ class TestNet:
         rnode: FrrNode = self._get_node_by_name(rname)
         assert (type(rnode) is FrrNode)
         st = rnode.daemon_cmds(commands)
-        # FIXME this is set because we don't set vtysh.conf
-        st = st[st.find("failure: 11\r\n") + len("failure: 11\r\n"):]
         st = st.strip()
         if isjson:
             try:
@@ -74,8 +72,7 @@ class TestNet:
         rnode:FrrNode = self._get_node_by_name(rname)
         assert (type(rnode) is FrrNode)
         st = rnode.daemon_cmd(command)
-        #FIXME this is set because we don't set vtysh.conf
-        st = st[st.find("failure: 11\r\n") + len("failure: 11\r\n"):]
+        st = st.strip()
         if isjson:
             try:
                 return json.loads(st)
