@@ -106,7 +106,7 @@ public class diffTopo {
         List<OpCtxG> opCtxGS = new ArrayList<>();
         for(int i = 0; i < router_count; i++){
             //FIXME why router 0 not mutate ?
-            var opCtxG = getConfOfRouter(routers_name.get(i), confg, i != 0);
+            var opCtxG = getConfOfRouter(routers_name.get(i), confg, true);
             opCtxGS.add(opCtxG);
         }
 
@@ -137,6 +137,14 @@ public class diffTopo {
             var phyEqualOpg = phyOpgPair.second();
             var stepPhyOpList = ranSplitPhyConf(phyEqualOpg, step_num - 1);
 
+            //we should give empty ospf conf if daemon is down
+
+            //step 0, commands load from ospf conf, so ospfAlive is True
+            List<Boolean> ospfAlive = new ArrayList<>();
+            for(int r = 0; r < router_count; r++){
+                ospfAlive.add(Boolean.TRUE);
+            }
+
             for(int step = 0; step < step_num; step++){
                 Map<String, Object> one_step = new HashMap<>();
                 steps.add(one_step);
@@ -144,7 +152,14 @@ public class diffTopo {
 
                 List<List<String>> ops = new ArrayList<>();
                 for(int r = 0; r < router_count; r++){
-                    var opctxg = split_confs.get(r).get(step);
+                    //check if ospf is Alive
+                    var opctxg = OpCtxG.Of();
+                    if (ospfAlive.get(r)) {
+                        opctxg = split_confs.get(r).get(step);
+                    }else{
+                        //IN the last round
+                        // split_confs.get(r)
+                    }
                     List<String> a = new ArrayList<>();
                     ops.add(a);
                     var front_ctx = "";
