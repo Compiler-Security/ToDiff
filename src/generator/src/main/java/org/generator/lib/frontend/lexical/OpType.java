@@ -39,7 +39,8 @@ public enum OpType {
     TIMERSTHROTTLESPF,
     //TODO max-metric...
     //TODO auto-cost it's hard to equal
-
+    RefreshTimer,
+    TimersLsaThrottle,
     OSPFROUTEREND,
     //=============OSPFDAEMON===================
     //TODO proactive-arp
@@ -78,8 +79,7 @@ public enum OpType {
 
     AreaNSSA,
     //TODO AREA LEFT
-    RefreshTimer,
-    TimersLsaThrottle,
+
     OSPFAREAGROUPEND,
 
 

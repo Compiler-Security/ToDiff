@@ -106,6 +106,25 @@ public class OSPF extends AbstractNode {
     int minHoldTime;
     int maxHoldTime;
 
+    public int getLsaRefreshTime() {
+        return lsaRefreshTime;
+    }
+
+    public void setLsaRefreshTime(int lsaRefreshTime) {
+        this.lsaRefreshTime = lsaRefreshTime;
+    }
+
+    public int getLsaIntervalTime() {
+        return lsaIntervalTime;
+    }
+
+    public void setLsaIntervalTime(int lsaIntervalTime) {
+        this.lsaIntervalTime = lsaIntervalTime;
+    }
+
+    int lsaRefreshTime;
+    int lsaIntervalTime;
+
     @Override
     public void initFiled() {
         status = OSPF_STATUS.UP;
@@ -114,5 +133,7 @@ public class OSPF extends AbstractNode {
         initDelay = 0; //spfScheduleDelayMsecs
         minHoldTime = 50; //holdtimeMinMsecs
         maxHoldTime = 5000; //holdtimeMaxMsecs
+        lsaRefreshTime = 10;//FIXME this default arg is not right
+        lsaIntervalTime = 10;//FIXME this default arg is not right
     }
 }

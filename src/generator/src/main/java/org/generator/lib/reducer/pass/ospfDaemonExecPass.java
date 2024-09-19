@@ -43,6 +43,16 @@ public class ospfDaemonExecPass extends baseExecPass {
                 cur_ospf.setMaxHoldTime(op.getNUM3());
                 return ExecStat.SUCC;
             }
+
+            case RefreshTimer -> {
+                cur_ospf.setLsaRefreshTime(op.getNUM());
+                return ExecStat.SUCC;
+            }
+
+            case TimersLsaThrottle -> {
+                cur_ospf.setLsaIntervalTime(op.getNUM());
+                return ExecStat.SUCC;
+            }
         }
         assert false:"should not goto here %s".formatted(op.Type());
         return ExecStat.FAIL;

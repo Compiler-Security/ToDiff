@@ -59,6 +59,16 @@ public class genCorePass {
                 op.setNUM2(ospf.getMinHoldTime());
                 op.setNUM3(ospf.getMaxHoldTime());
             }
+            //refresh timer <- lsaRefreshTime
+            {
+                var op = addOp(opCtxG, OpType.RefreshTimer);
+                op.setNUM(ospf.getLsaRefreshTime());
+            }
+            //timers lsa throttle all <- lsaIntervalTime
+            {
+                var op = addOp(opCtxG, OpType.TimersLsaThrottle);
+                op.setNUM(ospf.getLsaIntervalTime());
+            }
            // opCtxG.addOp(new Op);
         }
 
