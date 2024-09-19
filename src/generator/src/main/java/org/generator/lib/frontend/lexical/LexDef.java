@@ -60,6 +60,8 @@ public class LexDef {
                 {AreaStub, "area {ID(NUM)} stub"},
                 {AreaStubTotal, "area {ID(NUM)} stub no-summary"},
                 {AreaNSSA, "area {ID(NUM)} nssa"},
+                {RefreshTimer, "refresh timer {NUM(10-1800)}"},
+                {TimersLsaThrottle, "timers throttle lsa all {NUM(0-5000)}"},
                 {IPAddr, "ip address {IP}"},
                 {IpOspfArea, "ip ospf area {ID(NUM)}"},
                 {IpOspfCost, "ip ospf cost {NUM(1-65535)}"},
@@ -100,6 +102,8 @@ public class LexDef {
                 //FIXME simple fix of NOAreaStubTotal
                 //{NOAreaStubTotal, "no area {ID(NUM)} stub no-summary"},
                 {NOAreaNSSA, "no area {ID(NUM)} nssa"},
+                {NORefreshTimer,  "no refresh timer {NUM(10-1800)}"},
+                {NOTimersLsaThrottle, "no timers throttle lsa all {NUM(0-5000)}"},
                 {NOIPAddr, "no ip address {IP}"},
                 {NOIpOspfArea, "no ip ospf area | no ip ospf area {ID(NUM)}"},
                 {NOIpOspfCost, "no ip ospf cost | no ip ospf cost {NUM(1-65535)}"},

@@ -2,7 +2,6 @@ package org.generator.lib.reducer.semantic;
 
 import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.util.collections.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,6 +43,9 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOAreaShortcut, new OpType[]{AreaShortcut}},
 
                 {NOAreaStub, new OpType[]{AreaStub, AreaStubTotal}},
+
+                {NORefreshTimer, new OpType[]{RefreshTimer}},
+                {NOTimersLsaThrottle, new OpType[]{TimersLsaThrottle}},
 
                 //FIXME simple fix of NOAreaStubTotal
                //{NOAreaStubTotal, new OpType[]{AreaStubTotal}},

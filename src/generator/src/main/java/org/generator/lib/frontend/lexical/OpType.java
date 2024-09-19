@@ -78,7 +78,8 @@ public enum OpType {
 
     AreaNSSA,
     //TODO AREA LEFT
-
+    RefreshTimer,
+    TimersLsaThrottle,
     OSPFAREAGROUPEND,
 
 
@@ -133,6 +134,8 @@ public enum OpType {
     NOAreaStub,
     //FIXME simple fix of NOAreaStubTotal
     //NOAreaStubTotal,
+    NORefreshTimer,
+    NOTimersLsaThrottle,
     NOAreaNSSA,
     NOIPAddr,
     NOIpOspfArea,
@@ -146,6 +149,7 @@ public enum OpType {
     NOIpOspfRetransInter,
     NOIpOspfTransDealy,
     NOIpOspfPassive;
+
 
     public static boolean inPhy(@NotNull OpType typ) {
         return typ.ordinal() >= NODEADD.ordinal() && typ.ordinal() <= LINKREMOVE.ordinal();
