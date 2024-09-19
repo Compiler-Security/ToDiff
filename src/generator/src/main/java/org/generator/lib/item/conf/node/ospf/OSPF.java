@@ -122,8 +122,8 @@ public class OSPF extends AbstractNode {
         this.lsaIntervalTime = lsaIntervalTime;
     }
 
-    int lsaRefreshTime;
-    int lsaIntervalTime;
+    int lsaRefreshTime; //refresh timer 10
+    int lsaIntervalTime; // timers throttle lsa all
 
     @Override
     public void initFiled() {

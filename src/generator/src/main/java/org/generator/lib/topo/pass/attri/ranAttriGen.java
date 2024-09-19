@@ -111,12 +111,16 @@ public class ranAttriGen implements genAttri {
         //FIXME for testing we must choose some proper value such as 0 etc.
         if (generate.fastConvergence){
             ospf.setInitDelay(0);
-            ospf.setMaxHoldTime(0);
+            ospf.setMaxHoldTime(1);
             ospf.setMinHoldTime(0);
+            ospf.setLsaRefreshTime(10);
+            ospf.setLsaIntervalTime(1);
         }else{
             ospf.setInitDelay(ranHelper.randomInt(0, 600000));
             ospf.setMinHoldTime(ranHelper.randomInt(0, 600000));
             ospf.setMaxHoldTime(ranHelper.randomInt(0, 600000));
+            ospf.setLsaRefreshTime(ranHelper.randomInt(10, 1800));
+            ospf.setLsaIntervalTime(ranHelper.randomInt(0, 5000));
         }
         //FIXME we should think ABR_TYPE
     }

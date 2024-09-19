@@ -67,6 +67,17 @@ public class generate {
             }
         }
     }
+
+    private static boolean skipCommands(OpType opType){
+        if (generate.fastConvergence){
+            switch (opType){
+                case TIMERSTHROTTLESPF, IpOspfHelloInter, IpOspfDeadInter, IpOspfDeadInterMulti, RefreshTimer, TimersLsaThrottle
+                        -> {return true;}
+            }
+        }
+        return false;
+    }
+
     public static OpCtxG generateEqualOfCore(OpCtxG opCtxG){
         var opas = reducer.reduce(opCtxG);
         var normal_controller = NormalController.of();
@@ -74,7 +85,11 @@ public class generate {
         //we add active instructions to the normal_controller
         //these commands will be active in the final
         for(var opa: opas.getOps()){
-            normal_controller.addConfig(opa, expandRatio - 1, expandRatio + 1, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
+            if (skipCommands(opa.getOp().Type())){
+                normal_controller.addConfig(opa, 0, 1, 0, 0, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
+            }else {
+                normal_controller.addConfig(opa, expandRatio - 1, expandRatio + 1, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
+            }
         }
 
 
@@ -85,7 +100,6 @@ public class generate {
         addRemovedOpToController(opas, normal_controller);
 
 
-        var tmp_controller = CapacityController.of(opas.getOps().size(), 0, 0, 1, 0);
         var gen_opag = genEqualPass.solve(normal_controller);
         return gen_opag.toOpCtxGLeaner();
     }
