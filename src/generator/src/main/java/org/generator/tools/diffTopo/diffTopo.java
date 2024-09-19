@@ -103,6 +103,12 @@ public class diffTopo {
         //generate router graph
         var confg = topo.genGraph(router_count, topo.areaCount, topo.mxDegree, topo.abrRatio, false, dumpInfo);
 
+        //generate ospf core commands, all the round is same
+        List<OpCtxG> ospf_cores = new ArrayList<>();
+        for(int i = 0; i < router_count; i++) {
+            ospf_cores.add(getConfOfRouter(routers_name.get(i), confg, false));
+        }
+
         //record each router's core commands
         if (dumpInfo != null) {
             var core_commands = dumpInfo.putObject("core_commands");
@@ -134,11 +140,11 @@ public class diffTopo {
             List<OpCtxG> opCtxGS = new ArrayList<>();
             for(int j = 0; j < router_count; j++){
                 //FIXME why router 0 not mutate ?
-                var opCtxG = getConfOfRouter(routers_name.get(j), confg, true);
+                var opCtxG = generate.generateEqualOfCore(ospf_cores.get(j));
                 opCtxGS.add(opCtxG);
             }
             for(int r = 0; r < router_count; r++){
-                split_confs.add(ranSplitOspfConf(opCtxGS.get(r), step_num));
+                split_confs.add(ranSplitOspfConf(opCtxGS.get(r), step_num - 1));
             }
 
 
@@ -186,16 +192,21 @@ public class diffTopo {
                 for(int r = 0; r < router_count; r++){
                     //check if ospf is Alive
                     var opctxg = OpCtxG.Of();
-                    if (ospfAlive.get(r)) {
-                        //if router's ospf is up, we just use these commands
-                        opctxg = split_confs.get(r).get(step);
-                    }else{
-                        //else we put these commands to next steps
-                        //in the last round, we ensure OSPF is up
-                        var mergeCtxG = OpCtxG.Of();
-                        mergeCtxG.addOps(split_confs.get(r).get(step).getOps());
-                        mergeCtxG.addOps(split_confs.get(r).get(step +1).getOps());
-                        split_confs.get(r).set(step + 1, mergeCtxG);
+                    if (step == 0){
+                        //in step 0, ospf is always alive
+                        opctxg = ospf_cores.get(r);
+                    }else {
+                        if (ospfAlive.get(r)) {
+                            //if router's ospf is up, we just use these commands
+                            opctxg = split_confs.get(r).get(step - 1);
+                        } else {
+                            //else we put these commands to next steps
+                            //in the last round, we ensure OSPF is up
+                            var mergeCtxG = OpCtxG.Of();
+                            mergeCtxG.addOps(split_confs.get(r).get(step - 1).getOps());
+                            mergeCtxG.addOps(split_confs.get(r).get(step).getOps());
+                            split_confs.get(r).set(step, mergeCtxG);
+                        }
                     }
                     List<String> router_commands = new ArrayList<>();
                     ops.add(router_commands);
