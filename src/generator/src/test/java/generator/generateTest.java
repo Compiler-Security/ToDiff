@@ -50,7 +50,7 @@ public class generateTest {
             System.out.printf("testCase %d\n", i);
             //original ops
             var genOp = new genOps();
-            var ori = genOp.genRandom(300, 0.6, 0.4, 2, 1, 1, "r1");
+            var ori = genOp.genRandom(100, 0.6, 0.4, 2, 1, 1, "r1");
             ori = reducer.reduceToCore(ori);
             //var ori = new ConfReader().read(st);
 
@@ -75,6 +75,7 @@ public class generateTest {
 
             generate.irrOpRatio = 0.4;
             var gen_equal = generate.generateEqualOfCore(ori);
+            gen_equal.getOps().addAll(0, ori.getOps());
             var confg_equal = getSetConfG(gen_equal);
             if (!confg_equal.equals(confg)){
                 System.out.println("======compare=======");
