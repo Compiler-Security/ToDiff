@@ -61,6 +61,10 @@ public class generate {
             while(true) {
                 var ori_opa = ranHelper.randomElemOfList(opas.getOps());
                 assert ori_opa != null : "opa to mutate is supposed to be not null";
+                //this mutate op should not be skip commands
+                if (skipCommands(ori_opa.getOp().Type())){
+                    continue;
+                }
                 var mutate_opa = actionRulePass.mutate(ori_opa);
                 if (mutate_opa != null) controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1);
                 else break;
@@ -86,6 +90,7 @@ public class generate {
         //these commands will be active in the final
         for(var opa: opas.getOps()){
             if (skipCommands(opa.getOp().Type())){
+                //skipCommands should only be at once
                 normal_controller.addConfig(opa, 0, 1, 0, 0, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
             }else {
                 normal_controller.addConfig(opa, expandRatio - 1, expandRatio + 1, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
