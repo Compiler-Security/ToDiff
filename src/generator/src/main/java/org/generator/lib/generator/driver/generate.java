@@ -66,7 +66,7 @@ public class generate {
                     continue;
                 }
                 var mutate_opa = actionRulePass.mutate(ori_opa);
-                if (mutate_opa != null) controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1);
+                if (mutate_opa != null) controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                 else break;
             }
         }
@@ -91,9 +91,9 @@ public class generate {
         for(var opa: opas.getOps()){
             if (skipCommands(opa.getOp().Type())){
                 //skipCommands should only be at once
-                normal_controller.addConfig(opa, 0, 1, 0, 0, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
+                normal_controller.addConfig(opa, 0, 0, 0, 0, OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.ACTIVE);
             }else {
-                normal_controller.addConfig(opa, expandRatio - 1, expandRatio + 1, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
+                normal_controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.ACTIVE);
             }
         }
 
