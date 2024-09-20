@@ -170,7 +170,8 @@ class FrrNode(Node):
     def stop_frr(self):
         #infoaln("hahahah", self.log_path)
         #FIXME this kill_pid is duplicated and can be removed
-        self.save_frr_conf()
+        if "ospfd" in self.daemon_dict:
+            self.save_frr_conf()
         self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
         for v in self.daemon_dict.values():
             kill_pid(v["daemon_pid"])
