@@ -50,7 +50,7 @@ public class LexDef {
                 {SOCKETBUFFERRECV, "socket buffer recv {LONGNUM(1-4000000000)}"},
                 //FIXME SOCKETBUFFERALL
                 //{SOCKETBUFFERALL, "socket buffer all {LONGNUM(1-4000000000)}"},
-                {NOSOCKETPERINTERFACE, "no socket-per-interface"},
+                {SOCKETPERINTERFACE, "socket-per-interface"},
                 {AreaRange, "area {ID(NUM)} range {IPRANGE}|area {ID(NUM)} range {IPRANGE} advertise"},
                 {AreaRangeNoAd, "area {ID(NUM)} range {IPRANGE} not-advertise"},
                 {AreaRangeSub, "area {ID(NUM)} range {IPRANGE} substitute {IP}"},
@@ -79,7 +79,7 @@ public class LexDef {
                 //minimal args is the first LexDef of no operation
                 {NOROSPF, "no router ospf"},
                 {NORID, "no ospf router-id|no ospf router-id {ID}"},
-                {NORABRTYPE, "no ospf abr-type|no ospf abr-type {NAME(standard,shortcut,ibm,cisco)}"},
+                {NORABRTYPE, "no ospf abr-type {NAME(standard,shortcut,ibm,cisco)}"},
                 {NONETAREAID, "no network {IPRANGE} area {ID}"},
                 {NOPASSIVEINTFDEFUALT, "no passive-interface default"},
                 {NOTIMERSTHROTTLESPF, "no timers throttle spf|no timers throttle spf {NUM(0-600000)} {NUM2(0-600000)} {NUM3(0-600000)}"},
@@ -89,7 +89,7 @@ public class LexDef {
                 {NOSOCKETBUFFERRECV, "no socket buffer recv|no socket buffer recv {LONGNUM(1-4000000000)}"},
                 //SOCKETBUFFERALL
                 //{NOSOCKETBUFFERALL, "no socket buffer all|no socket buffer all {LONGNUM(1-4000000000)}"},
-                {NONOSOCKETPERINTERFACE, "no socket-per-interface"},
+                {NOSOCKETPERINTERFACE, "no socket-per-interface"},
                 {NOAreaRange, "no area {ID(NUM)} range {IPRANGE}|no area {ID(NUM)} range {IPRANGE} advertise"},
                 {NOAreaRangeNoAd, "no area {ID(NUM)} range {IPRANGE} not-advertise"},
                 {NOAreaRangeSub, "no area {ID(NUM)} range {IPRANGE} substitute {IP}"},

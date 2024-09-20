@@ -55,7 +55,7 @@ public enum OpType {
 
     //FIXME SOCKETBUFFERALL
     //SOCKETBUFFERALL,
-    NOSOCKETPERINTERFACE,
+    SOCKETPERINTERFACE,
 
     OSPFDAEMONGROUPEND,
     //===================OSPF AREA=====================
@@ -124,7 +124,7 @@ public enum OpType {
     NOSOCKETBUFFERRECV,
     //FIXME SOCKETBUFFERALL
     //NOSOCKETBUFFERALL,
-    NONOSOCKETPERINTERFACE,
+    NOSOCKETPERINTERFACE,
     NOAreaRange,
     NOAreaRangeNoAd,
     NOAreaRangeSub,
