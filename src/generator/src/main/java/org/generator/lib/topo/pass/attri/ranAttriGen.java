@@ -151,7 +151,7 @@ public class ranAttriGen implements genAttri {
         var deadInterval = ranHelper.randomInt(1, 65535);
         var helloInterval = ranHelper.randomInt(1, 65535);
         var retransInterval = ranHelper.randomInt(1, 65535);
-        var transInterval = ranHelper.randomInt(1, 655353);
+        var transInterval = ranHelper.randomInt(1, 65535);
         var netType = OSPFIntf.OSPFNetType.BROADCAST;
         var GRHelloDelay = ranHelper.randomInt(1, 1800);
         if (ospfIntfs.size() == 2){
