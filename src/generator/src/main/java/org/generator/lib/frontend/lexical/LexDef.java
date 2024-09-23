@@ -94,7 +94,7 @@ public class LexDef {
                 {NOAreaRangeNoAd, "no area {ID(NUM)} range {IPRANGE} not-advertise"},
                 //{NOAreaRangeSub, "no area {ID(NUM)} range {IPRANGE} substitute {IP}"},
                 //FIXME is this no lexical right?
-                {NOAreaRangeCost, "no area {ID(NUM)} range {IPRANGE} cost|no area {ID(NUM)} range {IPRANGE} cost {NUM(0-16777215)}|no area {ID(NUM)} range {IPRANGE} advertise cost {NUM(0-16777215)}"},
+                {NOAreaRangeCost, "no area {ID(NUM)} range {IPRANGE} cost {NUM(0-16777215)}|no area {ID(NUM)} range {IPRANGE} advertise cost {NUM(0-16777215)}"},
                 {NOAreaVLink, "no area {ID(NUM)} virtual-link {ID2}"},
                 {NOAreaShortcut, "no area {ID(NUM)} shortcut {NAME(enable,disable,default)}"},
                 {NOAreaStub, "no area {ID(NUM)} stub"},
