@@ -69,7 +69,8 @@ public class UnsetRedexDef extends BaseRedexDef{
         for (var item : reduce_seed) {
             var opType = (OpType) item[0];
             switch (opType){
-                case NOAreaRangeSub,NOAreaRangeCost,NOAreaRangeNoAd,NOAreaRange -> {
+//                case NoAreaRangeSub -> {seeds.add(new Object[]{item[0], item[1], 2});}
+                case NOAreaRangeCost,NOAreaRangeNoAd,NOAreaRange -> {
                     seeds.add(new Object[]{item[0], item[1], 2});
                 }
                 default -> {

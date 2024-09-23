@@ -127,7 +127,8 @@ public enum OpType {
     SOCKETPERINTERFACE,
     NOAreaRange,
     NOAreaRangeNoAd,
-    NOAreaRangeSub,
+    //FIXME NoAreaRangeSub
+    //NOAreaRangeSub,
     NOAreaRangeCost,
     NOAreaVLink,
     NOAreaShortcut,
