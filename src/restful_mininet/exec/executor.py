@@ -149,8 +149,6 @@ class executor:
                     ospf_res[router_name] = tmp
                 erroraln(f"- OSPF commands", "")
             
-         
-
             if i == 0:    
                 net.start_net()
             res.append({})
@@ -169,10 +167,7 @@ class executor:
                 begin_t = time.time()
                 while True:
                     if self._check_converge(net):
-                        if (i == 1):
-                            time.sleep(3600)
-                        else:
-                            time.sleep(self.minWaitTime)
+                        time.sleep(self.minWaitTime)
                         res[i]['exec']['convergence'] = True
                         warnaln("   + convergence!", "")
                         break
@@ -206,5 +201,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036744.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 6, 12)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1727073778.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 6, 12)
     t.test()

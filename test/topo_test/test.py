@@ -7,7 +7,7 @@ dockerDir = up(up(up(path.abspath(__file__))))
 #topo-fuzz/test/topo_test/
 dataDir = up(path.abspath(__file__))
 
-gridNum = 5
+gridNum = 10
 mxWaitTime = 60
 minWaitTime = 20
 
@@ -23,6 +23,7 @@ def buildTestContainers():
     assert  _run_test_sh(f"build_test.sh")== 0, "buildContainers fail"
 
 def launchTestContainers(grid):
+    assert _run_test_sh(f"stop_test.sh")== 0, "runContainers fail"
     assert _run_test_sh(f"run_test.sh {grid}")== 0, "runContainers fail"
 
 def getAllConfs():
@@ -30,7 +31,8 @@ def getAllConfs():
     return os.listdir(confDir)
 
 def choseConf(confName):
-    return True
+    timeidx = int(confName.split(".")[0][4:])
+    return timeidx > 1726732934
 
 import subprocess
 def launch_test(testName, idx):

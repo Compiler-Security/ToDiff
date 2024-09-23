@@ -144,11 +144,11 @@ class diffTest:
         if item == "rc":
             self.check_runningConfig(rt)
 
-
 if __name__ == "__main__":
-    d = diffTest("/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744/test1726036744_res.json")
-    #d.print_diff_running_config()
-    d.check()
+    testNum = "172707" + "3778"
+    d = diffTest(f"/home/frr/topo-fuzz/test/topo_test/data/result/test{testNum}/test{testNum}_res.json")
+    d.print_diff_running_config()
+    #d.check()
     rd = 0
     #print(d.runningConfig(0, d.step_nums[rd] - 1, "r3"))
     #for rt in d.routers:
