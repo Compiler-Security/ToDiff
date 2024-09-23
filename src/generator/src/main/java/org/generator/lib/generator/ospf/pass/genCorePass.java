@@ -161,7 +161,7 @@ public class genCorePass {
 
         //transDelay
         {
-            var op = addOp(opCtxG, OpType.IpOspfTransDealy);
+            var op = addOp(opCtxG, OpType.IpOspfTransDelay);
             op.setNUM(ospf_intf.getTransDelay());
         }
         return opCtxG;

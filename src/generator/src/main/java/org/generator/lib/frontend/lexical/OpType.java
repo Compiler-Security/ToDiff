@@ -104,7 +104,7 @@ public enum OpType {
     IpOspfNet,
     IpOspfPriority,
     IpOspfRetransInter,
-    IpOspfTransDealy,
+    IpOspfTransDelay,
     IpOspfPassive,
 //    TODO IpOspfPrefixSupp,
 
@@ -147,7 +147,7 @@ public enum OpType {
     NOIpOspfNet,
     NOIpOspfPriority,
     NOIpOspfRetransInter,
-    NOIpOspfTransDealy,
+    NOIpOspfTransDelay,
     NOIpOspfPassive;
 
 

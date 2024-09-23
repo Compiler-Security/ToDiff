@@ -43,7 +43,7 @@ public class ospfIntfExecPass extends baseExecPass {
             case IpOspfRetransInter -> {
                 cur_ospf_intf.setRetansInter(op.getNUM());
             }
-            case IpOspfTransDealy -> {
+            case IpOspfTransDelay -> {
                 cur_ospf_intf.setTransDelay(op.getNUM());
             }
             case IpOspfPassive -> {

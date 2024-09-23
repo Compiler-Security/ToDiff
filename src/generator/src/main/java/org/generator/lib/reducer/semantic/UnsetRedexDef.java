@@ -62,7 +62,7 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOIpOspfNet, new OpType[]{IpOspfNet}},
                 {NOIpOspfPriority, new OpType[]{IpOspfPriority}},
                 {NOIpOspfRetransInter, new OpType[]{IpOspfRetransInter}},
-                {NOIpOspfTransDealy, new OpType[]{IpOspfTransDealy}},
+                {NOIpOspfTransDelay, new OpType[]{IpOspfTransDelay}},
                 {NOIpOspfPassive, new OpType[]{IpOspfPassive}},
         };
         var seeds = new ArrayList<Object[]>();
