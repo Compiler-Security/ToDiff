@@ -31,13 +31,13 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOSOCKETBUFFERRECV, new OpType[]{SOCKETBUFFERRECV}},
                 //FIXME SOCKETBUFFERALL
                 //{NOSOCKETBUFFERALL, new OpType[]{SOCKETBUFFERALL}},
-                {NOSOCKETPERINTERFACE, new OpType[]{SOCKETPERINTERFACE}},
+                {SOCKETPERINTERFACE, new OpType[]{NoSOCKETPERINTERFACE}},
 
                 {NOAreaRange, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
                 {NOAreaRangeNoAd, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
                 {NOAreaRangeCost, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
 
-                {NOAreaRangeSub, new OpType[]{AreaRange, AreaRangeSub}},
+                //{NOAreaRangeSub, new OpType[]{AreaRange}},
 
 
                 //FIXME areaVLINK

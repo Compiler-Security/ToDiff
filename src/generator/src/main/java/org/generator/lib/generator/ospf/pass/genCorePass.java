@@ -96,7 +96,7 @@ public class genCorePass {
             }
             {
                 if (!daemon.isSocketPerInterface()){
-                    var op = addOp(opCtxG, OpType.SOCKETPERINTERFACE);
+                    var op = addOp(opCtxG, OpType.NoSOCKETPERINTERFACE);
                 }
             }
             {

@@ -91,7 +91,7 @@ public class ospfDaemonExecPass extends baseExecPass {
 //                ospf_daemon.setBufferrecv(num);
 //                return ExecStat.SUCC;
 //            }
-            case SOCKETPERINTERFACE -> {
+            case NoSOCKETPERINTERFACE -> {
                 ospf_daemon.setSocketPerInterface(false);
                 return ExecStat.SUCC;
             }
