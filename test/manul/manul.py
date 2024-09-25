@@ -7,7 +7,7 @@ from src.restful_mininet.net.testnet import TestNet
 from src.restful_mininet.exec.inst import MininetInst
 from src.restful_mininet.util.log import *
 import time
-
+import time
 from time import sleep
 import os
 from mininet import log
@@ -66,6 +66,9 @@ class manulTest():
     def run_ospf(self, router_name, ospf_command):
         self._run_ospf(self.net, router_name, [ospf_command])
 
+    def run_ospfs(self, router_name, ospf_commands):
+        self._run_ospf(self.net, router_name, ospf_commands)
+
     def stop(self):
         self.net.stop_net()
 if __name__ == "__main__":
@@ -73,17 +76,20 @@ if __name__ == "__main__":
     # simpleTest()
     os.system("mn -c 2> /dev/null")
     h = manulTest()
-    h.run_phys("""node r1 add
-              node r2 add
-              node s1 add
-              link r1-eth0 s1-eth0 add
-              link r2-eth0 s1-eth1 add
-              node r1 set OSPF up
-              node r2 set OSPF up 
+    h.run_phys("""node r0 add
+              node s0 add
+              link r0-eth2 s0-eth0 add
+              node r0 set OSPF up
               """)
+
+    time.sleep(1)
+    h.run_ospf("r0", "interface r0-eth2;ip ospf dead-interval 54315")
+    #time.sleep(2)
+    h.run_ospf("r0", "clear ip ospf process")
+    #h.run_ospf("r0", "interface r0-eth2;ip ospf dead-interval minimal hello-multiplier 10")
+    # h.run_ospf("r0", "interface r0-eth2;ip ospf dead-interval 1")
     #time.sleep(5)
     # h.run_phy("link r1-eth0 s1-eth0 remove")
     # time.sleep(1)
     # h.run_phy("link r1-eth0 s1-eth0 add")
     CLI(h.net.net)
-    h.stop()

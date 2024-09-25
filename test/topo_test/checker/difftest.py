@@ -100,7 +100,7 @@ class diffTest:
             diff = util.dict_diff(self.shrink_ospfIntfs(self.ospfIntfs(i - 1, self.step_nums[i - 1] - 1, rt)), self.shrink_ospfIntfs(self.ospfIntfs(i, self.step_nums[i] - 1, rt)))
             if (diff != {}):
                 print(f"round {i-1} {i} ospf-intfs")
-                print(self.shrink_ospfIntfs(self.ospfIntfs(i - 1, self.step_nums[i - 1] - 1, rt)))
+                #print(self.shrink_ospfIntfs(self.ospfIntfs(i - 1, self.step_nums[i - 1] - 1, rt)))
                 print(json.dumps(diff, indent=4))
 
     def check_runningConfig(self, rt):
@@ -148,7 +148,7 @@ if __name__ == "__main__":
     testNum = "172707" + "3778"
     d = diffTest(f"/home/frr/topo-fuzz/test/topo_test/data/result/test{testNum}/test{testNum}_res.json")
     d.print_diff_running_config()
-    #d.check()
+    d.check()
     rd = 0
     #print(d.runningConfig(0, d.step_nums[rd] - 1, "r3"))
     #for rt in d.routers:

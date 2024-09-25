@@ -8,8 +8,8 @@ dockerDir = up(up(up(path.abspath(__file__))))
 dataDir = up(path.abspath(__file__))
 
 gridNum = 10
-mxWaitTime = 60
-minWaitTime = 20
+mxWaitTime = 600
+minWaitTime = 30
 
 def getContainerName(num):
     return f"docker_topo-fuzz-test_{num}"
