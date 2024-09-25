@@ -33,8 +33,8 @@ public class OverrideRedexDef extends BaseRedexDef {
                 {ROSPF, new OpType[]{}, 0},
                 {IntfName, new OpType[]{}, 0},
                 {IPAddr, new OpType[]{IPAddr}, 1},
-                //完全一样
-                {IpOspfArea, new OpType[]{IpOspfArea}, 1},
+
+                {IpOspfArea, new OpType[]{}, 0},
                 {NETAREAID, new OpType[]{NETAREAID}, 2},
 
                 {AreaRangeNoAd, new OpType[]{AreaRange, AreaRangeSub, AreaRangeCost, AreaRangeNoAd}, 2},

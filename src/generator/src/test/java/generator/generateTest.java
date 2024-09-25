@@ -108,4 +108,15 @@ public class generateTest {
             break;
         }
     }
+
+    @Test
+    public void IPOSPFAREA_align_test(){
+        var st = """
+                int r0-eth0
+                ip ospf area 1
+                """;
+        var ori = new ConfReader().read(st);
+        var equal = generate.generateEqualOfCore(ori);
+        System.out.println(equal);
+    }
 }

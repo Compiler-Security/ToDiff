@@ -76,8 +76,9 @@ public class generate {
                     continue;
                 }
                 var mutate_opa = actionRulePass.mutate(ori_opa);
-                if (mutate_opa != null) controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
-                else break;
+                if (mutate_opa != null){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
+                    break;
+                }
             }
         }
     }
@@ -133,10 +134,10 @@ public class generate {
     public static final boolean insertRan = true;
 
     //insert irrOp, the number is irrOpRatio of activeOp
-    public static double irrOpRatio = 0.4;
+    public static double irrOpRatio = 0;
 
     //insert mutateOp, the number is mutateRatio of activeOp
-    public static double mutateOpRatio = 0.4;
+    public static double mutateOpRatio = 1;
     public static int expandRatio = 1;
 
     //when this is true, we will set

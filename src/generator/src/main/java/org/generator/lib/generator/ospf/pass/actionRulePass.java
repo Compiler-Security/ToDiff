@@ -88,9 +88,11 @@ public class actionRulePass {
      * @param opA
      */
     public static OpAnalysis mutate(OpAnalysis opA){
-        //first choose one unset_op type
+        //first choose one override_op type
         var override_list = OverrideRedexDef.getOverrideType(opA.getOp().Type());
-        if (override_list.isEmpty()) return null;
+        if (override_list.isEmpty()){
+            return OpAnalysis.of(genOpPass.genRanOpOfType(opA.getOp().Type()).getOpOspf(), opA.getCtxOp());
+        }
         if (generate.ran){
             Collections.shuffle(override_list);
         }
