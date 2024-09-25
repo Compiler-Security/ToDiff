@@ -99,14 +99,23 @@ class executor:
             warnln(f"    +check router {r_name}")
             res = net.net.nameToNode[r_name].dump_neighbor_info()
             if res == None:
-                warnln(f"    -check router {r_name}")
+                warnln(f"    -check router {r_name} n")
                 return False
             for val in res['neighbors'].values():
                 for val1 in val:
-                    if (val1['converged'] != 'Full' or val1['linkStateRetransmissionListCounter'] > 0):
-                        warnln(f"    -check router {r_name}")
+                    if (val1['converged'] != 'Full'):
+                        warnln(f"    -check router {r_name} nb c")
                         return False
-            warnln(f"    -check router {r_name}")
+                    if (val1['linkStateRetransmissionListCounter'] > 0):
+                        warnln(f"    -check router {r_name} nb re")
+                        return False
+            res = net.net.nameToNode[r_name].dump_ospf_intfs_info()
+            for intfName, val in res['interfaces'].items():
+                if val['state'] == "Waiting":
+                    warnln(f"    -check router {r_name} oi w")
+                    warnln(intfName)
+                    return False
+            warnln(f"    -check router {r_name} y")
         return True
     
     def _run(self, r):
@@ -163,6 +172,7 @@ class executor:
                 #handle convergence
                     #min(_check_convergence() + minWaitTime, maxWaitTime)
                     #for simplicity, maxWaitTime % minWaitTime == 0
+                CLI(net.net)
                 erroraln("+ check convergence", "")
                 begin_t = time.time()
                 while True:
@@ -177,10 +187,10 @@ class executor:
                             warnaln("   + not convergence!", "")
                             break
                         else:
-                            time.sleep(self.minWaitTime)
+                            time.sleep(10)
             else:
                 time.sleep(sleep_time)
-            
+            #CLI(net.net)
             erroraln("+ collect result", "")
             warnaln("   + collect from daemons", "")
             res[i]['watch'] = {}
@@ -201,5 +211,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1727073778.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 6, 12)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1727073778_r2d.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 300)
     t.test()

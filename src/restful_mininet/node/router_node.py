@@ -241,6 +241,14 @@ class FrrNode(Node):
         except Exception as e:
             traceback.print_exception(e)
             return None
+    
+    def dump_ospf_intfs_info(self):
+        info = self.daemon_cmds(["show ip ospf interface json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
 
 if __name__ == "__main__":
     setLogLevel('info')
