@@ -1,11 +1,13 @@
 package generator;
 
+import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.reducer.driver.reducer;
+import org.generator.lib.topo.driver.topo;
 import org.generator.tools.diffOp.genOps;
 import org.generator.tools.frontend.ConfReader;
 import org.junit.Test;
@@ -85,6 +87,23 @@ public class generateTest {
                 System.out.println("=======gen_equal========");
                 System.out.println(gen_equal);
                 assert  false: "Irrelevant OP WRONG";
+            }
+            break;
+        }
+    }
+
+    @Test
+    public void fastConvergenceOpTest(){
+        var confg = topo.genGraph(1, topo.areaCount, topo.mxDegree, topo.abrRatio, false, null);
+        confg = confg.viewConfGraphOfRouter("r0");
+        confg.setR_name("r0");
+        var core = generate.generateCore(confg);
+        while(true){
+            var equal = generate.generateEqualOfCore(core);
+            for(var op: equal){
+                if (generate.skipCommands(op.getOperation().Type())){
+                    System.out.println(IO.writeOp(op));
+                }
             }
             break;
         }

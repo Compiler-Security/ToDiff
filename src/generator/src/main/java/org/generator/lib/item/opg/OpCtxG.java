@@ -1,11 +1,9 @@
 package org.generator.lib.item.opg;
 
-import org.generator.lib.frontend.driver.IO;
-import org.generator.lib.item.IR.Op;
 import org.generator.lib.item.IR.OpCtx;
-import org.generator.lib.reducer.semantic.CtxOpDef;
 import org.generator.tools.frontend.OspfConfWriter;
 
+import java.util.Iterator;
 import java.util.List;
 
 public class OpCtxG extends BaseOpG<OpCtx>{

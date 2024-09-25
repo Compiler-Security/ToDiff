@@ -23,6 +23,13 @@ public class generate {
     public static OpCtxG generatePhyCore(ConfGraph confGraph){
         return genPhyCorePass.solve(confGraph);
     }
+
+    /**
+     *  confg = confg.viewConfGraphOfRouter("r0");
+     *  confg.setR_name("r0");
+     * @param confGraph
+     * @return
+     */
     public static OpCtxG generateCore(ConfGraph confGraph){
         var p = new genCorePass();
         var res1 = p.solve(confGraph);
@@ -50,6 +57,9 @@ public class generate {
                 var op = genOpPass.genRanOpByControl(ctxOpa.getOp().Type() == OpType.IntfName);
                 var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
                 if (activeOpAs.contains(opa)) continue;
+                if (skipCommands(op.getOpOspf().Type())){
+                    continue;
+                }
                 //System.out.println(opa);
                 controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                 break;
@@ -61,7 +71,7 @@ public class generate {
             while(true) {
                 var ori_opa = ranHelper.randomElemOfList(opas.getOps());
                 assert ori_opa != null : "opa to mutate is supposed to be not null";
-                //this mutate op should not be skip commands
+                //this skip op should not be mutate commands
                 if (skipCommands(ori_opa.getOp().Type())){
                     continue;
                 }
@@ -72,7 +82,7 @@ public class generate {
         }
     }
 
-    private static boolean skipCommands(OpType opType){
+    public static boolean skipCommands(OpType opType){
         if (generate.fastConvergence){
             switch (opType){
                 case TIMERSTHROTTLESPF, IpOspfHelloInter, IpOspfDeadInter, IpOspfDeadInterMulti, RefreshTimer, TimersLsaThrottle
