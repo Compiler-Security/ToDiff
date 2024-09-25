@@ -10,6 +10,7 @@ import org.generator.lib.generator.ospf.pass.genEqualPass;
 import org.generator.lib.generator.ospf.pass.genOpPass;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpOspf;
+import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.ospf.OSPF;
@@ -434,7 +435,7 @@ public class IOTest {
             normal_controller.addConfig(opa, 1, 2, 1, 1);
         }
         var tmp_controller = CapacityController.of(6, 0, 0, 1, 0);
-        var gen_opag = genEqualPass.solve(normal_controller);
+        var gen_opag = genEqualPass.solve(normal_controller, OpAG.of(opas));
         gen_opag = reducePass.expandOpAG(gen_opag);
         var print_ctx = OpCtxG.Of();
         gen_opag.getOps().forEach(opa -> print_ctx.addOp(opa.getOp().getOpCtx()));

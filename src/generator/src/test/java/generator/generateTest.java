@@ -77,7 +77,6 @@ public class generateTest {
 
             generate.irrOpRatio = 0.4;
             var gen_equal = generate.generateEqualOfCore(ori);
-            gen_equal.getOps().addAll(0, ori.getOps());
             var confg_equal = getSetConfG(gen_equal);
             if (!confg_equal.equals(confg)){
                 System.out.println("======compare=======");
@@ -114,6 +113,9 @@ public class generateTest {
         var st = """
                 int r0-eth0
                 ip ospf area 1
+                
+                router ospf
+                area 1.1.1.1 range 0.0.0.3/30
                 """;
         var ori = new ConfReader().read(st);
         var equal = generate.generateEqualOfCore(ori);

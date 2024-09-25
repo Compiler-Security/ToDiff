@@ -116,7 +116,7 @@ public class generate {
         addRemovedOpToController(opas, normal_controller);
 
 
-        var gen_opag = genEqualPass.solve(normal_controller);
+        var gen_opag = genEqualPass.solve(normal_controller, opas);
         return gen_opag.toOpCtxGLeaner();
     }
 
@@ -134,10 +134,10 @@ public class generate {
     public static final boolean insertRan = true;
 
     //insert irrOp, the number is irrOpRatio of activeOp
-    public static double irrOpRatio = 0;
+    public static double irrOpRatio = 0.4;
 
     //insert mutateOp, the number is mutateRatio of activeOp
-    public static double mutateOpRatio = 1;
+    public static double mutateOpRatio = 0.4;
     public static int expandRatio = 1;
 
     //when this is true, we will set
