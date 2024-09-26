@@ -86,7 +86,7 @@ public class generate {
     public static boolean skipCommands(OpType opType){
         if (generate.fastConvergence){
             switch (opType){
-                case TIMERSTHROTTLESPF, IpOspfHelloInter, IpOspfDeadInter, IpOspfDeadInterMulti, RefreshTimer, TimersLsaThrottle
+                case TIMERSTHROTTLESPF, IpOspfHelloInter, IpOspfDeadInter, IpOspfDeadInterMulti, RefreshTimer, TimersLsaThrottle, IpOspfRetransInter
                         -> {return true;}
             }
         }
