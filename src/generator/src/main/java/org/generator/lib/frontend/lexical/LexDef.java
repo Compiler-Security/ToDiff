@@ -93,10 +93,11 @@ public class LexDef {
                 {NOAreaRange, "no area {ID(NUM)} range {IPRANGE}|no area {ID(NUM)} range {IPRANGE} advertise"},
                 {NOAreaRangeNoAd, "no area {ID(NUM)} range {IPRANGE} not-advertise"},
                 //{NOAreaRangeSub, "no area {ID(NUM)} range {IPRANGE} substitute {IP}"},
-                //FIXME is this no lexical right?
+                //FIXME no ...cost only should be added once we fix frr bug
                 {NOAreaRangeCost, "no area {ID(NUM)} range {IPRANGE} cost {NUM(0-16777215)}|no area {ID(NUM)} range {IPRANGE} advertise cost {NUM(0-16777215)}"},
                 {NOAreaVLink, "no area {ID(NUM)} virtual-link {ID2}"},
-                {NOAreaShortcut, "no area {ID(NUM)} shortcut {NAME(enable,disable,default)}"},
+                //FIXME default should be added once we fix frr bug
+                {NOAreaShortcut, "no area {ID(NUM)} shortcut {NAME(enable,disable)}"},
                 {NOAreaStub, "no area {ID(NUM)} stub"},
 
                 //FIXME simple fix of NOAreaStubTotal
