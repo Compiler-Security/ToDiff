@@ -93,7 +93,13 @@ public class generate {
         return false;
     }
 
-    public static OpCtxG generateEqualOfCore(OpCtxG opCtxG){
+    /***
+     * if full, init opCtxG is  in the head of generate opCtxG
+     * @param opCtxG
+     * @param full
+     * @return
+     */
+    public static OpCtxG generateEqualOfCore(OpCtxG opCtxG, boolean full){
         var opas = reducer.reduce(opCtxG);
         var normal_controller = NormalController.of();
 
@@ -117,6 +123,10 @@ public class generate {
 
 
         var gen_opag = genEqualPass.solve(normal_controller, opas);
+        //remove original core ops
+        if (!full) {
+            gen_opag.setOpgroup(gen_opag.getOps().subList(opas.getOps().size(), gen_opag.getOps().size()));
+        }
         return gen_opag.toOpCtxGLeaner();
     }
 

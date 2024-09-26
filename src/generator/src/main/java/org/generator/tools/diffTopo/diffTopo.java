@@ -48,7 +48,7 @@ public class diffTopo {
         var confg = g.viewConfGraphOfRouter(r_name);
         confg.setR_name(r_name);
         if (mutate) {
-            return generate.generateEqualOfCore(generate.generateCore(confg));
+            return generate.generateEqualOfCore(generate.generateCore(confg), false);
         }else{
             return generate.generateCore(confg);
         }
@@ -139,10 +139,8 @@ public class diffTopo {
             //generate each router's commands
             List<OpCtxG> opCtxGS = new ArrayList<>();
             for(int j = 0; j < router_count; j++){
-                var ospf_core = ospf_cores.get(j);
-                var opCtxG = generate.generateEqualOfCore(ospf_cores.get(j));
-                //need to del ospf_core, which is head of generateEqualOfCore
-                opCtxG.setOpgroup(opCtxG.getOps().subList(ospf_core.getOps().size(), opCtxG.getOps().size()));
+                //FIXME why router 0 not mutate ?
+                var opCtxG = generate.generateEqualOfCore(ospf_cores.get(j), false);
                 opCtxGS.add(opCtxG);
             }
             for(int r = 0; r < router_count; r++){

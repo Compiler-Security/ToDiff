@@ -62,8 +62,7 @@ public class generateTest {
             var confg = getSetConfG(ori);
             generate.irrOpRatio = 0;
             //equal ops without IRR Op inserted
-            var gen_equal_wo_irrOp = generate.generateEqualOfCore(ori);
-            gen_equal_wo_irrOp.getOps().addAll(0, ori.getOps());
+            var gen_equal_wo_irrOp = generate.generateEqualOfCore(ori, true);
             var confg_equal_wo_irrOp = getSetConfG(gen_equal_wo_irrOp);
             if (!confg_equal_wo_irrOp.equals(confg)){
                 System.out.println("======compare=======");
@@ -76,7 +75,7 @@ public class generateTest {
             }
 
             generate.irrOpRatio = 0.4;
-            var gen_equal = generate.generateEqualOfCore(ori);
+            var gen_equal = generate.generateEqualOfCore(ori, true);
             var confg_equal = getSetConfG(gen_equal);
             if (!confg_equal.equals(confg)){
                 System.out.println("======compare=======");
@@ -98,7 +97,7 @@ public class generateTest {
         confg.setR_name("r0");
         var core = generate.generateCore(confg);
         while(true){
-            var equal = generate.generateEqualOfCore(core);
+            var equal = generate.generateEqualOfCore(core, true);
             for(var op: equal){
                 if (generate.skipCommands(op.getOperation().Type())){
                     System.out.println(IO.writeOp(op));
@@ -118,7 +117,7 @@ public class generateTest {
                 area 1.1.1.1 range 0.0.0.3/30
                 """;
         var ori = new ConfReader().read(st);
-        var equal = generate.generateEqualOfCore(ori);
+        var equal = generate.generateEqualOfCore(ori, true);
         System.out.println(equal);
     }
 }
