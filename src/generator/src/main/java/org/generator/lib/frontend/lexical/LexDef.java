@@ -78,7 +78,9 @@ public class LexDef {
 
                 //minimal args is the first LexDef of no operation
                 {NOROSPF, "no router ospf"},
-                {NORID, "no ospf router-id|no ospf router-id {ID}"},
+                //FIXME this is the simple fix of no ospf router-id, because no ospf router-id {ID} , id should be same for unset
+                //we don't support this in this generator
+                {NORID, "no ospf router-id"},
                 {NORABRTYPE, "no ospf abr-type {NAME(standard,shortcut,ibm,cisco)}"},
                 {NONETAREAID, "no network {IPRANGE} area {ID}"},
                 {NOPASSIVEINTFDEFUALT, "no passive-interface default"},
