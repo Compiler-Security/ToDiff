@@ -167,7 +167,7 @@ public class ranAttriGen implements genAttri {
         for(var ospfIntf: ospfIntfs){
             //self
             //FIXME for testing this ratio should be considered
-            ospfIntf.setPassive(ranHelper.randomInt(0, 5) != 0);
+            ospfIntf.setPassive(ranHelper.randomInt(0, 10) == 0);
             ospfIntf.setCost(ranHelper.randomInt(1, 65535));
             ospfIntf.setPriority(ranHelper.randomInt(0, 255));
             //we should set helloMulti for testing
