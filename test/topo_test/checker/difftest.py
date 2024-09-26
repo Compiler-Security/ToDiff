@@ -145,7 +145,7 @@ class diffTest:
             self.check_runningConfig(rt)
 
 if __name__ == "__main__":
-    testNum = "172707" + "3778"
+    testNum = "172733" + "0849"
     d = diffTest(f"/home/frr/topo-fuzz/test/topo_test/data/result/test{testNum}/test{testNum}_res.json")
     d.print_diff_running_config()
     d.check()

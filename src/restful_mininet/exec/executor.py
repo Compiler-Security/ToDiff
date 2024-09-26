@@ -172,7 +172,6 @@ class executor:
                 #handle convergence
                     #min(_check_convergence() + minWaitTime, maxWaitTime)
                     #for simplicity, maxWaitTime % minWaitTime == 0
-                CLI(net.net)
                 erroraln("+ check convergence", "")
                 begin_t = time.time()
                 while True:
@@ -211,5 +210,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1727073778_r2d.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 300)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1727330844.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 300)
     t.test()
