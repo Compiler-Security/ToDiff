@@ -67,11 +67,13 @@ class diffTest:
     def shrink_ospfIntfs(self, n_dict:dict):
         new_dict1 = copy.deepcopy(n_dict)
         for new_dict in new_dict1.values():
+            del new_dict['ifIndex']
             if "timerHelloInMsecs" in new_dict:
                 del new_dict["timerHelloInMsecs"]
-            for val in new_dict["interfaceIp"].values():
-                if "timerHelloInMsecs" in val:
-                    del val["timerHelloInMsecs"]
+            if "interfaceIp" in new_dict:
+                for val in new_dict["interfaceIp"].values():
+                    if "timerHelloInMsecs" in val:
+                        del val["timerHelloInMsecs"]
         return new_dict1
 
     def check_neighbors(self, rt):
@@ -110,17 +112,24 @@ class diffTest:
                 print(f"round {i-1} {i} running-configs")
                 print(json.dumps(diff, indent=4))
                 
+    def check_convergence(self):
+        for rd in range(0, self.round_num):
+            if self.conf["test"]["result"][rd][self.step_nums[rd] - 1]["exec"]["convergence"] != True:
+                    print(f"round {rd} not convergence")
+        
     def check(self):
             i = 0
             for rt in self.routers:
                 print(f"check router {rt}")
                 # for rd in range(0, self.round_num):
                 #     print(self.routingTable(rd, self.step_nums[rd] - 1, rt).keys())
+                self.check_runningConfig(rt)
+                self.check_convergence()
                 self.check_ospfIntfs(rt)
                 self.check_neighbors(rt)
                 self.check_routingTable(rt)
                 self.check_ospfDaemon(rt)
-                self.check_runningConfig(rt)
+                
             # for rd in range(0, self.round_num):
             #     print(json.dumps(self.ospfIntfs(rd, self.step_nums[rd] - 1, "r1"), indent=4))
 
@@ -145,9 +154,8 @@ class diffTest:
             self.check_runningConfig(rt)
 
 if __name__ == "__main__":
-    testNum = "172733" + "0849"
+    testNum = "172733" + "0842"
     d = diffTest(f"/home/frr/topo-fuzz/test/topo_test/data/result/test{testNum}/test{testNum}_res.json")
-    d.print_diff_running_config()
     d.check()
     rd = 0
     #print(d.runningConfig(0, d.step_nums[rd] - 1, "r3"))
