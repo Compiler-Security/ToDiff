@@ -168,7 +168,7 @@ public class ranAttriGen implements genAttri {
             //self
             //FIXME for testing this ratio should be considered
             ospfIntf.setPassive(ranHelper.randomInt(0, 10) == 0);
-            ospfIntf.setCost(ranHelper.randomInt(1, 65535));
+            //ospfIntf.setCost(ranHelper.randomInt(1, 65535));
             ospfIntf.setPriority(ranHelper.randomInt(0, 255));
             //we should set helloMulti for testing
             //network
@@ -230,6 +230,7 @@ public class ranAttriGen implements genAttri {
                 //TODO we should use random area
                 var area_id = ID.of(r.intfs.get(j).area);
                 ospf_intf.setArea(ID.of(r.intfs.get(j).area));
+                ospf_intf.setCost(r.intfs.get(j).cost);
 
                 if (area_id.toLong() == 0L){
                     isABR.put(ospf, true);

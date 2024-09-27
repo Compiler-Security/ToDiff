@@ -11,6 +11,7 @@ import org.generator.lib.topo.driver.topo;
 import org.generator.tools.diffOp.genOps;
 import org.generator.tools.frontend.ConfReader;
 import org.junit.Test;
+import org.generator.lib.topo.pass.base.ranBaseGen;
 
 import static org.generator.util.diff.differ.compareJson;
 
@@ -119,5 +120,15 @@ public class generateTest {
         var ori = new ConfReader().read(st);
         var equal = generate.generateEqualOfCore(ori, true);
         System.out.println(equal);
+    }
+
+    @Test
+    public void baseGraphDumpTest(){
+        var ran = new ranBaseGen();
+        var rs = ran.generate(5, 3, 2, 4);
+        var str = topo.dumpGraph(rs, ran);
+        System.out.println(str);
+        var t = topo.genGraph(5, 3, 2, 2,false, null);
+        System.out.println(t);
     }
 }
