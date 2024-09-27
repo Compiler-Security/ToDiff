@@ -156,7 +156,7 @@ public class ranAttriGen implements genAttri {
             helloInterval = 1;
             retransInterval = 1;
         }
-        var transInterval = ranHelper.randomInt(1, 65535);
+        var transDelay = ranHelper.randomInt(1, 100);
         var netType = OSPFIntf.OSPFNetType.BROADCAST;
         var GRHelloDelay = ranHelper.randomInt(1, 1800);
         if (ospfIntfs.size() == 2){
@@ -189,7 +189,7 @@ public class ranAttriGen implements genAttri {
             ospfIntf.setGRHelloDelay(GRHelloDelay);
             ospfIntf.setNetType(netType);
             ospfIntf.setRetansInter(retransInterval);
-            ospfIntf.setTransDelay(transInterval);
+            ospfIntf.setTransDelay(transDelay);
         }
         //we should ensure one ospfIntf priority > 0
     }
