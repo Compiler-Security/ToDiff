@@ -31,9 +31,9 @@ public class ranHelper {
         return ID.of(randomLong(0, 0xE0000000L));
     }
 
-        //< 254.0.0.0
+        //C+D class, 128.0.0.0 ~ 253.255.255.255
     static public IP randomIP(){
-        return IP.of(randomLong(0, 0xE0000000L), randomInt(1, 31));
+        return IP.of(randomLong(0x80000000L, 0xE0000000L), randomInt(1, 31));
     }
 
     static public IPRange randomIpRange(){
