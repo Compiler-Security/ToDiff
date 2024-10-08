@@ -103,7 +103,9 @@ class executor:
                 return False
             for val in res['neighbors'].values():
                 for val1 in val:
-                    if (val1['converged'] != 'Full'):
+                    #if neighbor is DR/Backup, converged is full
+                    #otherwise converged is 2-way
+                    if (val1['converged'] != 'Full' and val1['nbrState'] != '2-Way/DROther'):
                         warnln(f"    -check router {r_name} nb c")
                         return False
                     if (val1['linkStateRetransmissionListCounter'] > 0):
@@ -167,7 +169,7 @@ class executor:
             
             sleep_time = commands[i]['waitTime']
             erroraln(f"wait {sleep_time} s ", "")
-            #CLI(net.net)
+            
             if sleep_time == -1:
                 #handle convergence
                     #min(_check_convergence() + minWaitTime, maxWaitTime)
@@ -189,7 +191,6 @@ class executor:
                             time.sleep(10)
             else:
                 time.sleep(sleep_time)
-            #CLI(net.net)
             erroraln("+ collect result", "")
             warnaln("   + collect from daemons", "")
             res[i]['watch'] = {}
@@ -210,5 +211,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1727330849.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 300)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1728371895_r0.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 30)
     t.test()
