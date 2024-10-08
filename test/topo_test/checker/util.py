@@ -103,7 +103,7 @@ def get_test_name(last_five_num):
     return conf_name
 
 def get_all_test_name():
-    return os.listdir(confDir)
+    return sorted(os.listdir(confDir))
 
 def get_result_dir(test_name):
     return path.join(resultDir, test_name.split(".")[0])
@@ -111,5 +111,7 @@ def get_result_dir(test_name):
 def get_result_name(test_name):
     return test_name.split(".")[0] + "_res.json"
 
+def get_result_file_path(test_name):
+    return path.join(get_result_dir(test_name), get_result_name(test_name))
 if __name__ == "__main__":
     print(get_test_name("30842"))

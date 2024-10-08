@@ -19,10 +19,10 @@ from mininet.cli import CLI
 BIN_DIR="/usr/lib/frr"
 WORK_DIR = path.join(path.dirname(path.abspath(__file__)), "frr_conf")
 class manulTest():
-    def __init__(self):
+    def __init__(self, conf_file_dir):
         self.net = TestNet()
         self.ctx = {"intf":{}}
-        self.conf_file_dir = WORK_DIR
+        self.conf_file_dir = conf_file_dir
     def _run_phy(self, net, ctx, phy_commands):
         res = []
         for op in phy_commands:
@@ -37,7 +37,7 @@ class manulTest():
     def _run_ospf(self, net:TestNet, router_name, ospf_commands):
         res = []
         for op in ospf_commands:
-            if op in ["clear ip ospf process", "write terminal"]:
+            if op in ["clear ip ospf process", "write terminal", "show ip ospf neighbor json", "show ip ospf", "show ip ospf interface json"]:
                 res.append(net.run_frr_cmds(router_name, [op]))
             else:
                 resStr = ""
@@ -71,11 +71,20 @@ class manulTest():
 
     def stop(self):
         self.net.stop_net()
+
+    # def save_run_info(self):
+    #     for rname in self.net.router_nodes:
+    #         r = self.net.get_node_by_name(rname)
+    #         save_path = path.join(self.conf_file_dir, rname)
+    #         os.makedirs(save_path, exist_ok=True)
+    #         r.cmds_error(["cp", "-r", "/run/frr", save_path])
+
 if __name__ == "__main__":
     # setLogLevel('info')
     # simpleTest()
     os.system("mn -c 2> /dev/null")
     h = manulTest()
+
     h.run_phys("""node r0 add
               node s0 add
               link r0-eth2 s0-eth0 add
@@ -92,4 +101,3 @@ if __name__ == "__main__":
     # h.run_phy("link r1-eth0 s1-eth0 remove")
     # time.sleep(1)
     # h.run_phy("link r1-eth0 s1-eth0 add")
-    CLI(h.net.net)
