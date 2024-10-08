@@ -50,6 +50,9 @@ services:
         - type: bind
           source: ../
           target: /home/frr/topo-fuzz
+        - type: bind
+          source: ../../frr
+          target: /home/frr/de/frr
   
   topo-fuzz-test:
       build:
