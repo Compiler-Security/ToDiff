@@ -121,9 +121,10 @@ class humandReader():
 #             res.write(f"        result: '{command_res}'\n\n")
 #     with open(path.join(checkDir, new_name), "w") as fp:
 #         fp.write(res.getvalue())
-
+import util
 if __name__ == "__main__":
     #rd from 0
     #human_read_ospf(0, 0, "/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744_r1/test1726036744_r1_res.json")
-    h = humandReader("/home/frr/topo-fuzz/test/topo_test/data/result/test1727073765/test1727073765_res.json")
+    test_name = util.get_test_name("71900")
+    h = humandReader(util.get_result_file_path(test_name))
     h.readAll()
