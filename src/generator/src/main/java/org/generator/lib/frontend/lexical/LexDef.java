@@ -51,6 +51,7 @@ public class LexDef {
                 //FIXME SOCKETBUFFERALL
                 //{SOCKETBUFFERALL, "socket buffer all {LONGNUM(1-4000000000)}"},
                 {NoSOCKETPERINTERFACE, "no socket-per-interface"},
+
                 {AreaRange, "area {ID(NUM)} range {IPRANGE}|area {ID(NUM)} range {IPRANGE} advertise"},
                 {AreaRangeNoAd, "area {ID(NUM)} range {IPRANGE} not-advertise"},
                 {AreaRangeSub, "area {ID(NUM)} range {IPRANGE} substitute {IP}"},

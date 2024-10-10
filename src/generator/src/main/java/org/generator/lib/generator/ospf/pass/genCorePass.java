@@ -89,10 +89,10 @@ public class genCorePass {
             }
             {
                 //FIXME SOCKETBUFFERALL
-//                if (daemon.getBuffersend() == daemon.getBufferrecv()){
-//                    var op = addOp(opCtxG, OpType.SOCKETBUFFERALL);
-//                    op.setLONGNUM(daemon.getBufferrecv());
-//                }
+                if (daemon.getBuffersend() == daemon.getBufferrecv()){
+                    var op = addOp(opCtxG, OpType.SOCKETBUFFERALL);
+                    op.setLONGNUM(daemon.getBufferrecv());
+                }
             }
             {
                 if (!daemon.isSocketPerInterface()){
