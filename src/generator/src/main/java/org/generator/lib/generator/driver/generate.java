@@ -11,6 +11,7 @@ import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.reducer.driver.reducer;
+import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.reducer.semantic.CtxOpDef;
 import org.generator.util.ran.ranHelper;
 
@@ -132,7 +133,21 @@ public class generate {
 
     public static OpCtxG generateEqualOfPhyCore(OpCtxG opCtxG, double ratio, int maxRound){
         var r = new genPhyEqualPass();
-        return r.solve(opCtxG, ratio, maxRound);
+        var addPart =  r.solve(opCtxG, ratio, maxRound);
+        var totalPart = OpCtxG.Of();
+        totalPart.addOps(opCtxG.getOps());
+        totalPart.addOps(addPart.getOps());
+        var confg0 = new ConfGraph();
+        var confg1 = new ConfGraph();
+        phyArgPass.solve(opCtxG, confg0);
+        phyArgPass.solve(totalPart, confg1);
+        if (!confg0.equals(confg1)){
+            System.out.println(confg0);
+            System.out.println("==============");
+            System.out.println(confg1);
+            assert false : "phy conf not equal!";
+        }
+        return addPart;
     }
 
     //FIXME(should turn to true when running)
