@@ -280,7 +280,7 @@ class MininetInst(BaseInst):
                     intf1.config(loss=100)
                     intf2.config(loss=100)
                     return self.EXEC_DONE
-            return self.EXEC_MISS
+            return self.EXEC_DONE
 
         raise InstErrorException("[mininet] link inst not right")
 
