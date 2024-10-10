@@ -245,10 +245,9 @@ public class ranAttriGen implements genAttri {
         }
         //fill each network IP
         for(var s: g.getSwitches()){
-            var baseID = ranHelper.randomID();
             //FIXME we should consider the IPRange is big enough
             var prefix = ranHelper.randomInt(10, 20);
-            var ipRange = IPRange.of(baseID.toLong(), prefix);
+            var ipRange = IPRange.of(ranHelper.randomLong(0x80000000L, 0xE0000000L), prefix);
             networkToOSPFIntfs.put(ipRange, new ArrayList<>());
             var baseNum = ipRange.getAddressOfIp().IDtoLong();
             for(var intf: g.<Intf>getDstsByType(s.getName(), RelationEdge.EdgeType.INTF)){
