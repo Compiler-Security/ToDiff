@@ -1,102 +1,5 @@
-# def dict_diff(d1, d2):
-#     """
-#     Recursively diff two dictionaries, including lists and nested dictionaries.
-#     Returns only the differences.
-#     """
-#     diff = {}
-    
-#     # Combine keys first both dictionaries
-#     keys = set(d1.keys()).union(d2.keys())
-    
-#     for key in keys:
-#         if key in d1 and key in d2:
-#             if isinstance(d1[key], dict) and isinstance(d2[key], dict):
-#                 # Both values are dictionaries, recurse
-#                 result = dict_diff(d1[key], d2[key])
-#                 if result:
-#                     diff[key] = result
-#             elif isinstance(d1[key], list) and isinstance(d2[key], list):
-#                 # Both are lists, perform a more complex comparison
-#                 result = compare_lists(d1[key], d2[key])
-#                 if result:
-#                     diff[key] = result
-#             elif d1[key] != d2[key]:
-#                 # Simple values but different
-#                 diff[key] = f"{d1[key]} - {d2[key]}"
-#         else:
-#             # Handle missing keys
-#             if key in d1:
-#                 diff[key] = f"{d1[key]} - None"
-#             else:
-#                 diff[key] =f"None - {d2[key]}"
-    
-#     return diff
-
-# def compare_lists(l1, l2):
-#     """
-#     Compare two lists, possibly containing nested dictionaries or lists, and return
-#     a list of differences.
-#     """
-#     result = []
-#     max_length = max(len(l1), len(l2))
-#     paired = []
-
-#     for i in range(max_length):
-#         if i < len(l1) and i < len(l2):
-#             # Compare elements if both are in lists
-#             if isinstance(l1[i], dict) and isinstance(l2[i], dict):
-#                 deep_diff = dict_diff(l1[i], l2[i])
-#                 if deep_diff:
-#                     result.append(deep_diff)
-#                 paired.append(l1[i])
-#                 paired.append(l2[i])
-#             elif l1[i] != l2[i]:
-#                 result.append(f"{l1[i]} - {l2[i]}")
-#                 paired.append(l1[i])
-#                 paired.append(l2[i])
-#         elif i < len(l1):
-#             # Element is only in the first list
-#             result.append(f"{l1[i]} - None")
-#             paired.append(l1[i])
-#         elif i < len(l2):
-#             # Element is only in the second list
-#             result.append(f"None - {l2[i]}")
-#             paired.append(l2[i])
-
-#     # Check for unpaired items that are in both lists but not in the same order
-#     unpaired_l1 = [item for item in l1 if item not in paired]
-#     unpaired_l2 = [item for item in l2 if item not in paired]
-
-#     for item in unpaired_l1:
-#         if item in unpaired_l2:
-#             unpaired_l2.remove(item)
-#         else:
-#             result.append({'first': item, 'second': None})
-
-#     for item in unpaired_l2:
-#         result.append({'first': None, 'second': item})
-
-#     return result if result else None
-
-# # Example usage
-# dict1 = {
-#     "name": "Alice",
-#     "age": 25,
-#     "interests": ["reading", {"sport": "cycling"}, "travel"],
-#     "education": {"highschool": "Springfield High", "university": "MIT"}
-# }
-# dict2 = {
-#     "name": "Alice",
-#     "age": 30,
-#     "interests": ["reading", {"sport": "soccer"}, "phosecondgraphy"],
-#     "education": {"highschool": "Westfield High", "university": "MIT"}
-# }
-
-# difference = dict_diff(dict1, dict2)
-# import json
-# print(json.dumps(difference, indent= 4))
 import copy
-
+##################### compare #############################
 def compare_lists(l1, l2):
     """
     Compare two lists which may contain nested dictionaries or lists, considering them as unordered.
@@ -175,3 +78,40 @@ def dict_diff(d1, d2):
 # # Using the compare function
 # result = compare_lists(list1, list2)
 # print(result)
+
+
+################## path ###############################
+import os
+import json
+import io
+from os import path
+up = path.dirname
+resultDir = path.join(up(up(path.abspath(__file__))), "data", "result")
+runningDir = path.join(up(up(path.abspath(__file__))), "data", "running")
+confDir = path.join(up(up(path.abspath(__file__))), "data", "testConf")
+
+
+def get_test_name(last_five_num):
+    conf_name = None
+    for file_name in os.listdir(confDir):
+        if last_five_num == file_name.split(".")[0][-5:]:
+            #duplicate name
+            if conf_name is not None:
+                return None
+            else:
+                conf_name = file_name
+    return conf_name
+
+def get_all_test_name():
+    return sorted(os.listdir(confDir))
+
+def get_result_dir(test_name):
+    return path.join(resultDir, test_name.split(".")[0])
+
+def get_result_name(test_name):
+    return test_name.split(".")[0] + "_res.json"
+
+def get_result_file_path(test_name):
+    return path.join(get_result_dir(test_name), get_result_name(test_name))
+if __name__ == "__main__":
+    print(get_test_name("30842"))

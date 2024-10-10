@@ -70,6 +70,21 @@ class humandReader():
         res = self.data["genInfo"]["core_commands"][router_name]
         self.dump_to_file(new_name, res)
     
+    def readGraph(self):
+        new_name = path.basename(self.file_path)
+        #test32332_res_topo.dot
+        new_name = new_name.split(".")[0] + f"topo.dot"
+        res = self.data["genInfo"]["routerGraph"]
+        self.dump_to_file(new_name, res)
+    
+    def readConfigGraph(self):
+        new_name = path.basename(self.file_path)
+        #test32332_res_topo.dot
+        new_name = new_name.split(".")[0] + f"_config_graph.dot"
+        res = self.data["genInfo"]["configGraph"]
+        self.dump_to_file(new_name, res)
+
+
     def readAll(self):
         for rd in range(self.round_num):
             self.readPhyOfRound(rd)
@@ -78,6 +93,8 @@ class humandReader():
                 self.readOspfOfRoundOfRouter(rd, rt)
         for router_name in self.routers:
             self.readCore(router_name)
+        self.readGraph()
+        self.readConfigGraph()
 
 
 # def human_read_phy(rd, rt, file_path):
@@ -104,9 +121,10 @@ class humandReader():
 #             res.write(f"        result: '{command_res}'\n\n")
 #     with open(path.join(checkDir, new_name), "w") as fp:
 #         fp.write(res.getvalue())
-
+import util
 if __name__ == "__main__":
     #rd from 0
     #human_read_ospf(0, 0, "/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744_r1/test1726036744_r1_res.json")
-    h = humandReader("/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744/test1726036744_res.json")
+    test_name = util.get_test_name("71900")
+    h = humandReader(util.get_result_file_path(test_name))
     h.readAll()

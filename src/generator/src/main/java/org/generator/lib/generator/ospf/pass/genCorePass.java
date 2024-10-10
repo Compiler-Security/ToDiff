@@ -59,6 +59,16 @@ public class genCorePass {
                 op.setNUM2(ospf.getMinHoldTime());
                 op.setNUM3(ospf.getMaxHoldTime());
             }
+            //refresh timer <- lsaRefreshTime
+            {
+                var op = addOp(opCtxG, OpType.RefreshTimer);
+                op.setNUM(ospf.getLsaRefreshTime());
+            }
+            //timers lsa throttle all <- lsaIntervalTime
+            {
+                var op = addOp(opCtxG, OpType.TimersLsaThrottle);
+                op.setNUM(ospf.getLsaIntervalTime());
+            }
            // opCtxG.addOp(new Op);
         }
 
@@ -86,7 +96,7 @@ public class genCorePass {
             }
             {
                 if (!daemon.isSocketPerInterface()){
-                    var op = addOp(opCtxG, OpType.NOSOCKETPERINTERFACE);
+                    var op = addOp(opCtxG, OpType.NoSOCKETPERINTERFACE);
                 }
             }
             {
@@ -151,7 +161,7 @@ public class genCorePass {
 
         //transDelay
         {
-            var op = addOp(opCtxG, OpType.IpOspfTransDealy);
+            var op = addOp(opCtxG, OpType.IpOspfTransDelay);
             op.setNUM(ospf_intf.getTransDelay());
         }
         return opCtxG;

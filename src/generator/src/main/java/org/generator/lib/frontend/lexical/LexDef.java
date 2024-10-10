@@ -49,8 +49,9 @@ public class LexDef {
                 {SOCKETBUFFERSEND, "socket buffer send {LONGNUM(1-4000000000)}"},
                 {SOCKETBUFFERRECV, "socket buffer recv {LONGNUM(1-4000000000)}"},
                 //FIXME SOCKETBUFFERALL
-                {SOCKETBUFFERALL, "socket buffer all {LONGNUM(1-4000000000)}"},
-                {NOSOCKETPERINTERFACE, "no socket-per-interface"},
+                //{SOCKETBUFFERALL, "socket buffer all {LONGNUM(1-4000000000)}"},
+                {NoSOCKETPERINTERFACE, "no socket-per-interface"},
+
                 {AreaRange, "area {ID(NUM)} range {IPRANGE}|area {ID(NUM)} range {IPRANGE} advertise"},
                 {AreaRangeNoAd, "area {ID(NUM)} range {IPRANGE} not-advertise"},
                 {AreaRangeSub, "area {ID(NUM)} range {IPRANGE} substitute {IP}"},
@@ -60,6 +61,8 @@ public class LexDef {
                 {AreaStub, "area {ID(NUM)} stub"},
                 {AreaStubTotal, "area {ID(NUM)} stub no-summary"},
                 {AreaNSSA, "area {ID(NUM)} nssa"},
+                {RefreshTimer, "refresh timer {NUM(10-1800)}"},
+                {TimersLsaThrottle, "timers throttle lsa all {NUM(0-5000)}"},
                 {IPAddr, "ip address {IP}"},
                 {IpOspfArea, "ip ospf area {ID(NUM)}"},
                 {IpOspfCost, "ip ospf cost {NUM(1-65535)}"},
@@ -70,14 +73,16 @@ public class LexDef {
                 {IpOspfNet, "ip ospf network {NAME(broadcast,non-broadcast)}"},
                 {IpOspfPriority, "ip ospf priority {NUM(0-255)}"},
                 {IpOspfRetransInter, "ip ospf retransmit-interval {NUM(1-65535)}"},
-                {IpOspfTransDealy, "ip ospf transmit-delay {NUM(1-65535)}"},
+                {IpOspfTransDelay, "ip ospf transmit-delay {NUM(1-65535)}"},
                 {IpOspfPassive, "ip ospf passive"},
 
 
                 //minimal args is the first LexDef of no operation
                 {NOROSPF, "no router ospf"},
-                {NORID, "no ospf router-id|no ospf router-id {ID}"},
-                {NORABRTYPE, "no ospf abr-type|no ospf abr-type {NAME(standard,shortcut,ibm,cisco)}"},
+                //FIXME this is the simple fix of no ospf router-id, because no ospf router-id {ID} , id should be same for unset
+                //we don't support this in this generator
+                {NORID, "no ospf router-id"},
+                {NORABRTYPE, "no ospf abr-type {NAME(standard,shortcut,ibm,cisco)}"},
                 {NONETAREAID, "no network {IPRANGE} area {ID}"},
                 {NOPASSIVEINTFDEFUALT, "no passive-interface default"},
                 {NOTIMERSTHROTTLESPF, "no timers throttle spf|no timers throttle spf {NUM(0-600000)} {NUM2(0-600000)} {NUM3(0-600000)}"},
@@ -87,19 +92,22 @@ public class LexDef {
                 {NOSOCKETBUFFERRECV, "no socket buffer recv|no socket buffer recv {LONGNUM(1-4000000000)}"},
                 //SOCKETBUFFERALL
                 //{NOSOCKETBUFFERALL, "no socket buffer all|no socket buffer all {LONGNUM(1-4000000000)}"},
-                {NONOSOCKETPERINTERFACE, "no socket-per-interface"},
+                {SOCKETPERINTERFACE, "socket-per-interface"},
                 {NOAreaRange, "no area {ID(NUM)} range {IPRANGE}|no area {ID(NUM)} range {IPRANGE} advertise"},
                 {NOAreaRangeNoAd, "no area {ID(NUM)} range {IPRANGE} not-advertise"},
-                {NOAreaRangeSub, "no area {ID(NUM)} range {IPRANGE} substitute {IP}"},
-                //FIXME is this no lexical right?
-                {NOAreaRangeCost, "no area {ID(NUM)} range {IPRANGE} cost|no area {ID(NUM)} range {IPRANGE} cost {NUM(0-16777215)}|no area {ID(NUM)} range {IPRANGE} advertise cost {NUM(0-16777215)}"},
+                //{NOAreaRangeSub, "no area {ID(NUM)} range {IPRANGE} substitute {IP}"},
+                //FIXME no ...cost only should be added once we fix frr bug
+                {NOAreaRangeCost, "no area {ID(NUM)} range {IPRANGE} cost {NUM(0-16777215)}|no area {ID(NUM)} range {IPRANGE} advertise cost {NUM(0-16777215)}"},
                 {NOAreaVLink, "no area {ID(NUM)} virtual-link {ID2}"},
-                {NOAreaShortcut, "no area {ID(NUM)} shortcut {NAME(enable,disable,default)}"},
+                //FIXME default should be added once we fix frr bug
+                {NOAreaShortcut, "no area {ID(NUM)} shortcut {NAME(enable,disable)}"},
                 {NOAreaStub, "no area {ID(NUM)} stub"},
 
                 //FIXME simple fix of NOAreaStubTotal
                 //{NOAreaStubTotal, "no area {ID(NUM)} stub no-summary"},
                 {NOAreaNSSA, "no area {ID(NUM)} nssa"},
+                {NORefreshTimer,  "no refresh timer {NUM(10-1800)}"},
+                {NOTimersLsaThrottle, "no timers throttle lsa all {NUM(0-5000)}"},
                 {NOIPAddr, "no ip address {IP}"},
                 {NOIpOspfArea, "no ip ospf area | no ip ospf area {ID(NUM)}"},
                 {NOIpOspfCost, "no ip ospf cost | no ip ospf cost {NUM(1-65535)}"},
@@ -110,7 +118,7 @@ public class LexDef {
                 {NOIpOspfNet, "no ip ospf network | no ip ospf network {NAME(broadcast,non-broadcast)}"},
                 {NOIpOspfPriority, "no ip ospf priority | no ip ospf priority {NUM(0-255)}"},
                 {NOIpOspfRetransInter, "no ip ospf retransmit-interval | no ip ospf retransmit-interval {NUM(1-65535)}"},
-                {NOIpOspfTransDealy, "no ip ospf transmit-delay | no ip ospf transmit-delay {NUM(1-65535)}"},
+                {NOIpOspfTransDelay, "no ip ospf transmit-delay | no ip ospf transmit-delay {NUM(1-65535)}"},
                 {NOIpOspfPassive, "no ip ospf passive"},
 
 

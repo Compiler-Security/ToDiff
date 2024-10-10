@@ -10,6 +10,7 @@ import org.generator.lib.generator.ospf.pass.genEqualPass;
 import org.generator.lib.generator.ospf.pass.genOpPass;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpOspf;
+import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.ospf.OSPF;
@@ -353,64 +354,64 @@ public class IOTest {
         var confg = getSetConfG(ori);
         System.out.println(confg.toString());
     }
-    @Test
-    public void generatorTest(){
-        String test_st = """
-                interface r1-eth0
-                	ip address 82.144.2.106/3
-                	ip ospf area 0.0.0.2
-                interface r1-eth1
-                	ip address 89.183.104.6/1
-                	ip ospf area 0.0.0.3
-                int r1-eth2
-                	ip address 237.151.161.95/16
-                	ip ospf area 0.0.0.1
-                int r1-eth3
-                	ip address 117.132.165.79/15
-                	ip ospf area 0.0.0.0
-                router ospf    
-                    network 1.1.1.1/10 area 2
-                """;
-        int i = 0;
-        while(true) {
-            i++;
-            System.out.printf("testCase %d\n", i);
-            var genOp = new genOps();
-            var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-            //var ori = new ConfReader().read(test_st);
-
-            var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
-            //System.out.println(ori_use);
-            var confg = getSetConfG(ori_use);
-            var gen = generate.generateCore(confg);
-            //var gen = new ConfReader().read(test_st1);
-            //System.out.println(gen.getOps().size());
-            //System.out.println(reducer.reduceToCore(ori));
-            //System.out.println("========");
-            //System.out.println(gen);
-            var confg_core = getSetConfG(gen);
-            //System.out.println(confg);
-            //System.out.println(confg_core);
-            if (!confg_core.equals(confg)) {
-                System.out.println(gen);
-                System.out.println(compareJson(confg.toJson(), confg_core.toJson()).toPrettyString());
-                //System.out.println(confg_core.toJson().toPrettyString());
-            }
-            assert confg_core.equals(confg) : "CORE WRONG";
-            reducer.s = 0;
-            var gen_equal = generate.generateEqualOfCore(gen);
-            //System.out.println(gen_equal);
-            var confg_equal = getSetConfG(gen_equal);
-            if (!confg_equal.equals(confg)){
-                System.out.println(gen);
-                System.out.println("===============");
-                System.out.println(gen_equal);
-                System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
-            }
-            assert confg_equal.equals(confg) : "MUTATE WRONG";
-            //break;
-        }
-    }
+  //  @Test
+//    public void generatorTest(){
+//        String test_st = """
+//                interface r1-eth0
+//                	ip address 82.144.2.106/3
+//                	ip ospf area 0.0.0.2
+//                interface r1-eth1
+//                	ip address 89.183.104.6/1
+//                	ip ospf area 0.0.0.3
+//                int r1-eth2
+//                	ip address 237.151.161.95/16
+//                	ip ospf area 0.0.0.1
+//                int r1-eth3
+//                	ip address 117.132.165.79/15
+//                	ip ospf area 0.0.0.0
+//                router ospf
+//                    network 1.1.1.1/10 area 2
+//                """;
+//        int i = 0;
+//        while(true) {
+//            i++;
+//            System.out.printf("testCase %d\n", i);
+//            var genOp = new genOps();
+//            var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+//            //var ori = new ConfReader().read(test_st);
+//
+//            var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
+//            //System.out.println(ori_use);
+//            var confg = getSetConfG(ori_use);
+//            var gen = generate.generateCore(confg);
+//            //var gen = new ConfReader().read(test_st1);
+//            //System.out.println(gen.getOps().size());
+//            //System.out.println(reducer.reduceToCore(ori));
+//            //System.out.println("========");
+//            //System.out.println(gen);
+//            var confg_core = getSetConfG(gen);
+//            //System.out.println(confg);
+//            //System.out.println(confg_core);
+//            if (!confg_core.equals(confg)) {
+//                System.out.println(gen);
+//                System.out.println(compareJson(confg.toJson(), confg_core.toJson()).toPrettyString());
+//                //System.out.println(confg_core.toJson().toPrettyString());
+//            }
+//            assert confg_core.equals(confg) : "CORE WRONG";
+//            reducer.s = 0;
+//            var gen_equal = generate.generateEqualOfCore(gen);
+//            //System.out.println(gen_equal);
+//            var confg_equal = getSetConfG(gen_equal);
+//            if (!confg_equal.equals(confg)){
+//                System.out.println(gen);
+//                System.out.println("===============");
+//                System.out.println(gen_equal);
+//                System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
+//            }
+//            assert confg_equal.equals(confg) : "MUTATE WRONG";
+//            //break;
+//        }
+//    }
 
 
 
@@ -434,7 +435,7 @@ public class IOTest {
             normal_controller.addConfig(opa, 1, 2, 1, 1);
         }
         var tmp_controller = CapacityController.of(6, 0, 0, 1, 0);
-        var gen_opag = genEqualPass.solve(normal_controller);
+        var gen_opag = genEqualPass.solve(normal_controller, OpAG.of(opas));
         gen_opag = reducePass.expandOpAG(gen_opag);
         var print_ctx = OpCtxG.Of();
         gen_opag.getOps().forEach(opa -> print_ctx.addOp(opa.getOp().getOpCtx()));

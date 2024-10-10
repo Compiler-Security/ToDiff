@@ -43,6 +43,16 @@ public class ospfDaemonExecPass extends baseExecPass {
                 cur_ospf.setMaxHoldTime(op.getNUM3());
                 return ExecStat.SUCC;
             }
+
+            case RefreshTimer -> {
+                cur_ospf.setLsaRefreshTime(op.getNUM());
+                return ExecStat.SUCC;
+            }
+
+            case TimersLsaThrottle -> {
+                cur_ospf.setLsaIntervalTime(op.getNUM());
+                return ExecStat.SUCC;
+            }
         }
         assert false:"should not goto here %s".formatted(op.Type());
         return ExecStat.FAIL;
@@ -75,13 +85,13 @@ public class ospfDaemonExecPass extends baseExecPass {
                 return ExecStat.SUCC;
             }
             //FIXME SOCKETBUFFERALL
-            case SOCKETBUFFERALL -> {
-                var num = op.getLONGNUM();
-                ospf_daemon.setBuffersend(num);
-                ospf_daemon.setBufferrecv(num);
-                return ExecStat.SUCC;
-            }
-            case NOSOCKETPERINTERFACE -> {
+//            case SOCKETBUFFERALL -> {
+//                var num = op.getLONGNUM();
+//                ospf_daemon.setBuffersend(num);
+//                ospf_daemon.setBufferrecv(num);
+//                return ExecStat.SUCC;
+//            }
+            case NoSOCKETPERINTERFACE -> {
                 ospf_daemon.setSocketPerInterface(false);
                 return ExecStat.SUCC;
             }

@@ -39,7 +39,8 @@ public enum OpType {
     TIMERSTHROTTLESPF,
     //TODO max-metric...
     //TODO auto-cost it's hard to equal
-
+    RefreshTimer,
+    TimersLsaThrottle,
     OSPFROUTEREND,
     //=============OSPFDAEMON===================
     //TODO proactive-arp
@@ -53,8 +54,8 @@ public enum OpType {
     SOCKETBUFFERRECV,
 
     //FIXME SOCKETBUFFERALL
-    SOCKETBUFFERALL,
-    NOSOCKETPERINTERFACE,
+    //SOCKETBUFFERALL,
+    NoSOCKETPERINTERFACE,
 
     OSPFDAEMONGROUPEND,
     //===================OSPF AREA=====================
@@ -103,7 +104,7 @@ public enum OpType {
     IpOspfNet,
     IpOspfPriority,
     IpOspfRetransInter,
-    IpOspfTransDealy,
+    IpOspfTransDelay,
     IpOspfPassive,
 //    TODO IpOspfPrefixSupp,
 
@@ -122,17 +123,20 @@ public enum OpType {
     NOSOCKETBUFFERSEND,
     NOSOCKETBUFFERRECV,
     //FIXME SOCKETBUFFERALL
-    NOSOCKETBUFFERALL,
-    NONOSOCKETPERINTERFACE,
+    //NOSOCKETBUFFERALL,
+    SOCKETPERINTERFACE,
     NOAreaRange,
     NOAreaRangeNoAd,
-    NOAreaRangeSub,
+    //FIXME NoAreaRangeSub
+    //NOAreaRangeSub,
     NOAreaRangeCost,
     NOAreaVLink,
     NOAreaShortcut,
     NOAreaStub,
     //FIXME simple fix of NOAreaStubTotal
     //NOAreaStubTotal,
+    NORefreshTimer,
+    NOTimersLsaThrottle,
     NOAreaNSSA,
     NOIPAddr,
     NOIpOspfArea,
@@ -144,8 +148,9 @@ public enum OpType {
     NOIpOspfNet,
     NOIpOspfPriority,
     NOIpOspfRetransInter,
-    NOIpOspfTransDealy,
+    NOIpOspfTransDelay,
     NOIpOspfPassive;
+
 
     public static boolean inPhy(@NotNull OpType typ) {
         return typ.ordinal() >= NODEADD.ordinal() && typ.ordinal() <= LINKREMOVE.ordinal();

@@ -1,8 +1,11 @@
 package org.generator.lib.item.opg;
+import org.generator.lib.item.IR.OpCtx;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-abstract public class BaseOpG<T> {
+abstract public class BaseOpG<T> implements Iterable<T> {
     protected BaseOpG(){
         opgroup = new ArrayList<>();
     }
@@ -30,4 +33,9 @@ abstract public class BaseOpG<T> {
     }
 
     private List<T> opgroup;
+
+    @Override
+    public Iterator<T> iterator(){
+        return opgroup.iterator();
+    }
 }

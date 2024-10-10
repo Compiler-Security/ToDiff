@@ -52,12 +52,12 @@ class TestNet:
         self.net = Mininet(topo)
         self.router_nodes = ["r1", "r2", "r3"]
 
-    def _get_node_by_name(self, rname):
+    def get_node_by_name(self, rname):
         assert(self.net.nameToNode.__contains__(rname))
         return self.net.nameToNode[rname]
 
     def run_frr_cmds(self, rname:str, commands, isjson=False):
-        rnode: FrrNode = self._get_node_by_name(rname)
+        rnode: FrrNode = self.get_node_by_name(rname)
         assert (type(rnode) is FrrNode)
         st = rnode.daemon_cmds(commands)
         st = st.strip()
@@ -69,7 +69,7 @@ class TestNet:
         return st
 
     def run_frr_cmd(self, rname:str, command, isjson=False):
-        rnode:FrrNode = self._get_node_by_name(rname)
+        rnode:FrrNode = self.get_node_by_name(rname)
         assert (type(rnode) is FrrNode)
         st = rnode.daemon_cmd(command)
         st = st.strip()

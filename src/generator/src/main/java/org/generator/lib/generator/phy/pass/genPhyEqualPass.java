@@ -69,14 +69,13 @@ public class genPhyEqualPass {
     }
     boolean checkPreCondition(OpPhy targetOp, NormalController slot){
         switch (targetOp.Type()){
-            //FIXME linkdown handle is not right
-            case LINKADD, LINKREMOVE ->{
+            //The link {add|down|remove} instruction can be generated arbitrarily.
+            //The Link down instruction can be generated after the link remove instruction.
+            //We ignore invalid instructions in the test framework to ensure that the link instruction is generated only when the node exists.
+            case LINKADD, LINKREMOVE,LINKDOWN ->{
                 var b1 = getSlot(NormalController.CType.NODE, Arrays.stream(targetOp.getNAME().split("-")).toList().getFirst(), null).getCurType() == OpType.NODEADD;
                 var b2 = getSlot(NormalController.CType.NODE, Arrays.stream(targetOp.getNAME2().split("-")).toList().getFirst(), null).getCurType() == OpType.NODEADD;
                 return b1 && b2;
-            }
-            case LINKDOWN -> {
-                return slot.getCurType() == OpType.LINKADD || slot.getCurType() == OpType.LINKDOWN;
             }
             case INTFUP, INTFDOWN -> {
                 var opType =  getSlot(NormalController.CType.LINK, targetOp.getNAME(), null).getCurType();

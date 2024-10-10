@@ -11,6 +11,7 @@ import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.reducer.driver.reducer;
+import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.reducer.semantic.CtxOpDef;
 import org.generator.util.ran.ranHelper;
 
@@ -23,6 +24,13 @@ public class generate {
     public static OpCtxG generatePhyCore(ConfGraph confGraph){
         return genPhyCorePass.solve(confGraph);
     }
+
+    /**
+     *  confg = confg.viewConfGraphOfRouter("r0");
+     *  confg.setR_name("r0");
+     * @param confGraph
+     * @return
+     */
     public static OpCtxG generateCore(ConfGraph confGraph){
         var p = new genCorePass();
         var res1 = p.solve(confGraph);
@@ -50,6 +58,9 @@ public class generate {
                 var op = genOpPass.genRanOpByControl(ctxOpa.getOp().Type() == OpType.IntfName);
                 var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
                 if (activeOpAs.contains(opa)) continue;
+                if (skipCommands(op.getOpOspf().Type())){
+                    continue;
+                }
                 //System.out.println(opa);
                 controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                 break;
@@ -61,20 +72,47 @@ public class generate {
             while(true) {
                 var ori_opa = ranHelper.randomElemOfList(opas.getOps());
                 assert ori_opa != null : "opa to mutate is supposed to be not null";
+                //this skip op should not be mutate commands
+                if (skipCommands(ori_opa.getOp().Type())){
+                    continue;
+                }
                 var mutate_opa = actionRulePass.mutate(ori_opa);
-                if (mutate_opa != null) controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1);
-                else break;
+                if (mutate_opa != null){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
+                    break;
+                }
             }
         }
     }
-    public static OpCtxG generateEqualOfCore(OpCtxG opCtxG){
+
+    public static boolean skipCommands(OpType opType){
+        if (generate.fastConvergence){
+            switch (opType){
+                case TIMERSTHROTTLESPF, IpOspfHelloInter, IpOspfDeadInter, IpOspfDeadInterMulti, RefreshTimer, TimersLsaThrottle, IpOspfRetransInter
+                        -> {return true;}
+            }
+        }
+        return false;
+    }
+
+    /***
+     * if full, init opCtxG is  in the head of generate opCtxG
+     * @param opCtxG
+     * @param full
+     * @return
+     */
+    public static OpCtxG generateEqualOfCore(OpCtxG opCtxG, boolean full){
         var opas = reducer.reduce(opCtxG);
         var normal_controller = NormalController.of();
 
         //we add active instructions to the normal_controller
         //these commands will be active in the final
         for(var opa: opas.getOps()){
-            normal_controller.addConfig(opa, expandRatio - 1, expandRatio + 1, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.ACTIVE);
+            if (skipCommands(opa.getOp().Type())){
+                //skipCommands should only be at once
+                normal_controller.addConfig(opa, 0, 0, 0, 0, OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.ACTIVE);
+            }else {
+                normal_controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.ACTIVE);
+            }
         }
 
 
@@ -85,14 +123,31 @@ public class generate {
         addRemovedOpToController(opas, normal_controller);
 
 
-        var tmp_controller = CapacityController.of(opas.getOps().size(), 0, 0, 1, 0);
-        var gen_opag = genEqualPass.solve(normal_controller);
+        var gen_opag = genEqualPass.solve(normal_controller, opas);
+        //remove original core ops
+        if (!full) {
+            gen_opag.setOpgroup(gen_opag.getOps().subList(opas.getOps().size(), gen_opag.getOps().size()));
+        }
         return gen_opag.toOpCtxGLeaner();
     }
 
     public static OpCtxG generateEqualOfPhyCore(OpCtxG opCtxG, double ratio, int maxRound){
         var r = new genPhyEqualPass();
-        return r.solve(opCtxG, ratio, maxRound);
+        var addPart =  r.solve(opCtxG, ratio, maxRound);
+        var totalPart = OpCtxG.Of();
+        totalPart.addOps(opCtxG.getOps());
+        totalPart.addOps(addPart.getOps());
+        var confg0 = new ConfGraph();
+        var confg1 = new ConfGraph();
+        phyArgPass.solve(opCtxG, confg0);
+        phyArgPass.solve(totalPart, confg1);
+        if (!confg0.equals(confg1)){
+            System.out.println(confg0);
+            System.out.println("==============");
+            System.out.println(confg1);
+            assert false : "phy conf not equal!";
+        }
+        return addPart;
     }
 
     //FIXME(should turn to true when running)

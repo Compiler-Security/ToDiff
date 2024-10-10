@@ -86,6 +86,19 @@ class FrrNode(Node):
     def _getConfPath(self):
         return path.join(self.conf_dir, f"{self.name}.conf")
     
+    def load_frr_conf(self):
+        conf_path = self._getConfPath()
+        self.cmds_error(["cp", conf_path, "/etc/frr/frr.conf"])
+        if self.raw_conf_check != None:
+            with open("/etc/frr/frr.conf", "r") as fp:
+                raw_conf_now = fp.read()
+            assert raw_conf_now == self.raw_conf_check.replace("\r\n", "\n"), "new conf not right!"
+        try:
+            self.cmds_error(["vtysh", "-b"])
+        except:
+            #FIXME
+            pass
+
     #conf_dir testname/conf
     def load_frr(self, daemons, conf_dir, universe=False):
         self.conf_dir = conf_dir
@@ -97,21 +110,11 @@ class FrrNode(Node):
             os.makedirs(self.log_path)
         assert (path.exists(self.log_path))
         self.daemons = daemons
+        ospf_running = "ospfd" in self.daemon_dict
         for daemon in daemons:
             self._load_daemon(daemon, conf_dir, universe)
-        if (universe):
-            conf_path = self._getConfPath()
-            self.cmds_error(["cp", conf_path, "/etc/frr/frr.conf"])
-            if self.raw_conf_check != None:
-                with open("/etc/frr/frr.conf", "r") as fp:
-                    raw_conf_now = fp.read()
-                assert raw_conf_now == self.raw_conf_check.replace("\r\n", "\n"), "new conf not right!"
-            try:
-                self.cmds_error(["vtysh", "-b"])
-            except:
-                #FIXME
-                pass
-            
+        if (universe and not ospf_running):
+            self.load_frr_conf()
             #erroraln("cat /etc/frr/frr.conf", self.cmds(["cat", "/etc/frr/frr.conf"]))
         if DEBUG == True:
             self._log_load_frr()
@@ -170,7 +173,8 @@ class FrrNode(Node):
     def stop_frr(self):
         #infoaln("hahahah", self.log_path)
         #FIXME this kill_pid is duplicated and can be removed
-        self.save_frr_conf()
+        if "ospfd" in self.daemon_dict:
+            self.save_frr_conf()
         self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
         for v in self.daemon_dict.values():
             kill_pid(v["daemon_pid"])
@@ -232,6 +236,14 @@ class FrrNode(Node):
     
     def dump_neighbor_info(self):
         info = self.daemon_cmds(["show ip ospf neighbor json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
+    
+    def dump_ospf_intfs_info(self):
+        info = self.daemon_cmds(["show ip ospf interface json"])
         try:
             return json.loads(info)
         except Exception as e:

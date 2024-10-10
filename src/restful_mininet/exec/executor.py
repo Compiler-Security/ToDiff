@@ -14,7 +14,8 @@ import json
 import time
 
 class executor:
-
+    def __init__(self):
+        pass
     def __init__(self, conf_path, output_dir_str, minWaitTime, maxWaitTime) -> None:
         setLogLevel('info')
         self.conf_path = conf_path
@@ -32,7 +33,7 @@ class executor:
         self.conf_file_dir = path.join(self.output_dir, 'conf')
         os.makedirs(self.conf_file_dir, exist_ok=True)
         os.system("mn -c 2> /dev/null")
-    
+        
     def _run_phy(self, net, ctx, phy_commands):
         res = []
         for op in phy_commands:
@@ -98,14 +99,25 @@ class executor:
             warnln(f"    +check router {r_name}")
             res = net.net.nameToNode[r_name].dump_neighbor_info()
             if res == None:
-                warnln(f"    -check router {r_name}")
+                warnln(f"    -check router {r_name} n")
                 return False
             for val in res['neighbors'].values():
                 for val1 in val:
-                    if (val1['converged'] != 'Full' or val1['linkStateRetransmissionListCounter'] > 0):
-                        warnln(f"    -check router {r_name}")
+                    #if neighbor is DR/Backup, converged is full
+                    #otherwise converged is 2-way
+                    if (val1['converged'] != 'Full' and val1['nbrState'] != '2-Way/DROther'):
+                        warnln(f"    -check router {r_name} nb c")
                         return False
-            warnln(f"    -check router {r_name}")
+                    if (val1['linkStateRetransmissionListCounter'] > 0):
+                        warnln(f"    -check router {r_name} nb re")
+                        return False
+            res = net.net.nameToNode[r_name].dump_ospf_intfs_info()
+            for intfName, val in res['interfaces'].items():
+                if val['state'] == "Waiting":
+                    warnln(f"    -check router {r_name} oi w")
+                    warnln(intfName)
+                    return False
+            warnln(f"    -check router {r_name} y")
         return True
     
     def _run(self, r):
@@ -119,14 +131,26 @@ class executor:
         for i in range(0, self.step_nums[r]):
             erroraln(f"\n\n>>>> + step{i} <<<<", "")
             
-            erroraln(f"+ OSPF commands", "")
+            
             ospf_res = {}
             if i == 0:
+                erroraln(f"+ OSPF commands", "")
                 for j in range(0, len(self.routers)):
                     router_name = self.routers[j]
                     ospf_ops = commands[i]['ospf'][j]
                     self._init_ospf(router_name, ospf_ops)
+                erroraln(f"- OSPF commands", "")
+                
+                erroraln(f"+ PHY commands", "")
+                phy_res = self._run_phy(net, ctx, commands[i]['phy'])
+                erroraln(f"- PHY commands", "")
+            
             else:
+                erroraln(f"+ PHY commands", "")
+                phy_res = self._run_phy(net, ctx, commands[i]['phy'])
+                erroraln(f"- PHY commands", "")
+
+                erroraln(f"+ OSPF commands", "")
                 for j in range(len(self.routers) -1, -1, -1):
                     router_name = self.routers[j]
                     ospf_ops = commands[i]['ospf'][j]
@@ -134,12 +158,8 @@ class executor:
                     if j == 0:
                         print(tmp)
                     ospf_res[router_name] = tmp
-            erroraln(f"- OSPF commands", "")
+                erroraln(f"- OSPF commands", "")
             
-            erroraln(f"+ PHY commands", "")
-            phy_res = self._run_phy(net, ctx, commands[i]['phy'])
-            erroraln(f"- PHY commands", "")
-
             if i == 0:    
                 net.start_net()
             res.append({})
@@ -149,7 +169,7 @@ class executor:
             
             sleep_time = commands[i]['waitTime']
             erroraln(f"wait {sleep_time} s ", "")
-            #CLI(net.net)
+            
             if sleep_time == -1:
                 #handle convergence
                     #min(_check_convergence() + minWaitTime, maxWaitTime)
@@ -158,10 +178,7 @@ class executor:
                 begin_t = time.time()
                 while True:
                     if self._check_converge(net):
-                        if (i == 1):
-                            time.sleep(3600)
-                        else:
-                            time.sleep(self.minWaitTime)
+                        time.sleep(self.minWaitTime)
                         res[i]['exec']['convergence'] = True
                         warnaln("   + convergence!", "")
                         break
@@ -171,10 +188,9 @@ class executor:
                             warnaln("   + not convergence!", "")
                             break
                         else:
-                            time.sleep(self.minWaitTime)
+                            time.sleep(10)
             else:
                 time.sleep(sleep_time)
-            
             erroraln("+ collect result", "")
             warnaln("   + collect from daemons", "")
             res[i]['watch'] = {}
@@ -195,5 +211,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1726036744.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 600, 1200)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1728371895_r0.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 30)
     t.test()

@@ -153,4 +153,21 @@ public class baseGenTest {
             assert confg0.equals(confg1);
         }
     }
+
+    @Test
+    public void fixLinkEqual(){
+        var router_count = 3;
+        var string_st = """
+        node r0 add
+        node s0 add
+        node r0 set OSPF up
+        link r0-eth0 s0-eth0 add
+        intf r0-eth0 up
+        """;
+        var a = new PhyConfReader();
+        var phyConf = a.read(string_st);
+        //while(true) {
+        var phyEqualConf = generate.generateEqualOfPhyCore(phyConf, 1, 1);
+        System.out.println(phyEqualConf);
+    }
 }

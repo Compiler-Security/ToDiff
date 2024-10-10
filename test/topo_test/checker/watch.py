@@ -21,6 +21,11 @@ class watchTest:
         for step in range(step_num):
             print(f"step {step}")
             print(self._watchOfPhy(rd, step))
+    
+    def watchOspfProcessOfRoundRouter(self, rd, rt):
+        pass
+    def watchOspfResultOfRoundRouter(self, rd, rt):
+        pass
 
 if __name__ == "__main__":
     w = watchTest("/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744/test1726036744_res.json")

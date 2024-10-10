@@ -108,17 +108,13 @@ public class NormalController {
         }
     }
     public List<OpType> getPossibleTypes(){
-        var l = typeToInt.keySet().stream().filter(typ -> (getCounterOfType(typ) > 1 && typ == getFinalType()) || (getCounterOfType(typ) > 0 && typ != getFinalType())).collect(Collectors.toList());
-        if (!l.isEmpty()){
-            if (cType == CType.LINK){
-                if (getCounterOfType(OpType.LINKADD) == 1){
-                    return l.stream().filter(x -> x != OpType.LINKREMOVE).collect(Collectors.toList());
-                }
-            }
-            return l;
+        if (getCounterOfType(finalType) == 1){
+            var otherTypes = typeToInt.keySet().stream().filter(typ -> getCounterOfType(typ) > 0 && typ != getFinalType()).collect(Collectors.toList());
+            if (!otherTypes.isEmpty()) return otherTypes;
+            else return Stream.of(finalType).toList();
+        }else{
+            return typeToInt.keySet().stream().filter(typ -> getCounterOfType(typ) > 0).collect(Collectors.toList());
         }
-        if (getCounterOfType(finalType) > 0) return Stream.of(finalType).toList();
-        else return new ArrayList<>();
     }
 
     public void consumeOneType(OpType opType){

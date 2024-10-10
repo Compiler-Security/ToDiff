@@ -2,7 +2,6 @@ package org.generator.lib.reducer.semantic;
 
 import org.generator.lib.frontend.lexical.LexDef;
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.util.collections.Pair;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,18 +31,23 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOSOCKETBUFFERRECV, new OpType[]{SOCKETBUFFERRECV}},
                 //FIXME SOCKETBUFFERALL
                 //{NOSOCKETBUFFERALL, new OpType[]{SOCKETBUFFERALL}},
-                {NONOSOCKETPERINTERFACE, new OpType[]{NOSOCKETPERINTERFACE}},
+                {SOCKETPERINTERFACE, new OpType[]{NoSOCKETPERINTERFACE}},
 
                 {NOAreaRange, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
                 {NOAreaRangeNoAd, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
-                {NOAreaRangeSub, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
                 {NOAreaRangeCost, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
+
+                //{NOAreaRangeSub, new OpType[]{AreaRange}},
+
 
                 //FIXME areaVLINK
                 //{NOAreaVLink, new OpType[]{AreaVLink}},
                 {NOAreaShortcut, new OpType[]{AreaShortcut}},
 
                 {NOAreaStub, new OpType[]{AreaStub, AreaStubTotal}},
+
+                {NORefreshTimer, new OpType[]{RefreshTimer}},
+                {NOTimersLsaThrottle, new OpType[]{TimersLsaThrottle}},
 
                 //FIXME simple fix of NOAreaStubTotal
                //{NOAreaStubTotal, new OpType[]{AreaStubTotal}},
@@ -58,14 +62,15 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOIpOspfNet, new OpType[]{IpOspfNet}},
                 {NOIpOspfPriority, new OpType[]{IpOspfPriority}},
                 {NOIpOspfRetransInter, new OpType[]{IpOspfRetransInter}},
-                {NOIpOspfTransDealy, new OpType[]{IpOspfTransDealy}},
+                {NOIpOspfTransDelay, new OpType[]{IpOspfTransDelay}},
                 {NOIpOspfPassive, new OpType[]{IpOspfPassive}},
         };
         var seeds = new ArrayList<Object[]>();
         for (var item : reduce_seed) {
             var opType = (OpType) item[0];
             switch (opType){
-                case NOAreaRangeSub,NOAreaRangeCost,NOAreaRangeNoAd,NOAreaRange -> {
+//                case NoAreaRangeSub -> {seeds.add(new Object[]{item[0], item[1], 2});}
+                case NOAreaRangeCost,NOAreaRangeNoAd,NOAreaRange -> {
                     seeds.add(new Object[]{item[0], item[1], 2});
                 }
                 default -> {

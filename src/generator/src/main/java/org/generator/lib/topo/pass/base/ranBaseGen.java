@@ -77,6 +77,7 @@ class ranConnect{
                     var intf = new Intf();
                     r.intfs.add(intf);
                     intf.area = area;
+                    intf.cost = ranHelper.randomInt(1, 65535);
                     s.add(intf);
                 }
             }
@@ -173,6 +174,7 @@ public class ranBaseGen implements genBase{
                 var intf = new Intf();
                 r.intfs.add(intf);
                 intf.area = 0;
+                intf.cost = ranHelper.randomInt(1, 65535);
             }
             zero_routers.addAll(choseRouters);
         }

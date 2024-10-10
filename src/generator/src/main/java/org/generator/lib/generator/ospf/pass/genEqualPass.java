@@ -43,8 +43,8 @@ public class genEqualPass {
     }
 
     //FIXME(should turn to true when running)
-    public static OpAG solve(NormalController slots){
-        var cur_opag = OpAG.of();
+    public static OpAG solve(NormalController slots, OpAG init_opag){
+        var cur_opag = init_opag.copy();
         int s = 0;
         while(!slots.getCanMoveOpas().isEmpty()){
             var actionOpas = slots.getCanMoveOpas();

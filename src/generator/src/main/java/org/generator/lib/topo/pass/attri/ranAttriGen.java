@@ -111,12 +111,16 @@ public class ranAttriGen implements genAttri {
         //FIXME for testing we must choose some proper value such as 0 etc.
         if (generate.fastConvergence){
             ospf.setInitDelay(0);
-            ospf.setMaxHoldTime(0);
+            ospf.setMaxHoldTime(1);
             ospf.setMinHoldTime(0);
+            ospf.setLsaRefreshTime(10);
+            ospf.setLsaIntervalTime(1);
         }else{
             ospf.setInitDelay(ranHelper.randomInt(0, 600000));
             ospf.setMinHoldTime(ranHelper.randomInt(0, 600000));
             ospf.setMaxHoldTime(ranHelper.randomInt(0, 600000));
+            ospf.setLsaRefreshTime(ranHelper.randomInt(10, 1800));
+            ospf.setLsaIntervalTime(ranHelper.randomInt(0, 5000));
         }
         //FIXME we should think ABR_TYPE
     }
@@ -147,7 +151,12 @@ public class ranAttriGen implements genAttri {
         var deadInterval = ranHelper.randomInt(1, 65535);
         var helloInterval = ranHelper.randomInt(1, 65535);
         var retransInterval = ranHelper.randomInt(1, 65535);
-        var transInterval = ranHelper.randomInt(1, 655353);
+        if (generate.fastConvergence){
+            deadInterval = 1;
+            helloInterval = 1;
+            retransInterval = 1;
+        }
+        var transDelay = ranHelper.randomInt(1, 100);
         var netType = OSPFIntf.OSPFNetType.BROADCAST;
         var GRHelloDelay = ranHelper.randomInt(1, 1800);
         if (ospfIntfs.size() == 2){
@@ -158,8 +167,8 @@ public class ranAttriGen implements genAttri {
         for(var ospfIntf: ospfIntfs){
             //self
             //FIXME for testing this ratio should be considered
-            ospfIntf.setPassive(ranHelper.randomInt(0, 5) != 0);
-            ospfIntf.setCost(ranHelper.randomInt(1, 65535));
+            ospfIntf.setPassive(ranHelper.randomInt(0, 10) == 0);
+            //ospfIntf.setCost(ranHelper.randomInt(1, 65535));
             ospfIntf.setPriority(ranHelper.randomInt(0, 255));
             //we should set helloMulti for testing
             //network
@@ -180,7 +189,7 @@ public class ranAttriGen implements genAttri {
             ospfIntf.setGRHelloDelay(GRHelloDelay);
             ospfIntf.setNetType(netType);
             ospfIntf.setRetansInter(retransInterval);
-            ospfIntf.setTransDelay(transInterval);
+            ospfIntf.setTransDelay(transDelay);
         }
         //we should ensure one ospfIntf priority > 0
     }
@@ -221,6 +230,7 @@ public class ranAttriGen implements genAttri {
                 //TODO we should use random area
                 var area_id = ID.of(r.intfs.get(j).area);
                 ospf_intf.setArea(ID.of(r.intfs.get(j).area));
+                ospf_intf.setCost(r.intfs.get(j).cost);
 
                 if (area_id.toLong() == 0L){
                     isABR.put(ospf, true);
