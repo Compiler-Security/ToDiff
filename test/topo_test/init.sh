@@ -1,4 +1,4 @@
-mkdir data/backup
+mkdir -p data/backup
 sudo cp -r data/result data/backup/result
 sudo cp -r data/running data/backup/running
 sudo cp -r data/testConf data/backup/testConf

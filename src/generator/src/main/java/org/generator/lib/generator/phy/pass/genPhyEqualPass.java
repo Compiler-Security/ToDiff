@@ -79,7 +79,7 @@ public class genPhyEqualPass {
             }
             case INTFUP, INTFDOWN -> {
                 var opType =  getSlot(NormalController.CType.LINK, targetOp.getNAME(), null).getCurType();
-                return opType == OpType.LINKADD || opType == OpType.LINKDOWN;
+                return opType == OpType.LINKADD;
             }
             case NODESETOSPFUP,NODESETOSPFRE, NODESETOSPFSHUTDOWN ->{
                 return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;

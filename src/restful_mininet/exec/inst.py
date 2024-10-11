@@ -258,8 +258,19 @@ class MininetInst(BaseInst):
                 if self._get_pair_intf(intf1, "L") == intf2:
                     self.net.net.delLink(intf1.link)
                     return self.EXEC_DONE
-            #we align it with generator
+            #we assign it with generator
             return self.EXEC_DONE
+
+        # if _cmds_equal_prefix(op_args, ["up"]):
+        #     if node1 is None or node2 is None:
+        #         return self.EXEC_MISS
+        #     if (intf1 is not None) and (intf2 is not None):
+        #         if self._get_pair_intf(intf1, "L") == intf2:
+        #             #ATTENTION mininet has some bug, so we must set bw not to 0 in order to set loss to 0
+        #             intf1.config(bw = 1000, loss=0)
+        #             intf2.config(bw = 1000, loss=0)
+        #             return self.EXEC_DONE
+        #     return self.EXEC_MISS
         
         if _cmds_equal_prefix(op_args, ["down"]):
             if node1 is None or node2 is None:
@@ -269,7 +280,6 @@ class MininetInst(BaseInst):
                     intf1.config(loss=100)
                     intf2.config(loss=100)
                     return self.EXEC_DONE
-            #we align it with generator, link down can be added after link remove
             return self.EXEC_DONE
 
         raise InstErrorException("[mininet] link inst not right")
