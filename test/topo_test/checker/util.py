@@ -89,9 +89,9 @@ up = path.dirname
 resultDir = path.join(up(up(path.abspath(__file__))), "data", "result")
 runningDir = path.join(up(up(path.abspath(__file__))), "data", "running")
 confDir = path.join(up(up(path.abspath(__file__))), "data", "testConf")
+checkDir = path.join(up(up(path.abspath(__file__))), "data", "check")
 
-
-def get_test_name(last_five_num):
+def get_test_name_5(last_five_num):
     conf_name = None
     for file_name in os.listdir(confDir):
         if last_five_num == file_name.split(".")[0][-5:]:
@@ -114,4 +114,4 @@ def get_result_name(test_name):
 def get_result_file_path(test_name):
     return path.join(get_result_dir(test_name), get_result_name(test_name))
 if __name__ == "__main__":
-    print(get_test_name("30842"))
+    print(get_test_name_5("30842"))
