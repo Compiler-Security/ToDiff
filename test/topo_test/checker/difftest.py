@@ -2,6 +2,7 @@ import json
 
 import copy
 import util
+import pprint
 class diffTest:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -38,6 +39,13 @@ class diffTest:
     def routingTable(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "routing-table")
     
+    def shrink_routingTable(self, n_dict:dict):
+        new_dict = copy.deepcopy(n_dict)
+        for val in new_dict.values():
+            for nexthop in val["nexthops"]:
+                nexthop.pop("advertisedRouter", None)
+        return new_dict
+
     def shrink_neighbors(self, n_dict:dict):
         new_dict = copy.deepcopy(n_dict)
         for val in new_dict.values():
@@ -49,6 +57,9 @@ class diffTest:
                 del item["linkStateRetransmissionListCounter"]
                 del item["linkStateRequestListCounter"]
                 del item["databaseSummaryListCounter"]
+                del item["nbrState"]
+                del item["converged"]
+                del item["role"]
         return new_dict
 
     def shrink_ospfDaemon(self, n_dict:dict):
@@ -66,14 +77,25 @@ class diffTest:
     
     def shrink_ospfIntfs(self, n_dict:dict):
         new_dict1 = copy.deepcopy(n_dict)
-        for new_dict in new_dict1.values():
-            del new_dict['ifIndex']
-            if "timerHelloInMsecs" in new_dict:
-                del new_dict["timerHelloInMsecs"]
-            if "interfaceIp" in new_dict:
-                for val in new_dict["interfaceIp"].values():
+        for ospf_intf in new_dict1.values():
+            del ospf_intf['ifIndex']
+            if "timerHelloInMsecs" in ospf_intf:
+                del ospf_intf["timerHelloInMsecs"]
+            if "interfaceIp" in ospf_intf:
+                for val in ospf_intf["interfaceIp"].values():
                     if "timerHelloInMsecs" in val:
                         del val["timerHelloInMsecs"]
+            del ospf_intf["lsaRetransmissions"]
+
+            #we don't comapre state, dr, bdr
+            if ospf_intf['state'] in ["DR", "Backup"]:
+                ospf_intf.pop("drId", None)
+                ospf_intf.pop("drAddress", None)
+                ospf_intf.pop("bdrId", None)
+                ospf_intf.pop("bdrAddress", None)
+                ospf_intf.pop("state", None)
+                #ospf_intf.pop("networkLsaSequence", None)
+                
         return new_dict1
 
     def check_neighbors(self, rt):
@@ -85,7 +107,7 @@ class diffTest:
 
     def check_routingTable(self, rt):
         for i in range(1, self.round_num):
-            diff = util.dict_diff(self.routingTable(i - 1, self.step_nums[i - 1] - 1, rt),self.routingTable(i, self.step_nums[i] - 1, rt))
+            diff = util.dict_diff(self.shrink_routingTable(self.routingTable(i - 1, self.step_nums[i - 1] - 1, rt)), self.shrink_routingTable(self.routingTable(i, self.step_nums[i] - 1, rt)))
             if (diff != {}):
                 print(f"round {i-1} {i} routing table")
                 print(json.dumps(diff, indent=4))
@@ -93,16 +115,17 @@ class diffTest:
     def check_ospfDaemon(self, rt):
         for i in range(1, self.round_num):
             diff = util.dict_diff(self.shrink_ospfDaemon(self.ospfDaemon(i - 1, self.step_nums[i - 1] - 1, rt)), self.shrink_ospfDaemon(self.ospfDaemon(i, self.step_nums[i] - 1, rt)))
-            # if (diff != {}):
-            #     print(f"round {i-1} {i} ospf-daemon")
-            #     print(json.dumps(diff, indent=4))
+            if (diff != {}):
+                print(f"round {i-1} {i} ospf-daemon")
+                print(json.dumps(diff, indent=4))
 
     def check_ospfIntfs(self, rt):
         for i in range(1, self.round_num):
             diff = util.dict_diff(self.shrink_ospfIntfs(self.ospfIntfs(i - 1, self.step_nums[i - 1] - 1, rt)), self.shrink_ospfIntfs(self.ospfIntfs(i, self.step_nums[i] - 1, rt)))
             if (diff != {}):
                 print(f"round {i-1} {i} ospf-intfs")
-                #print(self.shrink_ospfIntfs(self.ospfIntfs(i - 1, self.step_nums[i - 1] - 1, rt)))
+                #pprint.pp(self.shrink_ospfIntfs(self.ospfIntfs(i - 1, self.step_nums[i - 1] - 1, rt)))
+                #pprint.pp(self.shrink_ospfIntfs(self.ospfIntfs(i, self.step_nums[i] - 1, rt)))
                 print(json.dumps(diff, indent=4))
 
     def check_runningConfig(self, rt):
@@ -154,10 +177,10 @@ class diffTest:
             self.check_runningConfig(rt)
 
 if __name__ == "__main__":
-    testNum = "172733" + "0842"
+    testNum = "172854" + "4999"
     d = diffTest(f"/home/frr/topo-fuzz/test/topo_test/data/result/test{testNum}/test{testNum}_res.json")
-    d.check()
+    #d.check()
     rd = 0
     #print(d.runningConfig(0, d.step_nums[rd] - 1, "r3"))
-    #for rt in d.routers:
-    #   d.check_item(rt, "oi")
+    for rt in d.routers:
+       d.check_item(rt, "od")
