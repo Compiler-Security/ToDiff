@@ -40,6 +40,7 @@ class reducer:
         skip = 0
         for step in range(0, self.step_num):
             for i in range(0, len(commands[step]["phy"])):
+                #current we only del ospf command for safety
                 continue
                 skip += 1
                 if (skip > skip_num):
