@@ -48,7 +48,7 @@ class executor:
     def _run_ospf(self, net:testnet.TestNet, router_name, ospf_commands):
         res = []
         for op in ospf_commands:
-            if op in ["clear ip ospf process", "write terminal"]:
+            if op in ["clear ip ospf process", "clear ip ospf neighbor", "clear ip ospf interface", "write terminal"]:
                 res.append(net.run_frr_cmds(router_name, [op]))
             else:
                 resStr = ""
@@ -174,6 +174,7 @@ class executor:
                 #handle convergence
                     #min(_check_convergence() + minWaitTime, maxWaitTime)
                     #for simplicity, maxWaitTime % minWaitTime == 0
+                #CLI(net.net)
                 erroraln("+ check convergence", "")
                 begin_t = time.time()
                 while True:
@@ -211,5 +212,5 @@ class executor:
         return res
     
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1728371895_r0.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 30)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1728544999_r1_rt3.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 30)
     t.test()
