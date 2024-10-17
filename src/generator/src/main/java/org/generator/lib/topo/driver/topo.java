@@ -33,20 +33,20 @@ public class topo {
             for(var intf: r.intfs){
                 var gedge = graph.addEdge("r%d->n%d(%d)".formatted(i, intf.networkId, j), "r%d".formatted(i), "n%d".formatted(intf.networkId));
                 assert intf.cost > 0: "intf cost should > 0";
-                gedge.setAttribute("label", "%d:%d:%d".formatted(intf.area, j, intf.cost));
+                gedge.setAttribute("label", "p%d:a%d".formatted(j, intf.area));
                 j++;
             }
         }
-        for(int i = 0; i < ran.networkId; i++){
-            var nodeName = "n%d".formatted(i);
-            var node = graph.getNode(nodeName);
-            if (node.edges().toList().size() != 2) continue;
-            var src1 = node.getEdge(0).getSourceNode();
-            var src2 = node.getEdge(1).getSourceNode();
-            var gedge = graph.addEdge("%s->%s(%d)".formatted(src1, src2, i), src1, src2);
-            gedge.setAttribute("label", node.getEdge(0).getAttribute("label"));
-            graph.removeNode(node);
-        }
+//        for(int i = 0; i < ran.networkId; i++){
+//            var nodeName = "n%d".formatted(i);
+//            var node = graph.getNode(nodeName);
+//            if (node.edges().toList().size() != 2) continue;
+//            var src1 = node.getEdge(0).getSourceNode();
+//            var src2 = node.getEdge(1).getSourceNode();
+//            var gedge = graph.addEdge("%s->%s(%d)".formatted(src1, src2, i), src1, src2);
+//            gedge.setAttribute("label", node.getEdge(0).getAttribute("label"));
+//            graph.removeNode(node);
+//        }
         FileSinkDOT fileSinkDOT = new FileSinkDOT(false);
         StringWriter stringWriter = new StringWriter();
         try {
