@@ -227,7 +227,7 @@ class FrrNode(Node):
             self.collect_info(j, "ospf-intfs", "show ip ospf interface json", True)
             self.collect_info(j, "neighbors", "show ip ospf neighbor json", True)
             self.collect_info(j, "routing-table", "show ip ospf route json", True)
-            self.collect_info(j, "database", "show ip ospf database json", True)
+            self.collect_info(j, "database", "show ip ospf database detail json", True)
         if "zebra" in self.daemon_dict:
             self.collect_info(j, "running-config", "show running-config", False)
             self.collect_info(j, "intfs", "show interface json", True)

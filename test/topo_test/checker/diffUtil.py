@@ -46,26 +46,41 @@ class diff:
         new_dict = copy.deepcopy(n_dict)
         """
         routerId:
-        areas:{
-            "0.0.0.1":{
-                "routerLinkStates":[
-                    {},
-                    {},
+        routerLinkStates:{
+            areas:{
+                "0.0.0.1":[
+                    {
+                        lsaAge:
+                        checksum:
+                        ...
+                    },
+                    {
+
+                    }
                     ...
                 ]
-                "routerLinkStatesCount"
-                ...
             }
-        }
+        },
+        networkLinkStates:{}
+        ...
         """
-        if "areas" in new_dict:
-            for area, table in new_dict["areas"].items():
-                for typ, lsa_heads in table.items():
-                    if isinstance(lsa_heads, list):
+        routerId =  new_dict["routerId"]
+        del new_dict["routerId"]
+        for lsa_type in new_dict:
+            if isinstance(new_dict[lsa_type], dict):
+                areas = new_dict[lsa_type]["areas"]
+                for area, lsa_heads in areas.items():
                         for lsa_head in lsa_heads:
                             del lsa_head["lsaAge"]
                             del lsa_head["sequenceNumber"]
+            else:
+                """                
+                FIXME 
+                Currently we don't check asExternalLinkStates, asExternalOpaqueLsa
+                """
+                pass
                             #should checksum be del?
+        new_dict["routerId"] = routerId
         return new_dict
 
     def shrink_routingTable(self, n_dict:dict):
