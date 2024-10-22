@@ -88,7 +88,7 @@ public class diffTopo {
         List<Integer> step_nums = new ArrayList<>();
         step_nums.add(1);
         for(int i = 1; i < round_num; i++)
-            step_nums.add(ranHelper.randomInt(1, max_step));
+            step_nums.add(ranHelper.randomInt(2, max_step));
         conf.put("step_nums", step_nums);
         conf.put("round_num", round_num);
         List<String> routers_name = new ArrayList<>();
