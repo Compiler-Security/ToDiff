@@ -66,13 +66,25 @@ class diff:
         """
         routerId =  new_dict["routerId"]
         del new_dict["routerId"]
+        del new_dict["networkLinkStates"]
         for lsa_type in new_dict:
             if isinstance(new_dict[lsa_type], dict):
                 areas = new_dict[lsa_type]["areas"]
                 for area, lsa_heads in areas.items():
                         for lsa_head in lsa_heads:
                             del lsa_head["lsaAge"]
-                            del lsa_head["sequenceNumber"]
+                            del lsa_head["lsaSeqNumber"]
+                            del lsa_head["checksum"]
+                            del lsa_head["lsaFlags"]
+                            if lsa_type == "routerLinkStates":
+                                router_links =[]
+                                for link_name in lsa_head["routerLinks"]:
+                                    link = lsa_head["routerLinks"][link_name]
+                                    if "designatedRouterAddress" in link:
+                                        del link["designatedRouterAddress"]
+                                    router_links.append(link)
+                                lsa_head["routerLinks"] = router_links
+                        
             else:
                 """                
                 FIXME 
@@ -129,6 +141,8 @@ class diff:
                 for val in ospf_intf["interfaceIp"].values():
                     if "timerHelloInMsecs" in val:
                         del val["timerHelloInMsecs"]
+            if "networkLsaSequence" in ospf_intf:
+                del ospf_intf["networkLsaSequence"]
             del ospf_intf["lsaRetransmissions"]
 
             #we don't comapre state, dr, bdr
