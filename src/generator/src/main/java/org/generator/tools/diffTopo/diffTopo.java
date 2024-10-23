@@ -21,10 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.generator.util.collections.Pair;
 import org.generator.util.ran.ranHelper;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class diffTopo {
 
@@ -91,7 +88,7 @@ public class diffTopo {
         List<Integer> step_nums = new ArrayList<>();
         step_nums.add(1);
         for(int i = 1; i < round_num; i++)
-            step_nums.add(ranHelper.randomInt(1, max_step));
+            step_nums.add(ranHelper.randomInt(2, max_step));
         conf.put("step_nums", step_nums);
         conf.put("round_num", round_num);
         List<String> routers_name = new ArrayList<>();
@@ -217,11 +214,17 @@ public class diffTopo {
                             router_commands.add(IO.writeOp(op));
                             front_ctx = router_commands.getLast();
                         }else{
+                            //append op to last line of router_commands with split symbol `;`
                             router_commands.set(router_commands.size() - 1, router_commands.get(router_commands.size() -1) + ';' + IO.writeOp(op));
                             //This is for ospf router-id command, it should use clear ip ospf process after this command
-                            //FIXME we can random add some control command like clear ip ospf database like this
                             if (op.getOpOspf().Type() == OpType.RID || op.getOpOspf().Type() == OpType.NORID){
                                 router_commands.add("clear ip ospf process");
+                                router_commands.add(front_ctx);
+                            }else if (ranHelper.randomInt(0, 50) == 0){
+                                //we can random add some control command like clear ip ospf database like this
+                                //FIXME we should use better method to insert control command to test_file
+                                List<String> control_commands = List.of("clear ip ospf process", "clear ip ospf neighbor", "clear ip ospf interface");
+                                router_commands.add(ranHelper.randomElemOfList(control_commands));
                                 router_commands.add(front_ctx);
                             }
                         }

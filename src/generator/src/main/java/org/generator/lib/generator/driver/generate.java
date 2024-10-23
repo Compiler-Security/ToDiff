@@ -91,6 +91,11 @@ public class generate {
                         -> {return true;}
             }
         }
+        //We don't change RID for lsa maxage timeout reason
+        //See https://github.com/FRRouting/frr/issues/17135
+        if (opType == OpType.RID){
+            return true;
+        }
         return false;
     }
 

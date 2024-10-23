@@ -39,6 +39,62 @@ class diff:
     def routingTable(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "routing-table")
     
+    def ospfDatabase(self, rd, step, router):
+        return self.watchOfConf(rd, step, router, "database")
+    
+    def shrink_ospfDatabase(self, n_dict:dict):
+        new_dict = copy.deepcopy(n_dict)
+        """
+        routerId:
+        routerLinkStates:{
+            areas:{
+                "0.0.0.1":[
+                    {
+                        lsaAge:
+                        checksum:
+                        ...
+                    },
+                    {
+
+                    }
+                    ...
+                ]
+            }
+        },
+        networkLinkStates:{}
+        ...
+        """
+        routerId =  new_dict["routerId"]
+        del new_dict["routerId"]
+        del new_dict["networkLinkStates"]
+        for lsa_type in new_dict:
+            if isinstance(new_dict[lsa_type], dict):
+                areas = new_dict[lsa_type]["areas"]
+                for area, lsa_heads in areas.items():
+                        for lsa_head in lsa_heads:
+                            del lsa_head["lsaAge"]
+                            del lsa_head["lsaSeqNumber"]
+                            del lsa_head["checksum"]
+                            del lsa_head["lsaFlags"]
+                            if lsa_type == "routerLinkStates":
+                                router_links =[]
+                                for link_name in lsa_head["routerLinks"]:
+                                    link = lsa_head["routerLinks"][link_name]
+                                    if "designatedRouterAddress" in link:
+                                        del link["designatedRouterAddress"]
+                                    router_links.append(link)
+                                lsa_head["routerLinks"] = router_links
+                        
+            else:
+                """                
+                FIXME 
+                Currently we don't check asExternalLinkStates, asExternalOpaqueLsa
+                """
+                pass
+                            #should checksum be del?
+        new_dict["routerId"] = routerId
+        return new_dict
+
     def shrink_routingTable(self, n_dict:dict):
         new_dict = copy.deepcopy(n_dict)
         for val in new_dict.values():
@@ -85,6 +141,10 @@ class diff:
                 for val in ospf_intf["interfaceIp"].values():
                     if "timerHelloInMsecs" in val:
                         del val["timerHelloInMsecs"]
+            if "networkLsaSequence" in ospf_intf:
+                del ospf_intf["networkLsaSequence"]
+            if "mcastMemberOspfDesignatedRouters" in ospf_intf:
+                del ospf_intf["mcastMemberOspfDesignatedRouters"]
             del ospf_intf["lsaRetransmissions"]
 
             #we don't comapre state, dr, bdr
@@ -110,6 +170,12 @@ class diff:
     def check_ospfIntfs(self, rt, rd):
         return util.dict_diff(self.shrink_ospfIntfs(self.ospfIntfs(0, self.step_nums[0] - 1, rt)), self.shrink_ospfIntfs(self.ospfIntfs(rd, self.step_nums[rd] - 1, rt)))
 
+    def check_ospfIntfs(self, rt, rd):
+        return util.dict_diff(self.shrink_ospfIntfs(self.ospfIntfs(0, self.step_nums[0] - 1, rt)), self.shrink_ospfIntfs(self.ospfIntfs(rd, self.step_nums[rd] - 1, rt)))
+    
+    def check_ospfDatabase(self, rt, rd):
+        return util.dict_diff(self.shrink_ospfDatabase(self.ospfDatabase(0, self.step_nums[0] - 1, rt)), self.shrink_ospfDatabase(self.ospfDatabase(rd, self.step_nums[rd] - 1, rt)))
+    
     def check_runningConfig(self, rt, rd):
         return util.str_diff(self.runningConfig(0, self.step_nums[0] - 1, rt), self.runningConfig(rd, self.step_nums[rd] - 1, rt))
             

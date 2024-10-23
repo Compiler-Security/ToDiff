@@ -10,7 +10,9 @@ import io
 class humandReader():
     def __init__(self, file_path):
         self._loadConf(file_path)
-        
+        self.dumpDir = path.join(checkDir, self.test_name)
+        os.makedirs(self.dumpDir, exist_ok=True)
+
     def _loadConf(self, file_path):
         self.file_path = file_path
         with open(file_path) as fp:
@@ -18,13 +20,14 @@ class humandReader():
         self.routers = self.data["routers"]
         self.round_num = self.data["round_num"]
         self.step_nums = self.data["step_nums"]
+        self.test_name = self.data["conf_name"]
     
     def _watchOfPhy(self, rd, step):
         return self.data["commands"][rd][step]["phy"]
     
 
     def dump_to_file(self, name, st):
-        with open(path.join(checkDir, name), "w") as fp:
+        with open(path.join(self.dumpDir, name), "w") as fp:
             fp.write(st)
 
     def readPhyOfRound(self, rd):
@@ -125,6 +128,9 @@ import util
 if __name__ == "__main__":
     #rd from 0
     #human_read_ospf(0, 0, "/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744_r1/test1726036744_r1_res.json")
-    test_name = util.get_test_name("71900")
+    test_name = util.get_test_name_5("44999")
     h = humandReader(util.get_result_file_path(test_name))
     h.readAll()
+
+    # h = humandReader("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1728543505.json")
+    # h.readPhyOfRound(1)
