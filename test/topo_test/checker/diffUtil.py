@@ -143,6 +143,8 @@ class diff:
                         del val["timerHelloInMsecs"]
             if "networkLsaSequence" in ospf_intf:
                 del ospf_intf["networkLsaSequence"]
+            if "mcastMemberOspfDesignatedRouters" in ospf_intf:
+                del ospf_intf["mcastMemberOspfDesignatedRouters"]
             del ospf_intf["lsaRetransmissions"]
 
             #we don't comapre state, dr, bdr
