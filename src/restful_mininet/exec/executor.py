@@ -67,6 +67,28 @@ class executor:
         warnaln("   OSPF commands result:", res)
         return res
     
+    def _run_isis(self, net:testnet.TestNet, router_name, isis_commands):
+        res = []
+        for op in isis_commands:
+            if op in ["write terminal"]:
+                res.append(net.run_frr_cmds(router_name, [op]))
+            else:
+                resStr = ""
+                sub_ops = op.split(";")
+                ctx_op = sub_ops[0]
+                #single ctx_op eg. router ospf
+                if (len(sub_ops) == 1):
+                    res.append(net.run_frr_cmds( router_name, ['configure terminal', ctx_op]))
+                else:
+                    sub_ops = sub_ops[1:]
+                    for sub_op in sub_ops:
+                        r = net.run_frr_cmds(router_name, ['configure terminal', ctx_op, sub_op])
+                        if r != "":
+                            resStr += sub_op + "<-" + r + ";"
+                    res.append(resStr)
+        warnaln("   ISIS commands result:", res)
+        return res
+        
     def _init_ospf(self, router_name, ospf_commands):
         conf_name = f"{router_name}.conf"
         with open(path.join(self.conf_file_dir, conf_name), 'w') as fp:
@@ -74,7 +96,14 @@ class executor:
                 for op in opa.split(";"):
                     fp.write(op)
                     fp.write('\n')
-          
+
+    def _init_isis(self, router_name, isis_commands):
+        conf_name = f"{router_name}.conf"
+        with open(path.join(self.conf_file_dir, conf_name), 'w') as fp:
+            for opa in isis_commands:
+                for op in opa.split(";"):
+                    fp.write(op)
+                    fp.write('\n')
     def test(self):
         try:
             res = {}
