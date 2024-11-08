@@ -1,0 +1,80 @@
+version: '3'
+services:
+  topo-fuzz: 
+    #platform: linux/amd64
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+      args:
+      - build_mode=interested
+      - frr_check=false
+      - nproc=16
+      - proxy=http://172.25.134.84:7890
+    init: true
+    privileged: true
+    user: frr
+    working_dir: /home/frr/topo-fuzz
+    volumes: 
+    - type: bind
+      source: /lib/modules
+      target: /lib/modules
+
+    - type: bind
+      source: ../
+      target: /home/frr/topo-fuzz
+
+  topo-fuzz-dev:
+      #platform: linux/amd64
+      build:
+        context: ../
+        dockerfile: ./docker/Dockerfile.dev
+        args:
+        - build_mode=interested
+        - frr_check=false
+        - nproc=16
+        - proxy=http://172.25.134.84:7890
+      ulimits:
+        nofile:
+          soft: 2048  # Soft limit
+          hard: 4096  # Hard limit
+      init: true
+      privileged: true
+      user: root
+      working_dir: /home/frr/
+      ports:
+        - "7100:33"
+      volumes: 
+        - type: bind
+          source: /lib/modules
+          target: /lib/modules
+        - type: bind
+          source: ../
+          target: /home/frr/topo-fuzz
+        # - type: bind
+        #   source: ../../frr
+        #   target: /home/frr/de/frr
+  
+  topo-fuzz-test:
+      build:
+        context: ../
+        dockerfile: ./docker/Dockerfile.dev
+        args:
+        - build_mode=interested
+        - frr_check=false
+        - nproc=16
+        - proxy=http://172.25.134.84:7890
+      ulimits:
+        nofile:
+          soft: 2048  # Soft limit
+          hard: 4096  # Hard limit
+      init: true
+      privileged: true
+      user: root
+      working_dir: /home/frr/
+      volumes: 
+        - type: bind
+          source: /lib/modules
+          target: /lib/modules
+        - type: bind
+          source: ../
+          target: /home/frr/topo-fuzz
