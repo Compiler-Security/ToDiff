@@ -110,7 +110,9 @@ class executor:
             start = time.time()
             res['result'] = []
             for i in range(0, self.round_num):
-                res['result'].append(self._run(i))
+                # here is isis or ospf
+                # isis: _run_for_isis   ospf: _run
+                res['result'].append(self._run_for_isis(i))
             stop = time.time()
             res['total_test_time'] = stop - start
             self.conf['test'] = res
@@ -149,6 +151,34 @@ class executor:
             warnln(f"    -check router {r_name} y")
         return True
     
+    def _check_converge_isis(self, net:testnet.TestNet):
+        for r_name in self.routers:
+            warnln(f"    +check router {r_name}")
+            res = net.net.nameToNode[r_name].dump_neighbor_info_isis()
+            if res == None:
+                warnln(f"    -check router {r_name} n")
+                return False
+            for val in res['neighbors'].values():
+                for val1 in val:
+                    #if neighbor is DR/Backup, converged is full
+                    #otherwise converged is 2-way
+                    if (val1['converged'] != 'Full' and val1['nbrState'] != '2-Way/DROther'):
+                        warnln(f"    -check router {r_name} nb c")
+                        return False
+                    if (val1['linkStateRetransmissionListCounter'] > 0):
+                        warnln(f"    -check router {r_name} nb re")
+                        return False
+            res = net.net.nameToNode[r_name].dump_isis_intfs_info()
+            for intfName, val in res['interfaces'].items():
+                if val['state'] == "Waiting":
+                    warnln(f"    -check router {r_name} oi w")
+                    warnln(intfName)
+                    return False
+            warnln(f"    -check router {r_name} y")
+        return True
+
+
+
     def _run(self, r):
         erroraln(f"\n\n======round{r}======","")
         erroraln("+ mininet init", "")
@@ -239,6 +269,96 @@ class executor:
         net.stop_net()
         return res
     
+    def _run_for_isis(self, r):
+        erroraln(f"\n\n======round{r}======","")
+        erroraln("+ mininet init", "")
+        net = testnet.TestNet()
+        erroraln("- mininet init", "")
+        ctx = {"intf":{}}
+        commands = self.conf['commands'][r]
+        res = []
+        for i in range(0, self.step_nums[r]):
+            erroraln(f"\n\n>>>> + step{i} <<<<", "")
+            
+            
+            isis_res = {}
+            if i == 0:
+                erroraln(f"+ ISIS commands", "")
+                for j in range(0, len(self.routers)):
+                    router_name = self.routers[j]
+                    isis_ops = commands[i]['isis'][j]
+                    self._init_isis(router_name, isis_ops)
+                erroraln(f"- ISIS commands", "")
+                
+                erroraln(f"+ PHY commands", "")
+                phy_res = self._run_phy(net, ctx, commands[i]['phy'])
+                erroraln(f"- PHY commands", "")
+            
+            else:
+                erroraln(f"+ PHY commands", "")
+                phy_res = self._run_phy(net, ctx, commands[i]['phy'])
+                erroraln(f"- PHY commands", "")
+
+                erroraln(f"+ ISIS commands", "")
+                for j in range(len(self.routers) -1, -1, -1):
+                    router_name = self.routers[j]
+                    isis_ops = commands[i]['isis'][j]
+                    tmp = self._run_isis(net, router_name, isis_ops)
+                    if j == 0:
+                        print(tmp)
+                    isis_res[router_name] = tmp
+                erroraln(f"- ISIS commands", "")
+            
+            if i == 0:    
+                net.start_net()
+            res.append({})
+            res[i]['exec'] = {}
+            res[i]['exec']['phy'] = phy_res
+            res[i]['exec']['isis'] = isis_res
+            
+            sleep_time = commands[i]['waitTime']
+            erroraln(f"wait {sleep_time} s ", "")
+            
+            if sleep_time == -1:
+                #handle convergence
+                    #min(_check_convergence() + minWaitTime, maxWaitTime)
+                    #for simplicity, maxWaitTime % minWaitTime == 0
+                erroraln("+ check convergence", "")
+                begin_t = time.time()
+                while True:
+                    if self._check_converge_isis(net):
+                        time.sleep(self.minWaitTime)
+                        res[i]['exec']['convergence'] = True
+                        warnaln("   + convergence!", "")
+                        break
+                    else:
+                        if time.time() - begin_t >= self.maxWaitTime:
+                            res[i]['exec']['convergence'] = False
+                            warnaln("   + not convergence!", "")
+                            break
+                        else:
+                            time.sleep(10)
+            else:
+                time.sleep(sleep_time)
+            erroraln("+ collect result", "")
+            warnaln("   + collect from daemons", "")
+            res[i]['watch'] = {}
+            for r_name in self.routers:
+                #some routers may be deleted
+                if r_name not in net.net.nameToNode:
+                    continue
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
+            warnaln("   - collect from daemons", "")
+            warnaln("   + collect from asan", "")
+            for r_name in self.routers:
+                if r_name not in net.net.nameToNode:
+                    continue
+                net.net.nameToNode[r_name].check_asan()
+            warnaln("   - collect from asan", "")
+            erroraln("- collect result", "")
+        net.stop_net()
+        return res
+
 if __name__ == "__main__":
     t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1728371895_r0.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 30)
     t.test()

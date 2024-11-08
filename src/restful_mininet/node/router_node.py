@@ -136,12 +136,20 @@ class FrrNode(Node):
             self.load_frr_conf()
             #erroraln("cat /etc/frr/frr.conf", self.cmds(["cat", "/etc/frr/frr.conf"]))
         if DEBUG == True:
-            self._log_load_frr()
+            self._log_load_frr_isis()
 
     def _log_load_frr(self):
         infoaln("daemon_dict", self.daemon_dict)
         infoaln("zebra_log", self.cmds(["cat", self.daemon_dict["zebra"]["log_path"]]))
         infoaln("ospf_log", self.cmds(["cat", self.daemon_dict["ospfd"]["log_path"]]))
+        infoaln("ls log/route", self.cmds(["ls", self.log_path]))
+        infoaln("cat /etc/frr/vtysh.conf", self.cmds(["cat", "/etc/frr/vtysh.conf"]))
+        infoaln("ls run", self.cmds(["ls", "/run/frr"]))
+
+    def _log_load_frr_isis(self):
+        infoaln("daemon_dict", self.daemon_dict)
+        infoaln("zebra_log", self.cmds(["cat", self.daemon_dict["zebra"]["log_path"]]))
+        infoaln("isis_log", self.cmds(["cat", self.daemon_dict["isisd"]["log_path"]]))
         infoaln("ls log/route", self.cmds(["ls", self.log_path]))
         infoaln("cat /etc/frr/vtysh.conf", self.cmds(["cat", "/etc/frr/vtysh.conf"]))
         infoaln("ls run", self.cmds(["ls", "/run/frr"]))
@@ -199,7 +207,18 @@ class FrrNode(Node):
             kill_pid(v["daemon_pid"])
         self.daemon_dict = {}
         log.info("cleaned\n")
-    
+
+    def stop_frr_isis(self):
+        #infoaln("hahahah", self.log_path)
+        #FIXME this kill_pid is duplicated and can be removed
+        if "isisd" in self.daemon_dict:
+            self.save_frr_conf()
+        self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
+        for v in self.daemon_dict.values():
+            kill_pid(v["daemon_pid"])
+        self.daemon_dict = {}
+        log.info("cleaned\n")
+
     def check_asan(self):
         warnln("+ check asan, TODO", "")
         #for d in os.listdir("/run/frr"):
@@ -213,7 +232,7 @@ class FrrNode(Node):
             del self.daemon_dict["ospfd"]
 
     def stop_isisd(self, conf_dir):
-        if "ospfd" in self.daemon_dict:
+        if "isisd" in self.daemon_dict:
             self.save_frr_conf()
             kill_pid(self.daemon_dict["isisd"]["daemon_pid"])
             os.remove(self.daemon_dict["isisd"]["pid_path"])
@@ -240,7 +259,19 @@ class FrrNode(Node):
         else:
             j[item] = self.daemon_cmds([cmds])
         warnaln(f"  - collect {item}", "")
-    
+
+    def collect_info_isis(self, j, item, cmds, isjson):
+        warnaln(f"  + collect {item}", "")
+        if isjson == True:
+            info = self.daemon_cmds([cmds])
+            if (item == "isis-daemon" and info == ""):
+                #we should handle special case of "isis-daemon"
+                j[item] = json.loads("{}")
+            else:
+                j[item] = json.loads(self.daemon_cmds([cmds]))
+        else:
+            j[item] = self.daemon_cmds([cmds])
+        warnaln(f"  - collect {item}", "")    
         
     def dump_info(self):
         j = {}
@@ -253,6 +284,15 @@ class FrrNode(Node):
             self.collect_info(j, "ospf-intfs", "show ip ospf interface json", True)
             self.collect_info(j, "neighbors", "show ip ospf neighbor json", True)
             self.collect_info(j, "routing-table", "show ip ospf route json", True)
+            
+        if "isisd" not in self.daemon_dict:
+            j["isis-up"] = False
+        else:
+            j["isis-up"] = True
+            self.collect_info(j, "isis-daemon", "show isis summary json", True)
+            self.collect_info(j, "isis-intfs", "show isis interface json", True)
+            self.collect_info(j, "neighbors", "show isis neighbor json", True)
+            self.collect_info(j, "routing-table", "show isis route json", True)
         if "zebra" in self.daemon_dict:
             self.collect_info(j, "running-config", "show running-config", False)
             self.collect_info(j, "intfs", "show interface json", True)
@@ -268,8 +308,24 @@ class FrrNode(Node):
             traceback.print_exception(e)
             return None
     
+    def dump_neighbor_info_isis(self):
+        info = self.daemon_cmds(["show isis neighbor json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
+        
     def dump_ospf_intfs_info(self):
         info = self.daemon_cmds(["show ip ospf interface json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
+
+    def dump_isis_intfs_info(self):
+        info = self.daemon_cmds(["show isis interface json"])
         try:
             return json.loads(info)
         except Exception as e:

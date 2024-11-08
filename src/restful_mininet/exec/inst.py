@@ -176,7 +176,7 @@ class MininetInst(BaseInst):
             up_node: FrrNode = self._get_node(node_name)
             if up_node is None:
                 return self.EXEC_MISS
-            return self._run_cmd(up_node.stop_frr)
+            return self._run_cmd(up_node.stop_frr_isis)
 
         raise InstErrorException("[mininet] node inst not right")
 
