@@ -32,6 +32,9 @@ class diff:
     
     def ospfIntfs(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "ospf-intfs")["interfaces"]
+
+    def isisIntfs(self, rd, step, router):
+        return self.watchOfConf(rd, step, router, "isis-intfs")["interfaces"]
     
     def ospfDaemon(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "ospf-daemon")
@@ -98,6 +101,29 @@ class diff:
                 
         return new_dict1
 
+    def shrink_isisIntfs(self, n_dict:dict):
+        new_dict1 = copy.deepcopy(n_dict)
+        for isis_intf in new_dict1.values():
+            del isis_intf['ifIndex']
+            if "timerHelloInMsecs" in isis_intf:
+                del isis_intf["timerHelloInMsecs"]
+            if "interfaceIp" in isis_intf:
+                for val in isis_intf["interfaceIp"].values():
+                    if "timerHelloInMsecs" in val:
+                        del val["timerHelloInMsecs"]
+            del isis_intf["lsaRetransmissions"]
+
+            #we don't comapre state, dr, bdr
+            
+            isis_intf.pop("drId", None)
+            isis_intf.pop("drAddress", None)
+            isis_intf.pop("bdrId", None)
+            isis_intf.pop("bdrAddress", None)
+            isis_intf.pop("state", None)
+                #ospf_intf.pop("networkLsaSequence", None)
+                
+        return new_dict1
+    
     def check_neighbors(self, rt, rd):
         return util.dict_diff(self.shrink_neighbors(self.neighbors(0, self.step_nums[0] - 1, rt)), self.shrink_neighbors(self.neighbors(rd, self.step_nums[rd] - 1, rt)))
 
@@ -109,6 +135,9 @@ class diff:
 
     def check_ospfIntfs(self, rt, rd):
         return util.dict_diff(self.shrink_ospfIntfs(self.ospfIntfs(0, self.step_nums[0] - 1, rt)), self.shrink_ospfIntfs(self.ospfIntfs(rd, self.step_nums[rd] - 1, rt)))
+    
+    def check_isisIntfs(self, rt, rd):
+        return util.dict_diff(self.shrink_isisIntfs(self.isisIntfs(0, self.step_nums[0] - 1, rt)), self.shrink_isisIntfs(self.isisIntfs(rd, self.step_nums[rd] - 1, rt)))
 
     def check_runningConfig(self, rt, rd):
         return util.str_diff(self.runningConfig(0, self.step_nums[0] - 1, rt), self.runningConfig(rd, self.step_nums[rd] - 1, rt))

@@ -354,7 +354,7 @@ if __name__ == "__main__":
         sleep(1)
         # print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         # sleep(20)
-        infoaln("r1 ospf route", net.nameToNode["r1"].daemon_cmd("show isis summary"))
+        infoaln("r1 ospf route", net.nameToNode["r1"].daemon_cmd("show isis neighbor"))
         # print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         # net.delLinkBetween(net.nameToNode["r1"],  net.nameToNode["r2"])
         # sleep(15)
