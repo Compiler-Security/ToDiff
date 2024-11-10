@@ -240,7 +240,7 @@ class FrrNode(Node):
 
     def terminate(self):
         erroraln("+ stop router ", self.name)
-        self.stop_frr()
+        self.stop_frr_isis()
         super().terminate()
         erroraln("- stop router ", self.name)
 
@@ -348,13 +348,13 @@ if __name__ == "__main__":
     net = Mininet(topo)
     try:
         net.start()
-        net.nameToNode["r1"].load_frr(daemons=["zebra", "ospfd"], conf_dir=WORK_DIR)
-        net.nameToNode["r2"].load_frr(daemons=["zebra", "ospfd"], conf_dir=WORK_DIR)
-        net.nameToNode["r3"].load_frr(daemons=["zebra", "ospfd"], conf_dir=WORK_DIR)
+        net.nameToNode["r1"].load_frr_isis(daemons=["zebra", "isisd"], conf_dir=WORK_DIR,universe=True)
+        net.nameToNode["r2"].load_frr_isis(daemons=["zebra", "isisd"], conf_dir=WORK_DIR,universe=True)
+        net.nameToNode["r3"].load_frr_isis(daemons=["zebra", "isisd"], conf_dir=WORK_DIR,universe=True)
         sleep(1)
         # print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         # sleep(20)
-        infoaln("r1 ospf route", net.nameToNode["r1"].daemon_cmd("show ip ospf interface"))
+        infoaln("r1 ospf route", net.nameToNode["r1"].daemon_cmd("show isis summary"))
         # print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         # net.delLinkBetween(net.nameToNode["r1"],  net.nameToNode["r2"])
         # sleep(15)
