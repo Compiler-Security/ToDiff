@@ -64,7 +64,18 @@ class diff:
                 del item["converged"]
                 del item["role"]
         return new_dict
-
+    def shrink_neighbors_isis(self, data: dict) -> dict:
+        new_data = copy.deepcopy(data)
+        for area in new_data.get("areas", []):
+            for circuit in area.get("circuits", []):
+                interface = circuit.get("interface", {})
+                if interface:
+                    interface.pop("last-ago", None)
+                    interface.pop("snpa", None)
+                    interface.pop("lan-id", None)
+                    interface.pop("lan-prio", None)
+                    interface.pop("dis-flaps", None)
+        return new_data
     def shrink_ospfDaemon(self, n_dict:dict):
         key_set = ["routerId", "tosRoutesOnly", "rfc2328Conform", "holdtimeMinMsecs", "holdtimeMaxMsecs", "spfScheduleDelayMsecs", "maximumPaths", "writeMultiplier", "abrType", "attachedAreaCounter"]
         new_dict = {x:n_dict[x] for x in key_set if x in n_dict}

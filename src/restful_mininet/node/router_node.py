@@ -344,6 +344,7 @@ if __name__ == "__main__":
     r3 = topo.addHost("r3", cls=FrrNode)
     topo.addLink(r1, r2)
     topo.addLink(r2, r3)
+    topo.addLink(r1, r3)
     # build network
     net = Mininet(topo)
     try:
@@ -351,10 +352,10 @@ if __name__ == "__main__":
         net.nameToNode["r1"].load_frr_isis(daemons=["zebra", "isisd"], conf_dir=WORK_DIR,universe=True)
         net.nameToNode["r2"].load_frr_isis(daemons=["zebra", "isisd"], conf_dir=WORK_DIR,universe=True)
         net.nameToNode["r3"].load_frr_isis(daemons=["zebra", "isisd"], conf_dir=WORK_DIR,universe=True)
-        sleep(1)
+        sleep(20)
         # print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         # sleep(20)
-        infoaln("r1 ospf route", net.nameToNode["r1"].daemon_cmd("show isis neighbor"))
+        infoaln("r1 ospf route", net.nameToNode["r1"].daemon_cmd("show isis route json"))
         # print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         # net.delLinkBetween(net.nameToNode["r1"],  net.nameToNode["r2"])
         # sleep(15)
