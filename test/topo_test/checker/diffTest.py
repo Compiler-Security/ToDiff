@@ -39,8 +39,10 @@ def checkTest(test_name, diffAll):
     
         # res = checkFunc(rd, diff, diff.check_ospfIntfs, "check_ospfIntfs", buf)
         res = checkFunc(rd, diff, diff.check_isisIntfs, "check_isisIntfs", buf)
-        res = checkFunc(rd, diff, diff.check_neighbors, "check_neighbors", buf)
+
+        res = checkFunc(rd, diff, diff.check_neighbors_isis, "check_neighbors", buf)
         # res = checkFunc(rd, diff, diff.check_ospfDaemon, "check_ospfDaemon", buf)
+        res = checkFunc(rd, diff, diff.check_isisDaemon, "check_isisDaemon", buf)
         res = checkFunc(rd, diff, diff.check_routingTable, "check_routingTable", buf)
     
     return buf.getvalue()

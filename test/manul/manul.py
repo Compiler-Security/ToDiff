@@ -60,7 +60,7 @@ class manulTest():
     def _run_isis(self, net:TestNet, router_name, isis_commands):
         res = []
         for op in isis_commands:
-            if op in ["write terminal", "show isis neighbor detail json", "show isis interface json", "show isis route json"]:
+            if op in ["write terminal", "show isis neighbor detail json", "show isis interface detail json", "show isis route json", "show isis summary json"]:
                 res.append(net.run_frr_cmds(router_name, [op]))
             else:
                 resStr = ""
