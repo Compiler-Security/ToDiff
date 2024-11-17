@@ -44,47 +44,25 @@ public class LexDef_isis {
                 {NODESETISISSHUTDOWN, "node {NAME} set ISIS down"},
                 {NODESETISISRE, "node {NAME} set ISIS restart"},
                 {ISISCONF, "RISISCONF"},
-                // route
+
                 {RISIS, "router isis {NAME}"},
                 {IntfName, "interface {NAME}|int {NAME}"},
-                //{RID, "ospf router-id {ID}"},
-                //{RABRTYPE, "ospf abr-type {NAME(standard,shortcut,ibm,cisco)}"},
-                //{NETAREAID, "network {IPRANGE} area {ID(NUM)}"},
-                //{PASSIVEINTFDEFUALT, "passive-interface default"},
-                //{TIMERSTHROTTLESPF, "timers throttle spf {NUM(0-600000)} {NUM2(0-600000)} {NUM3(0-600000)}"},
-                //{CLEARIPOSPFPROCESS, "clear ip ospf process"},
-                //{CLEARIPOSPFNEIGHBOR, "clear ip ospf neighbor"},
-                //{MAXIMUMPATHS, "maximum-paths {NUM(1-64)}"},
-                //{WRITEMULTIPLIER, "write-multiplier {NUM(1-100)}"},
-                //{SOCKETBUFFERSEND, "socket buffer send {LONGNUM(1-4000000000)}"},
-                //{SOCKETBUFFERRECV, "socket buffer recv {LONGNUM(1-4000000000)}"},
+                // route
+                //FIXME NUM or IP or ID
+                {NET, "NET {NUM}"},
+
+
                 
-                //FIXME SOCKETBUFFERALL
-                //{SOCKETBUFFERALL, "socket buffer all {LONGNUM(1-4000000000)}"},
-                //{NoSOCKETPERINTERFACE, "no socket-per-interface"},
-                {AreaRange, "area {ID(NUM)} range {IPRANGE}|area {ID(NUM)} range {IPRANGE} advertise"},
-                {AreaRangeNoAd, "area {ID(NUM)} range {IPRANGE} not-advertise"},
-                {AreaRangeSub, "area {ID(NUM)} range {IPRANGE} substitute {IP}"},
-                {AreaRangeCost, "area {ID(NUM)} range {IPRANGE} cost {NUM(0-16777215)}|area {ID(NUM)} range {IPRANGE} advertise cost {NUM(0-16777215)}"},
-                //{AreaVLink, "area {ID(NUM)} virtual-link {ID2}"},
-                {AreaShortcut, "area {ID(NUM)} shortcut {NAME(enable,disable,default)}"},
-                {AreaStub, "area {ID(NUM)} stub"},
-                {AreaStubTotal, "area {ID(NUM)} stub no-summary"},
-                {AreaNSSA, "area {ID(NUM)} nssa"},
-                {RefreshTimer, "refresh timer {NUM(10-1800)}"},
-                {TimersLsaThrottle, "timers throttle lsa all {NUM(0-5000)}"},
-                {IPAddr, "ip address {IP}"},
-                {IpOspfArea, "ip ospf area {ID(NUM)}"},
-                {IpOspfCost, "ip ospf cost {NUM(1-65535)}"},
-                {IpOspfDeadInter, "ip ospf dead-interval {NUM(1-65535)}"},
-                {IpOspfDeadInterMulti, "ip ospf dead-interval minimal hello-multiplier {NUM(2-20)}"},
-                {IpOspfHelloInter, "ip ospf hello-interval {NUM(1-65535)}"},
-                {IpOspfGRHelloDelay, "ip ospf graceful-restart hello-delay {NUM(1-1800)}"},
-                {IpOspfNet, "ip ospf network {NAME(broadcast,non-broadcast)}"},
-                {IpOspfPriority, "ip ospf priority {NUM(0-255)}"},
-                {IpOspfRetransInter, "ip ospf retransmit-interval {NUM(1-65535)}"},
-                {IpOspfTransDelay, "ip ospf transmit-delay {NUM(1-65535)}"},
-                {IpOspfPassive, "ip ospf passive"},
+                // region
+                {ISTYPE, "is-type {NAME(level-1,level-1-2,level-2-only)}"},
+
+                // interface
+                {IPROUTERISIS, "ip router isis {NAME}"},
+                {CIRCUITTYPE, "isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
+                {CSNPINTERVAL, "isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2)}"},
+                {HELLOPADDING, "isis hello padding"},
+                
+
 
 
                 //minimal args is the first LexDef of no operation

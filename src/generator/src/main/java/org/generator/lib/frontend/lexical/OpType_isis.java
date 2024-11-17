@@ -20,58 +20,21 @@ public enum OpType_isis {
     ISISCONF,
 
     RISIS,
-
+    IntfName,
     //=================ISIS ROUTER==================
 
-
-    //===================ISIS AREA=====================
-    //FIXME what if we already have the same area range
-
-    OSPFAREAGROUPBEGIN,
-
-    //FIXME IP equal is prefix ==, mask & ip ==
-    AreaRange,
-    AreaRangeNoAd,
-    AreaRangeSub,
-    AreaRangeCost,
-
-    //FIXME area can have multiple virtual-link
-    //FIXME areaVLINK
-    //AreaVLink,
-
-    AreaShortcut,
-    AreaStub,
-    AreaStubTotal,
-
-    AreaNSSA,
-    //TODO AREA LEFT
-
-    OSPFAREAGROUPEND,
+    NET,
+    //===================ISIS region=====================
+    ISTYPE,
 
 
+    //===================ISIS INTERFACE================
+    IPROUTERISIS,
+    CIRCUITTYPE,
+    CSNPINTERVAL,
+    HELLOPADDING,
+    
 
-
-    //FIXME we can set multiple ip to one interface, so here we should only generate one
-    IPAddr,
-
-    OSPFIntfGroupBEGIN,
-    //NOT CONSIDER ip ospf authentication-key AUTH_KEY
-    //NOT Consider ip ospf authentication message-digest
-    //NOT consider ip ospf message-digest-key KEYID md5 KEY
-    //NOT consider ip ospf authentication key-chain KEYCHAIN
-
-    IpOspfArea,
-    IpOspfCost,
-    IpOspfDeadInter,
-    IpOspfDeadInterMulti,
-    IpOspfHelloInter,
-    IpOspfGRHelloDelay,
-    //FIXME what is nonbroadcast?
-    IpOspfNet,
-    IpOspfPriority,
-    IpOspfRetransInter,
-    IpOspfTransDelay,
-    IpOspfPassive,
 //    TODO IpOspfPrefixSupp,
 
     OSPFIntfGroupEND,
