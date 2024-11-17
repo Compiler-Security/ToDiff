@@ -19,6 +19,16 @@ public class LexDef_isis {
         this.ArgsRange = argsRange;
     }
     private static final Map<OpType, List<LexDef>> preprocess;
+    /**
+     * type:
+     * 1.NAME
+     * 2.NAME2
+     * 3.NUM
+     * 4.ID
+     * 5.IPRANGE
+     * 6.LONGNUM
+     * 7.IP
+     */
     static {
         var lexical_seed = new Object[][]{
                 {NODEADD, "node {NAME} add"},
@@ -34,23 +44,24 @@ public class LexDef_isis {
                 {NODESETISISSHUTDOWN, "node {NAME} set ISIS down"},
                 {NODESETISISRE, "node {NAME} set ISIS restart"},
                 {ISISCONF, "RISISCONF"},
-
-                {RISIS, "router isis"},
+                // route
+                {RISIS, "router isis {NAME}"},
                 {IntfName, "interface {NAME}|int {NAME}"},
-                {RID, "ospf router-id {ID}"},
-                {RABRTYPE, "ospf abr-type {NAME(standard,shortcut,ibm,cisco)}"},
-                {NETAREAID, "network {IPRANGE} area {ID(NUM)}"},
-                {PASSIVEINTFDEFUALT, "passive-interface default"},
-                {TIMERSTHROTTLESPF, "timers throttle spf {NUM(0-600000)} {NUM2(0-600000)} {NUM3(0-600000)}"},
-                {CLEARIPOSPFPROCESS, "clear ip ospf process"},
-                {CLEARIPOSPFNEIGHBOR, "clear ip ospf neighbor"},
-                {MAXIMUMPATHS, "maximum-paths {NUM(1-64)}"},
-                {WRITEMULTIPLIER, "write-multiplier {NUM(1-100)}"},
-                {SOCKETBUFFERSEND, "socket buffer send {LONGNUM(1-4000000000)}"},
-                {SOCKETBUFFERRECV, "socket buffer recv {LONGNUM(1-4000000000)}"},
+                //{RID, "ospf router-id {ID}"},
+                //{RABRTYPE, "ospf abr-type {NAME(standard,shortcut,ibm,cisco)}"},
+                //{NETAREAID, "network {IPRANGE} area {ID(NUM)}"},
+                //{PASSIVEINTFDEFUALT, "passive-interface default"},
+                //{TIMERSTHROTTLESPF, "timers throttle spf {NUM(0-600000)} {NUM2(0-600000)} {NUM3(0-600000)}"},
+                //{CLEARIPOSPFPROCESS, "clear ip ospf process"},
+                //{CLEARIPOSPFNEIGHBOR, "clear ip ospf neighbor"},
+                //{MAXIMUMPATHS, "maximum-paths {NUM(1-64)}"},
+                //{WRITEMULTIPLIER, "write-multiplier {NUM(1-100)}"},
+                //{SOCKETBUFFERSEND, "socket buffer send {LONGNUM(1-4000000000)}"},
+                //{SOCKETBUFFERRECV, "socket buffer recv {LONGNUM(1-4000000000)}"},
+                
                 //FIXME SOCKETBUFFERALL
                 //{SOCKETBUFFERALL, "socket buffer all {LONGNUM(1-4000000000)}"},
-                {NoSOCKETPERINTERFACE, "no socket-per-interface"},
+                //{NoSOCKETPERINTERFACE, "no socket-per-interface"},
                 {AreaRange, "area {ID(NUM)} range {IPRANGE}|area {ID(NUM)} range {IPRANGE} advertise"},
                 {AreaRangeNoAd, "area {ID(NUM)} range {IPRANGE} not-advertise"},
                 {AreaRangeSub, "area {ID(NUM)} range {IPRANGE} substitute {IP}"},

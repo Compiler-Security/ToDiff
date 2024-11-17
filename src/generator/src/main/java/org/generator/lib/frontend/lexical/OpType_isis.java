@@ -21,44 +21,10 @@ public enum OpType_isis {
 
     RISIS,
 
-    //TODO ROSPFNUM,
-    //TODO ROSPFVRF,
+    //=================ISIS ROUTER==================
 
-    IntfName,
-    OSPFCONFEND,
 
-    //=================OSPF ROUTER==================
-
-    OSPFROUTERBEGIN,
-    RID,
-    RABRTYPE,
-    NETAREAID,
-
-    PASSIVEINTFDEFUALT,
-
-    TIMERSTHROTTLESPF,
-    //TODO max-metric...
-    //TODO auto-cost it's hard to equal
-    RefreshTimer,
-    TimersLsaThrottle,
-    OSPFROUTEREND,
-    //=============OSPFDAEMON===================
-    //TODO proactive-arp
-    CLEARIPOSPFPROCESS,
-    CLEARIPOSPFNEIGHBOR,
-    OSPFDAEMONGROUPBEGIN,
-    //FIXME this instruction's ctx is OSPFCONF
-    MAXIMUMPATHS,
-    WRITEMULTIPLIER,
-    SOCKETBUFFERSEND,
-    SOCKETBUFFERRECV,
-
-    //FIXME SOCKETBUFFERALL
-    //SOCKETBUFFERALL,
-    NoSOCKETPERINTERFACE,
-
-    OSPFDAEMONGROUPEND,
-    //===================OSPF AREA=====================
+    //===================ISIS AREA=====================
     //FIXME what if we already have the same area range
 
     OSPFAREAGROUPBEGIN,
