@@ -61,54 +61,36 @@ public class LexDef_isis {
                 {CIRCUITTYPE, "isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
                 {CSNPINTERVAL, "isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2)}"},
                 {HELLOPADDING, "isis hello padding"},
+                {HELLOINTERVAL, "isis hello-interval {NAME(level-1,level-2)} {NUM(1-600)} "},
+                {HELLOMULTIPLIER, "isis hello-multiplier {NAME(level-1,level-2)} {NUM(2-100)}"},
+                {ISISMETRICLEVEL1, "isis metric level-1 {NUM(0-255)}"},
+                {ISISMETRICLEVEL2, "isis metric level-2 {NUM(0-16777215)}"},
+                {NETWORKPOINTTOPOINT, "isis network point-to-point"},
+                {ISISPASSIVE, "isis passive"},
+                {ISISPRIORITY, "isis priority {NUM(0-127)} {NAME(level-1,level-2)}"},
+                {PSNPINTERVAL, "isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2)}"},
+                {THREEWAYHANDSHAKE, "isis three-way-handshake"},
+
+                // no isis
+                {NORISIS, "no router isis {NAME}"},
+                {NOTNET, "no NET {NUM}"},
+                {NOISTYPE, "no is-type {NAME(level-1,level-1-2,level-2-only)}"},
+                {NOIPROUTERISIS, "no ip router isis {NAME}"},
+                {NOCIRCUITTYPE, "no isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
+                {NOCSNPINTERVAL, "no isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2)}"},
+                {NOHELLOPADDING, "no isis hello padding"},
+                {NOHELLOINTERVAL, "no isis hello-interval {NAME(level-1,level-2)} {NUM(1-600)} "},
+                {NOHELLOMULTIPLIER, "no isis hello-multiplier {NAME(level-1,level-2)} {NUM(2-100)}"},
+                {NOISISMETRICLEVEL1, "no isis metric level-1 {NUM(0-255)}"},
+                {NOISISMETRICLEVEL2, "no isis metric level-2 {NUM(0-16777215)}"},
+                {NONETWORKPOINTTOPOINT, "no isis network point-to-point"},
+                {NOISISPASSIVE, "no isis passive"},
+                {NOISISPRIORITY, "no isis priority {NUM(0-127)} {NAME(level-1,level-2)}"},
+                {NOPSNPINTERVAL, "no isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2)}"},
+                {NOTHREEWAYHANDSHAKE, "no isis three-way-handshake"},
                 
 
-
-
-                //minimal args is the first LexDef of no operation
-                {NOROSPF, "no router ospf"},
-                //FIXME this is the simple fix of no ospf router-id, because no ospf router-id {ID} , id should be same for unset
-                //we don't support this in this generator
-                {NORID, "no ospf router-id"},
-                {NORABRTYPE, "no ospf abr-type {NAME(standard,shortcut,ibm,cisco)}"},
-                {NONETAREAID, "no network {IPRANGE} area {ID}"},
-                {NOPASSIVEINTFDEFUALT, "no passive-interface default"},
-                {NOTIMERSTHROTTLESPF, "no timers throttle spf|no timers throttle spf {NUM(0-600000)} {NUM2(0-600000)} {NUM3(0-600000)}"},
-                {NOMAXIMUMPATHS, "no maximum-paths|no maximum-paths {NUM(1-64)}"},
-                {NOWRITEMULTIPLIER, "no write-multiplier {NUM(1-100)}"},
-                {NOSOCKETBUFFERSEND, "no socket buffer send|no socket buffer send {LONGNUM(1-4000000000)}"},
-                {NOSOCKETBUFFERRECV, "no socket buffer recv|no socket buffer recv {LONGNUM(1-4000000000)}"},
-                //SOCKETBUFFERALL
-                //{NOSOCKETBUFFERALL, "no socket buffer all|no socket buffer all {LONGNUM(1-4000000000)}"},
-                {SOCKETPERINTERFACE, "socket-per-interface"},
-                {NOAreaRange, "no area {ID(NUM)} range {IPRANGE}|no area {ID(NUM)} range {IPRANGE} advertise"},
-                {NOAreaRangeNoAd, "no area {ID(NUM)} range {IPRANGE} not-advertise"},
-                //{NOAreaRangeSub, "no area {ID(NUM)} range {IPRANGE} substitute {IP}"},
-                //FIXME no ...cost only should be added once we fix frr bug
-                {NOAreaRangeCost, "no area {ID(NUM)} range {IPRANGE} cost {NUM(0-16777215)}|no area {ID(NUM)} range {IPRANGE} advertise cost {NUM(0-16777215)}"},
-                {NOAreaVLink, "no area {ID(NUM)} virtual-link {ID2}"},
-                //FIXME default should be added once we fix frr bug
-                {NOAreaShortcut, "no area {ID(NUM)} shortcut {NAME(enable,disable)}"},
-                {NOAreaStub, "no area {ID(NUM)} stub"},
-
-                //FIXME simple fix of NOAreaStubTotal
-                //{NOAreaStubTotal, "no area {ID(NUM)} stub no-summary"},
-                {NOAreaNSSA, "no area {ID(NUM)} nssa"},
-                {NORefreshTimer,  "no refresh timer {NUM(10-1800)}"},
-                {NOTimersLsaThrottle, "no timers throttle lsa all {NUM(0-5000)}"},
-                {NOIPAddr, "no ip address {IP}"},
-                {NOIpOspfArea, "no ip ospf area | no ip ospf area {ID(NUM)}"},
-                {NOIpOspfCost, "no ip ospf cost | no ip ospf cost {NUM(1-65535)}"},
-                {NOIpOspfDeadInter, "no ip ospf dead-interval | no ip ospf dead-interval {NUM(1-65535)}"},
-                {NOIpOspfDeadInterMulti, "no ip ospf dead-interval minimal hello-multiplier | no ip ospf dead-interval minimal hello-multiplier {NUM(2-20)}"},
-                {NOIpOspfHelloInter, "no ip ospf hello-interval | no ip ospf hello-interval {NUM(1-65535)}"},
-                {NOIpOspfGRHelloDelay, "no ip ospf graceful-restart hello-delay | no ip ospf graceful-restart hello-delay {NUM(1-1800)}"},
-                {NOIpOspfNet, "no ip ospf network | no ip ospf network {NAME(broadcast,non-broadcast)}"},
-                {NOIpOspfPriority, "no ip ospf priority | no ip ospf priority {NUM(0-255)}"},
-                {NOIpOspfRetransInter, "no ip ospf retransmit-interval | no ip ospf retransmit-interval {NUM(1-65535)}"},
-                {NOIpOspfTransDelay, "no ip ospf transmit-delay | no ip ospf transmit-delay {NUM(1-65535)}"},
-                {NOIpOspfPassive, "no ip ospf passive"},
-
+              
 
                 //INVALID will not to match, it can read/write invalid str to bypass [NAME]
                 {INVALID, "{NAME}"},

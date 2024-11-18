@@ -22,87 +22,74 @@ public enum OpType_isis {
     RISIS,
     IntfName,
     //=================ISIS ROUTER==================
-
+    ISISROUTERBEGIN,    
     NET,
+    ISISROUTEREND,
     //===================ISIS region=====================
+    ISISREGIONBEGIN,
     ISTYPE,
-
+    ISISREGIONEND,
 
     //===================ISIS INTERFACE================
+    ISISINTFBEGIN,
     IPROUTERISIS,
     CIRCUITTYPE,
     CSNPINTERVAL,
     HELLOPADDING,
-    
+    HELLOINTERVAL,
+    HELLOMULTIPLIER,
+    ISISMETRICLEVEL1,
+    ISISMETRICLEVEL2,
+    NETWORKPOINTTOPOINT,
+    ISISPASSIVE,
+    ISISPRIORITY,
+    PSNPINTERVAL,
+    THREEWAYHANDSHAKE,
+    ISISEND,
+    //================NO ISIS =================
+    NORISIS,
+    NOTNET,
+    NOISTYPE,
+    NOIPROUTERISIS,
+    NOCIRCUITTYPE,
+    NOCSNPINTERVAL,
+    NOHELLOPADDING,
+    NOHELLOINTERVAL,
+    NOHELLOMULTIPLIER,
+    NOISISMETRICLEVEL1,
+    NOISISMETRICLEVEL2,
+    NONETWORKPOINTTOPOINT,
+    NOISISPASSIVE,
+    NOISISPRIORITY,
+    NOPSNPINTERVAL,
+    NOTHREEWAYHANDSHAKE,
 
-//    TODO IpOspfPrefixSupp,
+    INVALID;
 
-    OSPFIntfGroupEND,
-    INVALID,
-    NOROSPF,
-    NORID,
-    NORABRTYPE,
-    NONETAREAID,
-    NOPASSIVEINTFDEFUALT,
-    NOTIMERSTHROTTLESPF,
-    NOCLEARIPOSPFPROCESS,
-    NOCLEARIPOSPFNEIGHBOR,
-    NOMAXIMUMPATHS,
-    NOWRITEMULTIPLIER,
-    NOSOCKETBUFFERSEND,
-    NOSOCKETBUFFERRECV,
-    //FIXME SOCKETBUFFERALL
-    //NOSOCKETBUFFERALL,
-    SOCKETPERINTERFACE,
-    NOAreaRange,
-    NOAreaRangeNoAd,
-    //FIXME NoAreaRangeSub
-    //NOAreaRangeSub,
-    NOAreaRangeCost,
-    NOAreaVLink,
-    NOAreaShortcut,
-    NOAreaStub,
-    //FIXME simple fix of NOAreaStubTotal
-    //NOAreaStubTotal,
-    NORefreshTimer,
-    NOTimersLsaThrottle,
-    NOAreaNSSA,
-    NOIPAddr,
-    NOIpOspfArea,
-    NOIpOspfCost,
-    NOIpOspfDeadInter,
-    NOIpOspfDeadInterMulti,
-    NOIpOspfHelloInter,
-    NOIpOspfGRHelloDelay,
-    NOIpOspfNet,
-    NOIpOspfPriority,
-    NOIpOspfRetransInter,
-    NOIpOspfTransDelay,
-    NOIpOspfPassive;
 
 
     public static boolean inPhy(@NotNull OpType typ) {
         return typ.ordinal() >= NODEADD.ordinal() && typ.ordinal() <= LINKREMOVE.ordinal();
     }
 
-    public static boolean inOSPF(@NotNull OpType typ) {
-        return typ.ordinal() > OSPFCONF.ordinal() && typ.ordinal() < OSPFIntfGroupEND.ordinal();
+    public static boolean inISIS(@NotNull OpType typ) {
+        return typ.ordinal() > ISISCONF.ordinal() && typ.ordinal() < ISISEND.ordinal();
     }
 
-    public  boolean inOSPFRouterWithTopo() {
-        return this.ordinal() > OSPFROUTERBEGIN.ordinal() && this.ordinal() < OSPFROUTEREND.ordinal();
+    public  boolean inISISRouterWithTopo() {
+        return this.ordinal() > ISISROUTERBEGIN.ordinal() && this.ordinal() < ISISROUTEREND.ordinal();
     }
-
+    // FIXME
     public boolean inOSPFDAEMON(){
         return this.ordinal() > OSPFDAEMONGROUPBEGIN.ordinal() && this.ordinal() < OSPFDAEMONGROUPEND.ordinal();
     }
 
-    public  boolean inOSPFAREA(){
-        return this.ordinal() > OSPFAREAGROUPBEGIN.ordinal() && this.ordinal() < OSPFAREAGROUPEND.ordinal();
+    public  boolean inISISREGION(){
+        return this.ordinal() > ISISREGIONBEGIN.ordinal() && this.ordinal() < ISISREGIONEND.ordinal();
     }
 
-    public  boolean inOSPFINTF(){
-        return this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal();
+    public  boolean inISISINTF(){
+        return this.ordinal() > ISISINTFBEGIN.ordinal() && this.ordinal() < ISISEND.ordinal();
     }
 
     /**
@@ -110,7 +97,7 @@ public enum OpType_isis {
      * @return
      */
     public boolean isUnsetOp(){
-        return this.ordinal() >= NOROSPF.ordinal() && this.ordinal() <= NOIpOspfPassive.ordinal();
+        return this.ordinal() >= NORISIS.ordinal() && this.ordinal() <= NOTHREEWAYHANDSHAKE.ordinal();
     }
 
     /**
@@ -118,7 +105,7 @@ public enum OpType_isis {
      * @return
      */
     public boolean isSetOp(){
-        return this.ordinal() > OSPFCONF.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal();
+        return this.ordinal() > ISISCONF.ordinal() && this.ordinal() < ISISEND.ordinal();
     }
 
     /**
@@ -126,7 +113,7 @@ public enum OpType_isis {
      * @return
      */
     public boolean isRouterOp(){
-        return (this.ordinal() > OSPFROUTERBEGIN.ordinal() && this.ordinal() < OSPFAREAGROUPEND.ordinal()) || (this.ordinal() >= NORID.ordinal() && this.ordinal() <= NOAreaNSSA.ordinal());
+        return (this.ordinal() > ISISROUTERBEGIN.ordinal() && this.ordinal() < ISISREGIONEND.ordinal()) || (this.ordinal() >= NOTNET.ordinal() && this.ordinal() <= NOISTYPE.ordinal());
     }
 
     /**
@@ -134,6 +121,6 @@ public enum OpType_isis {
      * @return
      */
     public boolean isIntfOp(){
-        return (this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal()) || (this.ordinal() > NOAreaStub.ordinal()) || this == IPAddr || this == NOIPAddr;
+        return (this.ordinal() > ISISINTFBEGIN.ordinal() && this.ordinal() < ISISEND.ordinal()) || (this.ordinal() > NOCIRCUITTYPE.ordinal()) ;
     }
 }
