@@ -103,30 +103,6 @@ public class ISISAreaSum extends AbstractNode {
         this.shortcut = shortcut;
     }
 
-    public boolean isStub() {
-        return stub;
-    }
-
-    public void setStub(boolean stub) {
-        this.stub = stub;
-    }
-
-    public boolean isNosummary() {
-        return nosummary;
-    }
-
-    public void setNosummary(boolean nosummary) {
-        this.nosummary = nosummary;
-    }
-
-    public boolean isNssa() {
-        return nssa;
-    }
-
-    public void setNssa(boolean nssa) {
-        this.nssa = nssa;
-    }
-
     public enum shortCutType{
         Enable,
         Disable,
@@ -150,9 +126,7 @@ public class ISISAreaSum extends AbstractNode {
     }
 
     shortCutType shortcut;
-    boolean stub;
-    boolean nosummary;
-    boolean nssa;
+
 
     public ID getArea() {
         return area;
@@ -167,9 +141,6 @@ public class ISISAreaSum extends AbstractNode {
     @Override
     public void initFiled() {
         shortcut = shortCutType.Default;
-        stub = false;
-        nosummary = false;
-        nssa = false;
         virtualLink = null;
         sumEntries = new HashMap<>();
         area = null;

@@ -12,6 +12,21 @@ public class ISISIntf extends AbstractNode_ISIS {
     /*
      * element
      * 1. vrf
+     * 2. passive
+     * 3. netType
+     * 4. level
+     * 5. helloIntervalLevel1
+     * 6. helloIntervalLevel2
+     * 7. priorityLevel1
+     * 8. priorityLevel2
+     * 9. csnpIntervalLevel1
+     * 10. csnpIntervalLevel2
+     * 11. psnpIntervalLevel1
+     * 12. psnpIntervalLevel2
+     * 13. helloMultiplierlevel1
+     * 14. helloMultiplierlevel2
+     * 15. metricLevel1
+     * 16. metricLevel2
      */
     public ISISIntf(String name){
         setName(name);
@@ -42,16 +57,6 @@ public class ISISIntf extends AbstractNode_ISIS {
     boolean passive;
     int vrf;
 
-
-    public int getDeadInterval() {
-        return deadInterval;
-    }
-
-    public void setDeadInterval(int deadInterval) {
-        this.deadInterval = deadInterval;
-    }
-
-    int deadInterval;
 
 
     public enum ISISNetType implements StringEnum {
@@ -133,11 +138,9 @@ public class ISISIntf extends AbstractNode_ISIS {
         // FIXME: helloIntervalLevel1 and helloIntervalLevel2 should be set to what?
         helloIntervalLevel1 = 10;  //timerHelloInMsecs
         helloIntervalLevel2 = 10;  //timerHelloInMsecs
-        deadInterval = 40; //timerDeadSecs
-        retansInter = 5; //timerRetransmitSecs
-        transDelay = 1; //transmitDelaySecs
 
         netType = ISISNetType.BROADCAST;
+        level =  null;
         priorityLevel1 = 1; //prioritylevel1
         priorityLevel2 = 1; //prioritylevel2
 
@@ -152,31 +155,6 @@ public class ISISIntf extends AbstractNode_ISIS {
         metricLevel1 = 10; //metricLevel1
         metricLevel2 = 10; //metricLevel2
     }
-
-
-    public int getRetansInter() {
-        return retansInter;
-    }
-
-    public void setRetansInter(int retansInter) {
-        this.retansInter = retansInter;
-    }
-
-    int retansInter;
-
-    public int getTransDelay() {
-        return transDelay;
-    }
-
-    public void setTransDelay(int transDelay) {
-        this.transDelay = transDelay;
-    }
-
-    int transDelay;
-
-
-
-
 
     // Add separate hello intervals and priorities for level-1 and level-2
     int helloIntervalLevel1;
