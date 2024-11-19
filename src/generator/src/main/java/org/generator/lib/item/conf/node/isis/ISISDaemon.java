@@ -3,8 +3,8 @@ package org.generator.lib.item.conf.node.ospf;
 import org.generator.lib.item.conf.node.NodeType;
 import org.generator.lib.item.conf.node.AbstractNode;
 
-public class OSPFDaemon extends AbstractNode {
-    public OSPFDaemon(String name){
+public class ISISDaemon extends AbstractNode {
+    public ISISDaemon(String name){
         setName(name);
         setNodeType(NodeType.OSPFDaemon);
         initFiled();

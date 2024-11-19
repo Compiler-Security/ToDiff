@@ -11,9 +11,9 @@ import org.generator.util.net.IPRange;
 import java.util.HashMap;
 import java.util.Map;
 
-public class OSPFAreaSum extends AbstractNode {
+public class ISISAreaSum extends AbstractNode {
 
-    public OSPFAreaSum(String name){
+    public ISISAreaSum(String name){
         setName(name);
         setNodeType(NodeType.OSPFAreaSum);
         sumEntries = new HashMap<>();

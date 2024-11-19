@@ -9,8 +9,8 @@ import org.generator.util.net.ID;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class OSPFIntf extends AbstractNode {
-    public OSPFIntf(String name){
+public class ISISIntf extends AbstractNode {
+    public ISISIntf(String name){
         setName(name);
         setNodeType(NodeType.OSPFIntf);
         initFiled();
