@@ -24,11 +24,11 @@ public class ISIS extends AbstractNode_ISIS {
     }
 
     public ID getRouterId() {
-        return routerId;
+        return NET;
     }
 
-    public void setRouterId(ID routerId) {
-        this.routerId = routerId;
+    public void setRouterId(ID NET) {
+        this.NET= NET;
     }
 
     public ISIS_STATUS getStatus() {
@@ -39,7 +39,7 @@ public class ISIS extends AbstractNode_ISIS {
         this.status = status;
     }
 
-    ID routerId;
+    ID NET;
     ISIS_STATUS status;
 
 
@@ -48,6 +48,6 @@ public class ISIS extends AbstractNode_ISIS {
     @Override
     public void initFiled() {
         status = ISIS_STATUS.UP;
-        routerId = ID.of(0xffffffffL);
+        NET = ID.of(0xffffffffL);
     }
 }
