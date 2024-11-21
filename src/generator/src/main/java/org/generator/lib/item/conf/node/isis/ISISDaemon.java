@@ -1,19 +1,18 @@
 package org.generator.lib.item.conf.node.isis;
-
-import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.NodeType_ISIS;
 
 import java.lang.foreign.Linker.Option;
 import java.util.Optional;
 
 import org.generator.lib.item.IR.Op;
-import org.generator.lib.item.conf.node.AbstractNode;
+import org.generator.lib.item.conf.node.AbstractNode_ISIS;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
 
 import java.util.Arrays;
 import java.util.Optional;
 
-public class ISISDaemon extends AbstractNode {
+public class ISISDaemon extends AbstractNode_ISIS {
     /*
      * 1. overloadbitonstartup
      * 2. lspmtu
@@ -23,7 +22,7 @@ public class ISISDaemon extends AbstractNode {
      */
     public ISISDaemon(String name){
         setName(name);
-        setNodeType(NodeType.OSPFDaemon);
+        setNodeType(NodeType_ISIS.ISISDaemon);
         initFiled();
     }
 

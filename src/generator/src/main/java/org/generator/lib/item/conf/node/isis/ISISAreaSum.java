@@ -1,9 +1,9 @@
-package org.generator.lib.item.conf.node.ospf;
+package org.generator.lib.item.conf.node.isis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.generator.lib.item.conf.node.NodeType;
-import org.generator.lib.item.conf.node.AbstractNode;
+import org.generator.lib.item.conf.node.NodeType_ISIS;
+import org.generator.lib.item.conf.node.AbstractNode_ISIS;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
@@ -11,11 +11,11 @@ import org.generator.util.net.IPRange;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ISISAreaSum extends AbstractNode {
+public class ISISAreaSum extends AbstractNode_ISIS {
 
     public ISISAreaSum(String name){
         setName(name);
-        setNodeType(NodeType.OSPFAreaSum);
+        setNodeType(NodeType_ISIS.ISISAreaSum);
         sumEntries = new HashMap<>();
         initFiled();
     }
