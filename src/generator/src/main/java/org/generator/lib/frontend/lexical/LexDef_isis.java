@@ -18,7 +18,7 @@ public class LexDef_isis {
         this.Args = args;
         this.ArgsRange = argsRange;
     }
-    private static final Map<OpType, List<LexDef>> preprocess;
+    private static final Map<OpType_isis, List<LexDef_isis>> preprocess;
     /**
      * type:
      * 1.NAME
@@ -99,7 +99,7 @@ public class LexDef_isis {
 
         preprocess = new HashMap<>();
         for(var item: lexical_seed){
-            OpType opType = (OpType) item[0];
+            OpType_isis opType = (OpType_isis) item[0];
             String seeds = (String) item[1];
             var seedArray = Arrays.stream(seeds.split("\\|")).map(String::strip).toArray(String[]::new);
             preprocess.put(opType, new ArrayList<>());
@@ -109,7 +109,7 @@ public class LexDef_isis {
         }
     }
 
-    private static LexDef seedToLexDef(String st){
+    private static LexDef_isis seedToLexDef(String st){
         Map<String, Object> argsRange = new HashMap<>();
         List<String> args = new ArrayList<>();
 
@@ -142,19 +142,19 @@ public class LexDef_isis {
         re = re.replaceAll(" +", "\\\\s+");
         var template = removeRangeStr(st);
 
-        return new LexDef(re, template, args, argsRange);
+        return new LexDef_isis(re, template, args, argsRange);
     }
 
     private static  String removeRangeStr(String st){
         return st.replaceAll("\\([\\w\\-,]+\\)", "");
     }
 
-    public static List<LexDef> getLexDef(OpType opType){
+    public static List<LexDef_isis> getLexDef(OpType_isis opType){
         assert preprocess.containsKey(opType): opType;
         return preprocess.get(opType);
     }
 
-    public static int getLexDefNum(OpType opType){
+    public static int getLexDefNum(OpType_isis opType){
         return preprocess.get(opType).size();
     }
 
@@ -162,7 +162,7 @@ public class LexDef_isis {
      * INVALID will not to match
      * @return OpType to match
      */
-    public static List<OpType> getOpTypesToMatch(){
+    public static List<OpType_isis> getOpTypesToMatch(){
         return preprocess.keySet().stream().filter(x -> x != INVALID).toList();
     }
     public String Template;
