@@ -1,6 +1,6 @@
 package org.generator.lib.item.IR;
 
-import org.generator.lib.frontend.driver.IO;
+import org.generator.lib.frontend.driver.IO_ISIS;
 import org.generator.lib.item.opg.OpIsisG;
 import org.generator.lib.frontend.lexical.OpType_isis;
 
@@ -77,9 +77,9 @@ public class OpIsis extends OpBase_ISIS{
     @Override
     public String toString() {
         if (getOpCtx() != null){
-            return IO.writeOp(getOpCtx());
+            return IO_ISIS.writeOp(getOpCtx());
         }else {
-            return IO.writeOp(OpCtx_ISIS.of(this, 0));
+            return IO_ISIS.writeOp(OpCtx_ISIS.of(this, 0));
         }
     }
 
