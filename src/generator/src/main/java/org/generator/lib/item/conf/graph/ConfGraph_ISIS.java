@@ -81,15 +81,15 @@ public class ConfGraph_ISIS extends AbstractRelationGraph_ISIS {
         var ospf_daemon_name = NodeGen_ISIS.getISISDaemonName(ospf_name);
         if (containsNode(ospf_name)){
             g.addNode(getNodeNotNull(ospf_name));
-            g.addOSPFRelation(ospf_name, r_name);
-            for(var areaSum: getOSPFAreaSumOfOSPF(ospf_name)){
+            g.addISISRelation(ospf_name, r_name);
+            for(var areaSum: getISISAreaSumOfISIS(ospf_name)){
                 g.addNode(areaSum);
-                g.addOSPFAreaSumRelation(areaSum.getName(), ospf_name);
+                g.addISISAreaSumRelation(areaSum.getName(), ospf_name);
             }
         }
         if (containsNode(ospf_daemon_name)){
             g.addNode(getNodeNotNull(ospf_daemon_name));
-            g.addOSPFDaemonRelation(ospf_daemon_name, r_name);
+            g.addISISDaemonRelation(ospf_daemon_name, r_name);
         }
         for(var intf: getIntfsOfRouter(r_name)){
             g.addNode(intf);
@@ -97,7 +97,7 @@ public class ConfGraph_ISIS extends AbstractRelationGraph_ISIS {
             var ospf_intf_name = NodeGen_ISIS.getISISIntfName(intf.getName());
             if (containsNode(ospf_intf_name)){
                 g.addNode(getNodeNotNull(ospf_intf_name));
-                g.addOSPFIntfRelation(ospf_intf_name, intf.getName());
+                g.addISISIntfRelation(ospf_intf_name, intf.getName());
             }
         }
         return g;
@@ -154,18 +154,18 @@ public class ConfGraph_ISIS extends AbstractRelationGraph_ISIS {
      public Set<Intf_ISIS> getIntfsOfRouter(String r_name){
         return this.<Intf_ISIS>getDstsByType(r_name, RelationEdge_ISIS.EdgeType.INTF);
      }
-     public Set<ISISIntf> getOSPFIntfOfRouter(String r_name){
+     public Set<ISISIntf> getISISIntfOfRouter(String r_name){
         return this.<Intf_ISIS>getDstsByType(r_name, RelationEdge_ISIS.EdgeType.INTF).stream().map(x->this.<ISISIntf>getDstsByType(x.getName(), RelationEdge_ISIS.EdgeType.ISISINTF)).flatMap(Collection::stream).collect(Collectors.toSet());
      }
 
-     public Set<ISISAreaSum> getOSPFAreaSumOfOSPF(String ospf_name){
-        return this.<ISISAreaSum> getDstsByType(ospf_name, RelationEdge_ISIS.EdgeType.ISISAREASUM);
+     public Set<ISISAreaSum> getISISAreaSumOfISIS(String isis_name){
+        return this.<ISISAreaSum> getDstsByType(isis_name, RelationEdge_ISIS.EdgeType.ISISAREASUM);
      }
-    public ISISIntf getOSPFIntf(String nodeName) {
+    public ISISIntf getISISIntf(String nodeName) {
         return (ISISIntf) getNode(nodeName).get();
     }
 
-    public ISISDaemon getOSPFDaemonOfOSPF(String ospf_name){
+    public ISISDaemon getISISDaemonOfISIS(String ospf_name){
         return this.<ISISDaemon>getDstsByType(ospf_name, RelationEdge_ISIS.EdgeType.ISISDAEMON).stream().findFirst().get();
     }
 
@@ -173,15 +173,15 @@ public class ConfGraph_ISIS extends AbstractRelationGraph_ISIS {
         return (Intf_ISIS) getNode(nodeName).get();
     }
 
-    public ExecStat addOSPFRelation(String ospf_name, String phynode_name){
-        var res1 = addEdge(phynode_name, ospf_name, RelationEdge_ISIS.EdgeType.ISIS);
-        var res2 =  addEdge(ospf_name, phynode_name, RelationEdge_ISIS.EdgeType.PhyNODE);
+    public ExecStat addISISRelation(String isis_name, String phynode_name){
+        var res1 = addEdge(phynode_name, isis_name, RelationEdge_ISIS.EdgeType.ISIS);
+        var res2 =  addEdge(isis_name, phynode_name, RelationEdge_ISIS.EdgeType.PhyNODE);
         assert res1.join(res2) == ExecStat.SUCC;
         return ExecStat.SUCC;
     }
-    public ExecStat addOSPFIntfRelation(String ospf_intf_name, String intf_name){
-        var res1 = addEdge(ospf_intf_name, intf_name, RelationEdge_ISIS.EdgeType.INTF);
-        var res2 = addEdge(intf_name, ospf_intf_name, RelationEdge_ISIS.EdgeType.ISISINTF);
+    public ExecStat addISISIntfRelation(String isis_intf_name, String intf_name){
+        var res1 = addEdge(isis_intf_name, intf_name, RelationEdge_ISIS.EdgeType.INTF);
+        var res2 = addEdge(intf_name, isis_intf_name, RelationEdge_ISIS.EdgeType.ISISINTF);
         return ExecStat.SUCC;
     }
 
@@ -191,7 +191,7 @@ public class ConfGraph_ISIS extends AbstractRelationGraph_ISIS {
         return ExecStat.SUCC;
     }
 
-    public ExecStat addOSPFAreaRelation(String area_name, String intf_name){
+    public ExecStat addISISAreaRelation(String area_name, String intf_name){
         var res1 = addEdge(area_name, intf_name, RelationEdge_ISIS.EdgeType.INTF);
         var res2 = addEdge(intf_name, area_name, RelationEdge_ISIS.EdgeType.ISISAREA);
         assert res1.join(res2) == ExecStat.SUCC;
@@ -203,21 +203,21 @@ public class ConfGraph_ISIS extends AbstractRelationGraph_ISIS {
         addEdge(intf2_name, intf1_name, RelationEdge_ISIS.EdgeType.LINK);
     }
 
-    public ExecStat addOSPFAreaSumRelation(String areaSum_name, String ospf_name){
+    public ExecStat addISISAreaSumRelation(String areaSum_name, String ospf_name){
         var res1 = addEdge(areaSum_name, ospf_name, RelationEdge_ISIS.EdgeType.ISIS);
         var res2 = addEdge(ospf_name, areaSum_name, RelationEdge_ISIS.EdgeType.ISISAREASUM);
         assert res1.join(res2) == ExecStat.SUCC;
         return ExecStat.SUCC;
     }
 
-    public ExecStat addOSPFDaemonRelation(String ospf_name, String ospf_daemon_name){
+    public ExecStat addISISDaemonRelation(String ospf_name, String ospf_daemon_name){
         var res1 = addEdge(ospf_name, ospf_daemon_name, RelationEdge_ISIS.EdgeType.ISISDAEMON);
         var res2 = addEdge(ospf_daemon_name, ospf_name, RelationEdge_ISIS.EdgeType.ISIS);
         assert res1.join(res2) == ExecStat.SUCC;
         return ExecStat.SUCC;
     }
 
-    public boolean containsOSPFOfRouter(String r_name){
+    public boolean containsISISOfRouter(String r_name){
         return this.containsNode(NodeGen_ISIS.getISISName(r_name));
     }
 

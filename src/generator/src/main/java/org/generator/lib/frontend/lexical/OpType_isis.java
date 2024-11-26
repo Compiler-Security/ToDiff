@@ -80,9 +80,9 @@ public enum OpType_isis {
         return this.ordinal() > ISISROUTERBEGIN.ordinal() && this.ordinal() < ISISROUTEREND.ordinal();
     }
     // FIXME
-    public boolean inOSPFDAEMON(){
-        return this.ordinal() > OSPFDAEMONGROUPBEGIN.ordinal() && this.ordinal() < OSPFDAEMONGROUPEND.ordinal();
-    }
+    // public boolean inOSPFDAEMON(){
+    //     return this.ordinal() > ISISDAEMONGROUPBEGIN.ordinal() && this.ordinal() < OSPFDAEMONGROUPEND.ordinal();
+    // }
 
     public  boolean inISISREGION(){
         return this.ordinal() > ISISREGIONBEGIN.ordinal() && this.ordinal() < ISISREGIONEND.ordinal();

@@ -41,6 +41,7 @@ public class IOTest {
         var genOp = new genOps();
         var res = genOp.genRandom(100, 0.5, 0.4, 2, 0, 0.3, "r1");
         System.out.println(res);
+		System.out.println("=========");
     }
     @Test
     public void jsonTest(){

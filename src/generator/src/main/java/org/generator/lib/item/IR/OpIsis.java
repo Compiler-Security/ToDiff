@@ -20,8 +20,8 @@ public class OpIsis extends OpBase_ISIS{
     }
 
     /**
-     * create the default OpOspf, whose type is invalid
-     * @return default OpOspf
+     * create the default OpIsis, whose type is invalid
+     * @return default OpIsis
      */
     public static OpIsis of(){
         return new OpIsis(OpType_isis.INVALID);

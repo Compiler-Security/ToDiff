@@ -1,7 +1,7 @@
 package org.generator.lib.item.opg;
 
 import org.generator.lib.item.IR.OpCtx_ISIS;
-import org.generator.tools.frontend.IsisConfWriter;
+//import org.generator.tools.frontend.IsisConfWriter;
 
 import java.util.Iterator;
 import java.util.List;
@@ -23,9 +23,9 @@ public class OpCtxG_ISIS extends BaseOpG<OpCtx_ISIS>{
         return opctxg;
     }
 
-    @Override
-    public String toString() {
-        var ospfConfWriter = new OspfConfWriter();
-        return ospfConfWriter.write(this);
-    }
+    // @Override
+    // public String toString() {
+    //     var ospfConfWriter = new OspfConfWriter();
+    //     return ospfConfWriter.write(this);
+    // }
 }

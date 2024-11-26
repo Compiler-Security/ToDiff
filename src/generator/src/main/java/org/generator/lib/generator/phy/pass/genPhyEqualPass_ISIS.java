@@ -25,13 +25,13 @@ public class genPhyEqualPass_ISIS {
                 case NODEDEL -> {
                     slots.add(NormalController_ISIS.getNodeCatg(0, 0, op.getNAME(), OpType_isis.NODEDEL, NormalController_ISIS.CType.NODE));
                 }
-                case NODESETOSPFUP -> {
+                case NODESETISISUP -> {
                     slots.add(NormalController_ISIS.getISISCatg(0, 0, 0, op.getNAME(), OpType_isis.NODESETISISUP, NormalController_ISIS.CType.ISIS));
                 }
-                case NODESETOSPFSHUTDOWN -> {
+                case NODESETISISSHUTDOWN -> {
                     slots.add(NormalController_ISIS.getISISCatg(0, 0, 0, op.getNAME(), OpType_isis.NODESETISISSHUTDOWN, NormalController_ISIS.CType.ISIS));
                 }
-                case NODESETOSPFRE -> {
+                case NODESETISISRE -> {
                     slots.add(NormalController_ISIS.getISISCatg(0, 0, 0, op.getNAME(), OpType_isis.NODESETISISRE, NormalController_ISIS.CType.ISIS));
                 }
                 case INTFUP -> {

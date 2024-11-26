@@ -92,7 +92,7 @@ public class OpCtx_ISIS {
     }
 
     /**
-     * create new OpCtx of OpOspf
+     * create new OpCtx of OpIsis
      * @param type
      * @param lex_idx
      * @return
