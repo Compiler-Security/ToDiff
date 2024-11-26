@@ -128,11 +128,11 @@ public class OpCtx_ISIS {
      *
      * @return
      */
-    public OpOspf getOpOspf(){
-        return (OpOspf) getOperation();
+    public OpIsis getOpIsis(){
+        return (OpIsis) getOperation();
     }
 
-    public OpPhy getOpPhy(){
-        return (OpPhy) getOperation();
+    public OpPhy_ISIS getOpPhy(){
+        return (OpPhy_ISIS) getOperation();
     }
 }

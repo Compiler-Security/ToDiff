@@ -1,6 +1,6 @@
-package org.generator.lib.generator.ospf.controller;
+package org.generator.lib.generator.isis.controller;
 
-import org.generator.lib.item.IR.OpAnalysis;
+import org.generator.lib.item.IR.OpAnalysis_ISIS;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,17 +19,17 @@ import java.util.List;
  * ACTIVE->REMOVED | REMOVED
  * ACTIVE->ACTIVE | ACTIVE
  */
-public  class NormalController {
+public  class NormalController_ISIS {
 
-    public class GenConfig{
+    public class GenConfig_ISIS{
         int ra, rr, ar, aa;
-        OpAnalysis.STATE state, finalState;
-        GenConfig(int rr, int ra, int ar, int aa){
+        OpAnalysis_ISIS.STATE state, finalState;
+        GenConfig_ISIS(int rr, int ra, int ar, int aa){
             this.rr = rr;
             this.ra = ra;
             this.ar = ar;
             this.aa = aa;
-            state = OpAnalysis.STATE.REMOVED;
+            state = OpAnalysis_ISIS.STATE.REMOVED;
         }
 
         @Override
@@ -45,14 +45,14 @@ public  class NormalController {
 
         }
 
-        public List<OpAnalysis.STATE> getValidMoveStates(){
-            List<OpAnalysis.STATE> valid_states = new ArrayList<>();
-            if (state == OpAnalysis.STATE.REMOVED){
-                if (this.ra > 0) valid_states.add(OpAnalysis.STATE.ACTIVE);
-                if (this.rr > 0) valid_states.add(OpAnalysis.STATE.REMOVED);
+        public List<OpAnalysis_ISIS.STATE> getValidMoveStates(){
+            List<OpAnalysis_ISIS.STATE> valid_states = new ArrayList<>();
+            if (state == OpAnalysis_ISIS.STATE.REMOVED){
+                if (this.ra > 0) valid_states.add(OpAnalysis_ISIS.STATE.ACTIVE);
+                if (this.rr > 0) valid_states.add(OpAnalysis_ISIS.STATE.REMOVED);
             }else{
-                if (this.ar > 0) valid_states.add(OpAnalysis.STATE.REMOVED);
-                if (this.aa > 0) valid_states.add(OpAnalysis.STATE.ACTIVE);
+                if (this.ar > 0) valid_states.add(OpAnalysis_ISIS.STATE.REMOVED);
+                if (this.aa > 0) valid_states.add(OpAnalysis_ISIS.STATE.ACTIVE);
             }
             return valid_states;
         }
@@ -61,7 +61,7 @@ public  class NormalController {
          * Must be valid
          * @param target_state
          */
-        public void moveToState(OpAnalysis.STATE target_state){
+        public void moveToState(OpAnalysis_ISIS.STATE target_state){
             switch (state){
                 case REMOVED -> {
                     switch (target_state){
@@ -85,14 +85,14 @@ public  class NormalController {
          * B -> A ++
          * @param target_state
          */
-        public void revertToState(OpAnalysis.STATE target_state){
+        public void revertToState(OpAnalysis_ISIS.STATE target_state){
             switch (state){
                 case REMOVED -> {
                     switch (target_state){
                         case REMOVED -> {assert  rr >= 0;}
                         case ACTIVE -> {
                             if (ra > 0) ra--;
-                            if (ar == 0 && finalState == OpAnalysis.STATE.REMOVED){
+                            if (ar == 0 && finalState == OpAnalysis_ISIS.STATE.REMOVED){
                                 ar++;
                             }
                         }
@@ -102,7 +102,7 @@ public  class NormalController {
                     switch (target_state){
                         case REMOVED -> {
                             if (ar > 0) ar--;
-                            if (ra == 0 && finalState == OpAnalysis.STATE.ACTIVE) {
+                            if (ra == 0 && finalState == OpAnalysis_ISIS.STATE.ACTIVE) {
                                 ra++;
                             }
                         }
@@ -117,82 +117,82 @@ public  class NormalController {
             return !getValidMoveStates().isEmpty();
         }
 
-        public  GenConfig copy(){
-            return new GenConfig(rr, ra, ar, aa);
+        public  GenConfig_ISIS copy(){
+            return new GenConfig_ISIS(rr, ra, ar, aa);
         }
     }
-    protected HashMap<OpAnalysis, GenConfig> configMap;
-    NormalController(){
+    protected HashMap<OpAnalysis_ISIS, GenConfig_ISIS> configMap;
+    NormalController_ISIS(){
         configMap = new HashMap<>();
     }
-    public static NormalController of(){
-        return new NormalController();
+    public static NormalController_ISIS of(){
+        return new NormalController_ISIS();
     }
     /**
      * use as update as well
      * @param opa
      */
-    public boolean addConfig(OpAnalysis opa, int rr, int ra, int ar, int aa){
-        configMap.put(opa, new GenConfig(rr, ra, ar, aa));
+    public boolean addConfig(OpAnalysis_ISIS opa, int rr, int ra, int ar, int aa){
+        configMap.put(opa, new GenConfig_ISIS(rr, ra, ar, aa));
         return true;
     }
 
-    public boolean addConfig(OpAnalysis opa, int rr, int ra, int ar, int aa, OpAnalysis.STATE cur_state, OpAnalysis.STATE final_state){
-        configMap.put(opa, new GenConfig(rr, ra, ar, aa));
+    public boolean addConfig(OpAnalysis_ISIS opa, int rr, int ra, int ar, int aa, OpAnalysis_ISIS.STATE cur_state, OpAnalysis_ISIS.STATE final_state){
+        configMap.put(opa, new GenConfig_ISIS(rr, ra, ar, aa));
         configMap.get(opa).state = cur_state;
         configMap.get(opa).finalState = final_state;
         return true;
     }
 
 
-    public List<OpAnalysis > getOpas(){
+    public List<OpAnalysis_ISIS> getOpas(){
         return configMap.keySet().stream().toList();
     }
-    public GenConfig delConfig(OpAnalysis opa){
+    public GenConfig_ISIS delConfig(OpAnalysis_ISIS opa){
         return configMap.remove(opa);
     }
 
-    public OpAnalysis.STATE getConfigStateOfOpa(OpAnalysis opa){
+    public OpAnalysis_ISIS.STATE getConfigStateOfOpa(OpAnalysis_ISIS opa){
         assert configMap.containsKey(opa);
         return configMap.get(opa).state;
     }
 
-    public OpAnalysis.STATE getConfigFinalStateOfOpa(OpAnalysis opa){
+    public OpAnalysis_ISIS.STATE getConfigFinalStateOfOpa(OpAnalysis_ISIS opa){
         assert configMap.containsKey(opa);
         return configMap.get(opa).finalState;
     }
 
-    public List<OpAnalysis.STATE> getValidMoveStatesOfOpa(OpAnalysis opa){
+    public List<OpAnalysis_ISIS.STATE> getValidMoveStatesOfOpa(OpAnalysis_ISIS opa){
         return configMap.get(opa).getValidMoveStates();
     }
 
-    public boolean canMoveStateOfOpa(OpAnalysis opa, OpAnalysis.STATE state){
+    public boolean canMoveStateOfOpa(OpAnalysis_ISIS opa, OpAnalysis_ISIS.STATE state){
         return getValidMoveStatesOfOpa(opa).contains(state);
     }
 
-    public void moveToStateOfOpa(OpAnalysis opa, OpAnalysis.STATE target_state){
+    public void moveToStateOfOpa(OpAnalysis_ISIS opa, OpAnalysis_ISIS.STATE target_state){
         configMap.get(opa).moveToState(target_state);
     }
 
-    public void revertToStateOfOpa(OpAnalysis opa, OpAnalysis.STATE target_state){
+    public void revertToStateOfOpa(OpAnalysis_ISIS opa, OpAnalysis_ISIS.STATE target_state){
         configMap.get(opa).revertToState(target_state);
     }
 
-    public boolean canMoveOfOpa(OpAnalysis opa){
+    public boolean canMoveOfOpa(OpAnalysis_ISIS opa){
         return configMap.get(opa).canMove();
     }
 
-    public boolean hasConfigOfOpa(OpAnalysis opa){
+    public boolean hasConfigOfOpa(OpAnalysis_ISIS opa){
         return configMap.containsKey(opa);
     }
 
-    public GenConfig getConfigOfOpa(OpAnalysis opa){
+    public GenConfig_ISIS getConfigOfOpa(OpAnalysis_ISIS opa){
         assert configMap.containsKey(opa);
         return configMap.get(opa);
     }
 
-    public List<OpAnalysis> getCanMoveOpas(){
-        List<OpAnalysis> res = new ArrayList<>();
+    public List<OpAnalysis_ISIS> getCanMoveOpas(){
+        List<OpAnalysis_ISIS> res = new ArrayList<>();
         for(var p: configMap.entrySet()){
             if (p.getValue().canMove()){
                 res.add(p.getKey());
@@ -201,8 +201,8 @@ public  class NormalController {
         return res;
     }
 
-    public List<OpAnalysis> getNoMoveOpas(){
-        List<OpAnalysis> res = new ArrayList<>();
+    public List<OpAnalysis_ISIS> getNoMoveOpas(){
+        List<OpAnalysis_ISIS> res = new ArrayList<>();
         for(var p: configMap.entrySet()){
             if (!p.getValue().canMove()){
                 res.add(p.getKey());
@@ -211,20 +211,20 @@ public  class NormalController {
         return res;
     }
 
-    public List<OpAnalysis> getActiveOpas(){
-        List<OpAnalysis> res = new ArrayList<>();
+    public List<OpAnalysis_ISIS> getActiveOpas(){
+        List<OpAnalysis_ISIS> res = new ArrayList<>();
         for(var p: configMap.entrySet()){
-            if (p.getValue().state == OpAnalysis.STATE.ACTIVE){
+            if (p.getValue().state == OpAnalysis_ISIS.STATE.ACTIVE){
                 res.add(p.getKey());
             }
         }
         return res;
     }
 
-    public List<OpAnalysis> getREMOVEDOpas(){
-        List<OpAnalysis> res = new ArrayList<>();
+    public List<OpAnalysis_ISIS> getREMOVEDOpas(){
+        List<OpAnalysis_ISIS> res = new ArrayList<>();
         for(var p: configMap.entrySet()){
-            if (p.getValue().state == OpAnalysis.STATE.REMOVED){
+            if (p.getValue().state == OpAnalysis_ISIS.STATE.REMOVED){
                 res.add(p.getKey());
             }
         }

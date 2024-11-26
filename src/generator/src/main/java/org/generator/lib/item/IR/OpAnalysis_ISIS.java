@@ -5,12 +5,12 @@ import org.generator.lib.reducer.semantic.CtxOpDef;
 import java.util.Objects;
 
 /***
- * OpAnalysis for OpOspf
- * extends OpOspf
- * OpOspf + ctxOp(OpAnalysis) + state + lineNo
+ * OpAnalysis for OpIsis
+ * extends OpIsis
+ * OpIsis + ctxOp(OpAnalysis) + state + lineNo
  *
  * ctxOp should be constant
- * OpOspf shoule be constant
+ * OpIsis shoule be constant
  *
  * ctxOp's ctxOp should always be null
  */
@@ -29,7 +29,7 @@ public class OpAnalysis_ISIS{
      *
      * @param opIsis
      * @return OpAnalysis
-     * create OpAnalysis, field opOspf + STATE(INIT) + lineNo(-1)
+     * create OpAnalysis, field opIsis + STATE(INIT) + lineNo(-1)
      * if opOspf is ctxOp, set ctxOp to itself
      */
     public static OpAnalysis_ISIS of(OpIsis opIsis){

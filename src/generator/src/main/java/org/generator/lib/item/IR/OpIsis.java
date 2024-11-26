@@ -55,7 +55,7 @@ public class OpIsis extends OpBase_ISIS{
 
 
     /**
-     * two OpOspf equal iff type1==type2 && args1 equal args2 <br>
+     * two OpIsis equal iff type1==type2 && args1 equal args2 <br>
      * args1 equal args2 iff any arg in args1 union args2, args1[arg] equal args2[arg]
      * @return is_equal
      */

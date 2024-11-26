@@ -1,10 +1,10 @@
-package org.generator.lib.generator.ospf.pass;
+package org.generator.lib.generator.isis.pass;
 
-import org.generator.lib.generator.driver.generate;
-import org.generator.lib.item.IR.OpAnalysis;
-import org.generator.lib.item.IR.OpCtx;
-import org.generator.lib.item.opg.OpAG;
-import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.generator.driver.generate_ISIS;
+import org.generator.lib.item.IR.OpAnalysis_ISIS;
+import org.generator.lib.item.IR.OpCtx_ISIS;
+import org.generator.lib.item.opg.OpAG_ISIS;
+import org.generator.lib.frontend.lexical.OpType_isis;
 import org.generator.lib.reducer.semantic.OverrideRedexDef;
 import org.generator.lib.reducer.semantic.UnsetRedexDef;
 import org.generator.util.collections.Pair;

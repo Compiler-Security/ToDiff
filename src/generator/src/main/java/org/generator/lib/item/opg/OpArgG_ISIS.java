@@ -29,7 +29,7 @@ public class OpArgG_ISIS extends BaseOpG<Op_ISIS>{
         Intf,
         ISIS,
         ISISIntf,
-        Attri
+        Attri//Attributes
     }
 
     public OpGType_ISIS getTyp() {
@@ -42,6 +42,7 @@ public class OpArgG_ISIS extends BaseOpG<Op_ISIS>{
 
     private OpGType_ISIS typ;
 
+    // FIXME: Is there ontype_isis or OpGType_isis?
     public List<Op_ISIS> getOpsOfType(OpType_isis typ){
         return getOps().stream().filter(x -> x.Type() == typ).toList();
     }
