@@ -45,7 +45,7 @@ public class LexDef_isis {
                 {NODESETISISRE, "node {NAME} set ISIS restart"},
                 {ISISCONF, "RISISCONF"},
 
-                {RISIS, "router isis {NAME}"},
+                {RISIS, "router isis"},
                 {IntfName, "interface {NAME}|int {NAME}"},
                 // route
                 //FIXME NUM or IP or ID

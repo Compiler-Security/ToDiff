@@ -31,6 +31,7 @@ public enum OpType_isis {
     ISISREGIONEND,
 
     //===================ISIS INTERFACE================
+    IPAddr,
     ISISINTFBEGIN,
     IPROUTERISIS,
     CIRCUITTYPE,

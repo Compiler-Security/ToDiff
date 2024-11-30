@@ -1,11 +1,11 @@
-package org.generator.lib.generator.ospf.pass;
+package org.generator.lib.generator.isis.pass;
 
-import org.generator.lib.frontend.lexical.LexDef;
-import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.frontend.lexical.LexDef_isis;
+import org.generator.lib.frontend.lexical.OpType_isis;
 import org.generator.lib.generator.driver.generate;
-import org.generator.lib.item.IR.Op;
-import org.generator.lib.item.IR.OpCtx;
-import org.generator.lib.item.IR.OpOspf;
+import org.generator.lib.item.IR.Op_ISIS;
+import org.generator.lib.item.IR.OpCtx_ISIS;
+import org.generator.lib.item.IR.OpIsis;
 import org.generator.util.collections.Pair;
 import org.generator.util.ran.ranHelper;
 
@@ -14,17 +14,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-public class genOpPass {
-    private static final List<OpType> intfOps, OspfOps;
+public class genOpPass_ISIS {
+    private static final List<OpType_isis> intfOps, OspfOps;
     static {
         intfOps = new ArrayList<>();
         OspfOps = new ArrayList<>();
-        for (var op_type: OpType.values()){
+        for (var op_type: OpType_isis.values()){
             //FIXME areaVLINK
             //if (op_type == OpType.AreaVLink) continue;
-            if (op_type.inOSPFINTF()){
+            if (op_type.inISISINTF()){
                 intfOps.add(op_type); }
-            else if (op_type.inOSPFAREA() || op_type.inOSPFDAEMON() || op_type.inOSPFRouterWithTopo()){
+            else if (op_type.inISISREGION() ||  op_type.inISISRouterWithTopo()){
                 OspfOps.add(op_type);
             }
         }
@@ -63,17 +63,16 @@ public class genOpPass {
         }else return ranHelper.randomStr();
     }
 
-    public static OpCtx genRanOpOfType(OpType type){
+    public static OpCtx_ISIS genRanOpOfType(OpType_isis type){
         int chose_idx = 0;
         if (generate.ran){
-            chose_idx = ranHelper.randomInt(0, LexDef.getLexDefNum(type) - 1);
+            chose_idx = ranHelper.randomInt(0, LexDef_isis.getLexDefNum(type) - 1);
         }
-        var gen_op = OpCtx.of(type, chose_idx);
-        var new_op = (OpOspf) gen_op.getOperation();
+        var gen_op = OpCtx_ISIS.of(type, chose_idx);
+        var new_op = (OpIsis) gen_op.getOperation();
         var lexDef = gen_op.getFormmat().getLexDef();
         var args = lexDef.Args;
         var argsRange = lexDef.ArgsRange;
-        System.out.println("new_op: " + new_op);
         for(var arg: args) {
             switch (arg) {
                 case "ID" -> {
@@ -111,8 +110,8 @@ public class genOpPass {
         }
         return gen_op;
     }
-    public static OpCtx genRanOpByControl(boolean inIntf){
-        OpType op_type;
+    public static OpCtx_ISIS genRanOpByControl(boolean inIntf){
+        OpType_isis op_type;
         if (inIntf){
             op_type = intfOps.get(ranHelper.randomInt(0, intfOps.size() - 1));
         }else  {
@@ -121,7 +120,7 @@ public class genOpPass {
         return genRanOpOfType(op_type);
     }
 
-    public static void copyFileds(Op dst_op, Op src_op, List<String> argList){
+    public static void copyFileds(Op_ISIS dst_op, Op_ISIS src_op, List<String> argList){
         for(var arg: argList){
             switch (arg) {
                 case "ID" -> {
