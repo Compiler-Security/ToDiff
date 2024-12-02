@@ -8,7 +8,6 @@ import org.generator.lib.item.IR.OpAnalysis_ISIS;
 import org.generator.lib.item.IR.OpCtx_ISIS;
 import org.generator.lib.item.IR.OpIsis;
 import org.generator.lib.item.opg.OpCtxG_ISIS;
-import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.NodeGen_ISIS;
 import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
@@ -225,10 +224,10 @@ public class genOps_ISIS {
         all = false;
         //fixme we should only generate one ip address XXX at once
         var opg1 = OpCtxG_ISIS.Of();
+        System.out.println(genOp(OpType_isis.RISIS).getOperation());
         opg1.addOp(genOp(OpType_isis.RISIS));
-        System.out.println(opg1.getOps());
         opgs.push(opg1);
-        System.out.println(opgs);
+        System.out.println("opgs"+ opgs);
         while(total_num < inst_num){
             if (rest_num > 0){
                 addOp(opgs.peek());
@@ -268,7 +267,7 @@ public class genOps_ISIS {
         }
         for(int i = 0; i < interface_num; i++){
             var intf = addOp(res, OpType_isis.IntfName);
-            intf.setNAME(NodeGen.getIntfName(r_name, i));
+            intf.setNAME(NodeGen_ISIS.getIntfName(r_name, i));
             // var ip = addOp(res, OpType_isis.IPAddr);
             // var area = addOp(res, OpType_isis.NET);
             // area.setID(ID.of(ranHelper.randomInt(0, 3)));

@@ -1,6 +1,7 @@
 package org.generator.tools.diffOp;
 
 import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.frontend.lexical.OpType_isis;
 import org.generator.lib.generator.ospf.pass.actionRulePass;
 import org.generator.lib.generator.ospf.pass.genOpPass;
 import org.generator.lib.item.IR.OpAnalysis;
@@ -207,6 +208,15 @@ public class genOps {
         return opCtx.getOpOspf();
     }
     boolean all;
+    /*
+        inst_num：要生成的操作实例总数。
+        router_ospf_ratio：路由器 OSPF 操作的比例。
+        intf_ratio：接口操作的比例。
+        interface_num：接口的数量。
+        no_ratio：未使用的比例（在当前代码中未使用）。
+        merge_ratio：合并操作的比例。
+        r_name：路由器的名称。
+        */
     public OpCtxG genRandom(int inst_num, double router_ospf_ratio, double intf_ratio, int interface_num, float no_ratio, double merge_ratio, String r_name){
         ran = new Random();
         this.no_ratio = no_ratio;
@@ -223,9 +233,10 @@ public class genOps {
         all = false;
         //fixme we should only generate one ip address XXX at once
         var opg1 = OpCtxG.Of();
+        System.out.println(genOp(OpType.ROSPF).getOperation());
         opg1.addOp(genOp(OpType.ROSPF));
         opgs.push(opg1);
-        System.out.println(opgs);
+        System.out.println("opgs"+ opgs);
         while(total_num < inst_num){
             if (rest_num > 0){
                 addOp(opgs.peek());

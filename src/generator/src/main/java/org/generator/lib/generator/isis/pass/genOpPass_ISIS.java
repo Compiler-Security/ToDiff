@@ -2,7 +2,7 @@ package org.generator.lib.generator.isis.pass;
 
 import org.generator.lib.frontend.lexical.LexDef_isis;
 import org.generator.lib.frontend.lexical.OpType_isis;
-import org.generator.lib.generator.driver.generate;
+import org.generator.lib.generator.driver.generate_ISIS;
 import org.generator.lib.item.IR.Op_ISIS;
 import org.generator.lib.item.IR.OpCtx_ISIS;
 import org.generator.lib.item.IR.OpIsis;
@@ -65,7 +65,7 @@ public class genOpPass_ISIS {
 
     public static OpCtx_ISIS genRanOpOfType(OpType_isis type){
         int chose_idx = 0;
-        if (generate.ran){
+        if (generate_ISIS.ran){
             chose_idx = ranHelper.randomInt(0, LexDef_isis.getLexDefNum(type) - 1);
         }
         var gen_op = OpCtx_ISIS.of(type, chose_idx);
@@ -73,7 +73,6 @@ public class genOpPass_ISIS {
         var lexDef = gen_op.getFormmat().getLexDef();
         var args = lexDef.Args;
         var argsRange = lexDef.ArgsRange;
-        System.out.println("lexDef: " + lexDef);
         for(var arg: args) {
             switch (arg) {
                 case "ID" -> {
