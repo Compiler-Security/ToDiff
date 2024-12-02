@@ -3,7 +3,7 @@ package org.generator.lib.item.opg;
 import org.generator.lib.generator.isis.pass.genCorePass_ISIS;
 import org.generator.lib.item.IR.OpAnalysis_ISIS;
 import org.generator.lib.item.IR.OpIsis;
-import org.generator.lib.reducer.driver.reducer;
+import org.generator.lib.reducer.driver.reducer_ISIS;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -114,7 +114,7 @@ public class OpAG_ISIS extends BaseOpG<OpAnalysis_ISIS>{
      * @return
      */
     public void reduce(){
-        reducer.reduce(this);
+        reducer_ISIS.reduce(this);
         updateOpStatus();
     }
 

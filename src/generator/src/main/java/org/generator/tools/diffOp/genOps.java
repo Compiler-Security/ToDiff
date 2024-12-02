@@ -225,6 +225,7 @@ public class genOps {
         var opg1 = OpCtxG.Of();
         opg1.addOp(genOp(OpType.ROSPF));
         opgs.push(opg1);
+        System.out.println(opgs);
         while(total_num < inst_num){
             if (rest_num > 0){
                 addOp(opgs.peek());

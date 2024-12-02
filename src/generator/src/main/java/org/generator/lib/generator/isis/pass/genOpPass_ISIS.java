@@ -73,6 +73,7 @@ public class genOpPass_ISIS {
         var lexDef = gen_op.getFormmat().getLexDef();
         var args = lexDef.Args;
         var argsRange = lexDef.ArgsRange;
+        System.out.println("lexDef: " + lexDef);
         for(var arg: args) {
             switch (arg) {
                 case "ID" -> {

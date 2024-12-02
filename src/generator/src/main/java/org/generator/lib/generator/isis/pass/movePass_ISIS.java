@@ -27,20 +27,20 @@ public class movePass_ISIS {
      * other DisCard
      */
     private static final Map<Pair<OpAnalysis_ISIS.STATE, OpAnalysis_ISIS.STATE>, applyRulePass_ISIS.RuleType[]> TranstionStateMap = new HashMap<>(){{
-        put(new Pair<>(OpAnalysis_ISIS.STATE.ACTIVE, OpAnalysis_ISIS.STATE.REMOVED), new applyRulePass_ISIS().RuleType[]{applyRulePass.RuleType.UnsetOp, applyRulePass.RuleType.UnsetCtx}); //FIXME if we want override, we should insert some mutate ops(final state is dead)
-        put(new Pair<>(OpAnalysis_ISIS.STATE.ACTIVE, OpAnalysis_ISIS.STATE.ACTIVE), new applyRulePass_ISIS.RuleType[]{applyRulePass.RuleType.Keep});
-        put(new Pair<>(OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.ACTIVE), new applyRulePass_ISIS.RuleType[]{applyRulePass.RuleType.Keep}); //FIXME if we want the op(final state is dead) to be active, we should use SolveConflict instead
-        put(new Pair<>(OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.REMOVED), new applyRulePass.RuleType[]{applyRulePass.RuleType.SYNWrong});
+        put(new Pair<>(OpAnalysis_ISIS.STATE.ACTIVE, OpAnalysis_ISIS.STATE.REMOVED), new applyRulePass_ISIS.RuleType[]{applyRulePass_ISIS.RuleType.UnsetOp, applyRulePass_ISIS.RuleType.UnsetCtx}); //FIXME if we want override, we should insert some mutate ops(final state is dead)
+        put(new Pair<>(OpAnalysis_ISIS.STATE.ACTIVE, OpAnalysis_ISIS.STATE.ACTIVE), new applyRulePass_ISIS.RuleType[]{applyRulePass_ISIS.RuleType.Keep});
+        put(new Pair<>(OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.ACTIVE), new applyRulePass_ISIS.RuleType[]{applyRulePass_ISIS.RuleType.Keep}); //FIXME if we want the op(final state is dead) to be active, we should use SolveConflict instead
+        put(new Pair<>(OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.REMOVED), new applyRulePass_ISIS.RuleType[]{applyRulePass_ISIS.RuleType.SYNWrong});
     }};
 
-    public static applyRulePass.RuleType[] getRules(OpAnalysis_ISIS.STATE from, OpAnalysis_ISIS.STATE to){
-        return TranstionStateMap.getOrDefault(new Pair<>(from, to), new applyRulePass.RuleType[]{applyRulePass.RuleType.DisCard});
+    public static applyRulePass_ISIS.RuleType[] getRules(OpAnalysis_ISIS.STATE from, OpAnalysis_ISIS.STATE to){
+        return TranstionStateMap.getOrDefault(new Pair<>(from, to), new applyRulePass_ISIS.RuleType[]{applyRulePass_ISIS.RuleType.DisCard});
     }
 
 
-    public  static List<applyRulePass.RuleType> getPossibleRules(OpAG_ISIS opAG, OpAnalysis_ISIS target_opa){
+    public  static List<applyRulePass_ISIS.RuleType> getPossibleRules(OpAG_ISIS opAG, OpAnalysis_ISIS target_opa){
         var current_state = opAG.getOpAState(target_opa);
-        List<applyRulePass.RuleType> possibleRules;
+        List<applyRulePass_ISIS.RuleType> possibleRules;
         return new ArrayList<>(List.of(getRules(current_state, target_opa.state)));
     }
 
@@ -101,7 +101,7 @@ public class movePass_ISIS {
      * @param allowed_ruleType null, or List contains allowed_ruleType
      * @return opAG_new, null if move fail
      */
-    public static  Pair<List<OpAnalysis_ISIS>, OpAG_ISIS> solve(OpAG_ISIS opAG, OpAnalysis_ISIS target_opa, applyRulePass.RuleType possibleRule){
+    public static  Pair<List<OpAnalysis_ISIS>, OpAG_ISIS> solve(OpAG_ISIS opAG, OpAnalysis_ISIS target_opa, applyRulePass_ISIS.RuleType possibleRule){
         /*
         TDOO For simplicity we only use dfs and currently not build condition graph
         */

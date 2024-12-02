@@ -1,6 +1,6 @@
 package org.generator.lib.generator.driver;
 
-import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.frontend.lexical.OpType_isis;
 import org.generator.lib.generator.isis.controller.CapacityController_ISIS;
 import org.generator.lib.generator.isis.controller.NormalController_ISIS;
 import org.generator.lib.generator.isis.pass.*;
@@ -10,9 +10,9 @@ import org.generator.lib.item.IR.OpAnalysis_ISIS;
 import org.generator.lib.item.opg.OpAG_ISIS;
 import org.generator.lib.item.opg.OpCtxG_ISIS;
 import org.generator.lib.item.conf.graph.ConfGraph_ISIS;
-import org.generator.lib.reducer.driver.reducer;
-import org.generator.lib.reducer.pass.phyArgPass;
-import org.generator.lib.reducer.semantic.CtxOpDef;
+import org.generator.lib.reducer.driver.reducer_ISIS;
+import org.generator.lib.reducer.pass.phyArgPass_ISIS;
+import org.generator.lib.reducer.semantic.CtxOpDef_ISIS;
 import org.generator.util.ran.ranHelper;
 
 import java.util.HashSet;
@@ -21,8 +21,8 @@ import java.util.Set;
 
 public class generate_ISIS {
 
-    public static OpCtxG generatePhyCore(ConfGraph confGraph){
-        return genPhyCorePass.solve(confGraph);
+    public static OpCtxG_ISIS generatePhyCore(ConfGraph_ISIS confGraph){
+        return genPhyCorePass_ISIS.solve(confGraph);
     }
 
     /**
@@ -31,38 +31,38 @@ public class generate_ISIS {
      * @param confGraph
      * @return
      */
-    public static OpCtxG generateCore(ConfGraph confGraph){
-        var p = new genCorePass();
+    public static OpCtxG_ISIS generateCore(ConfGraph_ISIS confGraph){
+        var p = new genCorePass_ISIS();
         var res1 = p.solve(confGraph);
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass();
         q.solve(res1, confGraph);
-        return reducer.reduceToCore(genCorePass.mergeOpCtxgToOne(res1));
+        return reducer_ISIS.reduceToCore(genCorePass_ISIS.mergeOpCtxgToOne(res1));
     }
 
-    public static void addRemovedOpToController(OpAG opas, NormalController controller){
-        Set<OpAnalysis> ctxOps_set = new HashSet<>();
+    public static void addRemovedOpToController(OpAG_ISIS opas, NormalController_ISIS controller){
+        Set<OpAnalysis_ISIS> ctxOps_set = new HashSet<>();
         for(var opa: opas.getOps()){
-            if (opa.getCtxOp() != null && CtxOpDef.isSetCtxOp(opa.getCtxOp().getOp().Type())){
+            if (opa.getCtxOp() != null && CtxOpDef_ISIS.isSetCtxOp(opa.getCtxOp().getOp().Type())){
                 ctxOps_set.add(opa.getCtxOp());
             }
         }
-        List<OpAnalysis> ctxOps = ctxOps_set.stream().toList();
+        List<OpAnalysis_ISIS> ctxOps = ctxOps_set.stream().toList();
         var totalIrrOps = (int) opas.getOps().size() * irrOpRatio;
-        Set<OpAnalysis> activeOpAs = new HashSet<>();
+        Set<OpAnalysis_ISIS> activeOpAs = new HashSet<>();
         activeOpAs.addAll(controller.getOpas());
         //add totally irrelevant ops
         for(int i = 0; i < totalIrrOps; i++){
             while(true) {
                 var ctxOpa = ranHelper.randomElemOfList(ctxOps);
-                var op = genOpPass.genRanOpByControl(ctxOpa.getOp().Type() == OpType.IntfName);
-                var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
+                var op = genOpPass_ISIS.genRanOpByControl(ctxOpa.getOp().Type() == OpType_isis.IntfName);
+                var opa = OpAnalysis_ISIS.of(op.getOpIsis(), ctxOpa);
                 if (activeOpAs.contains(opa)) continue;
-                if (skipCommands(op.getOpOspf().Type())){
+                if (skipCommands(op.getOpIsis().Type())){
                     continue;
                 }
                 //System.out.println(opa);
-                controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
+                controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.REMOVED);
                 break;
             }
         }
@@ -76,18 +76,18 @@ public class generate_ISIS {
                 if (skipCommands(ori_opa.getOp().Type())){
                     continue;
                 }
-                var mutate_opa = actionRulePass.mutate(ori_opa);
-                if (mutate_opa != null){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
+                var mutate_opa = actionRulePass_ISIS.mutate(ori_opa);
+                if (mutate_opa != null){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.REMOVED);
                     break;
                 }
             }
         }
     }
 
-    public static boolean skipCommands(OpType opType){
-        if (generate.fastConvergence){
+    public static boolean skipCommands(OpType_isis opType){
+        if (generate_ISIS.fastConvergence){
             switch (opType){
-                case TIMERSTHROTTLESPF, IpOspfHelloInter, IpOspfDeadInter, IpOspfDeadInterMulti, RefreshTimer, TimersLsaThrottle, IpOspfRetransInter
+                case HELLOINTERVAL
                         -> {return true;}
             }
         }
@@ -100,18 +100,18 @@ public class generate_ISIS {
      * @param full
      * @return
      */
-    public static OpCtxG generateEqualOfCore(OpCtxG opCtxG, boolean full){
-        var opas = reducer.reduce(opCtxG);
-        var normal_controller = NormalController.of();
+    public static OpCtxG_ISIS generateEqualOfCore(OpCtxG_ISIS opCtxG, boolean full){
+        var opas = reducer_ISIS.reduce(opCtxG);
+        var normal_controller = NormalController_ISIS.of();
 
         //we add active instructions to the normal_controller
         //these commands will be active in the final
         for(var opa: opas.getOps()){
             if (skipCommands(opa.getOp().Type())){
                 //skipCommands should only be at once
-                normal_controller.addConfig(opa, 0, 0, 0, 0, OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.ACTIVE);
+                normal_controller.addConfig(opa, 0, 0, 0, 0, OpAnalysis_ISIS.STATE.ACTIVE, OpAnalysis_ISIS.STATE.ACTIVE);
             }else {
-                normal_controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.ACTIVE, OpAnalysis.STATE.ACTIVE);
+                normal_controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis_ISIS.STATE.ACTIVE, OpAnalysis_ISIS.STATE.ACTIVE);
             }
         }
 
@@ -123,7 +123,7 @@ public class generate_ISIS {
         addRemovedOpToController(opas, normal_controller);
 
 
-        var gen_opag = genEqualPass.solve(normal_controller, opas);
+        var gen_opag = genEqualPass_ISIS.solve(normal_controller, opas);
         //remove original core ops
         if (!full) {
             gen_opag.setOpgroup(gen_opag.getOps().subList(opas.getOps().size(), gen_opag.getOps().size()));
@@ -131,16 +131,16 @@ public class generate_ISIS {
         return gen_opag.toOpCtxGLeaner();
     }
 
-    public static OpCtxG generateEqualOfPhyCore(OpCtxG opCtxG, double ratio, int maxRound){
-        var r = new genPhyEqualPass();
+    public static OpCtxG_ISIS generateEqualOfPhyCore(OpCtxG_ISIS opCtxG, double ratio, int maxRound){
+        var r = new genPhyEqualPass_ISIS();
         var addPart =  r.solve(opCtxG, ratio, maxRound);
-        var totalPart = OpCtxG.Of();
+        var totalPart = OpCtxG_ISIS.Of();
         totalPart.addOps(opCtxG.getOps());
         totalPart.addOps(addPart.getOps());
-        var confg0 = new ConfGraph();
-        var confg1 = new ConfGraph();
-        phyArgPass.solve(opCtxG, confg0);
-        phyArgPass.solve(totalPart, confg1);
+        var confg0 = new ConfGraph_ISIS();
+        var confg1 = new ConfGraph_ISIS();
+        phyArgPass_ISIS.solve(opCtxG, confg0);
+        phyArgPass_ISIS.solve(totalPart, confg1);
         if (!confg0.equals(confg1)){
             System.out.println(confg0);
             System.out.println("==============");

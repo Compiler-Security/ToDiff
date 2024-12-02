@@ -1,5 +1,6 @@
 package org.generator.lib.frontend.lexical;
 
+import org.generator.lib.item.conf.node.isis.ISIS;
 import org.jetbrains.annotations.NotNull;
 
 public enum OpType_isis {
@@ -25,10 +26,19 @@ public enum OpType_isis {
     ISISROUTERBEGIN,    
     NET,
     ISISROUTEREND,
+    ISISDAEMONGROUPBEGIN,
+    ATTACHEDBIT,
+    METRICSTYLE,
+    ADVERTISEHIGHMETRIC,
+    SETOVERLOADBIT,
+    SETOVERLOADBITONSTARTUP,
+    LSPMTU,
+    ISISDAEMONGROUPEND,
     //===================ISIS region=====================
     ISISREGIONBEGIN,
     ISTYPE,
     ISISREGIONEND,
+
 
     //===================ISIS INTERFACE================
     IPAddr,
@@ -80,10 +90,10 @@ public enum OpType_isis {
     public  boolean inISISRouterWithTopo() {
         return this.ordinal() > ISISROUTERBEGIN.ordinal() && this.ordinal() < ISISROUTEREND.ordinal();
     }
-    // FIXME
-    // public boolean inOSPFDAEMON(){
-    //     return this.ordinal() > ISISDAEMONGROUPBEGIN.ordinal() && this.ordinal() < OSPFDAEMONGROUPEND.ordinal();
-    // }
+    
+    public boolean inISISDAEMON(){
+        return this.ordinal() > ISISDAEMONGROUPBEGIN.ordinal() && this.ordinal() < ISISDAEMONGROUPEND.ordinal();
+    }
 
     public  boolean inISISREGION(){
         return this.ordinal() > ISISREGIONBEGIN.ordinal() && this.ordinal() < ISISREGIONEND.ordinal();

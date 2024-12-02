@@ -50,9 +50,13 @@ public class LexDef_isis {
                 // route
                 //FIXME NUM or IP or ID
                 {NET, "NET {NUM}"},
-
-
                 
+                {ATTACHEDBIT, "attached-bit {NAME(receive ignore,send)}"},
+                {METRICSTYLE, "metric-style {NAME(narrow,transition,wide)}"},
+                {ADVERTISEHIGHMETRIC, "advertise-high-metrics"},
+                {SETOVERLOADBIT, "set-overload-bit"},
+                {SETOVERLOADBITONSTARTUP, "set-overload-bit on-startup {NUM(0-86400)}"},
+                {LSPMTU, "lsp-mtu {NUM(128-4352)}"},
                 // region
                 {ISTYPE, "is-type {NAME(level-1,level-1-2,level-2-only)}"},
 

@@ -73,7 +73,6 @@ public class genOpPass {
         var lexDef = gen_op.getFormmat().getLexDef();
         var args = lexDef.Args;
         var argsRange = lexDef.ArgsRange;
-        System.out.println("new_op: " + new_op);
         for(var arg: args) {
             switch (arg) {
                 case "ID" -> {

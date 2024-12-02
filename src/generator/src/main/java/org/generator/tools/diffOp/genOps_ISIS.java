@@ -2,7 +2,7 @@ package org.generator.tools.diffOp;
 
 // import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.frontend.lexical.OpType_isis;
-import org.generator.lib.generator.ospf.pass.actionRulePass;
+import org.generator.lib.generator.isis.pass.actionRulePass_ISIS;
 import org.generator.lib.generator.isis.pass.genOpPass_ISIS;
 import org.generator.lib.item.IR.OpAnalysis_ISIS;
 import org.generator.lib.item.IR.OpCtx_ISIS;
@@ -29,12 +29,11 @@ public class genOps_ISIS {
             //if (op_type == OpType.AreaVLink) continue;
             if (op_type == OpType_isis.NET) continue;
             if (op_type.inISISINTF()){intfOp.add(op_type); allOp.add(op_type);}
-            else if (op_type.inISISREGION() || op_type.inISISRouterWithTopo()){
+            else if (op_type.inISISREGION() || op_type.inISISDAEMON() ||op_type.inISISRouterWithTopo()){
                 IsisOp.add(op_type);
                 allOp.add(op_type);
             }
         }
-        System.out.println(IsisOp);
     }
 
     private static  int getRanIntNum(Map<String, Object> argRange, String field){
@@ -134,9 +133,9 @@ public class genOps_ISIS {
         }
     }
 
-    // private static OpIsis unset(OpIsis op){
-    //     return actionRulePass.unset(OpAnalysis_ISIS.of(op)).getOp();
-    // }
+    private static OpIsis unset(OpIsis op){
+        return actionRulePass_ISIS.unset(OpAnalysis_ISIS.of(op)).getOp();
+    }
 
     OpCtx_ISIS genOp(OpType_isis op_type){
         return genOpPass_ISIS.genRanOpOfType(op_type);
@@ -157,12 +156,12 @@ public class genOps_ISIS {
     void addOp(OpCtxG_ISIS opg){
         if (all){
             var op = genRanOpByControl(false, false);
-            // if (ranHelper.randomInt(1, 5) < 2){
-            //     broken((OpIsis) op.getOperation());
-            // }else{
-            //     var unset_op = unset((OpIsis) op.getOperation());
-            //     if (unset_op != null) op = unset_op.getOpCtx();
-            // }
+            if (ranHelper.randomInt(1, 5) < 2){
+                broken((OpIsis) op.getOperation());
+            }else{
+                var unset_op = unset((OpIsis) op.getOperation());
+                if (unset_op != null) op = unset_op.getOpCtx();
+            }
             broken((OpIsis) op.getOperation());
             opg.addOp(op);
             return;
@@ -227,8 +226,9 @@ public class genOps_ISIS {
         //fixme we should only generate one ip address XXX at once
         var opg1 = OpCtxG_ISIS.Of();
         opg1.addOp(genOp(OpType_isis.RISIS));
-        System.out.println(opg1);
+        System.out.println(opg1.getOps());
         opgs.push(opg1);
+        System.out.println(opgs);
         while(total_num < inst_num){
             if (rest_num > 0){
                 addOp(opgs.peek());

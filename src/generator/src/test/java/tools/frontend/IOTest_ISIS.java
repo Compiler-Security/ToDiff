@@ -452,11 +452,11 @@ public class IOTest_ISIS {
                  node r3 add
                  node s1 add
                  node s2 add
-                 link r1-eth0 s1-eth0 up
-                 link r2-eth0 s1-eth1 up
-                 link r3-eth0 s1-eth2 up
-                 link r1-eth1 s2-eth0 up
-                 link r2-eth1 s2-eth1 up
+                 link r1-eth0 s1-eth0 add
+                 link r2-eth0 s1-eth1 add
+                 link r3-eth0 s1-eth2 add
+                 link r1-eth1 s2-eth0 add
+                 link r2-eth1 s2-eth1 add
                 """;
         var reader = new ConfReader();
         var opCtxG = reader.read(phy_st);
@@ -470,8 +470,8 @@ public class IOTest_ISIS {
         String phy_st = """
                      node r1 add
                      node s1 add
-                     link r1-eth0 s1-eth0 up
-                     link r1-eth1 s1-eth1 up
+                     link r1-eth0 s1-eth0 add
+                     link r1-eth1 s1-eth1 add
                 """;
 
         String ospf_st = """

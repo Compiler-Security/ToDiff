@@ -1,18 +1,18 @@
-package org.generator.lib.generator.ospf.pass;
+package org.generator.lib.generator.isis.pass;
 
-import org.generator.lib.generator.driver.generate;
-import org.generator.lib.item.IR.OpAnalysis;
-import org.generator.lib.item.IR.OpCtx;
-import org.generator.lib.item.opg.OpAG;
-import org.generator.lib.frontend.lexical.OpType;
-import org.generator.lib.reducer.semantic.OverrideRedexDef;
-import org.generator.lib.reducer.semantic.UnsetRedexDef;
+import org.generator.lib.generator.driver.generate_ISIS;
+import org.generator.lib.item.IR.OpAnalysis_ISIS;
+import org.generator.lib.item.IR.OpCtx_ISIS;
+import org.generator.lib.item.opg.OpAG_ISIS;
+import org.generator.lib.frontend.lexical.OpType_isis;
+import org.generator.lib.reducer.semantic.OverrideRedexDef_ISIS;
+import org.generator.lib.reducer.semantic.UnsetRedexDef_ISIS;
 import org.generator.util.collections.Pair;
 import org.generator.util.ran.ranHelper;
 
 import java.util.*;
 
-public class actionRulePass {
+public class actionRulePass_ISIS {
     public enum ActionType{
         COPY, //copy given op
         MUTATE, //mutate given op (change args)
@@ -27,7 +27,7 @@ public class actionRulePass {
      * Reduce(OpAG + OpA) = Reduce(OpAG apply OpA)
      * `+` means add OpA in the end of the OpAG
      */
-    private static void insert(OpAG opAG, OpAnalysis opA){
+    private static void insert(OpAG_ISIS opAG, OpAnalysis_ISIS opA){
         //TODO for simplicity currently we can only add opAs in the end of OpAG
         opAG.addOp(opA.copy());
         opAG.reduce();
@@ -87,34 +87,34 @@ public class actionRulePass {
      * We change OpA's
      * @param opA
      */
-    public static OpAnalysis mutate(OpAnalysis opA){
+    public static OpAnalysis_ISIS mutate(OpAnalysis_ISIS opA){
         //first choose one override_op type
-        var override_list = OverrideRedexDef.getOverrideType(opA.getOp().Type());
+        var override_list = OverrideRedexDef_ISIS.getOverrideType(opA.getOp().Type());
         if (override_list.isEmpty()){
-            return OpAnalysis.of(genOpPass.genRanOpOfType(opA.getOp().Type()).getOpOspf(), opA.getCtxOp());
+            return OpAnalysis_ISIS.of(genOpPass_ISIS.genRanOpOfType(opA.getOp().Type()).getOpIsis(), opA.getCtxOp());
         }
-        if (generate.ran){
+        if (generate_ISIS.ran){
             Collections.shuffle(override_list);
         }
         for(var overrideType: override_list){
             //second generate unset_op
-            var new_op = genOpPass.genRanOpOfType(overrideType);
+            var new_op = genOpPass_ISIS.genRanOpOfType(overrideType);
             //third make unset_equal fields to be the same
-            genOpPass.copyFileds(new_op.getOperation(), opA.getOp(), OverrideRedexDef.getOverrideEqualArg(opA.op.Type(), overrideType));
-            if (new_op.getOpOspf().equals(opA.getOp())) continue;
-            else return OpAnalysis.of(new_op.getOpOspf(), opA.getCtxOp());
+            genOpPass_ISIS.copyFileds(new_op.getOperation(), opA.getOp(), OverrideRedexDef_ISIS.getOverrideEqualArg(opA.op.Type(), overrideType));
+            if (new_op.getOpIsis().equals(opA.getOp())) continue;
+            else return OpAnalysis_ISIS.of(new_op.getOpIsis(), opA.getCtxOp());
         }
         return null;
     }
 
-    private static OpAnalysis broken(OpAnalysis opA){
+    private static OpAnalysis_ISIS broken(OpAnalysis_ISIS opA){
         var new_op = opA.getOp().copy();
         var op = opA.getOp();
-        new_op.setType(OpType.INVALID);
+        new_op.setType(OpType_isis.INVALID);
         var args =  op.getOpCtx().getFormmat().getLexDef().Args;
         var argsRange = op.getOpCtx().getFormmat().getLexDef().ArgsRange;
         if (args.isEmpty()) {
-            new_op.getOpCtx().setFormmat(OpCtx.Format.of(OpType.INVALID, 0));
+            new_op.getOpCtx().setFormmat(OpCtx_ISIS.Format.of(OpType_isis.INVALID, 0));
             new_op.setNAME(ranHelper.randomStr());
         }
         for(var arg: new_op.getOpCtx().getFormmat().getLexDef().Args) {
@@ -132,24 +132,24 @@ public class actionRulePass {
                 }
             }
         }
-        var res = OpAnalysis.of(new_op);
+        var res = OpAnalysis_ISIS.of(new_op);
         res.setCtxOp(opA.getCtxOp());
         return res;
     }
 
-    public static OpAnalysis unset(OpAnalysis opA){
+    public static OpAnalysis_ISIS unset(OpAnalysis_ISIS opA){
         //first choose one unset_op type
-        var unset_list = UnsetRedexDef.getUnsetType(opA.getOp().Type());
+        var unset_list = UnsetRedexDef_ISIS.getUnsetType(opA.getOp().Type());
         if (unset_list.isEmpty()) return null;
         var unsetType = unset_list.get(0);
-        if (generate.ran){
+        if (generate_ISIS.ran){
             unsetType = ranHelper.randomElemOfList(unset_list);
         }
         //second generate unset_op
-        var new_op = genOpPass.genRanOpOfType(unsetType);
+        var new_op = genOpPass_ISIS.genRanOpOfType(unsetType);
         //third make unset_equal fields to be the same
-        genOpPass.copyFileds(new_op.getOperation(), opA.getOp(), UnsetRedexDef.getUnsetEqualArg(opA.op.Type(), unsetType));
-        return OpAnalysis.of(new_op.getOpOspf(), opA.getCtxOp());
+        genOpPass_ISIS.copyFileds(new_op.getOperation(), opA.getOp(), UnsetRedexDef_ISIS.getUnsetEqualArg(opA.op.Type(), unsetType));
+        return OpAnalysis_ISIS.of(new_op.getOpIsis(), opA.getCtxOp());
     }
 
     /**
@@ -159,7 +159,7 @@ public class actionRulePass {
      * @param actionType
      * @return
      */
-    public static boolean solve(OpAG opAG, OpAnalysis targetOpA, ActionType actionType){
+    public static boolean solve(OpAG_ISIS opAG, OpAnalysis_ISIS targetOpA, ActionType actionType){
         switch (actionType) {
             case COPY -> {
                 insert(opAG, targetOpA);

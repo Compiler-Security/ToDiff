@@ -25,7 +25,7 @@ package org.generator.lib.generator.isis.pass;
 import org.generator.lib.generator.driver.generate_ISIS;
 import org.generator.lib.item.IR.OpAnalysis_ISIS;
 import org.generator.lib.item.opg.OpAG_ISIS;
-import org.generator.lib.reducer.pass.reducePass;
+import org.generator.lib.reducer.pass.reducePass_ISIS;
 import org.generator.util.ran.ranHelper;
 
 import java.util.Arrays;
@@ -44,9 +44,9 @@ public class applyRulePass_ISIS {
 
 
 
-    private static List<OpAnalysis> conflictOps(OpAG opAG, OpAnalysis target_opa){
+    private static List<OpAnalysis_ISIS> conflictOps(OpAG_ISIS opAG, OpAnalysis_ISIS target_opa){
         //opAG.reduce();
-        return opAG.activeSetView().getOps().stream().filter(opa -> reducePass.isConflict(opa, target_opa)).toList();
+        return opAG.activeSetView().getOps().stream().filter(opa -> reducePass_ISIS.isConflict(opa, target_opa)).toList();
     }
     /**
      * This pass will apply given rule to the opAG, and return a new opAG
@@ -55,33 +55,33 @@ public class applyRulePass_ISIS {
      * @param ruleType
      * @return  opAG_new, null if apply fail
      */
-    public static OpAG solve(OpAG opAG, OpAnalysis target_opa, RuleType ruleType) {
+    public static OpAG_ISIS solve(OpAG_ISIS opAG, OpAnalysis_ISIS target_opa, RuleType ruleType) {
         var opAG_new = opAG.copy();
         //IF target meet, return current opAGNew
         //System.out.println(ruleType);
         switch (ruleType){
             case Keep -> {
-                actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.COPY);
+                actionRulePass_ISIS.solve(opAG_new, target_opa, actionRulePass_ISIS.ActionType.COPY);
                 return opAG_new;
             }
             case UnsetOp -> {
-                actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.UNSET);
+                actionRulePass_ISIS.solve(opAG_new, target_opa, actionRulePass_ISIS.ActionType.UNSET);
                 return opAG_new;
             }
             case UnsetCtx -> {
-                if (!actionRulePass.solve(opAG_new, target_opa.ctxOp.getCtxOp(), actionRulePass.ActionType.UNSET)){
+                if (!actionRulePass_ISIS.solve(opAG_new, target_opa.ctxOp.getCtxOp(), actionRulePass_ISIS.ActionType.UNSET)){
                     //unset IntfName
                     return null;
                 }else return opAG_new; //unset ROSPF
             }
             case SYNWrong -> {
-                if (!actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.BREAK)){
+                if (!actionRulePass_ISIS.solve(opAG_new, target_opa, actionRulePass_ISIS.ActionType.BREAK)){
                     return null;
                 }
                 return opAG_new;
             }
             case NoCtx -> {
-                if (!actionRulePass.solve(opAG_new, target_opa, actionRulePass.ActionType.NoCtx)){
+                if (!actionRulePass_ISIS.solve(opAG_new, target_opa, actionRulePass_ISIS.ActionType.NoCtx)){
                     return null;
                 }
                 return opAG_new;
