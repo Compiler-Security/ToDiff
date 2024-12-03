@@ -161,7 +161,6 @@ public class genOps_ISIS {
                 var unset_op = unset((OpIsis) op.getOperation());
                 if (unset_op != null) op = unset_op.getOpCtx();
             }
-            broken((OpIsis) op.getOperation());
             opg.addOp(op);
             return;
         }
@@ -224,10 +223,8 @@ public class genOps_ISIS {
         all = false;
         //fixme we should only generate one ip address XXX at once
         var opg1 = OpCtxG_ISIS.Of();
-        System.out.println(genOp(OpType_isis.RISIS).getOperation());
         opg1.addOp(genOp(OpType_isis.RISIS));
         opgs.push(opg1);
-        System.out.println("opgs"+ opgs);
         while(total_num < inst_num){
             if (rest_num > 0){
                 addOp(opgs.peek());

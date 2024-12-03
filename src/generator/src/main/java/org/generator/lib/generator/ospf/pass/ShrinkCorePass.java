@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.generator.util.diff.differ.compareJson;
 
-public class shrinkCorePass {
+public class ShrinkCorePass {
 
     ObjectNode getJson(ConfGraph confG){
         ObjectNode jsonObject = new ObjectMapper().createObjectNode();
@@ -58,5 +58,5 @@ public class shrinkCorePass {
             }
         }
     }
-    public shrinkCorePass(){}
+    public ShrinkCorePass(){}
 }

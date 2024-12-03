@@ -21,8 +21,11 @@ import org.generator.lib.reducer.pass.ospfArgPass;
 import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.reducer.pass.reducePass;
 import org.generator.tools.frontend.ConfReader;
+import org.generator.tools.frontend.ConfReader_ISIS;
+import org.generator.tools.frontend.IsisConfWriter;
 import org.generator.tools.frontend.OspfConfWriter;
 import org.generator.tools.diffOp.genOps;
+import org.generator.tools.diffOp.genOps_ISIS;
 import org.generator.util.net.ID;
 import org.generator.util.net.IPRange;
 import org.junit.Test;
@@ -79,6 +82,15 @@ public class IOTest {
         var opA_new = actionRulePass.mutate(opA);
         System.out.println(opA_new);
     }
+	@Test
+	public void genRandom_and_genconfg(){
+		var genOp = new genOps();
+		var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+		var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
+		var confg = getSetConfG(ori_use);
+		System.out.println("=========");	
+		var gen = generate.generateCore(confg);
+	}
 
     @Test
     public void unsetOpTest(){

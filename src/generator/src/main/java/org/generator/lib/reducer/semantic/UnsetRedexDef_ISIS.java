@@ -19,65 +19,42 @@ public class UnsetRedexDef_ISIS extends BaseRedexDef_ISIS{
         var reduce_seed = new Object[][]{
                 //unset operation, we can assume that we compare minimal Args of NoOp with corresponding Args of OP
                 //minimal args is the first LexDef of no operation
-                // {NOROSPF, new OpType_isis[]{ROSPF}},
-                // {NORID, new OpType_isis[]{RID}},
-                // {NORABRTYPE, new OpType_isis[]{RABRTYPE}},
-                // {NONETAREAID, new OpType_isis[]{NETAREAID}},
-                // {NOPASSIVEINTFDEFUALT, new OpType_isis[]{PASSIVEINTFDEFUALT}},
-                // {NOTIMERSTHROTTLESPF, new OpType_isis[]{TIMERSTHROTTLESPF}},
-                // {NOMAXIMUMPATHS, new OpType_isis[]{MAXIMUMPATHS}},
-                // {NOWRITEMULTIPLIER, new OpType_isis[]{WRITEMULTIPLIER}},
-                // {NOSOCKETBUFFERSEND, new OpType_isis[]{SOCKETBUFFERSEND}},
-                // {NOSOCKETBUFFERRECV, new OpType_isis[]{SOCKETBUFFERRECV}},
-                //FIXME SOCKETBUFFERALL
-                //{NOSOCKETBUFFERALL, new OpType_isis[]{SOCKETBUFFERALL}},
-                // {SOCKETPERINTERFACE, new OpType_isis[]{NoSOCKETPERINTERFACE}},
 
-                // {NOAreaRange, new OpType_isis[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
-                // {NOAreaRangeNoAd, new OpType_isis[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
-                // {NOAreaRangeCost, new OpType_isis[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
+                {NORISIS,new OpType_isis[]{RISIS}},
+                {NOTNET, new OpType_isis[]{NET}},
+                //FIXME: we need "NOATTACHEDBIT"!
+                //{NOATTACHEDBIT, new OpType_isis[]{ATTACHEDBIT}},
+                {NOMETRICSTYLE, new OpType_isis[]{METRICSTYLE}},
+                {NOADVERTISEHIGHMETRIC, new OpType_isis[]{ADVERTISEHIGHMETRIC}},
+                {NOSETOVERLOADBIT, new OpType_isis[]{SETOVERLOADBIT}},
+                {NOSETOVERLOADBITONSTARTUP, new OpType_isis[]{SETOVERLOADBITONSTARTUP}},
+                {NOLSPMTU, new OpType_isis[]{LSPMTU}},
+                {NOISTYPE, new OpType_isis[]{ISTYPE}},
+                {NOIPROUTERISIS, new OpType_isis[]{IPROUTERISIS}},
+                {NOCIRCUITTYPE, new OpType_isis[]{CIRCUITTYPE}},
+                {NOCSNPINTERVAL, new OpType_isis[]{CSNPINTERVAL}},
+                {NOHELLOPADDING, new OpType_isis[]{HELLOPADDING}},
+                {NOHELLOINTERVAL, new OpType_isis[]{HELLOINTERVAL}},
+                {NOHELLOMULTIPLIER, new OpType_isis[]{HELLOMULTIPLIER}},
+                {NOISISMETRICLEVEL1, new OpType_isis[]{ISISMETRICLEVEL1}},
+                {NOISISMETRICLEVEL2, new OpType_isis[]{ISISMETRICLEVEL2}},
+                {NONETWORKPOINTTOPOINT, new OpType_isis[]{NETWORKPOINTTOPOINT}},
+                {NOISISPASSIVE, new OpType_isis[]{ISISPASSIVE}},
+                {NOISISPRIORITY, new OpType_isis[]{ISISPRIORITY}},
+                {NOPSNPINTERVAL, new OpType_isis[]{PSNPINTERVAL}},
+                {NOTHREEWAYHANDSHAKE, new OpType_isis[]{THREEWAYHANDSHAKE}},
 
-                //{NOAreaRangeSub, new OpType_isis[]{AreaRange}},
-
-
-                //FIXME areaVLINK
-                //{NOAreaVLink, new OpType_isis[]{AreaVLink}},
-                // {NOAreaShortcut, new OpType_isis[]{AreaShortcut}},
-
-                // {NOAreaStub, new OpType_isis[]{AreaStub, AreaStubTotal}},
-
-                // {NORefreshTimer, new OpType_isis[]{RefreshTimer}},
-                // {NOTimersLsaThrottle, new OpType_isis[]{TimersLsaThrottle}},
-
-                //FIXME simple fix of NOAreaStubTotal
-               //{NOAreaStubTotal, new OpType_isis[]{AreaStubTotal}},
-                // {NOAreaNSSA, new OpType_isis[]{AreaNSSA}},
-                // {NOIPAddr, new OpType_isis[]{IPAddr}},
-                // {NOIpOspfArea, new OpType_isis[]{IpOspfArea}},
-                // {NOIpOspfCost, new OpType_isis[]{IpOspfCost}},
-                // {NOIpOspfDeadInter, new OpType_isis[]{IpOspfDeadInter}},
-                // {NOIpOspfDeadInterMulti, new OpType_isis[]{IpOspfDeadInterMulti}},
-                // {NOIpOspfHelloInter, new OpType_isis[]{IpOspfHelloInter}},
-                // {NOIpOspfGRHelloDelay, new OpType_isis[]{IpOspfGRHelloDelay}},
-                // {NOIpOspfNet, new OpType_isis[]{IpOspfNet}},
-                // {NOIpOspfPriority, new OpType_isis[]{IpOspfPriority}},
-                // {NOIpOspfRetransInter, new OpType_isis[]{IpOspfRetransInter}},
-                // {NOIpOspfTransDelay, new OpType_isis[]{IpOspfTransDelay}},
-                // {NOIpOspfPassive, new OpType_isis[]{IpOspfPassive}},
         };
         var seeds = new ArrayList<Object[]>();
         for (var item : reduce_seed) {
             var OpType_isis = (OpType_isis) item[0];
-//             switch (OpType_isis){
-// //                case NoAreaRangeSub -> {seeds.add(new Object[]{item[0], item[1], 2});}
-//                 case NOAreaRangeCost,NOAreaRangeNoAd,NOAreaRange -> {
-//                     seeds.add(new Object[]{item[0], item[1], 2});
-//                 }
-//                 default -> {
-//                     seeds.add(new Object[]{item[0], item[1], LexDef_isis.getLexDef(OpType_isis).get(0).Args.size()});
-//                 }
-//             }
+            // switch (OpType_isis){
 
+            //     default -> {
+            //         seeds.add(new Object[]{item[0], item[1], LexDef_isis.getLexDef(OpType_isis).get(0).Args.size()});
+            //     }
+            // }
+            seeds.add(new Object[]{item[0], item[1], LexDef_isis.getLexDef(OpType_isis).get(0).Args.size()});
         }
         preprocess = new HashMap<>();
         parse(seeds, preprocess);
@@ -85,6 +62,7 @@ public class UnsetRedexDef_ISIS extends BaseRedexDef_ISIS{
 
     /**
      * find unsetOp Type by setOp
+     * preprocess : key is unsetOpType, value is setOpType and minimal args
      * @param setType
      * @return
      */

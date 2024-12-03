@@ -5,6 +5,7 @@ import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.ospf.controller.CapacityController;
 import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.driver.generate;
+import org.generator.lib.generator.driver.generate_ISIS;
 import org.generator.lib.generator.ospf.pass.actionRulePass;
 import org.generator.lib.generator.ospf.pass.genEqualPass;
 import org.generator.lib.generator.ospf.pass.genOpPass;
@@ -12,16 +13,23 @@ import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpCtxG;
+import org.generator.lib.item.opg.OpCtxG_ISIS;
 import org.generator.lib.item.conf.graph.ConfGraph;
+import org.generator.lib.item.conf.graph.ConfGraph_ISIS;
 import org.generator.lib.item.conf.node.ospf.OSPF;
 import org.generator.lib.item.conf.node.phy.Intf;
+import org.generator.lib.item.conf.node.phy.Intf_ISIS;
 import org.generator.lib.item.conf.node.phy.Router;
+import org.generator.lib.item.conf.node.phy.Router_ISIS;
 import org.generator.lib.reducer.driver.reducer;
+import org.generator.lib.reducer.driver.reducer_ISIS;
 import org.generator.lib.reducer.pass.ospfArgPass;
 import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.reducer.pass.reducePass;
 import org.generator.tools.frontend.ConfReader;
+import org.generator.tools.frontend.ConfReader_ISIS;
 import org.generator.tools.frontend.OspfConfWriter;
+import org.generator.tools.frontend.IsisConfWriter;
 import org.generator.tools.diffOp.genOps;
 import org.generator.tools.diffOp.genOps_ISIS;
 import org.generator.util.net.ID;
@@ -66,6 +74,19 @@ public class IOTest_ISIS {
         confg.addIntfRelation("r1-eth3", "r1");
         return confg;
     }
+	ConfGraph_ISIS getConfG_ISIS(){
+        var confg = new ConfGraph_ISIS("r1");
+        confg.addNode(new Router_ISIS("r1"));
+        confg.addNode(new Intf_ISIS("r1-eth0"));
+        confg.addIntfRelation("r1-eth0", "r1");
+        confg.addNode(new Intf_ISIS("r1-eth1"));
+        confg.addIntfRelation("r1-eth1", "r1");
+        confg.addNode(new Intf_ISIS("r1-eth2"));
+        confg.addIntfRelation("r1-eth2", "r1");
+        confg.addNode(new Intf_ISIS("r1-eth3"));
+        confg.addIntfRelation("r1-eth3", "r1");
+        return confg;
+    }
 
     ConfGraph getSetConfG(OpCtxG conf){
         ConfGraph g = getConfG();
@@ -73,6 +94,11 @@ public class IOTest_ISIS {
         return g;
     }
 
+	ConfGraph_ISIS getSetConfG_ISIS(OpCtxG_ISIS conf){
+        ConfGraph_ISIS g = getConfG_ISIS();
+        reducer_ISIS.reduceToConfG(conf, g);
+        return g;
+    }
     @Test
     public void mutateOpTest(){
         var opA = OpAnalysis.of(genOpPass.genRanOpOfType(OpType.IpOspfDeadInter).getOpOspf());
@@ -100,6 +126,17 @@ public class IOTest_ISIS {
         var ori = new ConfReader().read(test_st);
         System.out.println(reducer.reduceToCore(ori));
     }
+
+	@Test
+	public void genRandom_and_genconfg(){
+		var genOp = new genOps_ISIS();
+		var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+		var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
+		var confg = getSetConfG_ISIS(ori_use);
+		System.out.println(confg);	
+		var gen = generate_ISIS.generateCore(confg);
+	}
+
 
     @Test
     public void genCorePart1Test(){

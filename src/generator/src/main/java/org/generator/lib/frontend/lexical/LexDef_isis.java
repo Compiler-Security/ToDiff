@@ -50,8 +50,10 @@ public class LexDef_isis {
                 // route
                 //FIXME NUM or IP or ID
                 {NET, "NET {NUM}"},
+                {IPAddr, "ip address {IP}"},
                 
-                {ATTACHEDBIT, "attached-bit {NAME(receive ignore,send)}"},
+                //FIXME: we need "ATTACHEDBIT"!
+                //{ATTACHEDBIT, "attached-bit {NAME(receive ignore,send)}"},
                 {METRICSTYLE, "metric-style {NAME(narrow,transition,wide)}"},
                 {ADVERTISEHIGHMETRIC, "advertise-high-metrics"},
                 {SETOVERLOADBIT, "set-overload-bit"},
@@ -76,8 +78,16 @@ public class LexDef_isis {
                 {THREEWAYHANDSHAKE, "isis three-way-handshake"},
 
                 // no isis
-                {NORISIS, "no router isis {NAME}"},
+                {NORISIS, "no router isis"},
                 {NOTNET, "no NET {NUM}"},
+                //FIXME: we need "NOATTACHEDBIT"!
+                //{NOATTACHEDBIT, "no attached-bit {NAME(receive ignore,send)}"},
+                {NOMETRICSTYLE, "no metric-style {NAME(narrow,transition,wide)}"},
+                {NOADVERTISEHIGHMETRIC, "no advertise-high-metrics"},
+                {NOSETOVERLOADBIT, "no set-overload-bit"},
+                {NOSETOVERLOADBITONSTARTUP, "no set-overload-bit on-startup {NUM(0-86400)}"},
+                {NOLSPMTU, "no lsp-mtu {NUM(128-4352)}"},
+        
                 {NOISTYPE, "no is-type {NAME(level-1,level-1-2,level-2-only)}"},
                 {NOIPROUTERISIS, "no ip router isis {NAME}"},
                 {NOCIRCUITTYPE, "no isis circuit-type {NAME(level-1,level-1-2,level-2)}"},

@@ -82,6 +82,14 @@ public class ISISDaemon extends AbstractNode_ISIS {
 
     metricstyle metricStyle;
 
+    public metricstyle getMetricStyle() {
+        return metricStyle;
+    }
+
+    public void setMetricStyle(metricstyle metricStyle) {
+        this.metricStyle = metricStyle;
+    }
+
     boolean advertisehighmetrics;
 
     public boolean isAdvertisehighmetrics() {

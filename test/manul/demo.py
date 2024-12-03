@@ -25,7 +25,7 @@ h.run_phys("""
            """)
 
 h.net.net.start()
-time.sleep(50)
-#h.run_isis("r1", "interface r1-eth0;isis hello-interval 10")
+time.sleep(30)
+h.run_isis("r1", "interface r1-eth0;isis circuit-type level-1;isis priority 88;isis circuit-type level-2;no isis priority 88")
 h.run_isis("r1", "show isis interface detail json")
 CLI(h.net.net)
