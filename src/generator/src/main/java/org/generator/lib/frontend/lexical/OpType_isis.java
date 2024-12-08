@@ -26,6 +26,7 @@ public enum OpType_isis {
     ISISROUTERBEGIN,    
     NET,
     ISISROUTEREND,
+    //================ISIS DAEMON===================
     ISISDAEMONGROUPBEGIN,
     //ATTACHEDBIT,
     METRICSTYLE,

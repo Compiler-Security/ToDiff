@@ -6,6 +6,7 @@ import org.generator.lib.frontend.lexical.LexCtx_ISIS;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
+import org.generator.util.net.NET;
 import org.jetbrains.annotations.Nullable;
 
 
@@ -74,6 +75,13 @@ public class OpBuilderPass_ISIS {
             op.setIP(IP.of(Arg("IP")));
             //check range
             if (op.getIP() == null) return null;
+        }
+
+        //check NET
+        if (m.containsKey("NET")){
+            op.setNET(NET.of(Arg("NET")));
+            //check range
+            if (op.getNET() == null) return null;
         }
 
         //check NUM NUM2 NUM3 LONGNUM

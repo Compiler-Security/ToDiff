@@ -7,6 +7,7 @@ import org.generator.lib.item.conf.node.NodeGen_ISIS;
 import org.generator.lib.item.conf.node.NodeType_ISIS;
 import org.generator.lib.item.conf.node.isis.ISIS;
 import org.generator.lib.item.conf.node.isis.ISISAreaSum;
+import org.generator.lib.item.conf.node.isis.ISISDaemon;
 import org.generator.util.exec.ExecStat;
 import org.generator.util.net.ID;
 import org.generator.util.net.IPRange;
@@ -21,41 +22,14 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
             return ExecStat.FAIL;
         }
         var cur_rname = cur_router.getName();
-        // switch (op.Type()) {
-        //     case RID -> {
-        //         cur_ospf.setRouterId(op.getID());
-        //         return ExecStat.SUCC;
-        //     }
-        //     case RABRTYPE -> {
-        //         assert OSPF.ABR_TYPE.of(op.getNAME()).isPresent() : "abr type name not right %s".formatted(op.getNAME());
-        //         cur_ospf.setAbrType(OSPF.ABR_TYPE.of(op.getNAME()).get());
-        //         return ExecStat.SUCC;
-        //     }
-        //     case PASSIVEINTFDEFUALT -> {
-        //         topo.getOSPFIntfOfRouter(cur_rname).forEach(ospfIntf -> {ospfIntf.setPassive(true);});
-        //         return ExecStat.SUCC;
-        //     }
+        switch (op.Type()) {
+            default -> {
+                return ExecStat.MISS;
+            }
 
-        //     case TIMERSTHROTTLESPF -> {
-        //         int max_number = Stream.of(op.getNUM(), op.getNUM2(), op.getNUM3()).max(Integer::compareTo).get();
-        //         cur_ospf.setInitDelay(op.getNUM());
-        //         cur_ospf.setMinHoldTime(op.getNUM2());
-        //         cur_ospf.setMaxHoldTime(op.getNUM3());
-        //         return ExecStat.SUCC;
-        //     }
-
-        //     case RefreshTimer -> {
-        //         cur_ospf.setLsaRefreshTime(op.getNUM());
-        //         return ExecStat.SUCC;
-        //     }
-
-        //     case TimersLsaThrottle -> {
-        //         cur_ospf.setLsaIntervalTime(op.getNUM());
-        //         return ExecStat.SUCC;
-        //     }
-        // }
-        assert false:"should not goto here %s".formatted(op.Type());
-        return ExecStat.FAIL;
+        }
+        //assert false:"should not goto here %s".formatted(op.Type());
+        //return ExecStat.FAIL;
     }
 
     public ExecStat execOspfDaemonAttriCmds(@NotNull Op_ISIS op, @NotNull ConfGraph_ISIS topo) {
@@ -63,64 +37,60 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
             return ExecStat.MISS;
         }
         var ospf_daemon = cur_isis_daemon;
-//         switch (op.Type()){
-//             case MAXIMUMPATHS -> {
-//                 var num = op.getNUM();
-//                 ospf_daemon.setMaxPaths(num);
-//                 return ExecStat.SUCC;
-//             }
-//             case WRITEMULTIPLIER -> {
-//                 var num = op.getNUM();
-//                 ospf_daemon.setWritemulti(num);
-//                 return ExecStat.SUCC;
-//             }
-//             case  SOCKETBUFFERSEND -> {
-//                 var num = op.getLONGNUM();
-//                 ospf_daemon.setBuffersend(num);
-//                 return ExecStat.SUCC;
-//             }
-//             case SOCKETBUFFERRECV -> {
-//                 var num = op.getLONGNUM();
-//                 ospf_daemon.setBufferrecv(num);
-//                 return ExecStat.SUCC;
-//             }
-//             //FIXME SOCKETBUFFERALL
-// //            case SOCKETBUFFERALL -> {
-// //                var num = op.getLONGNUM();
-// //                ospf_daemon.setBuffersend(num);
-// //                ospf_daemon.setBufferrecv(num);
-// //                return ExecStat.SUCC;
-// //            }
-//             case NoSOCKETPERINTERFACE -> {
-//                 ospf_daemon.setSocketPerInterface(false);
-//                 return ExecStat.SUCC;
-//             }
-//             case CLEARIPOSPFNEIGHBOR, CLEARIPOSPFPROCESS ->{
-//                 return ExecStat.SUCC;
-//             }
-//         }
+        /*METRICSTYLE,
+        ADVERTISEHIGHMETRIC,
+        SETOVERLOADBIT,
+        SETOVERLOADBITONSTARTUP,
+        LSPMTU, */
+        switch (op.Type()){
+            case METRICSTYLE -> {
+                assert ISISDaemon.metricstyle.of(op.getNAME()).isPresent() : "metric style name not right %s".formatted(op.getNAME());
+                ospf_daemon.setMetricStyle(ISISDaemon.metricstyle.of(op.getNAME()).get());
+                return ExecStat.SUCC;
+            }
+
+            case LSPMTU -> {
+                ospf_daemon.setLspmtu(op.getNUM());
+                return ExecStat.SUCC;
+            }
+
+            case ADVERTISEHIGHMETRIC -> {
+                ospf_daemon.setAdvertisehighmetrics(false);
+                return ExecStat.SUCC;
+            }
+
+            case SETOVERLOADBIT -> {
+                ospf_daemon.setSetoverloadbit(false);
+                return ExecStat.SUCC;
+            }
+
+            case SETOVERLOADBITONSTARTUP -> {
+                ospf_daemon.setOverloadbitonstartup(op.getNUM());
+                return ExecStat.SUCC;
+            }
+        }
         assert false:String.format("should not go to here %s", op.toString());
         return ExecStat.FAIL;
     }
 
-    private ISISAreaSum getAreaSum(@NotNull ID area, @NotNull ConfGraph_ISIS topo){
-        var res = topo.<ISISAreaSum>getOrCreateNode(NodeGen_ISIS.getISISAreaSumName(cur_isis.getName(), NodeGen_ISIS.getAreaName(area)), NodeType_ISIS.ISISAreaSum);
-        if (!res.second()){
-            res.first().setArea(area);
-            topo.addISISAreaSumRelation(res.first().getName(), cur_isis.getName());
-        }
-        return res.first();
-    }
+    // private ISISAreaSum getAreaSum(@NotNull ID area, @NotNull ConfGraph_ISIS topo){
+    //     var res = topo.<ISISAreaSum>getOrCreateNode(NodeGen_ISIS.getISISAreaSumName(cur_isis.getName(), NodeGen_ISIS.getAreaName(area)), NodeType_ISIS.ISISAreaSum);
+    //     if (!res.second()){
+    //         res.first().setArea(area);
+    //         topo.addISISAreaSumRelation(res.first().getName(), cur_isis.getName());
+    //     }
+    //     return res.first();
+    // }
 
-    private ISISAreaSum.OSPFAreaSumEntry getAreaSumEntry(@NotNull ISISAreaSum areaSum, IPRange range){
-        return Optional.ofNullable(areaSum.getSumEntries().get(range.toString()))
-                .orElseGet(() -> {
-                    var entry = new ISISAreaSum.OSPFAreaSumEntry();
-                    entry.setRange(range);
-                    areaSum.getSumEntries().put(range.toString(), entry);
-                    return entry;
-                });
-    }
+    // private ISISAreaSum.OSPFAreaSumEntry getAreaSumEntry(@NotNull ISISAreaSum areaSum, IPRange range){
+    //     return Optional.ofNullable(areaSum.getSumEntries().get(range.toString()))
+    //             .orElseGet(() -> {
+    //                 var entry = new ISISAreaSum.OSPFAreaSumEntry();
+    //                 entry.setRange(range);
+    //                 areaSum.getSumEntries().put(range.toString(), entry);
+    //                 return entry;
+    //             });
+    // }
 
 //     public ExecStat execOSPFAreaCmds(@NotNull Op_ISIS op, @NotNull ConfGraph_ISIS topo) {
 //         if (cur_router == null || cur_isis == null) return ExecStat.MISS;

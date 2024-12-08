@@ -233,10 +233,8 @@ public class genOps {
         all = false;
         //fixme we should only generate one ip address XXX at once
         var opg1 = OpCtxG.Of();
-        System.out.println(genOp(OpType.ROSPF).getOperation());
         opg1.addOp(genOp(OpType.ROSPF));
         opgs.push(opg1);
-        System.out.println("opgs"+ opgs);
         while(total_num < inst_num){
             if (rest_num > 0){
                 addOp(opgs.peek());

@@ -4,6 +4,7 @@ import org.generator.lib.frontend.lexical.OpType_isis;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
+import org.generator.util.net.NET;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -56,10 +57,17 @@ abstract public class OpBase_ISIS implements Op_ISIS{
         this.IPRANGE = IPRANGE;
     }
 
+    public void setNET(NET NET) {
+        this.NET = NET;
+    }
+
+    public NET getNET() {
+        return NET;
+    }
 
     public IP IP;
     public ID ID;
-
+    public NET NET;
     public IPRange IPRANGE;
 
     public Integer getNUM() {

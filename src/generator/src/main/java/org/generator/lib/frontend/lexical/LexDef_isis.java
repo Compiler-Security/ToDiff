@@ -28,6 +28,7 @@ public class LexDef_isis {
      * 5.IPRANGE
      * 6.LONGNUM
      * 7.IP
+     * 8.NET
      */
     static {
         var lexical_seed = new Object[][]{
@@ -49,7 +50,7 @@ public class LexDef_isis {
                 {IntfName, "interface {NAME}|int {NAME}"},
                 // route
                 //FIXME NUM or IP or ID
-                {NET, "NET {NUM}"},
+                {NET, "NET {NET}"},
                 {IPAddr, "ip address {IP}"},
                 
                 //FIXME: we need "ATTACHEDBIT"!

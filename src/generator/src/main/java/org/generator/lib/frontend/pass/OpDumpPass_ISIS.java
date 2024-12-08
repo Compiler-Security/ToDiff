@@ -45,6 +45,10 @@ public class OpDumpPass_ISIS {
         if (op.getLONGNUM() != null){
             tokenMap.put("LONGNUM", op.getLONGNUM().toString());
         }
+        if(op.getNET()!=null){
+            tokenMap.put("NET", op.getNET().toString());
+        }
+
         var bypass = opctx.getFormmat().getByPass();
         if (bypass != null) {
             tokenMap.putAll(bypass);

@@ -1,7 +1,7 @@
 package org.generator.lib.generator.phy.pass;
 
 import org.generator.lib.frontend.lexical.OpType_isis;
-import org.generator.lib.generator.driver.generate;
+import org.generator.lib.generator.driver.generate_ISIS;
 import org.generator.lib.generator.phy.controller.NormalController_ISIS;
 import org.generator.lib.item.IR.OpCtx_ISIS;
 import org.generator.lib.item.IR.OpPhy_ISIS;
@@ -122,7 +122,7 @@ public class genPhyEqualPass_ISIS {
 
     boolean genOneOp(NormalController_ISIS slot){
         var possible_types = slot.getPossibleTypes();
-        if (generate.phyRan) Collections.shuffle(possible_types);
+        if (generate_ISIS.phyRan) Collections.shuffle(possible_types);
         for(var opType: possible_types){
             var phy_op = new OpPhy_ISIS(opType);
             phy_op.setNAME(slot.getName());
@@ -158,7 +158,7 @@ public class genPhyEqualPass_ISIS {
 
         var active_slots = getActiveSlots();
         while(!active_slots.isEmpty()){
-            if (generate.phyRan){
+            if (generate_ISIS.phyRan){
                 Collections.shuffle(active_slots);
             }
             boolean canMove = false;

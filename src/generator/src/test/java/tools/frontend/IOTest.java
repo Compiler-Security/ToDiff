@@ -44,7 +44,6 @@ public class IOTest {
         var genOp = new genOps();
         var res = genOp.genRandom(100, 0.5, 0.4, 2, 0, 0.3, "r1");
         System.out.println(res);
-		System.out.println("=========");
     }
     @Test
     public void jsonTest(){
@@ -88,7 +87,7 @@ public class IOTest {
 		var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
 		var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
 		var confg = getSetConfG(ori_use);
-		System.out.println("=========");	
+		System.out.println(confg);	
 		var gen = generate.generateCore(confg);
 	}
 

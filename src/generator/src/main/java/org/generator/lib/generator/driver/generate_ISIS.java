@@ -35,7 +35,7 @@ public class generate_ISIS {
         var p = new genCorePass_ISIS();
         var res1 = p.solve(confGraph);
         //FIXME shrinkPass is very slow in huge case
-        var q = new shrinkCorePass();
+        var q = new shrinkCorePass_ISIS();
         q.solve(res1, confGraph);
         return reducer_ISIS.reduceToCore(genCorePass_ISIS.mergeOpCtxgToOne(res1));
     }

@@ -33,7 +33,7 @@ public class reducer_ISIS {
     public static void reduceToConfG(OpCtxG_ISIS opCtxG, ConfGraph_ISIS confG){
         var r = new reducePass_ISIS();
         var opaG = r.solve(opCtxG).activeSetView();
-        //isisArgPass.solve(opaG, confG, confG.getR_name());
+        isisArgPass.solve(opaG, confG, confG.getR_name());
     }
 
     /**

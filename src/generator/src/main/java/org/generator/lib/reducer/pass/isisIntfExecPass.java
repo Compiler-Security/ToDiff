@@ -14,44 +14,76 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
         }
         switch (op.Type()){
             case ISISPRIORITY ->{
-                cur_isis_intf.setPriorityLevel1(op.getNUM());
+                if(op.getNAME().equals("level1")){
+                    cur_isis_intf.setPriorityLevel1(op.getNUM());
+                }else if(op.getNAME().equals("level2")){
+                    cur_isis_intf.setPriorityLevel2(op.getNUM());
+                }else{
+                    return ExecStat.FAIL;
+                }
             }
-            // case IpIsisCost -> {
-            //     cur_isis_intf.setCost(op.getNUM());
-            // }
-            // case IpOspfDeadInter -> {
-            //     cur_isis_intf.setDeadInterval(op.getNUM());
-            // }
-            // case IpOspfDeadInterMulti -> {
-            //     cur_isis_intf.setHelloMulti(op.getNUM());
-            //     cur_isis_intf.setHelloInterval(0);
-            //     cur_isis_intf.setDeadInterval(1);
-            // }
-            // case IpOspfHelloInter -> {
-            //     if (cur_isis_intf.getHelloMulti()  == 1) {
-            //         cur_isis_intf.setHelloInterval(op.getNUM());
-            //     }
-            // }
-            // case IpOspfGRHelloDelay -> {
-            //     cur_isis_intf.setGRHelloDelay(op.getNUM());
-            // }
-            // case IpOspfNet -> {
-            //     return OSPFIntf.OSPFNetType.of(op.getNAME())
-            //             .map(x -> {cur_isis_intf.setNetType(x); return ExecStat.SUCC;})
-            //             .orElse(ExecStat.MISS);
-            // }
-            // case IpOspfPriority -> {
-            //     cur_isis_intf.setPriority(op.getNUM());
-            // }
-            // case IpOspfRetransInter -> {
-            //     cur_isis_intf.setRetansInter(op.getNUM());
-            // }
-            // case IpOspfTransDelay -> {
-            //     cur_isis_intf.setTransDelay(op.getNUM());
-            // }
-            // case IpOspfPassive -> {
-            //     cur_isis_intf.setPassive(true);
-            // }
+
+            case CIRCUITTYPE ->{
+                cur_isis_intf.setLevel(ISISIntf.ISISLEVEL.of(op.getNAME()).get());
+            }
+            
+            case CSNPINTERVAL ->{
+                if (op.getNAME().equals("level1")){
+                    cur_isis_intf.setCsnpIntervalLevel1(op.getNUM());
+                }else if (op.getNAME().equals("level2")){
+                    cur_isis_intf.setCsnpIntervalLevel2(op.getNUM());
+                }else{
+                    return ExecStat.FAIL;
+                }
+            }
+
+            case HELLOINTERVAL ->{
+                if (op.getNAME().equals("level1")){
+                    cur_isis_intf.setHelloIntervalLevel1(op.getNUM());
+                }else if (op.getNAME().equals("level2")){
+                    cur_isis_intf.setHelloIntervalLevel2(op.getNUM());
+                }else{
+                    return ExecStat.FAIL;
+                }
+            }
+
+            case PSNPINTERVAL ->{
+                if (op.getNAME().equals("level1")){
+                    cur_isis_intf.setPsnpIntervalLevel1(op.getNUM());
+                }else if (op.getNAME().equals("level2")){
+                    cur_isis_intf.setPsnpIntervalLevel2(op.getNUM());
+                }else{
+                    return ExecStat.FAIL;
+                }
+            }
+
+            case HELLOMULTIPLIER ->{
+                if (op.getNAME().equals("level1")){
+                    cur_isis_intf.setHelloMultiplierlevel1(op.getNUM());
+                }else if (op.getNAME().equals("level2")){
+                    cur_isis_intf.setHelloMultiplierlevel2(op.getNUM());
+                }else{
+                    return ExecStat.FAIL;
+                }
+            }
+
+            case ISISPASSIVE ->{
+                cur_isis_intf.setPassive(true);
+            }
+
+            case NETWORKPOINTTOPOINT ->{
+                cur_isis_intf.setNetType(ISISIntf.ISISNetType.POINTTOPOINT);
+            }
+
+            //FIXME it is wrong
+            case ISISMETRICLEVEL1 ->{
+                cur_isis_intf.setMetricLevel1(op.getNUM());
+            }
+
+            case ISISMETRICLEVEL2 ->{
+                cur_isis_intf.setMetricLevel2(op.getNUM());
+            }
+
         }
         return ExecStat.SUCC;
     }
