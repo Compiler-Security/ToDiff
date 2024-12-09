@@ -15,17 +15,17 @@ import java.util.Map;
 import java.util.Random;
 
 public class genOpPass_ISIS {
-    private static final List<OpType_isis> intfOps, OspfOps;
+    private static final List<OpType_isis> intfOps, IsisOps;
     static {
         intfOps = new ArrayList<>();
-        OspfOps = new ArrayList<>();
+        IsisOps = new ArrayList<>();
         for (var op_type: OpType_isis.values()){
             //FIXME areaVLINK
             //if (op_type == OpType.AreaVLink) continue;
             if (op_type.inISISINTF()){
                 intfOps.add(op_type); }
             else if (op_type.inISISREGION() ||  op_type.inISISRouterWithTopo()){
-                OspfOps.add(op_type);
+                IsisOps.add(op_type);
             }
         }
     }
@@ -102,6 +102,10 @@ public class genOpPass_ISIS {
                 case "NAME2" -> {
                     new_op.setNAME(getRanName(argsRange, "NAME2"));
                 }
+
+                case "NET" -> {
+                    new_op.setNET(ranHelper.randomNet());
+                }
                 //case "NUM" -> {new_op.setNUM(argsRange.get("NUM"));}
                 default -> {
                     assert false : "%s mutate TODO %s".formatted(type, arg);
@@ -115,7 +119,7 @@ public class genOpPass_ISIS {
         if (inIntf){
             op_type = intfOps.get(ranHelper.randomInt(0, intfOps.size() - 1));
         }else  {
-            op_type = OspfOps.get(ranHelper.randomInt(0, OspfOps.size() - 1));
+            op_type = IsisOps.get(ranHelper.randomInt(0, IsisOps.size() - 1));
         }
         return genRanOpOfType(op_type);
     }
@@ -131,6 +135,9 @@ public class genOpPass_ISIS {
                 }
                 case "IP" -> {
                     dst_op.setIP(src_op.getIP());
+                }
+                case "NET" -> {
+                    dst_op.setNET(src_op.getNET());
                 }
                 case "NUM" -> {
                     dst_op.setNUM(src_op.getNUM());

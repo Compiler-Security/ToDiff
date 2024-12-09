@@ -131,10 +131,11 @@ public class IOTest_ISIS {
 	public void genRandom_and_genconfg(){
 		var genOp = new genOps_ISIS();
 		var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+		System.out.println(ori);
 		var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
 		var confg = getSetConfG_ISIS(ori_use);
-		System.out.println(confg);
-		var gen = generate_ISIS.generateCore(confg);
+		//System.out.println(confg);
+		//var gen = generate_ISIS.generateCore(confg);
 	}
 
 

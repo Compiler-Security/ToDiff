@@ -1,5 +1,6 @@
 package org.generator.tools.diffOp;
 
+import org.generator.lib.frontend.lexical.OpType;
 // import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.frontend.lexical.OpType_isis;
 import org.generator.lib.generator.isis.pass.actionRulePass_ISIS;
@@ -27,6 +28,7 @@ public class genOps_ISIS {
             //FIXME areaVLINK
             //if (op_type == OpType.AreaVLink) continue;
             if (op_type == OpType_isis.NET) continue;
+            if (op_type == OpType_isis.IPAddr) continue;
             if (op_type.inISISINTF()){intfOp.add(op_type); allOp.add(op_type);}
             else if (op_type.inISISREGION() || op_type.inISISDAEMON() ||op_type.inISISRouterWithTopo()){
                 IsisOp.add(op_type);
@@ -224,6 +226,7 @@ public class genOps_ISIS {
         //fixme we should only generate one ip address XXX at once
         var opg1 = OpCtxG_ISIS.Of();
         opg1.addOp(genOp(OpType_isis.RISIS));
+        opg1.addOp(genOp(OpType_isis.NET));
         opgs.push(opg1);
         while(total_num < inst_num){
             if (rest_num > 0){
@@ -265,7 +268,7 @@ public class genOps_ISIS {
         for(int i = 0; i < interface_num; i++){
             var intf = addOp(res, OpType_isis.IntfName);
             intf.setNAME(NodeGen_ISIS.getIntfName(r_name, i));
-            // var ip = addOp(res, OpType_isis.IPAddr);
+            var ip = addOp(res, OpType_isis.IPAddr);
             // var area = addOp(res, OpType_isis.NET);
             // area.setID(ID.of(ranHelper.randomInt(0, 3)));
         }

@@ -49,7 +49,6 @@ public class LexDef_isis {
                 {RISIS, "router isis"},
                 {IntfName, "interface {NAME}|int {NAME}"},
                 // route
-                //FIXME NUM or IP or ID
                 {NET, "NET {NET}"},
                 {IPAddr, "ip address {IP}"},
                 

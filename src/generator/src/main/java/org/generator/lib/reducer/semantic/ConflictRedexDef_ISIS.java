@@ -22,6 +22,8 @@ public class ConflictRedexDef_ISIS extends  BaseRedexDef_ISIS{
     static {
         var reduce_seed = new Object[][]{
                 //This means if OpType[] are in the previous context, then this op should be conflict and remove, third number is the compare arg num
+                //FIXME: now, we do not make sure which one should be conflict.
+                
                 // {IpOspfArea, new OpType_isis[]{NETAREAID}, 0},
                 // {NETAREAID, new OpType_isis[]{IpOspfArea}, 0},
                 // {NETAREAID, new OpType_isis[]{NETAREAID}, 1},

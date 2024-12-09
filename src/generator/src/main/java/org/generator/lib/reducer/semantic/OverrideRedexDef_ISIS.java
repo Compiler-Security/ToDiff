@@ -33,7 +33,10 @@ public class OverrideRedexDef_ISIS extends BaseRedexDef_ISIS {
                 {RISIS, new OpType_isis[]{}, 0},
                 {IntfName, new OpType_isis[]{}, 0},
                 {IPAddr, new OpType_isis[]{IPAddr}, 1},
+                //FIXME: this is not right
 
+
+                
                 // {IpIsisArea, new OpType_isis[]{}, 0},
                 // {NETAREAID, new OpType_isis[]{NETAREAID}, 2},
 
