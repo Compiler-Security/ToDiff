@@ -271,5 +271,64 @@ public class genOps {
         }
         return res;
     }
+
+    public OpCtxG genRandomEva(int inst_num, double router_ospf_ratio, double intf_ratio, int interface_num, float no_ratio, double merge_ratio, String r_name){
+        ran = new Random();
+        this.no_ratio = no_ratio;
+        ospf_instnum = (int) (inst_num * router_ospf_ratio);
+        ospf_total_num = ospf_instnum;
+        intf_instnum = (int) (inst_num * intf_ratio);
+        intf_total_num = intf_instnum;
+        other_instnum = inst_num - ospf_instnum - intf_instnum;
+        other_total_num = other_instnum;
+        this.interface_num = interface_num;
+        opgs = new Stack<>();
+        total_num = 0;
+        rest_num = 0;
+        all = false;
+        //fixme we should only generate one ip address XXX at once
+        var opg1 = OpCtxG.Of();
+        opg1.addOp(genOp(OpType.ROSPF));
+        opgs.push(opg1);
+        while(total_num < inst_num){
+            if (rest_num > 0){
+                addOp(opgs.peek());
+                rest_num -= 1;
+                total_num += 1;
+            }else{
+                switch (selectCtx()) {
+                    case 0 -> {
+                        if (opgs.empty() || (getCtxOpType(opgs.peek()) != OpType.ROSPF || ran.nextDouble(1) > merge_ratio)) {
+                            var opg = OpCtxG.Of();
+                            opg.addOp(genOp(OpType.ROSPF));
+                            opgs.push(opg);
+                        }
+                        all = false;
+                    }
+                    case 1 -> {
+                        var opg = OpCtxG.Of();
+                        var intf = genOp(OpType.IntfName);
+                        intf.getOperation().setNAME(NodeGen.getIntfName(r_name, ran.nextInt(interface_num)));
+                        if (opgs.empty() || (!intf.getOperation().getNAME().equals(opgs.peek().getOps().get(0).getOperation().getNAME()) || ran.nextDouble(1) > merge_ratio)) {
+                            opg.addOp(intf);
+                            opgs.push(opg);
+                        }
+                        all = false;
+                    }
+                    case 2 -> {
+                        all = true;
+                    }
+                }
+                continue;
+            }
+        }
+        var res = OpCtxG.Of();
+        for(var opg:opgs){
+            res.addOps(opg.getOps());
+        }
+        return res;
+    }
 }
+
+
 
