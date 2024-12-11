@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.reducer.driver.reducer;
 import org.generator.tools.diffOp.genOps;
+import org.generator.util.collections.Pair;
 import org.junit.Test;
 
 import java.io.File;
@@ -13,7 +14,7 @@ import java.io.IOException;
 
 public class evaluate {
 
-    double genInstruction(int inst_num){
+    Pair<Double, Integer> genInstruction(int inst_num){
         var genOp = new genOps();
         var ori = genOp.genRandomEva(inst_num, 0.2, 0.6, 4, 0.2f, 1, "r1");
         var core = reducer.reduceToCore(ori);
@@ -22,7 +23,7 @@ public class evaluate {
         long endTime = System.currentTimeMillis();
         System.out.println(gen.getOps().size());
         double elapsedTimeInSeconds = (endTime - startTime) / 1000.0;
-        return elapsedTimeInSeconds;
+        return new Pair(elapsedTimeInSeconds, gen.getOps().size());
     }
     /*
     X-axis command num
@@ -38,12 +39,14 @@ public class evaluate {
             else if (i > 500) i += 50;
             else i += 10;
             var res = genInstruction(i);
+            var t = res.first();
+            var num = res.second();
             System.out.println("=====%d=======".formatted(i));
-            resultNode.put(i.toString(), res);
+            resultNode.put(num.toString(), t);
         }
         var writer = new ObjectMapper().writer(new DefaultPrettyPrinter());
         try {
-            writer.writeValue(new File("/home/binshui/result/numTime.json"), resultNode);
+            writer.writeValue(new File("/home/binshui/topo-fuzz/evaluate/instTime/numTime.json"), resultNode);
         } catch (IOException e) {
             e.printStackTrace();
         }
