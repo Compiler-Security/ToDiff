@@ -46,10 +46,10 @@ public class LexDef_isis {
                 {NODESETISISRE, "node {NAME} set ISIS restart"},
                 {ISISCONF, "RISISCONF"},
 
-                {RISIS, "router isis"},
+                {RISIS, "router isis 1"},
                 {IntfName, "interface {NAME}|int {NAME}"},
                 // route
-                {NET, "NET {NET}"},
+                {NET, "net {NET}"},
                 {IPAddr, "ip address {IP}"},
                 
                 //FIXME: we need "ATTACHEDBIT"!
@@ -63,7 +63,7 @@ public class LexDef_isis {
                 {ISTYPE, "is-type {NAME(level-1,level-1-2,level-2-only)}"},
 
                 // interface
-                {IPROUTERISIS, "ip router isis {NAME}"},
+                {IPROUTERISIS, "ip router isis 1"},
                 {CIRCUITTYPE, "isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
                 {CSNPINTERVAL, "isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2)}"},
                 {HELLOPADDING, "isis hello padding"},
@@ -78,8 +78,8 @@ public class LexDef_isis {
                 {THREEWAYHANDSHAKE, "isis three-way-handshake"},
 
                 // no isis
-                {NORISIS, "no router isis"},
-                {NOTNET, "no NET {NUM}"},
+                {NORISIS, "no router isis 1"},
+                {NOTNET, "no net {NET}"},
                 //FIXME: we need "NOATTACHEDBIT"!
                 //{NOATTACHEDBIT, "no attached-bit {NAME(receive ignore,send)}"},
                 {NOMETRICSTYLE, "no metric-style {NAME(narrow,transition,wide)}"},
@@ -89,7 +89,8 @@ public class LexDef_isis {
                 {NOLSPMTU, "no lsp-mtu {NUM(128-4352)}"},
         
                 {NOISTYPE, "no is-type {NAME(level-1,level-1-2,level-2-only)}"},
-                {NOIPROUTERISIS, "no ip router isis {NAME}"},
+                {NOIPROUTERISIS, "no ip router isis 1"},
+                {NOIPAddr, "no ip address {IP}"},
                 {NOCIRCUITTYPE, "no isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
                 {NOCSNPINTERVAL, "no isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2)}"},
                 {NOHELLOPADDING, "no isis hello padding"},

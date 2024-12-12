@@ -131,13 +131,67 @@ public class IOTest_ISIS {
 	public void genRandom_and_genconfg(){
 		var genOp = new genOps_ISIS();
 		var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-		System.out.println(ori);
+		//System.out.println(ori);
 		var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
 		var confg = getSetConfG_ISIS(ori_use);
 		//System.out.println(confg);
-		//var gen = generate_ISIS.generateCore(confg);
+		var gen = generate_ISIS.generateCore(confg);
+        System.out.println(gen);
+        var gen_confg = getSetConfG_ISIS(gen);
+        if(!gen_confg.equals(confg)){
+            System.out.println(gen);
+            System.out.println("===============");
+            System.out.println(ori_use);
+            System.out.println(compareJson(confg.toJson(), gen_confg.toJson()));
+        }
+        else{
+            System.out.println("PASS");
+        }
 	}
+    /*            interface r1-eth0
+                ip address 82.144.2.106/3
+                isis csnp-interval 20 level-1
+            interface r1-eth1
+                ip address 89.183.104.6/1
+                isis csnp-interval 30 level-1
+            int r1-eth2
+                ip address 237.151.161.95/16
+                isis csnp-interval 40 level-1
+            router isis 1
+                lsp-mtu 130 
+                net 49.0000.0000.0000.0000.00*/
 
+    @Test
+    public void isisArgPassTest(){
+        String test_st = """
+            interface r1-eth0
+                isis csnp-interval 20 level-1
+            router isis 1
+                lsp-mtu 130 
+                net 49.0000.0000.0000.0000.00
+            """;
+        var genOp = new genOps_ISIS();
+		//var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+        var ori = new ConfReader_ISIS().read(test_st);
+        System.out.println(ori);
+        System.out.println("===============");
+        var core = reducer_ISIS.reduceToCore(ori);
+        System.out.println(core);
+        System.out.println("===============");
+        var core_confg = getSetConfG_ISIS(core);
+        var confg_to_core= generate_ISIS.generateCore(core_confg);
+        System.out.println(confg_to_core);
+        var confg_to_core_to_confg = getSetConfG_ISIS(confg_to_core);
+        if (!confg_to_core_to_confg.equals(core_confg)){
+            System.out.println(confg_to_core);
+            System.out.println("===============");
+            System.out.println(core);
+            System.out.println(compareJson(core_confg.toJson(), confg_to_core_to_confg.toJson()));
+        }
+        else{
+            System.out.println("PASS");
+        }
+    }
 
     @Test
     public void genCorePart1Test(){
@@ -145,12 +199,12 @@ public class IOTest_ISIS {
         while(true) {
             i++;
             System.out.printf("testCase %d\n", i);
-            var genOp = new genOps();
+            var genOp = new genOps_ISIS();
             var ori = genOp.genRandom(10000, 0.2, 0.6, 4, 0, 1, "r1");
-            var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
-            var confg = getSetConfG(ori_use);
-            var gen = generate.generateCore(confg);
-            var confg_core = getSetConfG(gen);
+            var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
+            var confg = getSetConfG_ISIS(ori_use);
+            var gen = generate_ISIS.generateCore(confg);
+            var confg_core = getSetConfG_ISIS(gen);
             if (!confg_core.equals(confg)) {
                 try {
                     FileWriter fileWriter = new FileWriter("output.txt");
@@ -169,6 +223,9 @@ public class IOTest_ISIS {
                 assert false;
                 break;
             }
+			if(i == 100){
+				break;
+			}
         }
     }
 
@@ -394,64 +451,66 @@ public class IOTest_ISIS {
         var confg = getSetConfG(ori);
         System.out.println(confg.toString());
     }
-  //  @Test
-//    public void generatorTest(){
-//        String test_st = """
-//                interface r1-eth0
-//                	ip address 82.144.2.106/3
-//                	ip ospf area 0.0.0.2
-//                interface r1-eth1
-//                	ip address 89.183.104.6/1
-//                	ip ospf area 0.0.0.3
-//                int r1-eth2
-//                	ip address 237.151.161.95/16
-//                	ip ospf area 0.0.0.1
-//                int r1-eth3
-//                	ip address 117.132.165.79/15
-//                	ip ospf area 0.0.0.0
-//                router ospf
-//                    network 1.1.1.1/10 area 2
-//                """;
-//        int i = 0;
-//        while(true) {
-//            i++;
-//            System.out.printf("testCase %d\n", i);
-//            var genOp = new genOps();
-//            var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-//            //var ori = new ConfReader().read(test_st);
-//
-//            var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
-//            //System.out.println(ori_use);
-//            var confg = getSetConfG(ori_use);
-//            var gen = generate.generateCore(confg);
-//            //var gen = new ConfReader().read(test_st1);
-//            //System.out.println(gen.getOps().size());
-//            //System.out.println(reducer.reduceToCore(ori));
-//            //System.out.println("========");
-//            //System.out.println(gen);
-//            var confg_core = getSetConfG(gen);
-//            //System.out.println(confg);
-//            //System.out.println(confg_core);
-//            if (!confg_core.equals(confg)) {
-//                System.out.println(gen);
-//                System.out.println(compareJson(confg.toJson(), confg_core.toJson()).toPrettyString());
-//                //System.out.println(confg_core.toJson().toPrettyString());
-//            }
-//            assert confg_core.equals(confg) : "CORE WRONG";
-//            reducer.s = 0;
-//            var gen_equal = generate.generateEqualOfCore(gen);
-//            //System.out.println(gen_equal);
-//            var confg_equal = getSetConfG(gen_equal);
-//            if (!confg_equal.equals(confg)){
-//                System.out.println(gen);
-//                System.out.println("===============");
-//                System.out.println(gen_equal);
-//                System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
-//            }
-//            assert confg_equal.equals(confg) : "MUTATE WRONG";
-//            //break;
-//        }
-//    }
+   @Test
+   public void generatorTest(){
+       String test_st = """
+               interface r1-eth0
+               	ip address 82.144.2.106/3
+               	ip ospf area 0.0.0.2
+               interface r1-eth1
+               	ip address 89.183.104.6/1
+               	ip ospf area 0.0.0.3
+               int r1-eth2
+               	ip address 237.151.161.95/16
+               	ip ospf area 0.0.0.1
+               int r1-eth3
+               	ip address 117.132.165.79/15
+               	ip ospf area 0.0.0.0
+               router ospf
+                   network 1.1.1.1/10 area 2
+               """;
+       int i = 0;
+       while(true) {
+           i++;
+           System.out.printf("testCase %d\n", i);
+           var genOp = new genOps_ISIS();
+           var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+           //var ori = new ConfReader().read(test_st);
+
+           var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
+           //System.out.println(ori_use);
+           var confg = getSetConfG_ISIS(ori_use);
+           var gen = generate_ISIS.generateCore(confg);
+           //var gen = new ConfReader().read(test_st1);
+           //System.out.println(gen.getOps().size());
+           //System.out.println(reducer.reduceToCore(ori));
+           //System.out.println("========");
+           //System.out.println(gen);
+		   //System.out.println("========");
+           var confg_core = getSetConfG_ISIS(gen);
+           System.out.println(confg);
+		   System.out.println("========");
+           System.out.println(confg_core);
+           if (!confg_core.equals(confg)) {
+               System.out.println(gen);
+               System.out.println(compareJson(confg.toJson(), confg_core.toJson()).toPrettyString());
+               //System.out.println(confg_core.toJson().toPrettyString());
+           }
+           assert confg_core.equals(confg) : "CORE WRONG";
+           reducer.s = 0;
+           var gen_equal = generate_ISIS.generateEqualOfCore(gen, true);
+           //System.out.println(gen_equal);
+           var confg_equal = getSetConfG_ISIS(gen_equal);
+           if (!confg_equal.equals(confg)){
+               System.out.println(gen);
+               System.out.println("===============");
+               System.out.println(gen_equal);
+               System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
+           }
+           assert confg_equal.equals(confg) : "MUTATE WRONG";
+           break;
+       }
+   }
 
 
 

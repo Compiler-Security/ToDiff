@@ -31,6 +31,7 @@ public class UnsetRedexDef_ISIS extends BaseRedexDef_ISIS{
                 {NOLSPMTU, new OpType_isis[]{LSPMTU}},
                 {NOISTYPE, new OpType_isis[]{ISTYPE}},
                 {NOIPROUTERISIS, new OpType_isis[]{IPROUTERISIS}},
+                {NOIPAddr, new OpType_isis[]{IPAddr}},
                 {NOCIRCUITTYPE, new OpType_isis[]{CIRCUITTYPE}},
                 {NOCSNPINTERVAL, new OpType_isis[]{CSNPINTERVAL}},
                 {NOHELLOPADDING, new OpType_isis[]{HELLOPADDING}},

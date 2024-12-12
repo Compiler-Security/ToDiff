@@ -68,9 +68,9 @@ public enum OpType_isis {
     NOSETOVERLOADBIT,
     NOSETOVERLOADBITONSTARTUP,
     NOLSPMTU,
-
     NOISTYPE,
     NOIPROUTERISIS,
+    NOIPAddr,
     NOCIRCUITTYPE,
     NOCSNPINTERVAL,
     NOHELLOPADDING,
@@ -141,6 +141,7 @@ public enum OpType_isis {
      * @return
      */
     public boolean isIntfOp(){
-        return (this.ordinal() > ISISINTFBEGIN.ordinal() && this.ordinal() < ISISEND.ordinal()) || (this.ordinal() > NOCIRCUITTYPE.ordinal()) ;
+        //return (this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal()) || (this.ordinal() > NOAreaStub.ordinal()) || this == IPAddr || this == NOIPAddr;
+        return (this.ordinal() > ISISINTFBEGIN.ordinal() && this.ordinal() < ISISEND.ordinal()) || (this.ordinal() > NOCIRCUITTYPE.ordinal())|| this == IPAddr || this == NOIPAddr;
     }
 }

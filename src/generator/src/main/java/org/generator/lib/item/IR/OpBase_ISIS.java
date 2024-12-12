@@ -167,7 +167,7 @@ abstract public class OpBase_ISIS implements Op_ISIS{
      */
     @Override
     public int hashCode() {
-        return Objects.hash(NAME, NAME2, IP, ID, IPRANGE, NUM, NUM2, NUM3, LONGNUM, type);
+        return Objects.hash(NAME, NAME2, IP, ID, IPRANGE, NET, NUM, NUM2, NUM3, LONGNUM, type);
     }
 
     public OpCtx_ISIS getOpCtx() {

@@ -41,129 +41,135 @@ public class genCorePass_ISIS {
         var opCtxG = OpCtxG_ISIS.Of();
         var isis_name = NodeGen_ISIS.getISISName(r_name);
         if (confg.containsNode(isis_name)){
-            ISIS ospf = confg.getNodeNotNull(NodeGen_ISIS.getISISName(r_name));
+            ISIS isis = confg.getNodeNotNull(NodeGen_ISIS.getISISName(r_name));
             addOp(opCtxG, OpType_isis.RISIS);
-            // if (ospf.getRouterId() != null){
-            //     var op = addOp(opCtxG, OpType_isis.RID);
-            //     op.setID(ospf.getRouterId());
-            // }
-
-            // if (ospf.getAbrType() != null){
-            //     var op = addOp(opCtxG, OpType.RABRTYPE);
-            //     op.setNAME(ospf.getAbrType().toString());
-            // }
-
-            // {
-            //     var op = addOp(opCtxG, OpType_isis.TIMERSTHROTTLESPF);
-            //     op.setNUM(ospf.getInitDelay());
-            //     op.setNUM2(ospf.getMinHoldTime());
-            //     op.setNUM3(ospf.getMaxHoldTime());
-            // }
-            // //refresh timer <- lsaRefreshTime
-            // {
-            //     var op = addOp(opCtxG, OpType.RefreshTimer);
-            //     op.setNUM(ospf.getLsaRefreshTime());
-            // }
-            // //timers lsa throttle all <- lsaIntervalTime
-            // {
-            //     var op = addOp(opCtxG, OpType.TimersLsaThrottle);
-            //     op.setNUM(ospf.getLsaIntervalTime());
-            // }
-           // opCtxG.addOp(new Op);
+            if(isis.getNET() != null){
+                var op = addOp(opCtxG, OpType_isis.NET);
+                op.setNET(isis.getNET());
+            }
+            //FIXME: it doesn't complete yet
         }
 
         var isis_daemon_name = NodeGen_ISIS.getISISDaemonName(isis_name);
         if (confg.containsNode(isis_daemon_name)){
             ISISDaemon daemon = confg.getNodeNotNull(isis_daemon_name);
-            // {
-            //     var op = addOp(opCtxG, OpType.WRITEMULTIPLIER);
-            //     op.setNUM(daemon.getWritemulti());
-            // }
-            // {
-            //     var op = addOp(opCtxG, OpType.SOCKETBUFFERSEND);
-            //     op.setLONGNUM(daemon.getBuffersend());
-            // }
-            // {
-            //     var op = addOp(opCtxG, OpType.SOCKETBUFFERRECV);
-            //     op.setLONGNUM(daemon.getBufferrecv());
-            // }
             {
-                //FIXME SOCKETBUFFERALL
-//                if (daemon.getBuffersend() == daemon.getBufferrecv()){
-//                    var op = addOp(opCtxG, OpType.SOCKETBUFFERALL);
-//                    op.setLONGNUM(daemon.getBufferrecv());
-//                }
+                var op = addOp(opCtxG, OpType_isis.METRICSTYLE);
+                op.setNAME(daemon.getMetricStyle().toString());
             }
-            // {
-            //     if (!daemon.isSocketPerInterface()){
-            //         var op = addOp(opCtxG, OpType.NoSOCKETPERINTERFACE);
-            //     }
-            // }
-            // {
-            //     var op = addOp(opCtxG, OpType.MAXIMUMPATHS);
-            //     op.setNUM(daemon.getMaxPaths());
-            // }
+            {
+                if(daemon.isAdvertisehighmetrics()){
+                    var op = addOp(opCtxG, OpType_isis.ADVERTISEHIGHMETRIC);
+                }
+            }
+            {
+                if(daemon.isSetoverloadbit()){
+                    var op = addOp(opCtxG, OpType_isis.SETOVERLOADBIT);
+                }
+            }
+            {
+                var op = addOp(opCtxG, OpType_isis.SETOVERLOADBITONSTARTUP);
+                op.setNUM(daemon.getOverloadbitonstartup());
+                
+            }
+            {
+                var op = addOp(opCtxG, OpType_isis.LSPMTU);
+                op.setNUM(daemon.getLspmtu());
+            }
         }
         return opCtxG;
     }
 
-    private  OpCtxG_ISIS handleIntf(ISISIntf ospf_intf){
+    private  OpCtxG_ISIS handleIntf(ISISIntf isis_intf){
         var opCtxG = OpCtxG_ISIS.Of();
-        Intf_ISIS intf = (Intf_ISIS) confg.getDstsByType(ospf_intf.getName(), RelationEdge_ISIS.EdgeType.INTF).stream().findAny().get();
+        Intf_ISIS intf = (Intf_ISIS) confg.getDstsByType(isis_intf.getName(), RelationEdge_ISIS.EdgeType.INTF).stream().findAny().get();
         {
             var op = addOp(opCtxG, OpType_isis.IntfName);
             op.setNAME(intf.getName());
         }
-
-
+        //FIXME:PROUTERISIS
         {
-            // var op = addOp(opCtxG, OpType_isis.IpIsisCost);
-            // op.setNUM(ospf_intf.getCost());
+            
+        }
+        /*
+         *  CIRCUITTYPE,
+            CSNPINTERVAL,
+            HELLOPADDING,
+            HELLOINTERVAL,
+            HELLOMULTIPLIER,
+            ISISMETRICLEVEL1,
+            ISISMETRICLEVEL2,
+            NETWORKPOINTTOPOINT,
+            ISISPASSIVE,
+            ISISPRIORITY,
+            PSNPINTERVAL,
+            THREEWAYHANDSHAKE,
+         */
+        {
+            var op = addOp(opCtxG, OpType_isis.CIRCUITTYPE);
+            op.setNAME(isis_intf.getLevel().toString());
+        }
+        {
+            var op = addOp(opCtxG, OpType_isis.CSNPINTERVAL);
+            if(op.getNAME().equals("level1")){
+                op.setNUM(isis_intf.getCsnpIntervalLevel1());
+            }else if(op.getNAME().equals("level2")){
+                op.setNUM(isis_intf.getCsnpIntervalLevel2());
+            }
+            else{
+                assert false:"the csnp interval level is not level1 or level2";
+            }
+        }
+        {
+            var op = addOp(opCtxG, OpType_isis.PSNPINTERVAL);
+            if(op.getNAME().equals("level1")){
+                op.setNUM(isis_intf.getPsnpIntervalLevel1());
+            }else if(op.getNAME().equals("level2")){
+                op.setNUM(isis_intf.getPsnpIntervalLevel2());
+            }
+            else{
+                assert false:"the psnp interval level is not level1 or level2";
+            }
+
+        }
+        
+        if(isis_intf.getHelloMultiplierlevel1()>1){
+            var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
+            op.setNAME("level1");
+            op.setNUM(isis_intf.getHelloMultiplierlevel1());
+        }
+        else{
+            var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
+            op.setNAME("level1");
+            op.setNUM(isis_intf.getHelloIntervalLevel1());
         }
 
-        //hello dead interval + multi
-        // if (ospf_intf.getHelloMulti() > 1){
-        //     var op = addOp(opCtxG, OpType.IpOspfDeadInterMulti);
-        //     op.setNUM(ospf_intf.getHelloMulti());
-        // }
-        // else{
-        //     {
-        //         var op = addOp(opCtxG, OpType.IpOspfDeadInter);
-        //         op.setNUM(ospf_intf.getDeadInterval());
-        //     }
-        //     {
-        //         var op = addOp(opCtxG, OpType.IpOspfHelloInter);
-        //         op.setNUM(ospf_intf.getHelloInterval());
-        //     }
-        // }
-
-        // {
-        //     var op = addOp(opCtxG, OpType.IpOspfGRHelloDelay);
-        //     op.setNUM(ospf_intf.getGRHelloDelay());
-        // }
-
-        // {
-        //     var op = addOp(opCtxG, OpType.IpOspfNet);
-        //     op.setNAME(ospf_intf.getNetType().toString());
-        // }
-
-        //priority
-        // {
-        //     var op = addOp(opCtxG, OpType.IpOspfPriority);
-        //     op.setNUM(ospf_intf.getPriority());
-        // }
-
-        //retrans
-        // {
-        //     var op = addOp(opCtxG, OpType.IpOspfRetransInter);
-        //     op.setNUM(ospf_intf.getRetansInter());
-        // }
-
-        //transDelay
-        // {
-        //     var op = addOp(opCtxG, OpType.IpOspfTransDelay);
-        //     op.setNUM(ospf_intf.getTransDelay());
-        // }
+        if(isis_intf.getHelloMultiplierlevel2() > 1){
+            var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
+            op.setNAME("level2");
+            op.setNUM(isis_intf.getHelloMultiplierlevel2());
+        }
+        else{
+            var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
+            op.setNAME("level2");
+            op.setNUM(isis_intf.getHelloIntervalLevel2());
+        }
+        {
+            if(isis_intf.isPassive()){
+                var op = addOp(opCtxG, OpType_isis.ISISPASSIVE);
+            }
+        }
+        {
+            var op = addOp(opCtxG, OpType_isis.ISISPRIORITY);
+            if (op.getNAME().equals("level1")){
+                op.setNUM(isis_intf.getPriorityLevel1()); 
+            }else if(op.getNAME().equals("level2")){
+                op.setNUM(isis_intf.getPriorityLevel2());
+            }else{
+                assert false:"the priority level is not level1 or level2";
+            }
+        }
+        
         return opCtxG;
     }
 
@@ -182,8 +188,8 @@ public class genCorePass_ISIS {
             }
             opgs.add(opCtxG);
         }
-        for(var ospf_intf: confg.getISISIntfOfRouter(r_name)){
-            opgs.add(handleIntf(ospf_intf));
+        for(var isis_intf: confg.getISISIntfOfRouter(r_name)){
+            opgs.add(handleIntf(isis_intf));
         }
         return opgs;
     }
@@ -256,40 +262,40 @@ public class genCorePass_ISIS {
 //     }
 
     // private List<OpCtxG> handleAreas(){
-    //     var ospf_name = NodeGen.getOSPFName(r_name);
+    //     var isis_name = NodeGen.getisisName(r_name);
     //     List<OpCtxG> opgs = new ArrayList<>();
     //     //System.out.println(confg.toDot(false));
-    //     for(var areaSum: confg.getOSPFAreaSumOfOSPF(ospf_name)){
+    //     for(var areaSum: confg.getisisAreaSumOfisis(isis_name)){
     //         var opctxg = handleArea(areaSum);
     //         opgs.add(opctxg);
     //     }
     //     return opgs;
     // }
 
-    // private List<OpCtxG> handleAREAID(boolean netAreaId, boolean router_ospf){
+    // private List<OpCtxG> handleAREAID(boolean netAreaId, boolean router_isis){
     //     List<OpCtxG> opCtxGS = new ArrayList<>();
-    //     if (!netAreaId || !router_ospf){
-    //         for(var ospf_intf: confg.getOSPFIntfOfRouter(r_name)){
-    //             if (ospf_intf.getArea() != null){
-    //                 Intf intf = (Intf) confg.getDstsByType(ospf_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
+    //     if (!netAreaId || !router_isis){
+    //         for(var isis_intf: confg.getisisIntfOfRouter(r_name)){
+    //             if (isis_intf.getArea() != null){
+    //                 Intf intf = (Intf) confg.getDstsByType(isis_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
     //                 var opCtxg = OpCtxG.Of();
     //                 var op1 = addOp(opCtxg, OpType.IntfName);
     //                 op1.setNAME(intf.getName());
-    //                 var op = addOp(opCtxg, OpType.IpOspfArea);
-    //                 op.setID(ospf_intf.getArea());
+    //                 var op = addOp(opCtxg, OpType.IpisisArea);
+    //                 op.setID(isis_intf.getArea());
     //                 opCtxGS.add(opCtxg);
     //             }
     //         }
     //     }else{
     //         List<Pair<IP, ID>> intfToArea = new ArrayList<>();
-    //         for(var ospf_intf: confg.getOSPFIntfOfRouter(r_name)){
-    //             if (ospf_intf.getArea() != null) {
-    //                 Intf intf = (Intf) confg.getDstsByType(ospf_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
-    //                 intfToArea.add(new Pair<>(intf.getIp(), ospf_intf.getArea()));
+    //         for(var isis_intf: confg.getisisIntfOfRouter(r_name)){
+    //             if (isis_intf.getArea() != null) {
+    //                 Intf intf = (Intf) confg.getDstsByType(isis_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
+    //                 intfToArea.add(new Pair<>(intf.getIp(), isis_intf.getArea()));
     //             }
     //         }
     //         var opCtxg = OpCtxG.Of();
-    //         addOp(opCtxg, OpType.ROSPF);
+    //         addOp(opCtxg, OpType.Risis);
     //         //TODO add prefix Tree
     //         for(var entry: intfToArea){
     //             var ip = entry.first();
@@ -351,7 +357,7 @@ public class genCorePass_ISIS {
     /**
      * This pass will return generate core config
      * @param confg
-     * @return each opCtxG is one interface or router ospf
+     * @return each opCtxG is one interface or router isis
      */
     public  List<OpCtxG_ISIS> solve(ConfGraph_ISIS confg){
         this.r_name = confg.getR_name();
@@ -359,7 +365,7 @@ public class genCorePass_ISIS {
         List<OpCtxG_ISIS> opgs = new ArrayList<>();
         //daemon
         var tmp1 = handleDaemon();
-        var router_ospf = !tmp1.getOps().isEmpty();
+        var router_isis = !tmp1.getOps().isEmpty();
         opgs.add(tmp1);
 
         //intfs
@@ -373,12 +379,12 @@ public class genCorePass_ISIS {
         //areaId
         // List<OpCtxG> tmp4;
         // if (generate.ran){
-        //     tmp4 = handleAREAID(ranHelper.randomInt(0, 1) == 0, router_ospf);
-        // }else tmp4 = handleAREAID(true, router_ospf);
+        //     tmp4 = handleAREAID(ranHelper.randomInt(0, 1) == 0, router_isis);
+        // }else tmp4 = handleAREAID(true, router_isis);
         // opgs.addAll(tmp4);
 
         //passive intf
-        var tmp5 = handlePassiveIntf(router_ospf);
+        var tmp5 = handlePassiveIntf(router_isis);
         opgs.addAll(tmp5);
 
         var res = mergeOpCtxgToEach(opgs);

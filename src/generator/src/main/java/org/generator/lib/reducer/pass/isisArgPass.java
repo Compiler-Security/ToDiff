@@ -38,21 +38,21 @@ public class isisArgPass {
         return new Pair<>(h.values().stream().filter(x -> x.getTyp() == OpArgG_ISIS.OpGType_ISIS.Intf).toList(), h.values().stream().filter(x -> x.getTyp() == OpArgG_ISIS.OpGType_ISIS.ISIS).findFirst().orElse(null));
     }
 
-    // private static boolean hasIpOspfArea(OpAG_ISIS opg) {
-    //     boolean ip_ospf_area = false;
+    // private static boolean hasIpisisArea(OpAG_ISIS opg) {
+    //     boolean ip_isis_area = false;
     //     for (var opa : opg.getOps()) {
-    //         if (opa.op.Type() == OpType_isis.IpOspfArea) {
-    //             ip_ospf_area = true;
+    //         if (opa.op.Type() == OpType_isis.IpisisArea) {
+    //             ip_isis_area = true;
     //             break;
     //         }
     //     }
-    //     return ip_ospf_area;
+    //     return ip_isis_area;
     // }
 
     public static void solve(OpAG_ISIS opg, ConfGraph_ISIS topo, String r_name) {
         var opgs = splitOpAG(opg);
         var intf_opgs = opgs.first();
-        var ospf_opg = opgs.second();
+        var isis_opg = opgs.second();
 
         //int name
         //ip address XXX.XXX.XXX.XXX
@@ -74,16 +74,16 @@ public class isisArgPass {
         }
 
         //network XXX.XXX.XXX.XXX area XXX
-        //ip ospf area XXX
-        //set area & add ospfintf
-        // boolean is_ip_ospf_area = hasIpOspfArea(opg);
-        // if (is_ip_ospf_area) {
+        //ip isis area XXX
+        //set area & add isisintf
+        // boolean is_ip_isis_area = hasIpisisArea(opg);
+        // if (is_ip_isis_area) {
         //     for(var intf_opg: intf_opgs){
         //         //only the first ip opsf area work
-        //         for(var op: intf_opg.popOpsOfType(OpType.IpOspfArea)){
+        //         for(var op: intf_opg.popOpsOfType(OpType.IpisisArea)){
         //             var intf_name = intf_opg.getCtxOp().getNAME();
         //             var intf = topo.getIntf(intf_name);
-        //             //add ospf Intf
+        //             //add isis Intf
         //             if (!intf.isPersudo() && intf.getIp() != null){
         //                 var res = topo.<ISISIntf>getOrCreateNode(NodeGen_ISIS.getISISIntfName(intf_name), NodeType_ISIS.ISISIntf);
         //                 assert  !res.second();
@@ -93,9 +93,9 @@ public class isisArgPass {
         //             break;
         //         }
         //     }
-        // }else if (ospf_opg != null){
+        // }else if (isis_opg != null){
         //     HashMap<IPRange, ID> netToArea = new HashMap<>();
-        //     for (var op: ospf_opg.popOpsOfType(OpType_isis.NETAREAID)){
+        //     for (var op: isis_opg.popOpsOfType(OpType_isis.NETAREAID)){
         //         if (!netToArea.containsKey(op.getIPRANGE())){
         //             netToArea.put(op.getIPRANGE(), op.getID());
         //         }
@@ -114,7 +114,7 @@ public class isisArgPass {
         //             }
         //         }
         //         if (mxEntry != null){
-        //             //add ospf Intf
+        //             //add isis Intf
         //             var intf_name = intf.getName();
         //             if (!intf.isPersudo()){
         //                 var res = topo.<ISISIntf>getOrCreateNode(NodeGen_ISIS.getISISIntfName(intf_name), NodeType_ISIS.ISISIntf);
@@ -127,51 +127,51 @@ public class isisArgPass {
         // }
 
 
-        //router ospf
-        //add ospf && ospf daemon
-        if (ospf_opg != null){
-            var ospf_name = NodeGen_ISIS.getISISName(r_name);
-            var ospf = topo.<ISIS>getOrCreateNode(ospf_name, NodeType_ISIS.ISIS);
-            assert !ospf.second();
-            topo.addISISRelation(ospf_name, r_name);
-            var ospf_daemon_name = NodeGen_ISIS.getISISDaemonName(ospf_name);
-            var ospf_daemon = topo.<ISISDaemon>getOrCreateNode(ospf_daemon_name, NodeType_ISIS.ISISDaemon);
-            assert !ospf.second();
-            topo.addISISDaemonRelation(ospf_name, ospf_daemon_name);
+        //router isis
+        //add isis && isis daemon
+        if (isis_opg != null){
+            var isis_name = NodeGen_ISIS.getISISName(r_name);
+            var isis = topo.<ISIS>getOrCreateNode(isis_name, NodeType_ISIS.ISIS);
+            assert !isis.second();
+            topo.addISISRelation(isis_name, r_name);
+            var isis_daemon_name = NodeGen_ISIS.getISISDaemonName(isis_name);
+            var isis_daemon = topo.<ISISDaemon>getOrCreateNode(isis_daemon_name, NodeType_ISIS.ISISDaemon);
+            assert !isis.second();
+            topo.addISISDaemonRelation(isis_name, isis_daemon_name);
 
             //
         }
 
-        //ospf intf commands
+        //isis intf commands
         //execute other intfs ops
         for (var intf_opg: intf_opgs){
             var exec = new isisIntfExecPass();
             var cur_intf_name = intf_opg.getCtxOp().getNAME();
-            var cur_ospf_intf_name = NodeGen_ISIS.getISISIntfName(cur_intf_name);
-            if (topo.containsNode(cur_ospf_intf_name)){
-                exec.setCur_isis_intf(topo.getISISIntf(cur_ospf_intf_name));
+            var cur_isis_intf_name = NodeGen_ISIS.getISISIntfName(cur_intf_name);
+            if (topo.containsNode(cur_isis_intf_name)){
+                exec.setCur_isis_intf(topo.getISISIntf(cur_isis_intf_name));
             }
             exec.execOps(intf_opg, topo);
         }
 
-        //ospf other commands
-        //execute other ospf ops
-        if (ospf_opg != null){
+        //isis other commands
+        //execute other isis ops
+        if (isis_opg != null){
             var exec = new isisDaemonExecPass();
             exec.setCur_router(topo.getNodeNotNull(r_name));
-            var ospf_name = NodeGen_ISIS.getISISName(r_name);
-            if (topo.containsNode(ospf_name)) {
-                exec.setCur_isis(topo.getNodeNotNull(ospf_name));
-                var ospf_daemon_name = NodeGen_ISIS.getISISDaemonName(ospf_name);
-                exec.setCur_isis_daemon(topo.getNodeNotNull(ospf_daemon_name));
+            var isis_name = NodeGen_ISIS.getISISName(r_name);
+            if (topo.containsNode(isis_name)) {
+                exec.setCur_isis(topo.getNodeNotNull(isis_name));
+                var isis_daemon_name = NodeGen_ISIS.getISISDaemonName(isis_name);
+                exec.setCur_isis_daemon(topo.getNodeNotNull(isis_daemon_name));
             }
-            exec.execOps(ospf_opg, topo);
+            exec.execOps(isis_opg, topo);
         }
 
-        //remove OSPF interface if OSPF daemon not running
+        //remove isis interface if isis daemon not running
         if (!topo.containsISISOfRouter(r_name)){
-            for(var ospfintf : topo.getISISIntfOfRouter(r_name)){
-                topo.delNode(ospfintf);
+            for(var isisintf : topo.getISISIntfOfRouter(r_name)){
+                topo.delNode(isisintf);
             }
         }
     }

@@ -13,7 +13,7 @@ import java.util.List;
 public class reducePass_ISIS {
     OpAG_ISIS opAG;
 
-
+    //较两个 OpIsis 操作对象在指定的参数上的值是否相等。
     private static boolean compareByArgs(OpIsis op1, OpIsis op2, List<String> args){
         var equal = true;
         for(var arg: args){
@@ -27,6 +27,7 @@ public class reducePass_ISIS {
                 case "NUM2" -> {equal &= op1.getNUM2().equals(op2.getNUM2());}
                 case "NUM3" -> {equal &= op1.getNUM3().equals(op2.getNUM3());}
                 case "LONGNUM" -> {equal &= op1.getLONGNUM().equals(op2.getLONGNUM());}
+                case "NET" -> {equal &= op1.getNET().equals(op2.getNET());}
                 default -> {assert false: "arg not right";}
             }
         }
@@ -40,6 +41,7 @@ public class reducePass_ISIS {
      * @param def
      * @return
      */
+    //根据给定的语义归约定义 def，判断 opaSource 是否与 opaTarget 匹配。
     static boolean matchByRedexDef(OpAnalysis_ISIS opaSource, OpAnalysis_ISIS opaTarget, BaseRedexDef_ISIS def){
         for(int i = 0; i < def.targetOps.size(); i++){
             var targetOp = def.targetOps.get(i);

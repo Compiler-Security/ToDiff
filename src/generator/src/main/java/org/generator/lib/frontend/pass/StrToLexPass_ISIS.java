@@ -2,6 +2,7 @@ package org.generator.lib.frontend.pass;
 
 import org.generator.lib.frontend.lexical.LexCtx_ISIS;
 import org.generator.lib.frontend.lexical.LexDef_isis;
+import org.generator.lib.frontend.lexical.OpType_isis;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -25,6 +26,19 @@ public class StrToLexPass_ISIS {
     @Nullable public LexCtx_ISIS solve(String st_op){
         var lexCtx = new LexCtx_ISIS();
         for(var opType: LexDef_isis.getOpTypesToMatch()){
+            var onType_tmp = opType;
+            if(onType_tmp == OpType_isis.NET) 
+            {
+                for(var lexDef: LexDef_isis.getLexDef(opType)){
+                    var tokenMap = decode_by_re(st_op, lexDef.Re);
+                    if (tokenMap != null){
+                        lexCtx.tokenMap = tokenMap;
+                        lexCtx.opType = opType;
+                        lexCtx.lexDef = lexDef;
+                        return lexCtx;
+                    }
+                }
+            }
             for(var lexDef: LexDef_isis.getLexDef(opType)){
                 var tokenMap = decode_by_re(st_op, lexDef.Re);
                 if (tokenMap != null){
@@ -34,6 +48,7 @@ public class StrToLexPass_ISIS {
                     return lexCtx;
                 }
             }
+            
         }
         return null;
     }

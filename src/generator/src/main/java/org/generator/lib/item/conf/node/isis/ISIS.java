@@ -6,7 +6,7 @@ import org.generator.lib.item.conf.node.NodeType_ISIS;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
 import org.generator.util.net.ID;
-
+import org.generator.util.net.NET;
 import java.util.Arrays;
 import java.util.Optional;
 
@@ -24,11 +24,19 @@ public class ISIS extends AbstractNode_ISIS {
     }
 
     public ID getRouterId() {
+        return RouterId;
+    }
+
+    public void setRouterId(ID RouterId) {
+        this.RouterId= RouterId;
+    }
+
+    public NET getNET(){
         return NET;
     }
 
-    public void setRouterId(ID NET) {
-        this.NET= NET;
+    public void setNET(NET NET) {
+        this.NET = NET;
     }
 
     public ISIS_STATUS getStatus() {
@@ -39,15 +47,16 @@ public class ISIS extends AbstractNode_ISIS {
         this.status = status;
     }
 
-    ID NET;
+    ID RouterId;
     ISIS_STATUS status;
-
+    NET NET;
 
     //NET
 
     @Override
     public void initFiled() {
         status = ISIS_STATUS.UP;
-        NET = ID.of(0xffffffffL);
+        RouterId = ID.of(0xffffffffL);
+        NET = org.generator.util.net.NET.of("ff.ffff.ffff.ffff.ffff.00");
     }
 }

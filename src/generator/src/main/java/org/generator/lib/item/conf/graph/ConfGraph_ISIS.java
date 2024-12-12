@@ -77,27 +77,27 @@ public class ConfGraph_ISIS extends AbstractRelationGraph_ISIS {
     public ConfGraph_ISIS viewConfGraphOfRouter(String r_name){
         var g = new ConfGraph_ISIS(r_name);
         g.addNode(getNodeNotNull(r_name));
-        var ospf_name = NodeGen_ISIS.getISISName(r_name);
-        var ospf_daemon_name = NodeGen_ISIS.getISISDaemonName(ospf_name);
-        if (containsNode(ospf_name)){
-            g.addNode(getNodeNotNull(ospf_name));
-            g.addISISRelation(ospf_name, r_name);
-            for(var areaSum: getISISAreaSumOfISIS(ospf_name)){
+        var isis_name = NodeGen_ISIS.getISISName(r_name);
+        var isis_daemon_name = NodeGen_ISIS.getISISDaemonName(isis_name);
+        if (containsNode(isis_name)){
+            g.addNode(getNodeNotNull(isis_name));
+            g.addISISRelation(isis_name, r_name);
+            for(var areaSum: getISISAreaSumOfISIS(isis_name)){
                 g.addNode(areaSum);
-                g.addISISAreaSumRelation(areaSum.getName(), ospf_name);
+                g.addISISAreaSumRelation(areaSum.getName(), isis_name);
             }
         }
-        if (containsNode(ospf_daemon_name)){
-            g.addNode(getNodeNotNull(ospf_daemon_name));
-            g.addISISDaemonRelation(ospf_daemon_name, r_name);
+        if (containsNode(isis_daemon_name)){
+            g.addNode(getNodeNotNull(isis_daemon_name));
+            g.addISISDaemonRelation(isis_daemon_name, r_name);
         }
         for(var intf: getIntfsOfRouter(r_name)){
             g.addNode(intf);
             g.addIntfRelation(intf.getName(), r_name);
-            var ospf_intf_name = NodeGen_ISIS.getISISIntfName(intf.getName());
-            if (containsNode(ospf_intf_name)){
-                g.addNode(getNodeNotNull(ospf_intf_name));
-                g.addISISIntfRelation(ospf_intf_name, intf.getName());
+            var isis_intf_name = NodeGen_ISIS.getISISIntfName(intf.getName());
+            if (containsNode(isis_intf_name)){
+                g.addNode(getNodeNotNull(isis_intf_name));
+                g.addISISIntfRelation(isis_intf_name, intf.getName());
             }
         }
         return g;
@@ -165,8 +165,8 @@ public class ConfGraph_ISIS extends AbstractRelationGraph_ISIS {
         return (ISISIntf) getNode(nodeName).get();
     }
 
-    public ISISDaemon getISISDaemonOfISIS(String ospf_name){
-        return this.<ISISDaemon>getDstsByType(ospf_name, RelationEdge_ISIS.EdgeType.ISISDAEMON).stream().findFirst().get();
+    public ISISDaemon getISISDaemonOfISIS(String isis_name){
+        return this.<ISISDaemon>getDstsByType(isis_name, RelationEdge_ISIS.EdgeType.ISISDAEMON).stream().findFirst().get();
     }
 
     public Intf_ISIS getIntf(String nodeName){
@@ -203,16 +203,16 @@ public class ConfGraph_ISIS extends AbstractRelationGraph_ISIS {
         addEdge(intf2_name, intf1_name, RelationEdge_ISIS.EdgeType.LINK);
     }
 
-    public ExecStat addISISAreaSumRelation(String areaSum_name, String ospf_name){
-        var res1 = addEdge(areaSum_name, ospf_name, RelationEdge_ISIS.EdgeType.ISIS);
-        var res2 = addEdge(ospf_name, areaSum_name, RelationEdge_ISIS.EdgeType.ISISAREASUM);
+    public ExecStat addISISAreaSumRelation(String areaSum_name, String isis_name){
+        var res1 = addEdge(areaSum_name, isis_name, RelationEdge_ISIS.EdgeType.ISIS);
+        var res2 = addEdge(isis_name, areaSum_name, RelationEdge_ISIS.EdgeType.ISISAREASUM);
         assert res1.join(res2) == ExecStat.SUCC;
         return ExecStat.SUCC;
     }
 
-    public ExecStat addISISDaemonRelation(String ospf_name, String ospf_daemon_name){
-        var res1 = addEdge(ospf_name, ospf_daemon_name, RelationEdge_ISIS.EdgeType.ISISDAEMON);
-        var res2 = addEdge(ospf_daemon_name, ospf_name, RelationEdge_ISIS.EdgeType.ISIS);
+    public ExecStat addISISDaemonRelation(String isis_name, String isis_daemon_name){
+        var res1 = addEdge(isis_name, isis_daemon_name, RelationEdge_ISIS.EdgeType.ISISDAEMON);
+        var res2 = addEdge(isis_daemon_name, isis_name, RelationEdge_ISIS.EdgeType.ISIS);
         assert res1.join(res2) == ExecStat.SUCC;
         return ExecStat.SUCC;
     }
