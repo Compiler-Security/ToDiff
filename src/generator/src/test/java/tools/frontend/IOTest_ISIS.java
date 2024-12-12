@@ -165,14 +165,15 @@ public class IOTest_ISIS {
     public void isisArgPassTest(){
         String test_st = """
             interface r1-eth0
+                ip address 237.151.161.95/16
                 isis csnp-interval 20 level-1
             router isis 1
                 lsp-mtu 130 
                 net 49.0000.0000.0000.0000.00
             """;
         var genOp = new genOps_ISIS();
-		//var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-        var ori = new ConfReader_ISIS().read(test_st);
+		var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+        //var ori = new ConfReader_ISIS().read(test_st);
         System.out.println(ori);
         System.out.println("===============");
         var core = reducer_ISIS.reduceToCore(ori);

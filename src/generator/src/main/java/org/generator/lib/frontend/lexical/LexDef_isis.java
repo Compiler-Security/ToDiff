@@ -50,7 +50,7 @@ public class LexDef_isis {
                 {IntfName, "interface {NAME}|int {NAME}"},
                 // route
                 {NET, "net {NET}"},
-                {IPAddr, "ip address {IP}"},
+                
                 
                 //FIXME: we need "ATTACHEDBIT"!
                 //{ATTACHEDBIT, "attached-bit {NAME(receive ignore,send)}"},
@@ -64,6 +64,7 @@ public class LexDef_isis {
 
                 // interface
                 {IPROUTERISIS, "ip router isis 1"},
+                {IPAddr, "ip address {IP}"},
                 {CIRCUITTYPE, "isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
                 {CSNPINTERVAL, "isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2)}"},
                 {HELLOPADDING, "isis hello padding"},

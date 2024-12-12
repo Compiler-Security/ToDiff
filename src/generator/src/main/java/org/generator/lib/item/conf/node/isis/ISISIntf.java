@@ -140,7 +140,7 @@ public class ISISIntf extends AbstractNode_ISIS {
         helloIntervalLevel2 = 10;  //timerHelloInMsecs
 
         netType = ISISNetType.BROADCAST;
-        level =  null;
+        level = ISISLEVEL.LEVEL1;
         priorityLevel1 = 1; //prioritylevel1
         priorityLevel2 = 1; //prioritylevel2
 

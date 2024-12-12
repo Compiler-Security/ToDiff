@@ -14,9 +14,9 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
         }
         switch (op.Type()){
             case ISISPRIORITY ->{
-                if(op.getNAME().equals("level1")){
+                if(op.getNAME().equals("level-1")){
                     cur_isis_intf.setPriorityLevel1(op.getNUM());
-                }else if(op.getNAME().equals("level2")){
+                }else if(op.getNAME().equals("level-2")){
                     cur_isis_intf.setPriorityLevel2(op.getNUM());
                 }else{
                     return ExecStat.FAIL;
@@ -24,13 +24,16 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
             }
 
             case CIRCUITTYPE ->{
+                if (op.getNAME() == null) {
+                    throw new IllegalArgumentException("Operation name cannot be null");
+                }
                 cur_isis_intf.setLevel(ISISIntf.ISISLEVEL.of(op.getNAME()).get());
             }
             
             case CSNPINTERVAL ->{
-                if (op.getNAME().equals("level1")){
+                if (op.getNAME().equals("level-1")){
                     cur_isis_intf.setCsnpIntervalLevel1(op.getNUM());
-                }else if (op.getNAME().equals("level2")){
+                }else if (op.getNAME().equals("level-2")){
                     cur_isis_intf.setCsnpIntervalLevel2(op.getNUM());
                 }else{
                     return ExecStat.FAIL;
@@ -38,9 +41,9 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
             }
 
             case HELLOINTERVAL ->{
-                if (op.getNAME().equals("level1")){
+                if (op.getNAME().equals("level-1")){
                     cur_isis_intf.setHelloIntervalLevel1(op.getNUM());
-                }else if (op.getNAME().equals("level2")){
+                }else if (op.getNAME().equals("level-2")){
                     cur_isis_intf.setHelloIntervalLevel2(op.getNUM());
                 }else{
                     return ExecStat.FAIL;
@@ -48,9 +51,9 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
             }
 
             case PSNPINTERVAL ->{
-                if (op.getNAME().equals("level1")){
+                if (op.getNAME().equals("level-1")){
                     cur_isis_intf.setPsnpIntervalLevel1(op.getNUM());
-                }else if (op.getNAME().equals("level2")){
+                }else if (op.getNAME().equals("level-2")){
                     cur_isis_intf.setPsnpIntervalLevel2(op.getNUM());
                 }else{
                     return ExecStat.FAIL;
@@ -58,9 +61,9 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
             }
 
             case HELLOMULTIPLIER ->{
-                if (op.getNAME().equals("level1")){
+                if (op.getNAME().equals("level-1")){
                     cur_isis_intf.setHelloMultiplierlevel1(op.getNUM());
-                }else if (op.getNAME().equals("level2")){
+                }else if (op.getNAME().equals("level-2")){
                     cur_isis_intf.setHelloMultiplierlevel2(op.getNUM());
                 }else{
                     return ExecStat.FAIL;

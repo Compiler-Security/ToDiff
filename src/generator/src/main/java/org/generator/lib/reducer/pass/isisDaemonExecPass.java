@@ -23,6 +23,10 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
         }
         var cur_rname = cur_router.getName();
         switch (op.Type()) {
+            case NET -> {
+                cur_isis.setNET(op.getNET());
+                return ExecStat.SUCC;
+            }
             default -> {
                 return ExecStat.MISS;
             }

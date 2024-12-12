@@ -73,58 +73,19 @@ public class isisArgPass {
             }
         }
 
-        //network XXX.XXX.XXX.XXX area XXX
-        //ip isis area XXX
-        //set area & add isisintf
-        // boolean is_ip_isis_area = hasIpisisArea(opg);
-        // if (is_ip_isis_area) {
-        //     for(var intf_opg: intf_opgs){
-        //         //only the first ip opsf area work
-        //         for(var op: intf_opg.popOpsOfType(OpType.IpisisArea)){
-        //             var intf_name = intf_opg.getCtxOp().getNAME();
-        //             var intf = topo.getIntf(intf_name);
-        //             //add isis Intf
-        //             if (!intf.isPersudo() && intf.getIp() != null){
-        //                 var res = topo.<ISISIntf>getOrCreateNode(NodeGen_ISIS.getISISIntfName(intf_name), NodeType_ISIS.ISISIntf);
-        //                 assert  !res.second();
-        //                 res.first().setArea(op.getID());
-        //                 topo.addISISIntfRelation(res.first().getName(), intf_name);
-        //             }
-        //             break;
-        //         }
-        //     }
-        // }else if (isis_opg != null){
-        //     HashMap<IPRange, ID> netToArea = new HashMap<>();
-        //     for (var op: isis_opg.popOpsOfType(OpType_isis.NETAREAID)){
-        //         if (!netToArea.containsKey(op.getIPRANGE())){
-        //             netToArea.put(op.getIPRANGE(), op.getID());
-        //         }
-        //     }
-        //     for (var intf: topo.getIntfsOfRouter(r_name)){
-        //         if (intf.getIp() == null) continue;
-        //         int mask_len = -1;
-        //         Map.Entry<IPRange, ID> mxEntry = null;
-        //         //find the most small subnetwork
-        //         for (var entry: netToArea.entrySet()){
-        //             if (entry.getKey().containsIp(intf.getIp())){
-        //                 if (entry.getKey().getMaskOfIp() > mask_len) {
-        //                     mask_len = entry.getKey().getMaskOfIp();
-        //                     mxEntry = entry;
-        //                 }
-        //             }
-        //         }
-        //         if (mxEntry != null){
-        //             //add isis Intf
-        //             var intf_name = intf.getName();
-        //             if (!intf.isPersudo()){
-        //                 var res = topo.<ISISIntf>getOrCreateNode(NodeGen_ISIS.getISISIntfName(intf_name), NodeType_ISIS.ISISIntf);
-        //                 assert  !res.second();
-        //                 res.first().setArea(mxEntry.getValue());
-        //                 topo.addISISIntfRelation(res.first().getName(), intf_name);
-        //             }
-        //         }
-        //     }
-        // }
+        // add isis Intf
+        for(var intf_opg: intf_opgs){
+                var intf_name = intf_opg.getCtxOp().getNAME();
+                var intf = topo.getIntf(intf_name);
+                //add isis Intf
+                if (!intf.isPersudo() && intf.getIp() != null){
+                    var res = topo.<ISISIntf>getOrCreateNode(NodeGen_ISIS.getISISIntfName(intf_name), NodeType_ISIS.ISISIntf);
+                    assert  !res.second();
+                    topo.addISISIntfRelation(res.first().getName(), intf_name);
+                }
+            }
+
+
 
 
         //router isis

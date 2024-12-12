@@ -111,9 +111,13 @@ public class genCorePass_ISIS {
         }
         {
             var op = addOp(opCtxG, OpType_isis.CSNPINTERVAL);
-            if(op.getNAME().equals("level1")){
+            //FIXME:所有路由器默认是level-1（不确定对不对）
+            if(op.getNAME() == null){
+                op.setNAME("level-1");
+            }
+            if(op.getNAME().equals("level-1")){
                 op.setNUM(isis_intf.getCsnpIntervalLevel1());
-            }else if(op.getNAME().equals("level2")){
+            }else if(op.getNAME().equals("level-2")){
                 op.setNUM(isis_intf.getCsnpIntervalLevel2());
             }
             else{
@@ -122,9 +126,13 @@ public class genCorePass_ISIS {
         }
         {
             var op = addOp(opCtxG, OpType_isis.PSNPINTERVAL);
-            if(op.getNAME().equals("level1")){
+            //FIXME:所有路由器默认是level-1（不确定对不对）
+            if(op.getNAME() == null){
+                op.setNAME("level-1");
+            }
+            if(op.getNAME().equals("level-1")){
                 op.setNUM(isis_intf.getPsnpIntervalLevel1());
-            }else if(op.getNAME().equals("level2")){
+            }else if(op.getNAME().equals("level-2")){
                 op.setNUM(isis_intf.getPsnpIntervalLevel2());
             }
             else{
@@ -135,23 +143,23 @@ public class genCorePass_ISIS {
         
         if(isis_intf.getHelloMultiplierlevel1()>1){
             var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
-            op.setNAME("level1");
+            op.setNAME("level-1");
             op.setNUM(isis_intf.getHelloMultiplierlevel1());
         }
         else{
             var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
-            op.setNAME("level1");
+            op.setNAME("level-1");
             op.setNUM(isis_intf.getHelloIntervalLevel1());
         }
 
         if(isis_intf.getHelloMultiplierlevel2() > 1){
             var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
-            op.setNAME("level2");
+            op.setNAME("level-2");
             op.setNUM(isis_intf.getHelloMultiplierlevel2());
         }
         else{
             var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
-            op.setNAME("level2");
+            op.setNAME("level-2");
             op.setNUM(isis_intf.getHelloIntervalLevel2());
         }
         {
@@ -161,9 +169,13 @@ public class genCorePass_ISIS {
         }
         {
             var op = addOp(opCtxG, OpType_isis.ISISPRIORITY);
-            if (op.getNAME().equals("level1")){
+            //FIXME:所有路由器默认是level-1（不确定对不对）
+            if(op.getNAME() == null){
+                op.setNAME("level-1");
+            }
+            if (op.getNAME().equals("level-1")){
                 op.setNUM(isis_intf.getPriorityLevel1()); 
-            }else if(op.getNAME().equals("level2")){
+            }else if(op.getNAME().equals("level-2")){
                 op.setNUM(isis_intf.getPriorityLevel2());
             }else{
                 assert false:"the priority level is not level1 or level2";
