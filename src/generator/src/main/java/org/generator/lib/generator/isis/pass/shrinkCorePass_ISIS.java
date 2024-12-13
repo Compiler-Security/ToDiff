@@ -40,7 +40,9 @@ public class shrinkCorePass_ISIS {
             var opCtxG = genCorePass_ISIS.mergeOpCtxgToOne(opCtxGs);
             var g = confG.copyPhyGraph_ISIS();
             reducer_ISIS.reduceToConfG(opCtxG, g);
-            System.out.println(opCtxG);
+            System.out.println(confG);
+            System.out.println("=====================================");
+            System.out.println(g);
             System.out.println(compareJson(confG.toJson(),g.toJson()).toPrettyString());
             assert false:"genCorePass's core is not equal to confG";
         }

@@ -12,6 +12,16 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
         if (cur_isis_intf == null){
             return ExecStat.MISS;
         }
+        /*
+         *     CIRCUITTYPE,
+            CSNPINTERVAL,
+            HELLOINTERVAL,
+            HELLOMULTIPLIER,
+            NETWORKPOINTTOPOINT,
+            ISISPASSIVE,
+            ISISPRIORITY,
+            PSNPINTERVAL,
+         */
         switch (op.Type()){
             case ISISPRIORITY ->{
                 if(op.getNAME().equals("level-1")){
@@ -24,10 +34,10 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
             }
 
             case CIRCUITTYPE ->{
-                if (op.getNAME() == null) {
-                    throw new IllegalArgumentException("Operation name cannot be null");
+                if (op.getNAME() != null) {
+                    cur_isis_intf.setLevel(ISISIntf.ISISLEVEL.of(op.getNAME()).get());
                 }
-                cur_isis_intf.setLevel(ISISIntf.ISISLEVEL.of(op.getNAME()).get());
+                
             }
             
             case CSNPINTERVAL ->{
@@ -79,13 +89,13 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
             }
 
             //FIXME it is wrong
-            case ISISMETRICLEVEL1 ->{
-                cur_isis_intf.setMetricLevel1(op.getNUM());
-            }
+            // case ISISMETRICLEVEL1 ->{
+            //     cur_isis_intf.setMetricLevel1(op.getNUM());
+            // }
 
-            case ISISMETRICLEVEL2 ->{
-                cur_isis_intf.setMetricLevel2(op.getNUM());
-            }
+            // case ISISMETRICLEVEL2 ->{
+            //     cur_isis_intf.setMetricLevel2(op.getNUM());
+            // }
 
         }
         return ExecStat.SUCC;

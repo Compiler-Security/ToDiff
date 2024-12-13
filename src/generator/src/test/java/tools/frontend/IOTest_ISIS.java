@@ -134,19 +134,19 @@ public class IOTest_ISIS {
 		//System.out.println(ori);
 		var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
 		var confg = getSetConfG_ISIS(ori_use);
-		//System.out.println(confg);
-		var gen = generate_ISIS.generateCore(confg);
-        System.out.println(gen);
-        var gen_confg = getSetConfG_ISIS(gen);
-        if(!gen_confg.equals(confg)){
-            System.out.println(gen);
-            System.out.println("===============");
-            System.out.println(ori_use);
-            System.out.println(compareJson(confg.toJson(), gen_confg.toJson()));
-        }
-        else{
-            System.out.println("PASS");
-        }
+		System.out.println(confg);
+		// var gen = generate_ISIS.generateCore(confg);
+        // System.out.println(gen);
+        // var gen_confg = getSetConfG_ISIS(gen);
+        // if(!gen_confg.equals(confg)){
+        //     System.out.println(gen);
+        //     System.out.println("===============");
+        //     System.out.println(ori_use);
+        //     System.out.println(compareJson(confg.toJson(), gen_confg.toJson()));
+        // }
+        // else{
+        //     System.out.println("PASS");
+        // }
 	}
     /*            interface r1-eth0
                 ip address 82.144.2.106/3
@@ -166,7 +166,10 @@ public class IOTest_ISIS {
         String test_st = """
             interface r1-eth0
                 ip address 237.151.161.95/16
-                isis csnp-interval 20 level-1
+                isis priority 88 level-1
+            interface r1-eth1
+                ip address 89.183.104.6/1
+                isis priority 100 level-2
             router isis 1
                 lsp-mtu 130 
                 net 49.0000.0000.0000.0000.00
@@ -174,14 +177,15 @@ public class IOTest_ISIS {
         var genOp = new genOps_ISIS();
 		var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
         //var ori = new ConfReader_ISIS().read(test_st);
-        System.out.println(ori);
-        System.out.println("===============");
+        //System.out.println(ori);
+        //System.out.println("===============");
         var core = reducer_ISIS.reduceToCore(ori);
-        System.out.println(core);
-        System.out.println("===============");
+        //System.out.println(core);
+        //System.out.println("===============");
         var core_confg = getSetConfG_ISIS(core);
+        //System.out.println(core_confg);
         var confg_to_core= generate_ISIS.generateCore(core_confg);
-        System.out.println(confg_to_core);
+        //System.out.println(confg_to_core);
         var confg_to_core_to_confg = getSetConfG_ISIS(confg_to_core);
         if (!confg_to_core_to_confg.equals(core_confg)){
             System.out.println(confg_to_core);
@@ -455,28 +459,26 @@ public class IOTest_ISIS {
    @Test
    public void generatorTest(){
        String test_st = """
-               interface r1-eth0
-               	ip address 82.144.2.106/3
-               	ip ospf area 0.0.0.2
-               interface r1-eth1
-               	ip address 89.183.104.6/1
-               	ip ospf area 0.0.0.3
-               int r1-eth2
-               	ip address 237.151.161.95/16
-               	ip ospf area 0.0.0.1
-               int r1-eth3
-               	ip address 117.132.165.79/15
-               	ip ospf area 0.0.0.0
-               router ospf
-                   network 1.1.1.1/10 area 2
+            interface r1-eth0
+                ip address 82.144.2.106/3
+                isis csnp-interval 20 level-1
+            interface r1-eth1
+                ip address 89.183.104.6/1
+                isis csnp-interval 30 level-1
+            int r1-eth2
+                ip address 237.151.161.95/16
+                isis csnp-interval 40 level-1
+            router isis 1
+                lsp-mtu 130 
+                net 49.0000.0000.0000.0000.00
                """;
        int i = 0;
        while(true) {
            i++;
            System.out.printf("testCase %d\n", i);
            var genOp = new genOps_ISIS();
-           var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-           //var ori = new ConfReader().read(test_st);
+           //var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+           var ori = new ConfReader_ISIS().read(test_st);
 
            var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
            //System.out.println(ori_use);

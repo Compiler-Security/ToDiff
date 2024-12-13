@@ -108,6 +108,17 @@ public class genCorePass {
     }
 
     private  OpCtxG handleIntf(OSPFIntf ospf_intf){
+        /*    IpOspfArea,
+    IpOspfCost,
+    IpOspfDeadInter,
+    IpOspfDeadInterMulti,
+    IpOspfHelloInter,
+    IpOspfGRHelloDelay,
+    IpOspfNet,
+    IpOspfPriority,
+    IpOspfRetransInter,
+    IpOspfTransDelay,
+    IpOspfPassive, */
         var opCtxG = OpCtxG.Of();
         Intf intf = (Intf) confg.getDstsByType(ospf_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
         {

@@ -13,7 +13,7 @@ public class ISISIntf extends AbstractNode_ISIS {
      * element
      * 1. vrf
      * 2. passive
-     * 3. netType
+     * 3. netType (broadcast, point-to-point)
      * 4. level
      * 5. helloIntervalLevel1
      * 6. helloIntervalLevel2
@@ -27,6 +27,7 @@ public class ISISIntf extends AbstractNode_ISIS {
      * 14. helloMultiplierlevel2
      * 15. metricLevel1
      * 16. metricLevel2
+     * 17. HELLOPADDING
      */
     public ISISIntf(String name){
         setName(name);
@@ -152,8 +153,8 @@ public class ISISIntf extends AbstractNode_ISIS {
         helloMultiplierlevel1 = 3; //helloMultiplierLevel1
         helloMultiplierlevel2 = 3; //helloMultiplierLevel2
 
-        metricLevel1 = 10; //metricLevel1
-        metricLevel2 = 10; //metricLevel2
+        // metricLevel1 = 10; //metricLevel1
+        // metricLevel2 = 10; //metricLevel2
     }
 
     // Add separate hello intervals and priorities for level-1 and level-2
@@ -311,35 +312,35 @@ public class ISISIntf extends AbstractNode_ISIS {
         }
     }
 
-    int metricLevel1;
-    int metricLevel2;
+    // int metricLevel1;
+    // int metricLevel2;
 
-    public int getMetricLevel1() {
-        return metricLevel1;
-    }
+    // public int getMetricLevel1() {
+    //     return metricLevel1;
+    // }
 
-    public void setMetricLevel1(int metricLevel1) {
-        this.metricLevel1 = metricLevel1;
-    }
+    // public void setMetricLevel1(int metricLevel1) {
+    //     this.metricLevel1 = metricLevel1;
+    // }
 
-    public int getMetricLevel2() {
-        return metricLevel2;
-    }
+    // public int getMetricLevel2() {
+    //     return metricLevel2;
+    // }
 
-    public void setMetricLevel2(int metricLevel2) {
-        this.metricLevel2 = metricLevel2;
-    }
+    // public void setMetricLevel2(int metricLevel2) {
+    //     this.metricLevel2 = metricLevel2;
+    // }
 
-    public int getMetric(ISISLEVEL level) {
-        switch (level) {
-            case LEVEL1:
-                return metricLevel1;
-            case LEVEL2:
-                return metricLevel2;
-            default:
-                throw new IllegalArgumentException("Invalid level");
-        }
-    }
+    // public int getMetric(ISISLEVEL level) {
+    //     switch (level) {
+    //         case LEVEL1:
+    //             return metricLevel1;
+    //         case LEVEL2:
+    //             return metricLevel2;
+    //         default:
+    //             throw new IllegalArgumentException("Invalid level");
+    //     }
+    // }
 
 
 

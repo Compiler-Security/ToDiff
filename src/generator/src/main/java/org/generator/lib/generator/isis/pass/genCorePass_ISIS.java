@@ -94,16 +94,12 @@ public class genCorePass_ISIS {
         /*
          *  CIRCUITTYPE,
             CSNPINTERVAL,
-            HELLOPADDING,
             HELLOINTERVAL,
             HELLOMULTIPLIER,
-            ISISMETRICLEVEL1,
-            ISISMETRICLEVEL2,
             NETWORKPOINTTOPOINT,
             ISISPASSIVE,
             ISISPRIORITY,
             PSNPINTERVAL,
-            THREEWAYHANDSHAKE,
          */
         {
             var op = addOp(opCtxG, OpType_isis.CIRCUITTYPE);
@@ -112,55 +108,71 @@ public class genCorePass_ISIS {
         {
             var op = addOp(opCtxG, OpType_isis.CSNPINTERVAL);
             //FIXME:所有路由器默认是level-1（不确定对不对）
-            if(op.getNAME() == null){
-                op.setNAME("level-1");
-            }
-            if(op.getNAME().equals("level-1")){
-                op.setNUM(isis_intf.getCsnpIntervalLevel1());
-            }else if(op.getNAME().equals("level-2")){
-                op.setNUM(isis_intf.getCsnpIntervalLevel2());
-            }
-            else{
-                assert false:"the csnp interval level is not level1 or level2";
-            }
+            op.setNAME("level-1");
+            op.setNUM(isis_intf.getCsnpIntervalLevel1());
+
+        }
+        {
+            var op = addOp(opCtxG, OpType_isis.CSNPINTERVAL);
+            op.setNAME("level-2");
+            op.setNUM(isis_intf.getCsnpIntervalLevel2());
         }
         {
             var op = addOp(opCtxG, OpType_isis.PSNPINTERVAL);
-            //FIXME:所有路由器默认是level-1（不确定对不对）
-            if(op.getNAME() == null){
-                op.setNAME("level-1");
-            }
-            if(op.getNAME().equals("level-1")){
-                op.setNUM(isis_intf.getPsnpIntervalLevel1());
-            }else if(op.getNAME().equals("level-2")){
-                op.setNUM(isis_intf.getPsnpIntervalLevel2());
-            }
-            else{
-                assert false:"the psnp interval level is not level1 or level2";
-            }
-
-        }
-        
-        if(isis_intf.getHelloMultiplierlevel1()>1){
-            var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
             op.setNAME("level-1");
+            op.setNUM(isis_intf.getPsnpIntervalLevel1());
+        }
+        {
+            var op = addOp(opCtxG, OpType_isis.PSNPINTERVAL);
+            op.setNAME("level-2");
+            op.setNUM(isis_intf.getPsnpIntervalLevel2());
+        }
+        //FIXME:it is not sure
+
+        // if(isis_intf.getHelloMultiplierlevel1()>1){
+        //     var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
+        //     op.setNAME("level-1");
+        //     op.setNUM(isis_intf.getHelloMultiplierlevel1());
+        // }
+        // else{
+        //     var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
+        //     op.setNAME("level-1");
+        //     op.setNUM(isis_intf.getHelloIntervalLevel1());
+        // }
+
+        // if(isis_intf.getHelloMultiplierlevel2() > 1){
+        //     var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
+        //     op.setNAME("level-2");
+        //     op.setNUM(isis_intf.getHelloMultiplierlevel2());
+        // }
+        // else{
+        //     var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
+        //     op.setNAME("level-2");
+        //     op.setNUM(isis_intf.getHelloIntervalLevel2());
+        // }
+
+        {
+            var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
             op.setNUM(isis_intf.getHelloMultiplierlevel1());
-        }
-        else{
-            var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
             op.setNAME("level-1");
-            op.setNUM(isis_intf.getHelloIntervalLevel1());
         }
 
-        if(isis_intf.getHelloMultiplierlevel2() > 1){
+        {
             var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
-            op.setNAME("level-2");
             op.setNUM(isis_intf.getHelloMultiplierlevel2());
-        }
-        else{
-            var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
             op.setNAME("level-2");
+        }
+
+        {
+            var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
+            op.setNUM(isis_intf.getHelloIntervalLevel1());
+            op.setNAME("level-1");
+        }
+            
+        {
+            var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
             op.setNUM(isis_intf.getHelloIntervalLevel2());
+            op.setNAME("level-2");
         }
         {
             if(isis_intf.isPassive()){
@@ -169,19 +181,19 @@ public class genCorePass_ISIS {
         }
         {
             var op = addOp(opCtxG, OpType_isis.ISISPRIORITY);
-            //FIXME:所有路由器默认是level-1（不确定对不对）
-            if(op.getNAME() == null){
-                op.setNAME("level-1");
-            }
-            if (op.getNAME().equals("level-1")){
-                op.setNUM(isis_intf.getPriorityLevel1()); 
-            }else if(op.getNAME().equals("level-2")){
-                op.setNUM(isis_intf.getPriorityLevel2());
-            }else{
-                assert false:"the priority level is not level1 or level2";
+            op.setNUM(isis_intf.getPriorityLevel1());
+            op.setNAME("level-1");
+        }
+        {
+            var op = addOp(opCtxG, OpType_isis.ISISPRIORITY);
+            op.setNUM(isis_intf.getPriorityLevel2());
+            op.setNAME("level-2");
+        }
+        {
+            if(isis_intf.getNetType() == ISISIntf.ISISNetType.POINTTOPOINT){
+                var op = addOp(opCtxG, OpType_isis.NETWORKPOINTTOPOINT);
             }
         }
-        
         return opCtxG;
     }
 

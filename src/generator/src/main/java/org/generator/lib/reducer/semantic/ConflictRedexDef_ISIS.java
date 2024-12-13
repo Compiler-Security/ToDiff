@@ -24,15 +24,11 @@ public class ConflictRedexDef_ISIS extends  BaseRedexDef_ISIS{
                 //This means if OpType[] are in the previous context, then this op should be conflict and remove, third number is the compare arg num
                 //FIXME: now, we do not make sure which one should be conflict.
                 
-                // {IpOspfArea, new OpType_isis[]{NETAREAID}, 0},
-                // {NETAREAID, new OpType_isis[]{IpOspfArea}, 0},
-                // {NETAREAID, new OpType_isis[]{NETAREAID}, 1},
-                // {IpOspfArea, new OpType_isis[]{IpOspfArea}, 0},
-
-                // {AreaRange, new OpType[]{AreaRangeSub, AreaRangeCost}, 2},
-
-                //{IpOspfDeadInter, new OpType[]{IpOspfDeadInterMulti}, 0},
-                //{IpOspfHelloInter, new OpType[]{IpOspfDeadInterMulti}, 0},
+                // {ISISPRIORITY, new OpType_isis[]{ISISPASSIVE}, 0},
+                // {HELLOMULTIPLIER, new OpType_isis[]{HELLOINTERVAL}, 0},
+                // {HELLOINTERVAL, new OpType_isis[]{HELLOMULTIPLIER}, 0},
+                // {PSNPINTERVAL, new OpType_isis[]{HELLOINTERVAL}, 1},
+                // {CSNPINTERVAL, new OpType_isis[]{HELLOINTERVAL}, 1},
                 // Other instruction
                 // {XXX, [], 0}
         };

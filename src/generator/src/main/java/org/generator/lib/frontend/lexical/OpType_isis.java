@@ -47,16 +47,17 @@ public enum OpType_isis {
     IPROUTERISIS,
     CIRCUITTYPE,
     CSNPINTERVAL,
-    HELLOPADDING,
+    //HELLOPADDING,
     HELLOINTERVAL,
     HELLOMULTIPLIER,
-    ISISMETRICLEVEL1,
-    ISISMETRICLEVEL2,
+    //ISISMETRICLEVEL1,
+    //ISISMETRICLEVEL2,
     NETWORKPOINTTOPOINT,
     ISISPASSIVE,
     ISISPRIORITY,
+    //THREEWAYHANDSHAKE,
     PSNPINTERVAL,
-    THREEWAYHANDSHAKE,
+    
     ISISEND,
     //================NO ISIS =================
     NORISIS,
@@ -73,16 +74,17 @@ public enum OpType_isis {
     NOIPAddr,
     NOCIRCUITTYPE,
     NOCSNPINTERVAL,
-    NOHELLOPADDING,
+    //NOHELLOPADDING,
     NOHELLOINTERVAL,
     NOHELLOMULTIPLIER,
-    NOISISMETRICLEVEL1,
-    NOISISMETRICLEVEL2,
+    //NOISISMETRICLEVEL1,
+    //NOISISMETRICLEVEL2,
     NONETWORKPOINTTOPOINT,
     NOISISPASSIVE,
     NOISISPRIORITY,
+    //NOTHREEWAYHANDSHAKE,
     NOPSNPINTERVAL,
-    NOTHREEWAYHANDSHAKE,
+    
 
     INVALID;
 
@@ -117,7 +119,7 @@ public enum OpType_isis {
      * @return
      */
     public boolean isUnsetOp(){
-        return this.ordinal() >= NORISIS.ordinal() && this.ordinal() <= NOTHREEWAYHANDSHAKE.ordinal();
+        return this.ordinal() >= NORISIS.ordinal() && this.ordinal() <= NOPSNPINTERVAL.ordinal();
     }
 
     /**
