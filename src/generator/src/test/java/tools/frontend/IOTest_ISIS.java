@@ -491,9 +491,9 @@ public class IOTest_ISIS {
            //System.out.println(gen);
 		   //System.out.println("========");
            var confg_core = getSetConfG_ISIS(gen);
-           System.out.println(confg);
-		   System.out.println("========");
-           System.out.println(confg_core);
+           //System.out.println(confg);
+		   //System.out.println("========");
+           //System.out.println(confg_core);
            if (!confg_core.equals(confg)) {
                System.out.println(gen);
                System.out.println(compareJson(confg.toJson(), confg_core.toJson()).toPrettyString());

@@ -22,9 +22,11 @@ public class genOpPass_ISIS {
         for (var op_type: OpType_isis.values()){
             //FIXME areaVLINK
             //if (op_type == OpType.AreaVLink) continue;
+            if(op_type ==OpType_isis.IPROUTERISIS)
+                continue;
             if (op_type.inISISINTF()){
                 intfOps.add(op_type); }
-            else if (op_type.inISISREGION() ||  op_type.inISISRouterWithTopo()){
+            else if (op_type.inISISREGION() ||  op_type.inISISRouterWithTopo()|| op_type.inISISDAEMON()){
                 IsisOps.add(op_type);
             }
         }

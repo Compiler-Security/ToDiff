@@ -88,7 +88,7 @@ public class generate_ISIS {
     public static boolean skipCommands(OpType_isis opType){
         if (generate_ISIS.fastConvergence){
             switch (opType){
-                case HELLOINTERVAL
+                case HELLOINTERVAL,HELLOMULTIPLIER,CSNPINTERVAL,PSNPINTERVAL
                         -> {return true;}
             }
         }
