@@ -58,4 +58,4 @@ def checkTests():
         
 if __name__ == "__main__":
     #checkTest(util.get_test_name_5("44999"), False)
-    checkTests()
+    checkTest(util.get_test_name_5("63766"), False)

@@ -78,7 +78,8 @@ public class isisArgPass {
                 var intf_name = intf_opg.getCtxOp().getNAME();
                 var intf = topo.getIntf(intf_name);
                 //add isis Intf
-                if (!intf.isPersudo() && intf.getIp() != null){
+                //if (!intf.isPersudo() && intf.getIp() != null){
+                if (!intf.isPersudo()){
                     var res = topo.<ISISIntf>getOrCreateNode(NodeGen_ISIS.getISISIntfName(intf_name), NodeType_ISIS.ISISIntf);
                     assert  !res.second();
                     topo.addISISIntfRelation(res.first().getName(), intf_name);

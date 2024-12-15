@@ -2,14 +2,20 @@ package tools.frontend;
 
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.frontend.lexical.OpType_isis;
 import org.generator.lib.generator.ospf.controller.CapacityController;
 import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.generator.driver.generate_ISIS;
+import org.generator.lib.generator.isis.pass.actionRulePass_ISIS;
 import org.generator.lib.generator.ospf.pass.actionRulePass;
 import org.generator.lib.generator.ospf.pass.genEqualPass;
 import org.generator.lib.generator.ospf.pass.genOpPass;
+import org.generator.lib.generator.isis.pass.genOpPass_ISIS;
 import org.generator.lib.item.IR.OpAnalysis;
+import org.generator.lib.item.IR.OpAnalysis_ISIS;
+import org.generator.lib.item.IR.OpCtx_ISIS;
+import org.generator.lib.item.IR.OpIsis;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpCtxG;
@@ -26,6 +32,7 @@ import org.generator.lib.reducer.driver.reducer_ISIS;
 import org.generator.lib.reducer.pass.ospfArgPass;
 import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.reducer.pass.reducePass;
+import org.generator.lib.reducer.pass.reducePass_ISIS;
 import org.generator.tools.frontend.ConfReader;
 import org.generator.tools.frontend.ConfReader_ISIS;
 import org.generator.tools.frontend.OspfConfWriter;
@@ -34,6 +41,7 @@ import org.generator.tools.diffOp.genOps;
 import org.generator.tools.diffOp.genOps_ISIS;
 import org.generator.util.net.ID;
 import org.generator.util.net.IPRange;
+import org.generator.util.ran.ranHelper;
 import org.junit.Test;
 
 import java.io.BufferedWriter;
@@ -127,6 +135,15 @@ public class IOTest_ISIS {
         System.out.println(reducer.reduceToCore(ori));
     }
 
+    @Test
+    public void mutateIPADDRESS(){
+        var op = OpIsis.of(OpType_isis.IPAddr);
+        var ip_op = genOpPass_ISIS.genRanOpOfType(OpType_isis.IPAddr);
+        OpCtx_ISIS.of(op);
+        var opa = OpAnalysis_ISIS.of(op);
+        assert actionRulePass_ISIS.mutate(opa) != null;
+    }
+
 	@Test
 	public void genRandom_and_genconfg(){
 		var genOp = new genOps_ISIS();
@@ -165,28 +182,33 @@ public class IOTest_ISIS {
     public void isisArgPassTest(){
         String test_st = """
             interface r1-eth0
-                ip address 237.151.161.95/16
-                isis priority 88 level-1
-            interface r1-eth1
-                ip address 89.183.104.6/1
-                isis priority 100 level-2
+	            ip router isis 1
+	            isis circuit-type level-2
+            interface r1-eth2
+                ip router isis 1
+	            isis passive
+	            ip address 132.91.27.212/26
             router isis 1
-                lsp-mtu 130 
-                net 49.0000.0000.0000.0000.00
+                lsp-mtu 130
+            interface r1-eth3
+                ip router isis 1
+	            isis circuit-type level-2
             """;
         var genOp = new genOps_ISIS();
-		var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-        //var ori = new ConfReader_ISIS().read(test_st);
-        //System.out.println(ori);
-        //System.out.println("===============");
+		//var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+        var ori = new ConfReader_ISIS().read(test_st);
+        System.out.println(ori);
+        System.out.println("===============");
         var core = reducer_ISIS.reduceToCore(ori);
-        //System.out.println(core);
-        //System.out.println("===============");
+        System.out.println(core);
+        System.out.println("===============");
         var core_confg = getSetConfG_ISIS(core);
         //System.out.println(core_confg);
+        //System.out.println("===============");
         var confg_to_core= generate_ISIS.generateCore(core_confg);
-        //System.out.println(confg_to_core);
+        System.out.println(confg_to_core);
         var confg_to_core_to_confg = getSetConfG_ISIS(confg_to_core);
+        //System.out.println(confg_to_core_to_confg);
         if (!confg_to_core_to_confg.equals(core_confg)){
             System.out.println(confg_to_core);
             System.out.println("===============");
@@ -460,25 +482,22 @@ public class IOTest_ISIS {
    public void generatorTest(){
        String test_st = """
             interface r1-eth0
-                ip address 82.144.2.106/3
-                isis csnp-interval 20 level-1
-            interface r1-eth1
-                ip address 89.183.104.6/1
-                isis csnp-interval 30 level-1
-            int r1-eth2
-                ip address 237.151.161.95/16
-                isis csnp-interval 40 level-1
+	            ip router isis 1
+	            isis circuit-type level-2
+            interface r1-eth2
+	            isis passive
+	            ip address 132.91.27.212/26
             router isis 1
-                lsp-mtu 130 
-                net 49.0000.0000.0000.0000.00
+            interface r1-eth3
+	            isis circuit-type level-2
                """;
        int i = 0;
        while(true) {
            i++;
            System.out.printf("testCase %d\n", i);
            var genOp = new genOps_ISIS();
-           //var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-           var ori = new ConfReader_ISIS().read(test_st);
+           var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+           //var ori = new ConfReader_ISIS().read(test_st);
 
            var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
            //System.out.println(ori_use);
@@ -501,7 +520,7 @@ public class IOTest_ISIS {
            }
            assert confg_core.equals(confg) : "CORE WRONG";
            reducer.s = 0;
-           var gen_equal = generate_ISIS.generateEqualOfCore(gen, true);
+           var gen_equal = generate_ISIS.generateEqualOfCore(gen, false);
            //System.out.println(gen_equal);
            var confg_equal = getSetConfG_ISIS(gen_equal);
            if (!confg_equal.equals(confg)){
@@ -515,7 +534,19 @@ public class IOTest_ISIS {
        }
    }
 
-
+   @Test
+    public void reducerTest(){
+        String test_st = """
+                    interface r1-eth0
+                    isis circuit-type level-2
+                    no isis circuit-type level-2
+                """;
+        var ori = new ConfReader_ISIS().read(test_st);
+        var r = new reducePass_ISIS();
+        var res = r.solve(ori);
+        System.out.println(res);
+        assert res.getOps().get(1).getCtxOp() != null:"no isis circuit-type level-2's ctx op should be interface r1-eth0";
+    }
 
     @Test
     public void Part2Test(){

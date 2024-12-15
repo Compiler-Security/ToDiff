@@ -269,6 +269,7 @@ public class genOps_ISIS {
             var intf = addOp(res, OpType_isis.IntfName);
             intf.setNAME(NodeGen_ISIS.getIntfName(r_name, i));
             var ip = addOp(res, OpType_isis.IPAddr);
+            var iprouteisis = addOp(res, OpType_isis.IPROUTERISIS);
             // var area = addOp(res, OpType_isis.NET);
             // area.setID(ID.of(ranHelper.randomInt(0, 3)));
         }

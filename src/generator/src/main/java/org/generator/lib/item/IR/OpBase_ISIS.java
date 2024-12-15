@@ -138,7 +138,7 @@ abstract public class OpBase_ISIS implements Op_ISIS{
      * @param op
      * @return if all args equal
      */
-    public boolean ArgsEqual(Op op){
+    public boolean ArgsEqual(Op_ISIS op){
         return argEqual(getNAME(), op.getNAME())
                 && argEqual(getNAME2(), op.getNAME2())
                 && argEqual(getID(), op.getID())
@@ -147,7 +147,8 @@ abstract public class OpBase_ISIS implements Op_ISIS{
                 && argEqual(getNUM(), op.getNUM())
                 && argEqual(getNUM2(), op.getNUM2())
                 && argEqual(getNUM3(), op.getNUM3())
-                && argEqual(getLONGNUM(), op.getLONGNUM());
+                && argEqual(getLONGNUM(), op.getLONGNUM())
+                && argEqual(getNET(), op.getNET());  
     }
 
     /**
