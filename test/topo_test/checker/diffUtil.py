@@ -26,6 +26,8 @@ class diff:
     def neighbors(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "neighbors")["neighbors"]
 
+    def neighbors_isis(self, rd, step, router):
+        return self.watchOfConf(rd, step, router, "neighbors")
 
     def runningConfig(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "running-config")
@@ -34,7 +36,7 @@ class diff:
         return self.watchOfConf(rd, step, router, "ospf-intfs")["interfaces"]
 
     def isisIntfs(self, rd, step, router):
-        return self.watchOfConf(rd, step, router, "isis-intfs")["interfaces"]
+        return self.watchOfConf(rd, step, router, "isis-intfs")
     
     def ospfDaemon(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "ospf-daemon")
@@ -46,11 +48,17 @@ class diff:
         return self.watchOfConf(rd, step, router, "routing-table")
     
     def shrink_routingTable(self, n_dict:dict):
+        print(n_dict)
         new_dict = copy.deepcopy(n_dict)
         for val in new_dict.values():
             for nexthop in val["nexthops"]:
                 nexthop.pop("advertisedRouter", None)
         return new_dict
+
+    def shrink_routingTable_isis(self, routing_table):
+        if routing_table and isinstance(routing_table, list):
+            return routing_table[0]
+        return None
 
     def shrink_neighbors(self, n_dict:dict):
         new_dict = copy.deepcopy(n_dict)
@@ -142,11 +150,14 @@ class diff:
         return util.dict_diff(self.shrink_neighbors(self.neighbors(0, self.step_nums[0] - 1, rt)), self.shrink_neighbors(self.neighbors(rd, self.step_nums[rd] - 1, rt)))
 
     def check_neighbors_isis(self, rt, rd):
-        return util.dict_diff(self.shrink_neighbors_isis(self.neighbors(0, self.step_nums[0] - 1, rt)), self.shrink_neighbors_isis(self.neighbors(rd, self.step_nums[rd] - 1, rt)))
+        return util.dict_diff(self.shrink_neighbors_isis(self.neighbors_isis(0, self.step_nums[0] - 1, rt)), self.shrink_neighbors_isis(self.neighbors_isis(rd, self.step_nums[rd] - 1, rt)))
 
     def check_routingTable(self, rt, rd):
         return util.dict_diff(self.shrink_routingTable(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
     
+    def check_routingTable_isis(self, rt, rd):
+        return util.dict_diff(self.shrink_routingTable_isis(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable_isis(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
+
     def check_ospfDaemon(self, rt, rd):
         return util.dict_diff(self.shrink_ospfDaemon(self.ospfDaemon(0, self.step_nums[0] - 1, rt)), self.shrink_ospfDaemon(self.ospfDaemon(rd, self.step_nums[rd] - 1, rt)))
 

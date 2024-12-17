@@ -276,26 +276,26 @@ class FrrNode(Node):
     def dump_info(self):
         j = {}
         warnaln(f"+ collect {self.name}", "")
-        if "ospfd" not in self.daemon_dict:
-            j["ospf-up"] = False
-        else:
-            j["ospf-up"] = True
-            self.collect_info(j, "ospf-daemon", "show ip ospf json", True)
-            self.collect_info(j, "ospf-intfs", "show ip ospf interface json", True)
-            self.collect_info(j, "neighbors", "show ip ospf neighbor json", True)
-            self.collect_info(j, "routing-table", "show ip ospf route json", True)
+        # if "ospfd" not in self.daemon_dict:
+        #     j["ospf-up"] = False
+        # else:
+        #     j["ospf-up"] = True
+        #     self.collect_info(j, "ospf-daemon", "show ip ospf json", True)
+        #     self.collect_info(j, "ospf-intfs", "show ip ospf interface json", True)
+        #     self.collect_info(j, "neighbors", "show ip ospf neighbor json", True)
+        #     self.collect_info(j, "routing-table", "show ip ospf route json", True)
             
         if "isisd" not in self.daemon_dict:
             j["isis-up"] = False
         else:
             j["isis-up"] = True
-            self.collect_info(j, "isis-daemon", "show isis summary json", True)
-            self.collect_info(j, "isis-intfs", "show isis interface json", True)
-            self.collect_info(j, "neighbors", "show isis neighbor json", True)
-            self.collect_info(j, "routing-table", "show isis route json", True)
+            self.collect_info_isis(j, "isis-daemon", "show isis summary json", True)
+            self.collect_info_isis(j, "isis-intfs", "show isis interface json", True)
+            self.collect_info_isis(j, "neighbors", "show isis neighbor json", True)
+            self.collect_info_isis(j, "routing-table", "show isis route json", True)
         if "zebra" in self.daemon_dict:
-            self.collect_info(j, "running-config", "show running-config", False)
-            self.collect_info(j, "intfs", "show interface json", True)
+            self.collect_info_isis(j, "running-config", "show running-config", False)
+            self.collect_info_isis(j, "intfs", "show interface json", True)
         warnaln(f"- collect {self.name}", "")
         #warnaln("end dump ospf json", "")
         return j
@@ -349,17 +349,19 @@ if __name__ == "__main__":
     net = Mininet(topo)
     try:
         net.start()
-        net.nameToNode["r1"].load_frr_isis(daemons=["zebra", "isisd"], conf_dir=WORK_DIR,universe=True)
-        net.nameToNode["r2"].load_frr_isis(daemons=["zebra", "isisd"], conf_dir=WORK_DIR,universe=True)
-        net.nameToNode["r3"].load_frr_isis(daemons=["zebra", "isisd"], conf_dir=WORK_DIR,universe=True)
+        net.nameToNode["r1"].load_frr(daemons=["zebra", "ospfd"], conf_dir=WORK_DIR,universe=True)
+        net.nameToNode["r2"].load_frr(daemons=["zebra", "ospfd"], conf_dir=WORK_DIR,universe=True)
+        net.nameToNode["r3"].load_frr(daemons=["zebra", "ospfd"], conf_dir=WORK_DIR,universe=True)
         sleep(20)
         # print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         # sleep(20)
-        infoaln("r1 ospf route", net.nameToNode["r1"].daemon_cmd("show isis route json"))
+        #infoaln("r1 ospf route", net.nameToNode["r1"].daemon_cmd("show ip ospf neighbor json"))
+        #infoaln("r3 isis neighbor", net.nameToNode["r3"].dump_neighbor_info())
+        
         # print(net.nameToNode["r1"].cmd("cat /tmp/r1-ospfd.log"))
         # net.delLinkBetween(net.nameToNode["r1"],  net.nameToNode["r2"])
         # sleep(15)
-        # net.nameToNode["r1"].daemon_multicmd(["show ip ospf route"])
+        net.nameToNode["r1"].daemon_cmd(["show ip ospf neighbor"])
         net.stop()
         # while(1):
         #     pass

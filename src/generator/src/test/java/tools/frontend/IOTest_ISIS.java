@@ -482,12 +482,11 @@ public class IOTest_ISIS {
    public void generatorTest(){
        String test_st = """
             interface r1-eth0
-	            ip router isis 1
-	            isis circuit-type level-2
-            interface r1-eth2
-	            isis passive
+	            isis priority 27 level-1
+                isis priority 88 level-2
 	            ip address 132.91.27.212/26
             router isis 1
+                lsp-mtu 130
             interface r1-eth3
 	            isis circuit-type level-2
                """;
@@ -496,7 +495,7 @@ public class IOTest_ISIS {
            i++;
            System.out.printf("testCase %d\n", i);
            var genOp = new genOps_ISIS();
-           var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+           var ori = genOp.genRandom(10, 0.2, 0.6, 4, 0, 1, "r1");
            //var ori = new ConfReader_ISIS().read(test_st);
 
            var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
@@ -530,8 +529,7 @@ public class IOTest_ISIS {
                System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
            }
            assert confg_equal.equals(confg) : "MUTATE WRONG";
-           break;
-       }
+        }
    }
 
    @Test

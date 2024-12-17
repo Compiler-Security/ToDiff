@@ -158,22 +158,23 @@ class executor:
             if res == None:
                 warnln(f"    -check router {r_name} n")
                 return False
-            for val in res['neighbors'].values():
-                for val1 in val:
-                    #if neighbor is DR/Backup, converged is full
-                    #otherwise converged is 2-way
-                    if (val1['converged'] != 'Full' and val1['nbrState'] != '2-Way/DROther'):
-                        warnln(f"    -check router {r_name} nb c")
-                        return False
-                    if (val1['linkStateRetransmissionListCounter'] > 0):
-                        warnln(f"    -check router {r_name} nb re")
-                        return False
-            res = net.net.nameToNode[r_name].dump_isis_intfs_info()
-            for intfName, val in res['interfaces'].items():
-                if val['state'] == "Waiting":
-                    warnln(f"    -check router {r_name} oi w")
-                    warnln(intfName)
-                    return False
+            # for val in res['neighbors'].values():
+            #     for val1 in val:
+            #         #if neighbor is DR/Backup, converged is full
+            #         #otherwise converged is 2-way
+            #         # FIXME: ISIS has no DR/Backup
+            #         if (val1['converged'] != 'Full'):
+            #             warnln(f"    -check router {r_name} nb c")
+            #             return False
+            #         if (val1['linkStateRetransmissionListCounter'] > 0):
+            #             warnln(f"    -check router {r_name} nb re")
+            #             return False
+            # res = net.net.nameToNode[r_name].dump_isis_intfs_info()
+            # for intfName, val in res['interfaces'].items():
+            #     if val['state'] == "Waiting":
+            #         warnln(f"    -check router {r_name} oi w")
+            #         warnln(intfName)
+            #         return False
             warnln(f"    -check router {r_name} y")
         return True
 

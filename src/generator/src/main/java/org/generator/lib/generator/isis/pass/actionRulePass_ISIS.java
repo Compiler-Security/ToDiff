@@ -100,7 +100,7 @@ public class actionRulePass_ISIS {
             //second generate unset_op
             var new_op = genOpPass_ISIS.genRanOpOfType(overrideType);
             //third make unset_equal fields to be the same
-            if(overrideType == OpType_isis.IPAddr){
+            if(overrideType == OpType_isis.IPAddr||overrideType == OpType_isis.PSNPINTERVAL||overrideType == OpType_isis.CSNPINTERVAL||overrideType == OpType_isis.HELLOINTERVAL||overrideType == OpType_isis.HELLOMULTIPLIER||overrideType == OpType_isis.ISISPRIORITY){
                 genOpPass_ISIS.copyFileds(new_op.getOperation(), opA.getOp(), Collections.emptyList());
             }
             else{

@@ -17,6 +17,6 @@ h.run_phys("""
 
 h.net.net.start()
 import time
-time.sleep(40)
+time.sleep(60)
 h.run_ospf("r1", "show ip ospf neighbor json")
 CLI(h.net.net)

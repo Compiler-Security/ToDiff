@@ -159,7 +159,7 @@ abstract public class OpBase_ISIS implements Op_ISIS{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OpBase_ISIS opBase = (OpBase_ISIS) o;
-        return type == opBase.type && Objects.equals(NAME, opBase.NAME) && Objects.equals(NAME2, opBase.NAME2) && Objects.equals(IP, opBase.IP) && Objects.equals(ID, opBase.ID) && Objects.equals(IPRANGE, opBase.IPRANGE) && Objects.equals(NUM, opBase.NUM) && Objects.equals(NUM2, opBase.NUM2) && Objects.equals(NUM3, opBase.NUM3) && Objects.equals(LONGNUM, opBase.LONGNUM);
+        return type == opBase.type && Objects.equals(NAME, opBase.NAME) && Objects.equals(NAME2, opBase.NAME2) && Objects.equals(IP, opBase.IP) && Objects.equals(ID, opBase.ID) && Objects.equals(IPRANGE, opBase.IPRANGE) && Objects.equals(NUM, opBase.NUM) && Objects.equals(NUM2, opBase.NUM2) && Objects.equals(NUM3, opBase.NUM3) && Objects.equals(LONGNUM, opBase.LONGNUM)&& Objects.equals(NET, opBase.NET);
     }
 
     /**

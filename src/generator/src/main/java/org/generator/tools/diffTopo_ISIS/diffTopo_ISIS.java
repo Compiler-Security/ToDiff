@@ -31,7 +31,7 @@ public class diffTopo_ISIS {
     public static List<List<OpCtx_ISIS>> ranSplitPhyConf(OpCtxG_ISIS opCtxG, int split_num){
         return ranHelper.randomSplitElemsCanEmpty(opCtxG.getOps(), split_num);
     }
-    public static List<OpCtxG_ISIS> ranSplitOspfConf(OpCtxG_ISIS opCtxG, int split_num){
+    public static List<OpCtxG_ISIS> ranSplitIsisConf(OpCtxG_ISIS opCtxG, int split_num){
         var r = new reducePass_ISIS();
         var tmp = r.solve(opCtxG);
         var res = ranHelper.randomSplitElemsCanEmpty(tmp.getOps(), split_num);
@@ -54,18 +54,24 @@ public class diffTopo_ISIS {
         }
     }
 
+    // Pair<OpCtxG_ISIS, OpCtxG_ISIS> getConfOfPhy(ConfGraph_ISIS g){
+    //     var ori_phyg = generate_ISIS.generatePhyCore(g);
+    //     var equal_phyg = generate_ISIS.generateEqualOfPhyCore(ori_phyg, 0.4, 1);
+    //     //System.out.println(equal_phyg);
+    //     return new Pair<>(ori_phyg, equal_phyg);
+    // }
     Pair<OpCtxG_ISIS, OpCtxG_ISIS> getConfOfPhy(ConfGraph_ISIS g){
         var ori_phyg = generate_ISIS.generatePhyCore(g);
-        var equal_phyg = generate_ISIS.generateEqualOfPhyCore(ori_phyg, 0.4, 1);
-        //System.out.println(equal_phyg);
-        return new Pair<>(ori_phyg, equal_phyg);
+        //var equal_phyg = generate.generateEqualOfPhyCore(ori_phyg, 0.4, 1);
+        //return new Pair<>(ori_phyg, equal_phyg);
+        //For evaluate, we don't generate equal phy commands
+        return  new Pair<>(ori_phyg, OpCtxG_ISIS.Of());
     }
 
     public void main(){
         var router_count =10;
         var confg = topo_ISIS.genGraph(router_count, 3, 4, 3, true, null);
         System.out.println("phy");
-        //System.out.println(new OspfConfWriter().write(getConfOfPhy(confg)));
         for(int i = 0; i < router_count; i++){
             var r_name = NodeGen_ISIS.getRouterName(i);
             var opCtxG = getConfOfRouter(r_name, confg, false);
@@ -103,10 +109,10 @@ public class diffTopo_ISIS {
         //generate router graph
         var confg = topo_ISIS.genGraph(router_count, topo_ISIS.areaCount, topo_ISIS.mxDegree, topo_ISIS.abrRatio, false, dumpInfo);
 
-        //generate ospf core commands, all the round is same
-        List<OpCtxG_ISIS> ospf_cores = new ArrayList<>();
+        //generate isis core commands, all the round is same
+        List<OpCtxG_ISIS> isis_cores = new ArrayList<>();
         for(int i = 0; i < router_count; i++) {
-            ospf_cores.add(getConfOfRouter(routers_name.get(i), confg, false));
+            isis_cores.add(getConfOfRouter(routers_name.get(i), confg, false));
         }
 
         //record each router's core commands
@@ -134,26 +140,26 @@ public class diffTopo_ISIS {
             var phyEqualOpg = phyOpgPair.second();
             var stepPhyOpList = ranSplitPhyConf(phyEqualOpg, step_num - 1);
 
-            //Prepare OSPF commands
+            //Prepare ISIS commands
             List<List<OpCtxG_ISIS>> split_confs = new ArrayList<>();
             //generate each router's commands
             List<OpCtxG_ISIS> opCtxGS = new ArrayList<>();
             for(int j = 0; j < router_count; j++){
                 //FIXME why router 0 not mutate ?
-                var opCtxG = generate_ISIS.generateEqualOfCore(ospf_cores.get(j), false);
+                var opCtxG = generate_ISIS.generateEqualOfCore(isis_cores.get(j), false);
                 opCtxGS.add(opCtxG);
             }
             for(int r = 0; r < router_count; r++){
-                split_confs.add(ranSplitOspfConf(opCtxGS.get(r), step_num - 1));
+                split_confs.add(ranSplitIsisConf(opCtxGS.get(r), step_num - 1));
             }
 
 
-            //we should give empty ospf conf if daemon is down
-            //step 0, commands load from ospf conf, so ospfAlive is True
-            List<Boolean> ospfAlive = new ArrayList<>();
+            //we should give empty isis conf if daemon is down
+            //step 0, commands load from isis conf, so isisAlive is True
+            List<Boolean> isisAlive = new ArrayList<>();
             Map<String, Integer> routerNametoIdx = new HashMap<>();
             for(int r = 0; r < router_count; r++){
-                ospfAlive.add(Boolean.TRUE);
+                isisAlive.add(Boolean.TRUE);
                 routerNametoIdx.put(routers_name.get(r), r);
             }
 
@@ -174,34 +180,34 @@ public class diffTopo_ISIS {
                 }
                 for(var op: phyOps){
                     phy_ops.add(IO_ISIS.writeOp(op));
-                    //update ospfAlive
+                    //update isisAlive
                     switch (op.getOpPhy().Type()){
                         case NODESETISISUP -> {
                             var router_name = op.getOpPhy().getNAME();
-                            ospfAlive.set(routerNametoIdx.get(router_name), true);
+                            isisAlive.set(routerNametoIdx.get(router_name), true);
                         }
                         case NODEDEL,NODESETISISSHUTDOWN -> {
                             var router_name = op.getOpPhy().getNAME();
-                            ospfAlive.set(routerNametoIdx.get(router_name), false);
+                            isisAlive.set(routerNametoIdx.get(router_name), false);
                         }
                     }
                 }
 
-                //add OSPF ops
+                //add isis ops
                 List<List<String>> ops = new ArrayList<>();
                 for(int r = 0; r < router_count; r++){
-                    //check if ospf is Alive
+                    //check if isis is Alive
                     var opctxg = OpCtxG_ISIS.Of();
                     if (step == 0){
-                        //in step 0, ospf is always alive
-                        opctxg = ospf_cores.get(r);
+                        //in step 0, isis is always alive
+                        opctxg = isis_cores.get(r);
                     }else {
-                        if (ospfAlive.get(r)) {
-                            //if router's ospf is up, we just use these commands
+                        if (isisAlive.get(r)) {
+                            //if router's isis is up, we just use these commands
                             opctxg = split_confs.get(r).get(step - 1);
                         } else {
                             //else we put these commands to next steps
-                            //in the last round, we ensure OSPF is up
+                            //in the last round, we ensure isis is up
                             var mergeCtxG = OpCtxG_ISIS.Of();
                             mergeCtxG.addOps(split_confs.get(r).get(step - 1).getOps());
                             mergeCtxG.addOps(split_confs.get(r).get(step).getOps());
@@ -218,19 +224,19 @@ public class diffTopo_ISIS {
                             front_ctx = router_commands.getLast();
                         }else{
                             router_commands.set(router_commands.size() - 1, router_commands.get(router_commands.size() -1) + ';' + IO_ISIS.writeOp(op));
-                            //This is for ospf router-id command, it should use clear ip ospf process after this command
+                            //This is for isis router-id command, it should use clear ip isis process after this command
 
                             //look here:FIXME:we don't need it in ISIS
-                            //FIXME we can random add some control command like clear ip ospf database like this
+                            //FIXME we can random add some control command like clear ip isis database like this
                             // if (op.getOpIsis().Type() == OpType_isis.RID || op.getOpIsis().Type() == OpType_isis.NORID){
-                            //     router_commands.add("clear ip ospf process");
+                            //     router_commands.add("clear ip isis process");
                             //     router_commands.add(front_ctx);
                             // }
                         }
                     }
                 }
 
-                one_step.put("ospf", ops);
+                one_step.put("isis", ops);
 
                 //add waitTime
                 var waitTime = ranHelper.randomInt(1, max_step_time);
