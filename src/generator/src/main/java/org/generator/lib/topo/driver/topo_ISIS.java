@@ -4,9 +4,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.apache.commons.cli.*;
 import org.generator.lib.item.conf.graph.ConfGraph_ISIS;
-import org.generator.lib.topo.item.base.Router;
+import org.generator.lib.topo.item.base.Router_ISIS;
 import org.generator.lib.topo.pass.attri.ranAttriGen_ISIS;
-import org.generator.lib.topo.pass.base.ranBaseGen;
+import org.generator.lib.topo.pass.base.ranBaseGen_ISIS;
 import org.generator.lib.topo.pass.build.topoBuild_ISIS;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
@@ -18,7 +18,7 @@ import java.util.List;
 
 public class topo_ISIS {
 
-    public static String dumpGraph(List<Router> routers, ranBaseGen ran){
+    public static String dumpGraph(List<Router_ISIS> routers, ranBaseGen_ISIS ran){
         Graph graph = new MultiGraph("BaseGraph");
         for(int i = 0; i < routers.size(); i++){
             graph.addNode("r%d".formatted(i));
@@ -33,7 +33,8 @@ public class topo_ISIS {
             for(var intf: r.intfs){
                 var gedge = graph.addEdge("r%d->n%d(%d)".formatted(i, intf.networkId, j), "r%d".formatted(i), "n%d".formatted(intf.networkId));
                 assert intf.cost > 0: "intf cost should > 0";
-                gedge.setAttribute("label", "%d:%d:%d".formatted(intf.area, j, intf.cost));
+                //FIXME:here has changed
+                gedge.setAttribute("label", "%d:%d:%d".formatted(j, intf.cost));
                 j++;
             }
         }
@@ -59,7 +60,7 @@ public class topo_ISIS {
     }
 
     public static ConfGraph_ISIS genGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, ObjectNode dumpInfo){
-        var ran = new ranBaseGen();
+        var ran = new ranBaseGen_ISIS();
         var routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
         var baseGraphStr = dumpGraph(routers, ran);
         if (dumpInfo != null) dumpInfo.put("routerGraph", TextNode.valueOf(baseGraphStr));

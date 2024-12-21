@@ -5,14 +5,14 @@ import org.generator.lib.item.conf.graph.ConfGraph_ISIS;
 import org.generator.lib.item.conf.node.NodeGen_ISIS;
 import org.generator.lib.item.conf.node.phy.Intf_ISIS;
 import org.generator.lib.item.conf.node.phy.Switch_ISIS;
-import org.generator.lib.topo.item.base.Router;
+import org.generator.lib.topo.item.base.Router_ISIS;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class topoBuild_ISIS {
-    public ConfGraph_ISIS solve(List<Router> routers){
+    public ConfGraph_ISIS solve(List<Router_ISIS> routers){
         ConfGraph_ISIS g = new ConfGraph_ISIS();
         Map<String, Integer> switchPort = new HashMap<>();
         for(int i = 0; i < routers.size(); i++){

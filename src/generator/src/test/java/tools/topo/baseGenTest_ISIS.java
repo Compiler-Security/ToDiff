@@ -7,6 +7,7 @@ import org.generator.lib.reducer.pass.phyArgPass_ISIS;
 import org.generator.lib.topo.driver.topo_ISIS;
 import org.generator.lib.topo.pass.attri.ranAttriGen_ISIS;
 import org.generator.lib.topo.pass.base.ranBaseGen;
+import org.generator.lib.topo.pass.base.ranBaseGen_ISIS;
 import org.generator.lib.topo.pass.build.topoBuild_ISIS;
 import org.generator.tools.diffOp.genOps;
 import org.generator.tools.diffTopo.diffTopo;
@@ -23,49 +24,66 @@ import java.io.StringWriter;
 public class baseGenTest_ISIS {
     @Test
     public void testRandomBaseGen(){
-        var ran = new ranBaseGen();
-        var routers = ran.generate(3, 2, 2, 3);
-        Graph graph = new MultiGraph("BaseGraph");
-        for(int i = 0; i < routers.size(); i++){
-            graph.addNode("r%d".formatted(i));
-        }
-        for(int i = 0; i < ran.networkId; i++){
-            graph.addNode("n%d".formatted(i));
-        }
-        for(int i = 0; i < routers.size(); i++){
-            var r = routers.get(i);
-            int j = 0;
-            for(var intf: r.intfs){
-                var gedge = graph.addEdge("r%d->n%d(%d)".formatted(i, intf.networkId, j), "r%d".formatted(i), "n%d".formatted(intf.networkId));
-               gedge.setAttribute("label", "%d".formatted(intf.area));
-                j++;
+        int x = 0;
+        while(true)
+        {
+            x++;
+            System.out.printf("testCase %d\n", x);
+            var ran = new ranBaseGen_ISIS();
+            var routers = ran.generate(3, 2, 2, 3);
+            Graph graph = new MultiGraph("BaseGraph");
+            for(int i = 0; i < routers.size(); i++){
+                var node = graph.addNode("r%d".formatted(i));
+                var router = routers.get(i);
+                // 格式：area=X,level=Y
+                node.setAttribute("label", "area=%d,level=%d".formatted(
+                    router.area, 
+                    router.level
+            ));
+            }
+            for(int i = 0; i < ran.networkId; i++){
+                graph.addNode("n%d".formatted(i));
+            }
+            for(int i = 0; i < routers.size(); i++){
+                var r = routers.get(i);
+                int j = 0;
+                for(var intf: r.intfs){
+                    var gedge = graph.addEdge("r%d->n%d(%d)".formatted(i, intf.networkId, j), "r%d".formatted(i), "n%d".formatted(intf.networkId));
+                //gedge.setAttribute("label", "%d".formatted(intf.cost));
+                    j++;
+                }
+            }
+            for(int i = 0; i < ran.networkId; i++){
+                var nodeName = "n%d".formatted(i);
+                var node = graph.getNode(nodeName);
+                if (node.edges().toList().size() != 2) continue;
+                var src1 = node.getEdge(0).getSourceNode();
+                var src2 = node.getEdge(1).getSourceNode();
+                var gedge = graph.addEdge("%s->%s(%d)".formatted(src1, src2, i), src1, src2);
+                //gedge.setAttribute("label", node.getEdge(0).getAttribute("label"));
+                graph.removeNode(node);
+            }
+            FileSinkDOT fileSinkDOT = new FileSinkDOT(false);
+            StringWriter stringWriter = new StringWriter();
+            try {
+                fileSinkDOT.writeAll(graph, stringWriter);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
+            System.out.println(stringWriter.toString());
+            var b = new topoBuild_ISIS();
+            var confG = b.solve(routers);
+            System.out.println(confG.toDot(false));
+
+            var c = new ranAttriGen_ISIS();
+            c.generate(confG, routers);
+            System.out.println(confG.toJson().toPrettyString());
+            if(x == 1)
+            {
+                break;
             }
         }
-        for(int i = 0; i < ran.networkId; i++){
-            var nodeName = "n%d".formatted(i);
-            var node = graph.getNode(nodeName);
-            if (node.edges().toList().size() != 2) continue;
-            var src1 = node.getEdge(0).getSourceNode();
-            var src2 = node.getEdge(1).getSourceNode();
-            var gedge = graph.addEdge("%s->%s(%d)".formatted(src1, src2, i), src1, src2);
-            gedge.setAttribute("label", node.getEdge(0).getAttribute("label"));
-            graph.removeNode(node);
-        }
-        FileSinkDOT fileSinkDOT = new FileSinkDOT(false);
-        StringWriter stringWriter = new StringWriter();
-        try {
-            fileSinkDOT.writeAll(graph, stringWriter);
-        }catch (IOException e){
-            e.printStackTrace();
-        }
-        System.out.println(stringWriter.toString());
-        var b = new topoBuild_ISIS();
-        var confG = b.solve(routers);
-        System.out.println(confG.toDot(false));
-
-        var c = new ranAttriGen_ISIS();
-        c.generate(confG, routers);
-        System.out.println(confG.toJson().toPrettyString());
+        
     }
 
     @Test

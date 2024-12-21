@@ -9,10 +9,11 @@ import org.generator.lib.item.conf.node.isis.ISISAreaSum;
 import org.generator.lib.item.conf.node.isis.ISISDaemon;
 import org.generator.lib.item.conf.node.isis.ISISIntf;
 import org.generator.lib.item.conf.node.phy.Intf_ISIS;
-import org.generator.lib.topo.item.base.Router;
+import org.generator.lib.topo.item.base.Router_ISIS;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
+import org.generator.util.net.NET;
 import org.generator.util.ran.ranHelper;
 
 import java.util.*;
@@ -23,46 +24,43 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
     List<ISIS> isiss;
     Map<IPRange, List<ISISIntf>> networkToISISIntfs;
 
-    Map<ID, AreaAttri> areas;
+    Map<Integer, String> areaToAreaId; // 存储区域到区域ID的映射
+    Map<Integer, Integer> areaSystemIdCounter; // 存储每个区域的系统ID计数器
 
-    Map<ISIS, Boolean> isABR;
+    // class AreaAttri {
+    //     public AreaAttri(ID area_id){
+    //         isiss = new HashSet<>();
+    //         intfs = new HashSet<>();
+    //         this.area_id = area_id;
+    //     }
+    //     public Set<ISIS> isiss;
+    //     public Set<Intf_ISIS> intfs;
+    //     public ID area_id;
+    //     public boolean stub;
+    //     public boolean noSummary;
+    //     public boolean nssa;
 
-    class AreaAttri {
-        public AreaAttri(ID area_id){
-            isiss = new HashSet<>();
-            intfs = new HashSet<>();
-            this.area_id = area_id;
-        }
-        public Set<ISIS> isiss;
-        public Set<Intf_ISIS> intfs;
-        public ID area_id;
-        public boolean stub;
-        public boolean noSummary;
-        public boolean nssa;
+    //     @Override
+    //     public boolean equals(Object o) {
+    //         if (this == o) return true;
+    //         if (o == null || getClass() != o.getClass()) return false;
+    //         AreaAttri areaAttri = (AreaAttri) o;
+    //         return Objects.equals(area_id, areaAttri.area_id);
+    //     }
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            AreaAttri areaAttri = (AreaAttri) o;
-            return Objects.equals(area_id, areaAttri.area_id);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(area_id);
-        }
-    }
+    //     @Override
+    //     public int hashCode() {
+    //         return Objects.hash(area_id);
+    //     }
+    // }
 
     public void generate_ISISAreaSums(ConfGraph_ISIS confG){
-        for(var areaAttri: areas.values()){
-            generate_ISISAreaSum(areaAttri, confG);
-        }
+
     }
-    private void generate_ISISAreaSum(AreaAttri areaAttri, ConfGraph_ISIS confG){
+    // private void generate_ISISAreaSum(AreaAttri areaAttri, ConfGraph_ISIS confG){
   
-        // it doesn't need in the ISIS
-    }
+    //     // it doesn't need in the ISIS
+    // }
     private void generate_ISIS(ISIS isis){
         //self, we don't think about status of isis
         //FIXME for testing we must choose some proper value such as 0 etc.
@@ -154,12 +152,21 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
         }
     }
     @Override
-    public void generate(ConfGraph_ISIS g, List<Router> routers) {
+    public void generate(ConfGraph_ISIS g, List<Router_ISIS> routers) {
         isis_daemons = new ArrayList<>();
         networkToISISIntfs = new HashMap<>();
         isiss = new ArrayList<>();
-        areas = new HashMap<>();
-        isABR = new HashMap<>();
+        areaToAreaId = new HashMap<>();
+        areaSystemIdCounter = new HashMap<>();
+        // 为每个区域生成唯一的区域ID
+        for (Router_ISIS r : routers) {
+            if (!areaToAreaId.containsKey(r.area)) {
+                // 生成形如 "49.0001" 的区域ID
+                String areaId = String.format("49.%04d", r.area);
+                areaToAreaId.put(r.area, areaId);
+                areaSystemIdCounter.put(r.area, 1); // 初始化系统ID计数器
+            }
+        }
         //build each router and fill area, router_id
         for(int i = 0; i < routers.size(); i++){
             var r = routers.get(i);
@@ -167,6 +174,22 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
             var isis_name = NodeGen_ISIS.getISISName(r_name);
             var isis_daemon_name = NodeGen_ISIS.getISISDaemonName(isis_name);
             var isis = new ISIS(isis_name);
+
+            // 生成NET地址
+            String areaId = areaToAreaId.get(r.area);
+            int systemIdCount = areaSystemIdCounter.get(r.area);
+            String systemId = String.format("%04d.%04d.%04d", 
+                systemIdCount / 10000,
+                (systemIdCount % 10000) / 100,
+                systemIdCount % 100);
+            areaSystemIdCounter.put(r.area, systemIdCount + 1);
+
+            // 创建完整的NET地址
+            NET net = NET.of(areaId + "." + systemId + ".00");
+            isis.setNET(net);
+
+
+            
             g.addNode(isis);
             isiss.add(isis);
             var isis_daemon = new ISISDaemon(isis_daemon_name);
@@ -175,7 +198,6 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
             g.addISISRelation(isis_name, r_name);
             g.addISISDaemonRelation(isis_daemon_name, r_name);
             isis.setRouterId(ID.of(i + 1)); //router id is not allowed to 0.0.0.0
-            isABR.put(isis, false);
             for(int j = 0; j < r.intfs.size(); j++){
                 var intf_name  = NodeGen_ISIS.getIntfName(r_name, j);
                 var isis_intf_name = NodeGen_ISIS.getISISIntfName(intf_name);
@@ -183,21 +205,18 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
                 g.addNode(isis_intf);
                 g.addISISIntfRelation(isis_intf_name, intf_name);
                 //TODO we should use random area
-                var area_id = ID.of(r.intfs.get(j).area);
+                //var area_id = ID.of(r.intfs.get(j).area);
                 //isis_intf.setArea(ID.of(r.intfs.get(j).area));
                 //isis_intf.setCost(r.intfs.get(j).cost);
 
-                if (area_id.toLong() == 0L){
-                    isABR.put(isis, true);
-                }
 
-                if (!areas.containsKey(area_id)){
-                    areas.put(area_id, new AreaAttri(area_id));
-                }
-                areas.get(area_id).intfs.add(g.getIntf(intf_name));
-                areas.get(area_id).isiss.add(isis);
             }
+
+            
         }
+
+
+
         //fill each network IP
         for(var s: g.getSwitches()){
             //FIXME we should consider the IPRange is big enough
