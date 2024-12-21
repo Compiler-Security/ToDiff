@@ -21,7 +21,12 @@ public class topo_ISIS {
     public static String dumpGraph(List<Router_ISIS> routers, ranBaseGen_ISIS ran){
         Graph graph = new MultiGraph("BaseGraph");
         for(int i = 0; i < routers.size(); i++){
-            graph.addNode("r%d".formatted(i));
+            var node = graph.addNode("r%d".formatted(i));
+            var router = routers.get(i);
+            node.setAttribute("label", "area=%d,level=%d".formatted(
+                router.area, 
+                router.level));
+
         }
         for(int i = 0; i < ran.networkId; i++){
             var n = graph.addNode("n%d".formatted(i));
@@ -34,7 +39,7 @@ public class topo_ISIS {
                 var gedge = graph.addEdge("r%d->n%d(%d)".formatted(i, intf.networkId, j), "r%d".formatted(i), "n%d".formatted(intf.networkId));
                 assert intf.cost > 0: "intf cost should > 0";
                 //FIXME:here has changed
-                gedge.setAttribute("label", "%d:%d:%d".formatted(j, intf.cost));
+                gedge.setAttribute("label", "%d:%d".formatted(j, intf.cost));
                 j++;
             }
         }
