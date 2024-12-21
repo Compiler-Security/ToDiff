@@ -58,4 +58,9 @@ def checkTests():
         
 if __name__ == "__main__":
     #checkTest(util.get_test_name_5("44999"), False)
-    checkTests()
+    diff_dir = path.join(util.checkDir, "diff")
+    os.makedirs(diff_dir, exist_ok=True)
+    res = checkTest(util.get_test_name_5("79083"), False)
+    test_name = util.get_test_name_5("79083")
+    with open(path.join(diff_dir, f"{test_name}.txt"), "w") as fp:
+            fp.write(res)

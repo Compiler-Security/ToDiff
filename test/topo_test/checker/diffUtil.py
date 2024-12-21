@@ -79,8 +79,11 @@ class diff:
         new_data = copy.deepcopy(data)
         for area in new_data.get("areas", []):
             for circuit in area.get("circuits", []):
+                # 删除 expires-in 字段
+                circuit.pop("expires-in", None)
+                
                 interface = circuit.get("interface", {})
-                if interface:
+                if isinstance(interface, dict):
                     interface.pop("last-ago", None)
                     interface.pop("snpa", None)
                     interface.pop("lan-id", None)

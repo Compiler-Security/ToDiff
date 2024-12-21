@@ -290,8 +290,8 @@ class FrrNode(Node):
         else:
             j["isis-up"] = True
             self.collect_info_isis(j, "isis-daemon", "show isis summary json", True)
-            self.collect_info_isis(j, "isis-intfs", "show isis interface json", True)
-            self.collect_info_isis(j, "neighbors", "show isis neighbor json", True)
+            self.collect_info_isis(j, "isis-intfs", "show isis interface detail json", True)
+            self.collect_info_isis(j, "neighbors", "show isis neighbor detail json", True)
             self.collect_info_isis(j, "routing-table", "show isis route json", True)
         if "zebra" in self.daemon_dict:
             self.collect_info_isis(j, "running-config", "show running-config", False)
@@ -309,7 +309,7 @@ class FrrNode(Node):
             return None
     
     def dump_neighbor_info_isis(self):
-        info = self.daemon_cmds(["show isis neighbor json"])
+        info = self.daemon_cmds(["show isis neighbor detail json"])
         try:
             return json.loads(info)
         except Exception as e:
@@ -325,7 +325,7 @@ class FrrNode(Node):
             return None
 
     def dump_isis_intfs_info(self):
-        info = self.daemon_cmds(["show isis interface json"])
+        info = self.daemon_cmds(["show isis interface detail json"])
         try:
             return json.loads(info)
         except Exception as e:
