@@ -197,7 +197,7 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
             g.addNode(isis_daemon);
             g.addISISRelation(isis_name, r_name);
             g.addISISDaemonRelation(isis_daemon_name, r_name);
-            isis.setRouterId(ID.of(i + 1)); //router id is not allowed to 0.0.0.0
+            //isis.setRouterId(ID.of(i + 1)); //router id is not allowed to 0.0.0.0
             for(int j = 0; j < r.intfs.size(); j++){
                 var intf_name  = NodeGen_ISIS.getIntfName(r_name, j);
                 var isis_intf_name = NodeGen_ISIS.getISISIntfName(intf_name);

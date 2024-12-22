@@ -23,13 +23,13 @@ public class ISIS extends AbstractNode_ISIS {
         SHUTDOWN,
     }
 
-    public ID getRouterId() {
-        return RouterId;
-    }
+    // public ID getRouterId() {
+    //     return RouterId;
+    // }
 
-    public void setRouterId(ID RouterId) {
-        this.RouterId= RouterId;
-    }
+    // public void setRouterId(ID RouterId) {
+    //     this.RouterId= RouterId;
+    // }
 
     public NET getNET(){
         return NET;
@@ -47,7 +47,7 @@ public class ISIS extends AbstractNode_ISIS {
         this.status = status;
     }
 
-    ID RouterId;
+    //ID RouterId;
     ISIS_STATUS status;
     NET NET;
 
@@ -56,7 +56,7 @@ public class ISIS extends AbstractNode_ISIS {
     @Override
     public void initFiled() {
         status = ISIS_STATUS.UP;
-        RouterId = ID.of(0xffffffffL);
+        //RouterId = ID.of(0xffffffffL);
         NET = org.generator.util.net.NET.of("ff.ffff.ffff.ffff.ffff.00");
     }
 }

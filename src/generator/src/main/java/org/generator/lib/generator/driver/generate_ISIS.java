@@ -32,8 +32,7 @@ public class generate_ISIS {
      * @return
      */
     public static OpCtxG_ISIS generateCore(ConfGraph_ISIS confGraph){
-        var p = new genCorePass_ISIS();
-        //FIEME here is wrong!!!!  
+        var p = new genCorePass_ISIS(); 
         var res1 = p.solve(confGraph);
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass_ISIS();
