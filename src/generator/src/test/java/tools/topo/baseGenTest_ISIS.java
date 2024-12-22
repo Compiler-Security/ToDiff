@@ -2,6 +2,7 @@ package tools.topo;
 
 import org.generator.lib.generator.driver.generate_ISIS;
 import org.generator.lib.item.conf.graph.ConfGraph_ISIS;
+import org.generator.lib.item.conf.node.NodeGen_ISIS;
 import org.generator.lib.item.opg.OpCtxG_ISIS;
 import org.generator.lib.reducer.pass.phyArgPass_ISIS;
 import org.generator.lib.topo.driver.topo_ISIS;
@@ -20,6 +21,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class baseGenTest_ISIS {
     @Test
@@ -70,22 +73,47 @@ public class baseGenTest_ISIS {
             }catch (IOException e){
                 e.printStackTrace();
             }
-            System.out.println(stringWriter.toString());
+            //System.out.println(stringWriter.toString());
             var b = new topoBuild_ISIS();
             var confG = b.solve(routers);
-            System.out.println(confG.toDot(false));
+            //System.out.println(confG.toDot(false));
 
             var c = new ranAttriGen_ISIS();
             c.generate(confG, routers);
-            System.out.println(confG.toJson().toPrettyString());
-            if(x == 1)
+            //System.out.println(confG.toJson().toPrettyString());
+            
+             //generate isis core commands, all the round is same
+            var router_count = routers.size();
+            var routers_name = new ArrayList<String>();
+            for(int i = 0; i < router_count; i++){
+                routers_name.add(NodeGen_ISIS.getRouterName(i));
+            }
+            List<OpCtxG_ISIS> isis_cores = new ArrayList<>();
+            //System.out.println(confG);
+            for(int i = 0; i < router_count; i++) {
+                isis_cores.add(getConfOfRouter(routers_name.get(i), confG, false));
+            }
+            // for(int i = 0; i < router_count; i++) {
+            //     System.out.println(routers_name.get(i));
+            //     System.out.println(new IsisConfWriter().write(isis_cores.get(i)));
+            //     System.out.println("===============");
+            // }
+            if(x == 1000)
             {
                 break;
             }
         }
         
     }
-
+    OpCtxG_ISIS getConfOfRouter(String r_name, ConfGraph_ISIS g, boolean mutate){
+        var confg = g.viewConfGraphOfRouter(r_name);
+        confg.setR_name(r_name);
+        if (mutate) {
+            return generate_ISIS.generateEqualOfCore(generate_ISIS.generateCore(confg), false);
+        }else{
+            return generate_ISIS.generateCore(confg);
+        }
+    }
     @Test
     public void testDiffTopo(){
         var d = new diffTopo();

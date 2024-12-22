@@ -59,12 +59,12 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
             }
 
             case ADVERTISEHIGHMETRIC -> {
-                ospf_daemon.setAdvertisehighmetrics(false);
+                ospf_daemon.setAdvertisehighmetrics(true);
                 return ExecStat.SUCC;
             }
 
             case SETOVERLOADBIT -> {
-                ospf_daemon.setSetoverloadbit(false);
+                ospf_daemon.setSetoverloadbit(true);
                 return ExecStat.SUCC;
             }
 
