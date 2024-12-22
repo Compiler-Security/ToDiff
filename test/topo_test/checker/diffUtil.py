@@ -159,7 +159,12 @@ class diff:
         return util.dict_diff(self.shrink_routingTable(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
     
     def check_routingTable_isis(self, rt, rd):
-        return util.dict_diff(self.shrink_routingTable_isis(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable_isis(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
+        rt0 = self.shrink_routingTable_isis(self.routingTable(0, self.step_nums[0] - 1, rt))
+        rtd = self.shrink_routingTable_isis(self.routingTable(rd, self.step_nums[rd] - 1, rt))
+        if rt0 is None or rtd is None:
+            return {}
+        return util.dict_diff(rt0, rtd)
+        # return util.dict_diff(self.shrink_routingTable_isis(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable_isis(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
 
     def check_ospfDaemon(self, rt, rd):
         return util.dict_diff(self.shrink_ospfDaemon(self.ospfDaemon(0, self.step_nums[0] - 1, rt)), self.shrink_ospfDaemon(self.ospfDaemon(rd, self.step_nums[rd] - 1, rt)))
