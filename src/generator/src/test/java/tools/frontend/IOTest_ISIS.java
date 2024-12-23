@@ -481,22 +481,31 @@ public class IOTest_ISIS {
    @Test
    public void generatorTest(){
        String test_st = """
-            interface r1-eth0
-	            isis priority 27 level-1
-                isis priority 88 level-2
-	            ip address 132.91.27.212/26
             router isis 1
-                lsp-mtu 130
+                net 89.6662.dcc8.8224.a6c9.00
+                advertise-high-metrics
+            interface r1-eth1
+                ip address 173.34.65.178/19
+                isis csnp-interval 29 level-1
+                isis psnp-interval 39 level-1
+                isis psnp-interval 58 level-2
+            interface r1-eth2
+                ip address 184.49.199.153/16
+                isis passive
             interface r1-eth3
-	            isis circuit-type level-2
+                ip address 150.10.235.34/24
+                isis psnp-interval 50 level-1
+            interface r1-eth0
+                ip address 210.19.129.79/28
+
                """;
        int i = 0;
        while(true) {
            i++;
            System.out.printf("testCase %d\n", i);
            var genOp = new genOps_ISIS();
-           var ori = genOp.genRandom(10, 0.2, 0.6, 4, 0, 1, "r1");
-           //var ori = new ConfReader_ISIS().read(test_st);
+           //var ori = genOp.genRandom(10, 0.2, 0.6, 4, 0, 1, "r1");
+           var ori = new ConfReader_ISIS().read(test_st);
 
            var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
            //System.out.println(ori_use);
@@ -521,6 +530,8 @@ public class IOTest_ISIS {
            reducer.s = 0;
            var gen_equal = generate_ISIS.generateEqualOfCore(gen, false);
            //System.out.println(gen_equal);
+           var gen_equal_use = new ConfReader_ISIS().read(new IsisConfWriter().write(gen_equal));
+           //System.out.println(gen_equal_use);
            var confg_equal = getSetConfG_ISIS(gen_equal);
            if (!confg_equal.equals(confg)){
                System.out.println(gen);
@@ -529,7 +540,11 @@ public class IOTest_ISIS {
                System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
            }
            assert confg_equal.equals(confg) : "MUTATE WRONG";
+           if(i == 1000){
+               break;
         }
+    }
+
    }
 
    @Test

@@ -33,7 +33,7 @@ public class baseGenTest_ISIS {
             x++;
             System.out.printf("testCase %d\n", x);
             var ran = new ranBaseGen_ISIS();
-            var routers = ran.generate(3, 2, 2, 3);
+            var routers = ran.generate(4, 2, 2, 3);
             Graph graph = new MultiGraph("BaseGraph");
             for(int i = 0; i < routers.size(); i++){
                 var node = graph.addNode("r%d".formatted(i));
@@ -73,15 +73,16 @@ public class baseGenTest_ISIS {
             }catch (IOException e){
                 e.printStackTrace();
             }
-            //System.out.println(stringWriter.toString());
+            System.out.println(stringWriter.toString());
+            System.out.println("===============");
             var b = new topoBuild_ISIS();
             var confG = b.solve(routers);
-            //System.out.println(confG.toDot(false));
-
+            System.out.println(confG.toDot(false));
+            System.out.println("===============");
             var c = new ranAttriGen_ISIS();
             c.generate(confG, routers);
-            //System.out.println(confG.toJson().toPrettyString());
-            
+            System.out.println(confG.toJson().toPrettyString());
+            System.out.println("===============");
              //generate isis core commands, all the round is same
             var router_count = routers.size();
             var routers_name = new ArrayList<String>();
@@ -93,12 +94,12 @@ public class baseGenTest_ISIS {
             for(int i = 0; i < router_count; i++) {
                 isis_cores.add(getConfOfRouter(routers_name.get(i), confG, false));
             }
-            // for(int i = 0; i < router_count; i++) {
-            //     System.out.println(routers_name.get(i));
-            //     System.out.println(new IsisConfWriter().write(isis_cores.get(i)));
-            //     System.out.println("===============");
-            // }
-            if(x == 1000)
+            for(int i = 0; i < router_count; i++) {
+                System.out.println(routers_name.get(i));
+                System.out.println(new IsisConfWriter().write(isis_cores.get(i)));
+                System.out.println("===============");
+            }
+            if(x == 1)
             {
                 break;
             }
