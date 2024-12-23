@@ -89,7 +89,9 @@ public class genCorePass_ISIS {
         }
         //FIXME:PROUTERISIS
         {
-            
+            if(isis_intf.isIprouteisis()){
+                var op = addOp(opCtxG, OpType_isis.IPROUTERISIS);
+            }
         }
         /*
          *  CIRCUITTYPE,
@@ -210,9 +212,7 @@ public class genCorePass_ISIS {
                 var op = addOp(opCtxG, OpType_isis.IPAddr);
                 op.setIP(intf.getIp());
             }
-            {
-                var op = addOp(opCtxG, OpType_isis.IPROUTERISIS);
-            }
+
             opgs.add(opCtxG);
         }
         for(var isis_intf: confg.getISISIntfOfRouter(r_name)){

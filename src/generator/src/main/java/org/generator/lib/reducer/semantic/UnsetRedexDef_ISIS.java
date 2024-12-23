@@ -30,7 +30,7 @@ public class UnsetRedexDef_ISIS extends BaseRedexDef_ISIS{
                 {NOSETOVERLOADBITONSTARTUP, new OpType_isis[]{SETOVERLOADBITONSTARTUP}},
                 {NOLSPMTU, new OpType_isis[]{LSPMTU}},
                 {NOISTYPE, new OpType_isis[]{ISTYPE}},
-                {NOIPROUTERISIS, new OpType_isis[]{IPROUTERISIS}},
+                //{NOIPROUTERISIS, new OpType_isis[]{IPROUTERISIS}},
                 {NOIPAddr, new OpType_isis[]{IPAddr}},
                 {NOCIRCUITTYPE, new OpType_isis[]{CIRCUITTYPE}},
                 {NOCSNPINTERVAL, new OpType_isis[]{CSNPINTERVAL}},

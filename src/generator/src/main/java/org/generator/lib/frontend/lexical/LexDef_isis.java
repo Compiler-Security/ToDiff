@@ -90,7 +90,7 @@ public class LexDef_isis {
                 {NOLSPMTU, "no lsp-mtu {NUM(128-4352)}"},
         
                 {NOISTYPE, "no is-type {NAME(level-1,level-1-2,level-2-only)}"},
-                {NOIPROUTERISIS, "no ip router isis 1"},
+                //{NOIPROUTERISIS, "no ip router isis 1"},
                 {NOIPAddr, "no ip address {IP}"},
                 {NOCIRCUITTYPE, "no isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
                 {NOCSNPINTERVAL, "no isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2)}"},

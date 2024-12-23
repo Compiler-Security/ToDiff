@@ -23,6 +23,9 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
             PSNPINTERVAL,
          */
         switch (op.Type()){
+            case IPROUTERISIS ->{
+                cur_isis_intf.setIprouteisis(true);
+            }
             case ISISPRIORITY ->{
                 if(op.getNAME().equals("level-1")){
                     cur_isis_intf.setPriorityLevel1(op.getNUM());

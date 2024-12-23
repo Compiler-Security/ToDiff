@@ -33,7 +33,7 @@ public class baseGenTest_ISIS {
             x++;
             System.out.printf("testCase %d\n", x);
             var ran = new ranBaseGen_ISIS();
-            var routers = ran.generate(4, 2, 2, 3);
+            var routers = ran.generate(3, 2, 2, 3);
             Graph graph = new MultiGraph("BaseGraph");
             for(int i = 0; i < routers.size(); i++){
                 var node = graph.addNode("r%d".formatted(i));
@@ -73,12 +73,12 @@ public class baseGenTest_ISIS {
             }catch (IOException e){
                 e.printStackTrace();
             }
-            System.out.println(stringWriter.toString());
-            System.out.println("===============");
+            //System.out.println(stringWriter.toString());
+            //System.out.println("===============");
             var b = new topoBuild_ISIS();
             var confG = b.solve(routers);
-            System.out.println(confG.toDot(false));
-            System.out.println("===============");
+            //System.out.println(confG.toDot(false));
+            //System.out.println("===============");
             var c = new ranAttriGen_ISIS();
             c.generate(confG, routers);
             System.out.println(confG.toJson().toPrettyString());

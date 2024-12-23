@@ -57,13 +57,13 @@ def checkTests():
 
         
 if __name__ == "__main__":
-    checkTests()
+    #checkTests()
 
     # test one example
-    # diff_dir = path.join(util.checkDir, "diff")
-    # os.makedirs(diff_dir, exist_ok=True)
+    diff_dir = path.join(util.checkDir, "diff")
+    os.makedirs(diff_dir, exist_ok=True)
     
-    # test_name = util.get_test_name_5("57159")
-    # res = checkTest(test_name, False)
-    # with open(path.join(diff_dir, f"{test_name}.txt"), "w") as fp:
-    #         fp.write(res)
+    test_name = util.get_test_name_5("42093")
+    res = checkTest(test_name, False)
+    with open(path.join(diff_dir, f"{test_name}.txt"), "w") as fp:
+            fp.write(res)

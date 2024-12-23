@@ -114,6 +114,8 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
             //isisIntf.setCost(ranHelper.randomInt(1, 65535));
             isisIntf.setPriorityLevel1(ranHelper.randomInt(0, 127));
             isisIntf.setPriorityLevel2(ranHelper.randomInt(0, 127));
+
+            isisIntf.setIprouteisis(true);
             //we should set helloMulti for testing
             //network
             if (generate_ISIS.fastConvergence){

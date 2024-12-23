@@ -44,7 +44,14 @@ public class ISISIntf extends AbstractNode_ISIS {
         this.vrf = vrf;
     }
 
+    boolean iprouteisis;
+    public boolean isIprouteisis() {
+        return iprouteisis;
+    }
 
+    public void setIprouteisis(boolean iprouteisis) {
+        this.iprouteisis = iprouteisis;
+    }
 
 
     public boolean isPassive() {
@@ -139,6 +146,8 @@ public class ISISIntf extends AbstractNode_ISIS {
         // FIXME: helloIntervalLevel1 and helloIntervalLevel2 should be set to what?
         helloIntervalLevel1 = 10;  //timerHelloInMsecs
         helloIntervalLevel2 = 10;  //timerHelloInMsecs
+
+        iprouteisis = false;
 
         netType = ISISNetType.BROADCAST;
         level = ISISLEVEL.LEVEL1;
