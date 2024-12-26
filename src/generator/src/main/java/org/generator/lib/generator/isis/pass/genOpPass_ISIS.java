@@ -24,6 +24,11 @@ public class genOpPass_ISIS {
             //if (op_type == OpType.AreaVLink) continue;
             if(op_type ==OpType_isis.IPROUTERISIS)
                 continue;
+            if(op_type ==OpType_isis.NET)
+                continue;
+            //FIXME it can delete
+            if(op_type ==OpType_isis.ISTYPE)
+                continue;
             if (op_type.inISISINTF()){
                 intfOps.add(op_type); }
             else if (op_type.inISISREGION() ||  op_type.inISISRouterWithTopo()|| op_type.inISISDAEMON()){

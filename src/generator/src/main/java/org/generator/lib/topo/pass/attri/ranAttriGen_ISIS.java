@@ -126,24 +126,26 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
                 isisIntf.setHelloMultiplierlevel1(ranHelper.randomInt(1,100));
                 isisIntf.setHelloMultiplierlevel2(ranHelper.randomInt(1,100));
             }
-            if (isisIntf.getHelloMultiplierlevel1() == 1) {
-                //IF we don't set hello multiplier
-                isisIntf.setHelloIntervalLevel1(helloInterval);
-            }else{
-                //IF we set hello multiplier, other args should be set by hello-multiplier
-                isisIntf.setHelloIntervalLevel2(helloInterval);
-            }
-            if(isisIntf.getHelloMultiplierlevel2() == 1){
-                isisIntf.setHelloIntervalLevel2(helloInterval);
-            }else{
-                isisIntf.setHelloIntervalLevel2(helloInterval);
-            }
+            // if (isisIntf.getHelloMultiplierlevel1() == 1) {
+            //     //IF we don't set hello multiplier
+            //     isisIntf.setHelloIntervalLevel1(helloInterval);
+            // }else{
+            //     //IF we set hello multiplier, other args should be set by hello-multiplier
+            //     isisIntf.setHelloIntervalLevel2(helloInterval);
+            // }
+            // if(isisIntf.getHelloMultiplierlevel2() == 1){
+            //     isisIntf.setHelloIntervalLevel2(helloInterval);
+            // }else{
+            //     isisIntf.setHelloIntervalLevel2(helloInterval);
+            // }
+            isisIntf.setHelloIntervalLevel1(helloInterval);
+            isisIntf.setHelloIntervalLevel2(helloInterval);
             isisIntf.setPsnpIntervalLevel1(psnpInterval);
             isisIntf.setPsnpIntervalLevel2(psnpInterval);
             isisIntf.setCsnpIntervalLevel1(csnpInterval);
             isisIntf.setCsnpIntervalLevel2(csnpInterval);
             isisIntf.setNetType(netType);
-            isisIntf.setLevel(ranHelper.randomElemOfList(Arrays.asList(ISISIntf.ISISLEVEL.values())));
+            //isisIntf.setLevel(ranHelper.randomElemOfList(Arrays.asList(ISISIntf.ISISLEVEL.values())));
             //FIXME we need consider the metric
         }
         //we should ensure one isisIntf priority > 0
@@ -160,13 +162,14 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
         isiss = new ArrayList<>();
         areaToAreaId = new HashMap<>();
         areaSystemIdCounter = new HashMap<>();
-        // 为每个区域生成唯一的区域ID
+        // generate the unique area ID for each area
         for (Router_ISIS r : routers) {
             if (!areaToAreaId.containsKey(r.area)) {
-                // 生成形如 "49.0001" 的区域ID
+                // generate areaId
                 String areaId = String.format("49.%04d", r.area);
                 areaToAreaId.put(r.area, areaId);
-                areaSystemIdCounter.put(r.area, 1); // 初始化系统ID计数器
+                // initialize the systemId counter
+                areaSystemIdCounter.put(r.area, 1); 
             }
         }
         //build each router and fill area, router_id
@@ -177,7 +180,7 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
             var isis_daemon_name = NodeGen_ISIS.getISISDaemonName(isis_name);
             var isis = new ISIS(isis_name);
 
-            // 生成NET地址
+            // generate areaId and systemId
             String areaId = areaToAreaId.get(r.area);
             int systemIdCount = areaSystemIdCounter.get(r.area);
             String systemId = String.format("%04d.%04d.%04d", 
@@ -186,12 +189,21 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
                 systemIdCount % 100);
             areaSystemIdCounter.put(r.area, systemIdCount + 1);
 
-            // 创建完整的NET地址
+            // generate NET
             NET net = NET.of(areaId + "." + systemId + ".00");
             isis.setNET(net);
 
-
-            
+            // set router type
+            if(r.level == 0){
+                isis.setRouterType(ISIS.RouterType.LEVEL1);
+            }else if(r.level == 1){
+                isis.setRouterType(ISIS.RouterType.LEVEL2);
+            }else if(r.level == 2){
+                isis.setRouterType(ISIS.RouterType.LEVEL1_2);
+            }
+            else{
+                throw new RuntimeException("level should be 0, 1, 2");
+            }
             g.addNode(isis);
             isiss.add(isis);
             var isis_daemon = new ISISDaemon(isis_daemon_name);
@@ -206,6 +218,21 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
                 var isis_intf = new ISISIntf(isis_intf_name);
                 g.addNode(isis_intf);
                 g.addISISIntfRelation(isis_intf_name, intf_name);
+                //set circuit type for each interface
+                if(r.level == 0){
+                    isis_intf.setLevel(ISISIntf.ISISLEVEL.LEVEL1);
+                }
+                else if(r.level == 1){
+                    isis_intf.setLevel(ISISIntf.ISISLEVEL.LEVEL2);
+                }
+                //if the router is level-1-2, the cuicuit type can be random
+                else if(r.level == 2){
+                    isis_intf.setLevel(ranHelper.randomElemOfList(Arrays.asList(ISISIntf.ISISLEVEL.values())));
+                }
+                else{
+                    throw new RuntimeException("level should be 0, 1, 2");
+                }
+
                 //TODO we should use random area
                 //var area_id = ID.of(r.intfs.get(j).area);
                 //isis_intf.setArea(ID.of(r.intfs.get(j).area));
@@ -213,7 +240,6 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
 
 
             }
-
             
         }
 

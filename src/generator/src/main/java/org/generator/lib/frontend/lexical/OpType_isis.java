@@ -25,6 +25,7 @@ public enum OpType_isis {
     //=================ISIS ROUTER==================
     ISISROUTERBEGIN,    
     NET,
+    ISTYPE,
     ISISROUTEREND,
     //================ISIS DAEMON===================
     ISISDAEMONGROUPBEGIN,
@@ -37,7 +38,7 @@ public enum OpType_isis {
     ISISDAEMONGROUPEND,
     //===================ISIS region=====================
     ISISREGIONBEGIN,
-    ISTYPE,
+    
     ISISREGIONEND,
 
 

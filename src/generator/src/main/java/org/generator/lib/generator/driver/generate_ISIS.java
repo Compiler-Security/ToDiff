@@ -162,7 +162,7 @@ public class generate_ISIS {
     public static double irrOpRatio = 0.4;//0.4;
 
     //insert mutateOp, the number is mutateRatio of activeOp
-    public static double mutateOpRatio = 0;//0.4;
+    public static double mutateOpRatio = 0.4;//0.4;
     public static int expandRatio = 1;
 
     //when this is true, we will set

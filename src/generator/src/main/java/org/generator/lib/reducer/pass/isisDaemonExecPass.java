@@ -27,6 +27,11 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
                 cur_isis.setNET(op.getNET());
                 return ExecStat.SUCC;
             }
+            case ISTYPE -> {
+                assert ISIS.RouterType.of(op.getNAME()).isPresent() : "router type name not right %s".formatted(op.getNAME());
+                cur_isis.setRouterType(ISIS.RouterType.of(op.getNAME()).get());   
+                return ExecStat.SUCC;
+            }
             default -> {
                 return ExecStat.MISS;
             }
@@ -40,7 +45,7 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
         if (cur_isis_daemon == null){
             return ExecStat.MISS;
         }
-        var ospf_daemon = cur_isis_daemon;
+        var isis_daemon = cur_isis_daemon;
         /*METRICSTYLE,
         ADVERTISEHIGHMETRIC,
         SETOVERLOADBIT,
@@ -49,27 +54,27 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
         switch (op.Type()){
             case METRICSTYLE -> {
                 assert ISISDaemon.metricstyle.of(op.getNAME()).isPresent() : "metric style name not right %s".formatted(op.getNAME());
-                ospf_daemon.setMetricStyle(ISISDaemon.metricstyle.of(op.getNAME()).get());
+                isis_daemon.setMetricStyle(ISISDaemon.metricstyle.of(op.getNAME()).get());
                 return ExecStat.SUCC;
             }
 
             case LSPMTU -> {
-                ospf_daemon.setLspmtu(op.getNUM());
+                isis_daemon.setLspmtu(op.getNUM());
                 return ExecStat.SUCC;
             }
 
             case ADVERTISEHIGHMETRIC -> {
-                ospf_daemon.setAdvertisehighmetrics(true);
+                isis_daemon.setAdvertisehighmetrics(true);
                 return ExecStat.SUCC;
             }
 
             case SETOVERLOADBIT -> {
-                ospf_daemon.setSetoverloadbit(true);
+                isis_daemon.setSetoverloadbit(true);
                 return ExecStat.SUCC;
             }
 
             case SETOVERLOADBITONSTARTUP -> {
-                ospf_daemon.setOverloadbitonstartup(op.getNUM());
+                isis_daemon.setOverloadbitonstartup(op.getNUM());
                 return ExecStat.SUCC;
             }
         }

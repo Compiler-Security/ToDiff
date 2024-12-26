@@ -144,23 +144,23 @@ public class ISISIntf extends AbstractNode_ISIS {
         passive = false;
         vrf = 0;
         // FIXME: helloIntervalLevel1 and helloIntervalLevel2 should be set to what?
-        helloIntervalLevel1 = 10;  //timerHelloInMsecs
-        helloIntervalLevel2 = 10;  //timerHelloInMsecs
+        helloIntervalLevel1 = 3;  //timerHelloInMsecs
+        helloIntervalLevel2 = 3;  //timerHelloInMsecs
 
         iprouteisis = false;
 
         netType = ISISNetType.BROADCAST;
-        level = ISISLEVEL.LEVEL1;
-        priorityLevel1 = 1; //prioritylevel1
-        priorityLevel2 = 1; //prioritylevel2
+        level = ISISLEVEL.LEVEL1_2;
+        priorityLevel1 = 64; //prioritylevel1
+        priorityLevel2 = 64; //prioritylevel2
 
-        csnpIntervalLevel1 = 10; //timerCsnpInMsecs
+        csnpIntervalLevel1 = 10; //timerCsnpInMsecs 
         csnpIntervalLevel2 = 10; //timerCsnpInMsecs
-        psnpIntervalLevel1 = 10; //timerPsnpInMsecs
-        psnpIntervalLevel2 = 10; //timerPsnpInMsecs
+        psnpIntervalLevel1 = 2; //timerPsnpInMsecs
+        psnpIntervalLevel2 = 2; //timerPsnpInMsecs
 
-        helloMultiplierlevel1 = 3; //helloMultiplierLevel1
-        helloMultiplierlevel2 = 3; //helloMultiplierLevel2
+        helloMultiplierlevel1 = 10; //helloMultiplierLevel1
+        helloMultiplierlevel2 = 10; //helloMultiplierLevel2
 
         // metricLevel1 = 10; //metricLevel1
         // metricLevel2 = 10; //metricLevel2

@@ -43,9 +43,15 @@ public class genCorePass_ISIS {
         if (confg.containsNode(isis_name)){
             ISIS isis = confg.getNodeNotNull(NodeGen_ISIS.getISISName(r_name));
             addOp(opCtxG, OpType_isis.RISIS);
-            if(isis.getNET() != null){
-                var op = addOp(opCtxG, OpType_isis.NET);
-                op.setNET(isis.getNET());
+            {
+                if(isis.getNET() != null){
+                    var op = addOp(opCtxG, OpType_isis.NET);
+                    op.setNET(isis.getNET());
+                }
+            }
+            {
+                var op = addOp(opCtxG, OpType_isis.ISTYPE);
+                op.setNAME(isis.getRouterType().toString());
             }
             //FIXME: it doesn't complete yet
         }

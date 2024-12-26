@@ -34,6 +34,7 @@ public class OverrideRedexDef_ISIS extends BaseRedexDef_ISIS {
                 {IntfName, new OpType_isis[]{}, 0},
                 {IPAddr, new OpType_isis[]{IPAddr}, 1},
                 //FIXME: this is not right
+                //{NET, new OpType_isis[]{NET}, 1},
                 {ISISPRIORITY, new OpType_isis[]{ISISPRIORITY}, 2},
                 {HELLOMULTIPLIER, new OpType_isis[]{HELLOMULTIPLIER}, 2},
                 {HELLOINTERVAL, new OpType_isis[]{HELLOINTERVAL}, 2},
