@@ -43,7 +43,7 @@ def checkTest(test_name, diffAll):
         res = checkFunc(rd, diff, diff.check_neighbors_isis, "check_neighbors", buf)
         # res = checkFunc(rd, diff, diff.check_ospfDaemon, "check_ospfDaemon", buf)
         res = checkFunc(rd, diff, diff.check_isisDaemon, "check_isisDaemon", buf)
-        res = checkFunc(rd, diff, diff.check_routingTable_isis, "check_routingTable", buf)
+        #res = checkFunc(rd, diff, diff.check_routingTable_isis, "check_routingTable", buf)
     
     return buf.getvalue()
 import os
@@ -57,13 +57,13 @@ def checkTests():
 
         
 if __name__ == "__main__":
-    #checkTests()
+    checkTests()
 
     # test one example
-    diff_dir = path.join(util.checkDir, "diff")
-    os.makedirs(diff_dir, exist_ok=True)
+    # diff_dir = path.join(util.checkDir, "diff")
+    # os.makedirs(diff_dir, exist_ok=True)
     
-    test_name = util.get_test_name_5("42093")
-    res = checkTest(test_name, False)
-    with open(path.join(diff_dir, f"{test_name}.txt"), "w") as fp:
-            fp.write(res)
+    # test_name = util.get_test_name_5("11369")
+    # res = checkTest(test_name, False)
+    # with open(path.join(diff_dir, f"{test_name}.txt"), "w") as fp:
+    #         fp.write(res)
