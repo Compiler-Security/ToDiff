@@ -332,6 +332,13 @@ class FrrNode(Node):
             traceback.print_exception(e)
             return None
 
+    def dump_isis_daemon_info(self):
+        info = self.daemon_cmds(["show isis summary json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
 if __name__ == "__main__":
     setLogLevel('info')
     WORK_DIR = path.join(path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__))))), "test",

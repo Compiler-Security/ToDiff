@@ -154,27 +154,16 @@ class executor:
     def _check_converge_isis(self, net:testnet.TestNet):
         for r_name in self.routers:
             warnln(f"    +check router {r_name}")
-            res = net.net.nameToNode[r_name].dump_neighbor_info_isis()
+            res = net.net.nameToNode[r_name].dump_isis_daemon_info()
             if res == None:
                 warnln(f"    -check router {r_name} n")
                 return False
-            # for val in res['neighbors'].values():
-            #     for val1 in val:
-            #         #if neighbor is DR/Backup, converged is full
-            #         #otherwise converged is 2-way
-            #         # FIXME: ISIS has no DR/Backup
-            #         if (val1['converged'] != 'Full'):
-            #             warnln(f"    -check router {r_name} nb c")
-            #             return False
-            #         if (val1['linkStateRetransmissionListCounter'] > 0):
-            #             warnln(f"    -check router {r_name} nb re")
-            #             return False
-            # res = net.net.nameToNode[r_name].dump_isis_intfs_info()
-            # for intfName, val in res['interfaces'].items():
-            #     if val['state'] == "Waiting":
-            #         warnln(f"    -check router {r_name} oi w")
-            #         warnln(intfName)
-            #         return False
+            for area in res.get("areas", []):
+                # 处理 levels 数组中的字段
+                for level in area.get("levels", []):
+                    if level["spf"] != "no pending":
+                        warnln(f"    -check router {r_name} da")
+                        return False
             warnln(f"    -check router {r_name} y")
         return True
 
