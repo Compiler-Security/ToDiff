@@ -31,15 +31,17 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
                     cur_isis_intf.setPriorityLevel1(op.getNUM());
                 }else if(op.getNAME().equals("level-2")){
                     cur_isis_intf.setPriorityLevel2(op.getNUM());
-                }else{
+                }else if(op.getNAME().equals("")){
+                    cur_isis_intf.setPriorityLevel1(op.getNUM());
+                    cur_isis_intf.setPriorityLevel2(op.getNUM());
+                }
+                else{
                     return ExecStat.FAIL;
                 }
             }
 
-            case CIRCUITTYPE ->{
-                if (op.getNAME() != null) {
-                    cur_isis_intf.setLevel(ISISIntf.ISISLEVEL.of(op.getNAME()).get());
-                }
+            case CIRCUITTYPE ->{        
+                cur_isis_intf.setLevel(ISISIntf.ISISLEVEL.of(op.getNAME()).get());
                 
             }
             
@@ -48,9 +50,13 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
                     cur_isis_intf.setCsnpIntervalLevel1(op.getNUM());
                 }else if (op.getNAME().equals("level-2")){
                     cur_isis_intf.setCsnpIntervalLevel2(op.getNUM());
+                }else if (op.getNAME().equals("")){
+                    cur_isis_intf.setCsnpIntervalLevel1(op.getNUM());
+                    cur_isis_intf.setCsnpIntervalLevel2(op.getNUM());
                 }else{
                     return ExecStat.FAIL;
                 }
+                 
             }
 
             case HELLOINTERVAL ->{
@@ -58,7 +64,11 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
                     cur_isis_intf.setHelloIntervalLevel1(op.getNUM());
                 }else if (op.getNAME().equals("level-2")){
                     cur_isis_intf.setHelloIntervalLevel2(op.getNUM());
-                }else{
+                }else if(op.getNAME().equals("")){
+                    cur_isis_intf.setHelloIntervalLevel1(op.getNUM());
+                    cur_isis_intf.setHelloIntervalLevel2(op.getNUM());
+                }
+                else{
                     return ExecStat.FAIL;
                 }
             }
@@ -68,7 +78,11 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
                     cur_isis_intf.setPsnpIntervalLevel1(op.getNUM());
                 }else if (op.getNAME().equals("level-2")){
                     cur_isis_intf.setPsnpIntervalLevel2(op.getNUM());
-                }else{
+                }else if(op.getNAME().equals("")){
+                    cur_isis_intf.setPsnpIntervalLevel1(op.getNUM());
+                    cur_isis_intf.setPsnpIntervalLevel2(op.getNUM());
+                }
+                else{
                     return ExecStat.FAIL;
                 }
             }
@@ -78,7 +92,11 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
                     cur_isis_intf.setHelloMultiplierlevel1(op.getNUM());
                 }else if (op.getNAME().equals("level-2")){
                     cur_isis_intf.setHelloMultiplierlevel2(op.getNUM());
-                }else{
+                }else if(op.getNAME().equals("")){
+                    cur_isis_intf.setHelloMultiplierlevel1(op.getNUM());
+                    cur_isis_intf.setHelloMultiplierlevel2(op.getNUM());
+                }
+                else{
                     return ExecStat.FAIL;
                 }
             }

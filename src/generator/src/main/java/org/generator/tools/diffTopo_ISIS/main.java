@@ -58,7 +58,8 @@ public class main {
         CommandLineParser parser = new DefaultParser();
         HelpFormatter formatter = new HelpFormatter();
         CommandLine cmd;
-        int routerCount = 3,maxStep = 3,maxStepTime = 10, roundNum = 2;
+        //maxStepTime = 10
+        int routerCount = 3,maxStep = 3,maxStepTime = 89, roundNum = 2;
         String dirPath = "";
         try {
             cmd = parser.parse(getOptions(), args);

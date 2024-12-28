@@ -66,16 +66,16 @@ public class LexDef_isis {
                 {IPROUTERISIS, "ip router isis 1"},
                 {IPAddr, "ip address {IP}"},
                 {CIRCUITTYPE, "isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
-                {CSNPINTERVAL, "isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2)}"},
+                {CSNPINTERVAL, "isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2,_)}"},
                 //{HELLOPADDING, "isis hello padding"},
-                {HELLOINTERVAL, "isis hello-interval {NAME(level-1,level-2)} {NUM(1-600)} "},
-                {HELLOMULTIPLIER, "isis hello-multiplier {NAME(level-1,level-2)} {NUM(2-100)}"},
+                {HELLOINTERVAL, "isis hello-interval {NAME(level-1,level-2,_)} {NUM(1-600)} "},
+                {HELLOMULTIPLIER, "isis hello-multiplier {NAME(level-1,level-2,_)} {NUM(2-100)}"},
                 //{ISISMETRICLEVEL1, "isis metric level-1 {NUM(0-255)}"},
                 //{ISISMETRICLEVEL2, "isis metric level-2 {NUM(0-16777215)}"},
                 {NETWORKPOINTTOPOINT, "isis network point-to-point"},
                 {ISISPASSIVE, "isis passive"},
-                {ISISPRIORITY, "isis priority {NUM(0-127)} {NAME(level-1,level-2)}"},
-                {PSNPINTERVAL, "isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2)}"},
+                {ISISPRIORITY, "isis priority {NUM(0-127)} {NAME(level-1,level-2,_)}"},
+                {PSNPINTERVAL, "isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2,_)}"},
                 //{THREEWAYHANDSHAKE, "isis three-way-handshake"},
 
                 // no isis
@@ -90,19 +90,19 @@ public class LexDef_isis {
                 {NOLSPMTU, "no lsp-mtu {NUM(128-4352)}"},
         
                 {NOISTYPE, "no is-type {NAME(level-1,level-1-2,level-2-only)}"},
-                //{NOIPROUTERISIS, "no ip router isis 1"},
+                {NOIPROUTERISIS, "no ip router isis 1"},
                 {NOIPAddr, "no ip address {IP}"},
                 {NOCIRCUITTYPE, "no isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
-                {NOCSNPINTERVAL, "no isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2)}"},
+                {NOCSNPINTERVAL, "no isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2,_)}"},
                 //{NOHELLOPADDING, "no isis hello padding"},
-                {NOHELLOINTERVAL, "no isis hello-interval {NAME(level-1,level-2)} {NUM(1-600)} "},
-                {NOHELLOMULTIPLIER, "no isis hello-multiplier {NAME(level-1,level-2)} {NUM(2-100)}"},
+                {NOHELLOINTERVAL, "no isis hello-interval {NAME(level-1,level-2,_)} {NUM(1-600)} "},
+                {NOHELLOMULTIPLIER, "no isis hello-multiplier {NAME(level-1,level-2,_)} {NUM(2-100)}"},
                 //{NOISISMETRICLEVEL1, "no isis metric level-1 {NUM(0-255)}"},
                 //{NOISISMETRICLEVEL2, "no isis metric level-2 {NUM(0-16777215)}"},
                 {NONETWORKPOINTTOPOINT, "no isis network point-to-point"},
                 {NOISISPASSIVE, "no isis passive"},
-                {NOISISPRIORITY, "no isis priority {NUM(0-127)} {NAME(level-1,level-2)}"},
-                {NOPSNPINTERVAL, "no isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2)}"},
+                {NOISISPRIORITY, "no isis priority {NUM(0-127)} {NAME(level-1,level-2,_)}"},
+                {NOPSNPINTERVAL, "no isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2,_)}"},
                 //{NOTHREEWAYHANDSHAKE, "no isis three-way-handshake"},
                 
 
@@ -129,7 +129,7 @@ public class LexDef_isis {
         Map<String, Object> argsRange = new HashMap<>();
         List<String> args = new ArrayList<>();
 
-        String regex = "\\{(\\w+)(?:\\(([\\w\\-|,]+)\\))?\\}";
+        String regex = "\\{(\\w+)(?:\\(([\\w\\-|,_]+)\\))?\\}";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(st);
         StringBuilder result = new StringBuilder();
@@ -142,7 +142,9 @@ public class LexDef_isis {
                     argsRange.put(name, true);
                 }
                 if (value.contains(",")){
-                    var tmp = Arrays.stream(value.split(",")).toList();
+                    var tmp = Arrays.stream(value.split(","))
+                         .map(s -> s.equals("_") ? "" : s)  // 将 _ 转换为空字符串
+                         .toList();
                     argsRange.put(name, tmp);
                 }else if (value.contains("-")){
                     var tmp = Arrays.stream(value.split("-")).map(Long::valueOf).toList();
