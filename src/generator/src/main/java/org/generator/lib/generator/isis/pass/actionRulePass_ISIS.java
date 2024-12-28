@@ -96,9 +96,16 @@ public class actionRulePass_ISIS {
         if (generate_ISIS.ran){
             Collections.shuffle(override_list);
         }
+        // var priority_op = genOpPass_ISIS.genRanOpOfType(OpType_isis.ISISPRIORITY);
+        // priority_op.getOperation().setNUM(14);
+        // priority_op.getOperation().setNAME("level-2");
         for(var overrideType: override_list){
             //second generate unset_op
             var new_op = genOpPass_ISIS.genRanOpOfType(overrideType);
+            // if (overrideType == OpType_isis.ISISPRIORITY){
+            //     new_op = priority_op;
+            // }
+            
             //third make unset_equal fields to be the same
             if(overrideType == OpType_isis.IPAddr||overrideType == OpType_isis.PSNPINTERVAL||overrideType == OpType_isis.CSNPINTERVAL||overrideType == OpType_isis.HELLOINTERVAL||overrideType == OpType_isis.HELLOMULTIPLIER||overrideType == OpType_isis.ISISPRIORITY){
                 genOpPass_ISIS.copyFileds(new_op.getOperation(), opA.getOp(), Collections.emptyList());
@@ -106,8 +113,14 @@ public class actionRulePass_ISIS {
             else{
                 genOpPass_ISIS.copyFileds(new_op.getOperation(), opA.getOp(), OverrideRedexDef_ISIS.getOverrideEqualArg(opA.op.Type(), overrideType));
             }
+            if(overrideType == OpType_isis.PSNPINTERVAL||overrideType == OpType_isis.CSNPINTERVAL||overrideType == OpType_isis.HELLOINTERVAL||overrideType == OpType_isis.HELLOMULTIPLIER||overrideType == OpType_isis.ISISPRIORITY){
+                new_op.getOperation().setNAME(opA.getOp().getNAME());
+            }
             if (new_op.getOpIsis().equals(opA.getOp())) continue;
-            else return OpAnalysis_ISIS.of(new_op.getOpIsis(), opA.getCtxOp());
+            else {
+                //System.out.printf("new_op %s\n", new_op.getOperation());
+                return OpAnalysis_ISIS.of(new_op.getOpIsis(), opA.getCtxOp());
+            }
         }
         return null;
     }

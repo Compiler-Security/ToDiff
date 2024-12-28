@@ -62,15 +62,39 @@ public class generate_ISIS {
                     continue;
                 }
                 //System.out.println(opa);
+                //System.out.printf("add totally irrelevant op %s\n", opa.op);
                 controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.REMOVED);
                 break;
             }
         }
         var mutateOpNum = (int) opas.getOps().size() * mutateOpRatio;
+        //test
+        // var ori_opas = new OpAnalysis_ISIS[3];
+        // for(var opa: opas.getOps()){
+        //     if (opa.getOp().Type() == OpType_isis.IPAddr){
+        //         ori_opas[0] = opa;
+        //         break;
+        //     }
+        // }
+
+        // for(var opa: opas.getOps()){
+        //     if (opa.getOp().Type() == OpType_isis.ISISPRIORITY && opa.getOp().getNAME().equals("level-2")){
+        //         ori_opas[1] = opa;
+        //         break;
+        //     }
+        // }
+        // for(var opa: opas.getOps()){
+        //     if (opa.getOp().Type() == OpType_isis.ISISPRIORITY && opa.getOp().getNAME().equals("level-1")){
+        //         ori_opas[2] = opa;
+        //         break;
+        //     }
+        // }
         //add some mutate op of active op
         for(int i = 0; i < mutateOpNum; i++){
             while(true) {
                 var ori_opa = ranHelper.randomElemOfList(opas.getOps());
+                //System.out.printf("ori_opa %s\n", ori_opa.op);
+                //var ori_opa = ori_opas[i];
                 assert ori_opa != null : "opa to mutate is supposed to be not null";
                 //this skip op should not be mutate commands
                 if (skipCommands(ori_opa.getOp().Type())){
@@ -78,6 +102,7 @@ public class generate_ISIS {
                 }
                 var mutate_opa = actionRulePass_ISIS.mutate(ori_opa);
                 if (mutate_opa != null){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.REMOVED);
+                    //System.out.printf("add mutate op %s\n", mutate_opa.op);
                     break;
                 }
             }
