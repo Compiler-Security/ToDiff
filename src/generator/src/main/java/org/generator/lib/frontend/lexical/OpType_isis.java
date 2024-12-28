@@ -72,7 +72,7 @@ public enum OpType_isis {
     NOSETOVERLOADBITONSTARTUP,
     NOLSPMTU,
     NOISTYPE,
-    //NOIPROUTERISIS,
+    NOIPROUTERISIS,
     NOIPAddr,
     NOCIRCUITTYPE,
     NOCSNPINTERVAL,
@@ -146,6 +146,6 @@ public enum OpType_isis {
      */
     public boolean isIntfOp(){
         //return (this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal()) || (this.ordinal() > NOAreaStub.ordinal()) || this == IPAddr || this == NOIPAddr;
-        return (this.ordinal() > ISISINTFBEGIN.ordinal() && this.ordinal() < ISISEND.ordinal()) || (this.ordinal() >= NOCIRCUITTYPE.ordinal())|| this == IPAddr || this == NOIPAddr || this == IPROUTERISIS ;//|| this == NOIPROUTERISIS;
+        return (this.ordinal() > ISISINTFBEGIN.ordinal() && this.ordinal() < ISISEND.ordinal()) || (this.ordinal() >= NOCIRCUITTYPE.ordinal())|| this == IPAddr || this == NOIPAddr || this == IPROUTERISIS || this == NOIPROUTERISIS;
     }
 }
