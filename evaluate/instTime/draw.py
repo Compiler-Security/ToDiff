@@ -1,5 +1,5 @@
 import json
-with open("/home/binshui/topo-fuzz/evaluate/instTime/data.json") as fp:
+with open("/home/binshui/topo-fuzz/evaluate/instTime/dataUse.json") as fp:
     time = json.load(fp)
 
 import matplotlib.pyplot as plt
@@ -28,9 +28,9 @@ y_fit = func(x_fit, *params)
 
 # 绘制折线图
 plt.figure(figsize=(8, 6))
-plt.plot(x_fit, y_fit, label='Fitted Curve', color='red')
+#plt.plot(x_fit, y_fit, label='Fitted Curve', color='red', linestyle = '--')
 plt.plot(instruction_counts, execution_times, marker='o', linestyle='-', label='Execution Time')
-plt.title("Execution Time vs Instruction Count")
+#plt.title("Execution Time vs Instruction Count")
 plt.xlabel("Number of Instructions")
 plt.ylabel("Execution Time (seconds)")
 plt.grid(True)

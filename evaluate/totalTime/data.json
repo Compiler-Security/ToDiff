@@ -1,0 +1,62 @@
+{
+    "1": {
+        "totalInstruction": 139,
+        "graphTime": 0.142,
+        "genTime": 0.487,
+        "runTime": 34.997719049453735
+    },
+    "2": {
+        "totalInstruction": 518,
+        "graphTime": 0.077,
+        "genTime": 0.681,
+        "runTime": 42.658905267715454
+    },
+    "5": {
+        "totalInstruction": 1539,
+        "graphTime": 0.092,
+        "genTime": 0.9600000000000001,
+        "runTime": 59.55882716178894
+    },
+    "7": {
+        "totalInstruction": 2081,
+        "graphTime": 0.099,
+        "genTime": 1.177,
+        "runTime": 73.2468192577362
+    },
+    "10": {
+        "totalInstruction": 2646,
+        "graphTime": 0.11,
+        "genTime": 1.4,
+        "runTime": 74.04147577285767
+    },
+    "12": {
+        "totalInstruction": 2853,
+        "graphTime": 0.112,
+        "genTime": 1.335,
+        "runTime": 91.16318273544312
+    },
+    "13": {
+        "totalInstruction": 3914,
+        "graphTime": 0.118,
+        "genTime": 2.209,
+        "runTime": 99.21445417404175
+    },
+    "16": {
+        "totalInstruction": 4273,
+        "graphTime": 0.126,
+        "genTime": 2.003,
+        "runTime": 102.45832014083862
+    },
+    "18": {
+        "totalInstruction": 4659,
+        "graphTime": 0.126,
+        "genTime": 2.0180000000000002,
+        "runTime": 107.35586714744568
+    },
+    "20": {
+        "totalInstruction": 5419,
+        "graphTime": 0.138,
+        "genTime": 2.712,
+        "runTime": 133.54933977127075
+    }
+}

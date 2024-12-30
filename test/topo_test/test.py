@@ -7,9 +7,9 @@ dockerDir = up(up(up(path.abspath(__file__))))
 #topo-fuzz/test/topo_test/
 dataDir = up(path.abspath(__file__))
 
-gridNum = 10
+gridNum = 5
 mxWaitTime = 600
-minWaitTime = 30
+minWaitTime = 5
 
 def getContainerName(num):
     return f"docker_topo-fuzz-test_{num}"
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     buildTestContainers()
     launchTestContainers(gridNum)
     #   2.get all test confs
-    test_confs = [conf for conf in getAllConfs() if choseConf(conf) == True]
+    test_confs = sorted([conf for conf in getAllConfs() if choseConf(conf) == True])
     print(test_confs)
     #   3.split all confs by grid
     worker_length = len(test_confs) // gridNum
