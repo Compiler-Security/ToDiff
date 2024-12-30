@@ -20,6 +20,8 @@ import org.generator.tools.frontend.IsisConfWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.generator.util.collections.Pair;
 import org.generator.util.ran.ranHelper;
+import org.generator.util.timer.timer;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -89,6 +91,9 @@ public class diffTopo_ISIS {
 
      */
     public JsonNode gen(int router_count, int max_step, int max_step_time, int round_num){
+        var toTalTimer = new timer();
+        toTalTimer.start();
+
         Map<String, Object> conf = new HashMap<>();
         ObjectNode dumpInfo = new ObjectMapper().createObjectNode();
         //FIXME
@@ -106,8 +111,17 @@ public class diffTopo_ISIS {
         }
         conf.put("routers", routers_name);
 
+        //start gen graph timer
+        var genGraphTimer = new timer();
+        genGraphTimer.start();
+
         //generate router graph
         var confg = topo_ISIS.genGraph(router_count, topo_ISIS.areaCount, topo_ISIS.mxDegree, topo_ISIS.abrRatio, false, dumpInfo);
+
+        //finish genGraphTimer
+        genGraphTimer.finish();
+        var evaluateInfo = dumpInfo.putObject("evaluate");
+        evaluateInfo.put("genGraphTime", genGraphTimer.getTime());
 
         //generate isis core commands, all the round is same
         List<OpCtxG_ISIS> isis_cores = new ArrayList<>();
@@ -124,6 +138,12 @@ public class diffTopo_ISIS {
                 core_commands.put(routers_name.get(i), writer.write(getConfOfRouter(routers_name.get(i), confg, false)));
             }
         }
+
+        //start gen Equal command timer
+        var genEqualTimer = new timer();
+        genEqualTimer.start();
+
+        int totalInstruction = 0;
 
         //generate each round's commands
         List<List<Map<String, Object>>> commands = new ArrayList<>();
@@ -148,6 +168,8 @@ public class diffTopo_ISIS {
                 //FIXME why router 0 not mutate ?
                 var opCtxG = generate_ISIS.generateEqualOfCore(isis_cores.get(j), false);
                 opCtxGS.add(opCtxG);
+                //count instruction for evaluation
+                totalInstruction += opCtxG.getOps().size();
             }
             for(int r = 0; r < router_count; r++){
                 split_confs.add(ranSplitIsisConf(opCtxGS.get(r), step_num - 1));
@@ -246,6 +268,14 @@ public class diffTopo_ISIS {
                 one_step.put("waitTime", waitTime);
             }
         }
+
+        //finish genEqualTimer
+        genEqualTimer.finish();
+        toTalTimer.finish();
+        evaluateInfo.put("genEqualTime", genEqualTimer.getTime());
+        evaluateInfo.put("totalTime", toTalTimer.getTime());
+        evaluateInfo.put("totalInstruction", totalInstruction);
+
         var mapper = new ObjectMapper();
         conf.put("genInfo", dumpInfo);
         try {
