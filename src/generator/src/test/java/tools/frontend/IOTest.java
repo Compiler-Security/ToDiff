@@ -407,39 +407,39 @@ public class IOTest {
    @Test
    public void generatorTest(){
        String test_st = """
-               interface r1-eth0
-               	ip address 82.144.2.106/3
-               	ip ospf area 0.0.0.2
-               interface r1-eth1
-               	ip address 89.183.104.6/1
-               	ip ospf area 0.0.0.3
-               int r1-eth2
-               	ip address 237.151.161.95/16
-               	ip ospf area 0.0.0.1
-               int r1-eth3
-               	ip address 117.132.165.79/15
-               	ip ospf area 0.0.0.0
-               router ospf
-                   network 1.1.1.1/10 area 2
+            router ospf
+                refresh timer 828
+                area 167.26.133.223 range 207.18.146.47/4 not-advertise
+                network 154.149.246.252/32 area 0.0.0.0
+                network 180.194.156.207/32 area 0.0.0.2
+            interface r1-eth0
+                ip address 180.194.156.207/4
+                ip ospf dead-interval minimal hello-multiplier 20
+                ip ospf retransmit-interval 30812
+            interface r1-eth1
+                ip address 154.149.246.252/19
+                ip ospf hello-interval 4216
+
+
                """;
        int i = 0;
        while(true) {
            i++;
            System.out.printf("testCase %d\n", i);
            var genOp = new genOps();
-           var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-           //var ori = new ConfReader().read(test_st);
+           //var ori = genOp.genRandom(10, 0.2, 0.6, 2, 0, 1, "r1");
+           var ori = new ConfReader().read(test_st);
 
            var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
-           //System.out.println(ori_use);
+           System.out.println(ori_use);
            var confg = getSetConfG(ori_use);
            var gen = generate.generateCore(confg);
            //var gen = new ConfReader().read(test_st1);
            //System.out.println(gen.getOps().size());
            //System.out.println(reducer.reduceToCore(ori));
-           //System.out.println("========");
-           //System.out.println(gen);
-		   //System.out.println("========");
+           System.out.println("========");
+           System.out.println(gen);
+		   System.out.println("========");
            var confg_core = getSetConfG(gen);
            System.out.println(confg);
 		   System.out.println("========");
@@ -451,7 +451,7 @@ public class IOTest {
            }
            assert confg_core.equals(confg) : "CORE WRONG";
            reducer.s = 0;
-           var gen_equal = generate.generateEqualOfCore(gen,true);
+           var gen_equal = generate.generateEqualOfCore(gen,false);
            //System.out.println(gen_equal);
            var confg_equal = getSetConfG(gen_equal);
            if (!confg_equal.equals(confg)){

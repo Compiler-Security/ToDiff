@@ -486,9 +486,13 @@ public class IOTest_ISIS {
             interface r1-eth0
                 ip address 127.0.0.1/22
                 ip router isis 1
-                isis priority 7 level-1
-                isis priority 14 level-2
-
+                isis hello-interval level-1 1
+                isis hello-interval level-2 63 
+                isis hello-interval level-2 20
+                no isis hello-interval level-2 20
+            interface r1-eth1
+                ip address 127.0.0.2/22
+                ip router isis 1
 
                """;
        int i = 0;
@@ -496,8 +500,8 @@ public class IOTest_ISIS {
            i++;
            System.out.printf("testCase %d\n", i);
            var genOp = new genOps_ISIS();
-           var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-           //var ori = new ConfReader_ISIS().read(test_st);
+           //var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+           var ori = new ConfReader_ISIS().read(test_st);
 
            var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
            //System.out.println(ori_use);
@@ -507,11 +511,11 @@ public class IOTest_ISIS {
            //System.out.println(gen.getOps().size());
            //System.out.println(reducer.reduceToCore(ori));
            //System.out.println("========");
-           //System.out.println(gen);
-		   //System.out.println("========");
+           System.out.println(gen);
+		   System.out.println("========");
            var confg_core = getSetConfG_ISIS(gen);
-           //System.out.println(confg);
-		   //System.out.println("========");
+           System.out.println(confg);
+		   System.out.println("========");
            //System.out.println(confg_core);
            if (!confg_core.equals(confg)) {
                System.out.println(gen);
@@ -520,8 +524,8 @@ public class IOTest_ISIS {
            }
            assert confg_core.equals(confg) : "CORE WRONG";
            reducer.s = 0;
-           var gen_equal = generate_ISIS.generateEqualOfCore(gen, false);
-           //System.out.println(gen_equal);
+           var gen_equal = generate_ISIS.generateEqualOfCore(gen, true);
+           System.out.println(gen_equal);
            var gen_equal_use = new ConfReader_ISIS().read(new IsisConfWriter().write(gen_equal));
            //System.out.println(gen_equal_use);
            var confg_equal = getSetConfG_ISIS(gen_equal);
@@ -532,7 +536,7 @@ public class IOTest_ISIS {
                System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
            }
            assert confg_equal.equals(confg) : "MUTATE WRONG";
-           if(i == 1000){
+           if(i == 1){
                break;
         }
     }

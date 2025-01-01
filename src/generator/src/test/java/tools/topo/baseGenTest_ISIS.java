@@ -77,12 +77,12 @@ public class baseGenTest_ISIS {
             //System.out.println("===============");
             var b = new topoBuild_ISIS();
             var confG = b.solve(routers);
-            //System.out.println(confG.toDot(false));
-            //System.out.println("===============");
+            System.out.println(confG.toDot(false));
+            System.out.println("===============");
             var c = new ranAttriGen_ISIS();
             c.generate(confG, routers);
-            System.out.println(confG.toJson().toPrettyString());
-            System.out.println("===============");
+            //System.out.println(confG.toJson().toPrettyString());
+            //System.out.println("===============");
              //generate isis core commands, all the round is same
             var router_count = routers.size();
             var routers_name = new ArrayList<String>();
