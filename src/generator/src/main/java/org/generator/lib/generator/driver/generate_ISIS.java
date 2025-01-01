@@ -61,7 +61,6 @@ public class generate_ISIS {
                 if (skipCommands(op.getOpIsis().Type())){
                     continue;
                 }
-                //System.out.println(opa);
                 //System.out.printf("add totally irrelevant op %s\n", opa.op);
                 controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.REMOVED);
                 break;
@@ -100,6 +99,9 @@ public class generate_ISIS {
                 if (skipCommands(ori_opa.getOp().Type())){
                     continue;
                 }
+                if(ori_opa.getOp().Type() == OpType_isis.IPROUTERISIS){
+                    continue;
+                }
                 var mutate_opa = actionRulePass_ISIS.mutate(ori_opa);
                 if (mutate_opa != null){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.REMOVED);
                     //System.out.printf("add mutate op %s\n", mutate_opa.op);
@@ -112,8 +114,8 @@ public class generate_ISIS {
     public static boolean skipCommands(OpType_isis opType){
         if (generate_ISIS.fastConvergence){
             switch (opType){
-                // case HELLOINTERVAL,HELLOMULTIPLIER,CSNPINTERVAL,PSNPINTERVAL
-                //         -> {return true;}
+                case IPROUTERISIS,NET
+                        -> {return true;}
             }
         }
         return false;
@@ -149,10 +151,13 @@ public class generate_ISIS {
 
 
         var gen_opag = genEqualPass_ISIS.solve(normal_controller, opas);
+        //System.out.printf("gen_opag  %s\n", gen_opag);
+        //System.out.printf("opas  %s\n", opas);
         //remove original core ops
         if (!full) {
             gen_opag.setOpgroup(gen_opag.getOps().subList(opas.getOps().size(), gen_opag.getOps().size()));
         }
+        //System.out.printf("gen_opag  %s\n", gen_opag);
         return gen_opag.toOpCtxGLeaner();
     }
 
