@@ -7,6 +7,7 @@ import org.generator.lib.frontend.driver.IO_ISIS;
 import org.generator.lib.frontend.lexical.OpType_isis;
 import org.generator.lib.generator.driver.generate_ISIS;
 import org.generator.lib.item.IR.OpCtx_ISIS;
+import org.generator.lib.item.IR.OpIsis;
 import org.generator.lib.item.IR.OpPhy_ISIS;
 import org.generator.lib.item.conf.graph.ConfGraph_ISIS;
 import org.generator.lib.item.conf.node.NodeGen_ISIS;
@@ -23,8 +24,10 @@ import org.generator.util.ran.ranHelper;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class diffTopo_ISIS {
 
@@ -79,6 +82,47 @@ public class diffTopo_ISIS {
             System.out.println(new IsisConfWriter().write(opCtxG));
         }
     }
+
+    public List<OpCtxG_ISIS> ranSplitIsisConfWithBase(OpCtxG_ISIS opCtxG, int count) {
+        // first, we split the opCtxG
+        List<OpCtxG_ISIS> splits = ranSplitIsisConf(opCtxG, count);
+        
+        // process each split
+        for (OpCtxG_ISIS split : splits) {
+            Set<String> interfaces = new HashSet<>();
+            OpCtxG_ISIS baseConfig = OpCtxG_ISIS.Of();
+            
+            // Collect the interface name
+            for (var op : split.getOps()) {
+                if (op.getOpIsis().Type() == OpType_isis.IntfName) {
+                    interfaces.add(op.getOpIsis().getNAME());
+                }
+            }
+            
+            // Add the base configuration
+            for (String intf : interfaces) {
+                // add interface name command
+                var intfOp = OpIsis.of(OpType_isis.IntfName);
+                intfOp.setNAME(intf);
+                var intfOpCtx = OpCtx_ISIS.of(intfOp);
+                baseConfig.addOp(intfOpCtx);
+                
+                // add ip router isis command
+                var iprouteOp = OpIsis.of(OpType_isis.IPROUTERISIS);
+                var iprouteOpCtx = OpCtx_ISIS.of(iprouteOp);
+                baseConfig.addOp(iprouteOpCtx);
+            }
+            
+            // add the base configuration to the split
+            var newSplit = OpCtxG_ISIS.Of();
+            newSplit.addOps(baseConfig.getOps());
+            newSplit.addOps(split.getOps());
+            splits.set(splits.indexOf(split), newSplit);
+        }
+        
+        return splits;
+    }
+
 
     /**
      *
@@ -150,7 +194,8 @@ public class diffTopo_ISIS {
                 opCtxGS.add(opCtxG);
             }
             for(int r = 0; r < router_count; r++){
-                split_confs.add(ranSplitIsisConf(opCtxGS.get(r), step_num - 1));
+                //split_confs.add(ranSplitIsisConf(opCtxGS.get(r), step_num - 1));
+                split_confs.add(ranSplitIsisConfWithBase(opCtxGS.get(r), step_num - 1));
             }
 
 

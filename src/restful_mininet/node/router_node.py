@@ -292,7 +292,7 @@ class FrrNode(Node):
             self.collect_info_isis(j, "isis-daemon", "show isis summary json", True)
             self.collect_info_isis(j, "isis-intfs", "show isis interface detail json", True)
             self.collect_info_isis(j, "neighbors", "show isis neighbor detail json", True)
-            #self.collect_info_isis(j, "routing-table", "show isis route json", True)
+            self.collect_info_isis(j, "routing-table", "show isis route json", True)
         if "zebra" in self.daemon_dict:
             self.collect_info_isis(j, "running-config", "show running-config", False)
             self.collect_info_isis(j, "intfs", "show interface json", True)
