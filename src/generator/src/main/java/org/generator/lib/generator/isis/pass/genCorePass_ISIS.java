@@ -86,7 +86,7 @@ public class genCorePass_ISIS {
         return opCtxG;
     }
 
-    private  OpCtxG_ISIS handleIntf(ISISIntf isis_intf){
+    private  OpCtxG_ISIS handleIntf(ISISIntf isis_intf, boolean isfull){
         var opCtxG = OpCtxG_ISIS.Of();
         Intf_ISIS intf = (Intf_ISIS) confg.getDstsByType(isis_intf.getName(), RelationEdge_ISIS.EdgeType.INTF).stream().findAny().get();
         {
@@ -113,13 +113,110 @@ public class genCorePass_ISIS {
             var op = addOp(opCtxG, OpType_isis.CIRCUITTYPE);
             op.setNAME(isis_intf.getLevel().toString());
         }
-        {
-            if(isis_intf.getCsnpIntervalLevel1() == isis_intf.getCsnpIntervalLevel2()){
-                var op = addOp(opCtxG, OpType_isis.CSNPINTERVAL);
-                op.setNUM(isis_intf.getCsnpIntervalLevel1());
-                op.setNAME("");
+        if(isfull){
+            {
+                if(isis_intf.getCsnpIntervalLevel1() == isis_intf.getCsnpIntervalLevel2()){
+                    var op = addOp(opCtxG, OpType_isis.CSNPINTERVAL);
+                    op.setNUM(isis_intf.getCsnpIntervalLevel1());
+                    op.setNAME("");
+                }
+                else{
+                    var op = addOp(opCtxG, OpType_isis.CSNPINTERVAL);
+                    op.setNUM(isis_intf.getCsnpIntervalLevel1());
+                    op.setNAME("level-1");
+                    var op2 = addOp(opCtxG, OpType_isis.CSNPINTERVAL);
+                    op2.setNUM(isis_intf.getCsnpIntervalLevel2());
+                    op2.setNAME("level-2");
+                }
             }
-            else{
+            {
+                if(isis_intf.getHelloIntervalLevel1() == isis_intf.getHelloIntervalLevel2()){
+                    var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
+                    op.setNUM(isis_intf.getHelloIntervalLevel1());
+                    op.setNAME("");
+                }
+                else{
+                    var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
+                    op.setNUM(isis_intf.getHelloIntervalLevel1());
+                    op.setNAME("level-1");
+                    var op2 = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
+                    op2.setNUM(isis_intf.getHelloIntervalLevel2());
+                    op2.setNAME("level-2");
+                }
+            }
+            //FIXME:it is not sure
+
+            // if(isis_intf.getHelloMultiplierlevel1()>1){
+            //     var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
+            //     op.setNAME("level-1");
+            //     op.setNUM(isis_intf.getHelloMultiplierlevel1());
+            // }
+            // else{
+            //     var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
+            //     op.setNAME("level-1");
+            //     op.setNUM(isis_intf.getHelloIntervalLevel1());
+            // }
+
+            // if(isis_intf.getHelloMultiplierlevel2() > 1){
+            //     var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
+            //     op.setNAME("level-2");
+            //     op.setNUM(isis_intf.getHelloMultiplierlevel2());
+            // }
+            // else{
+            //     var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
+            //     op.setNAME("level-2");
+            //     op.setNUM(isis_intf.getHelloIntervalLevel2());
+            // }
+
+            {
+                if(isis_intf.getHelloMultiplierlevel1()==isis_intf.getHelloMultiplierlevel2()){
+                    var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
+                    op.setNUM(isis_intf.getHelloMultiplierlevel1());
+                    op.setNAME("");
+                }
+                else{
+                    var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
+                    op.setNUM(isis_intf.getHelloMultiplierlevel1());
+                    op.setNAME("level-1");
+                    var op2 = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
+                    op2.setNUM(isis_intf.getHelloMultiplierlevel2());
+                    op2.setNAME("level-2");
+                }
+            }
+
+            {
+                if(isis_intf.getPsnpIntervalLevel1() == isis_intf.getPsnpIntervalLevel2()){
+                    var op = addOp(opCtxG, OpType_isis.PSNPINTERVAL);
+                    op.setNUM(isis_intf.getPsnpIntervalLevel1());
+                    op.setNAME("");
+                }
+                else{
+                    var op = addOp(opCtxG, OpType_isis.PSNPINTERVAL);
+                    op.setNUM(isis_intf.getPsnpIntervalLevel1());
+                    op.setNAME("level-1");
+                    var op2 = addOp(opCtxG, OpType_isis.PSNPINTERVAL);
+                    op2.setNUM(isis_intf.getPsnpIntervalLevel2());
+                    op2.setNAME("level-2");
+                }
+            }
+            {
+                if(isis_intf.getPriorityLevel1() == isis_intf.getPriorityLevel2()){
+                    var op = addOp(opCtxG, OpType_isis.ISISPRIORITY);
+                    op.setNUM(isis_intf.getPriorityLevel1());
+                    op.setNAME("");
+                }
+                else{
+                    var op = addOp(opCtxG, OpType_isis.ISISPRIORITY);
+                    op.setNUM(isis_intf.getPriorityLevel1());
+                    op.setNAME("level-1");
+                    var op2 = addOp(opCtxG, OpType_isis.ISISPRIORITY);
+                    op2.setNUM(isis_intf.getPriorityLevel2());
+                    op2.setNAME("level-2");
+                }
+            }
+        }
+        else{
+            {
                 var op = addOp(opCtxG, OpType_isis.CSNPINTERVAL);
                 op.setNUM(isis_intf.getCsnpIntervalLevel1());
                 op.setNAME("level-1");
@@ -127,14 +224,7 @@ public class genCorePass_ISIS {
                 op2.setNUM(isis_intf.getCsnpIntervalLevel2());
                 op2.setNAME("level-2");
             }
-        }
-        {
-            if(isis_intf.getHelloIntervalLevel1() == isis_intf.getHelloIntervalLevel2()){
-                var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
-                op.setNUM(isis_intf.getHelloIntervalLevel1());
-                op.setNAME("");
-            }
-            else{
+            {
                 var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
                 op.setNUM(isis_intf.getHelloIntervalLevel1());
                 op.setNAME("level-1");
@@ -142,38 +232,7 @@ public class genCorePass_ISIS {
                 op2.setNUM(isis_intf.getHelloIntervalLevel2());
                 op2.setNAME("level-2");
             }
-        }
-        //FIXME:it is not sure
-
-        // if(isis_intf.getHelloMultiplierlevel1()>1){
-        //     var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
-        //     op.setNAME("level-1");
-        //     op.setNUM(isis_intf.getHelloMultiplierlevel1());
-        // }
-        // else{
-        //     var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
-        //     op.setNAME("level-1");
-        //     op.setNUM(isis_intf.getHelloIntervalLevel1());
-        // }
-
-        // if(isis_intf.getHelloMultiplierlevel2() > 1){
-        //     var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
-        //     op.setNAME("level-2");
-        //     op.setNUM(isis_intf.getHelloMultiplierlevel2());
-        // }
-        // else{
-        //     var op = addOp(opCtxG, OpType_isis.HELLOINTERVAL);
-        //     op.setNAME("level-2");
-        //     op.setNUM(isis_intf.getHelloIntervalLevel2());
-        // }
-
-        {
-            if(isis_intf.getHelloMultiplierlevel1()==isis_intf.getHelloMultiplierlevel2()){
-                var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
-                op.setNUM(isis_intf.getHelloMultiplierlevel1());
-                op.setNAME("");
-            }
-            else{
+            {
                 var op = addOp(opCtxG, OpType_isis.HELLOMULTIPLIER);
                 op.setNUM(isis_intf.getHelloMultiplierlevel1());
                 op.setNAME("level-1");
@@ -181,15 +240,7 @@ public class genCorePass_ISIS {
                 op2.setNUM(isis_intf.getHelloMultiplierlevel2());
                 op2.setNAME("level-2");
             }
-        }
-
-        {
-            if(isis_intf.getPsnpIntervalLevel1() == isis_intf.getPsnpIntervalLevel2()){
-                var op = addOp(opCtxG, OpType_isis.PSNPINTERVAL);
-                op.setNUM(isis_intf.getPsnpIntervalLevel1());
-                op.setNAME("");
-            }
-            else{
+            {
                 var op = addOp(opCtxG, OpType_isis.PSNPINTERVAL);
                 op.setNUM(isis_intf.getPsnpIntervalLevel1());
                 op.setNAME("level-1");
@@ -197,19 +248,7 @@ public class genCorePass_ISIS {
                 op2.setNUM(isis_intf.getPsnpIntervalLevel2());
                 op2.setNAME("level-2");
             }
-        }
-        {
-            if(isis_intf.isPassive()){
-                var op = addOp(opCtxG, OpType_isis.ISISPASSIVE);
-            }
-        }
-        {
-            if(isis_intf.getPriorityLevel1() == isis_intf.getPriorityLevel2()){
-                var op = addOp(opCtxG, OpType_isis.ISISPRIORITY);
-                op.setNUM(isis_intf.getPriorityLevel1());
-                op.setNAME("");
-            }
-            else{
+            {
                 var op = addOp(opCtxG, OpType_isis.ISISPRIORITY);
                 op.setNUM(isis_intf.getPriorityLevel1());
                 op.setNAME("level-1");
@@ -219,6 +258,12 @@ public class genCorePass_ISIS {
             }
         }
         {
+            if(isis_intf.isPassive()){
+                var op = addOp(opCtxG, OpType_isis.ISISPASSIVE);
+            }
+        }
+
+        {
             if(isis_intf.getNetType() == ISISIntf.ISISNetType.POINTTOPOINT){
                 var op = addOp(opCtxG, OpType_isis.NETWORKPOINTTOPOINT);
             }
@@ -226,7 +271,7 @@ public class genCorePass_ISIS {
         return opCtxG;
     }
 
-    private List<OpCtxG_ISIS> handleIntfs(){
+    private List<OpCtxG_ISIS> handleIntfs(boolean isfull){
         List<OpCtxG_ISIS> opgs = new ArrayList<>();
         for(var intf: confg.getIntfsOfRouter(r_name)){
             if (intf.getIp() == null) continue;
@@ -243,7 +288,7 @@ public class genCorePass_ISIS {
             opgs.add(opCtxG);
         }
         for(var isis_intf: confg.getISISIntfOfRouter(r_name)){
-            opgs.add(handleIntf(isis_intf));
+            opgs.add(handleIntf(isis_intf, isfull));
         }
         return opgs;
     }
@@ -413,7 +458,7 @@ public class genCorePass_ISIS {
      * @param confg
      * @return each opCtxG is one interface or router isis
      */
-    public  List<OpCtxG_ISIS> solve(ConfGraph_ISIS confg){
+    public  List<OpCtxG_ISIS> solve(ConfGraph_ISIS confg, boolean isfull){
         this.r_name = confg.getR_name();
         this.confg = confg;
         List<OpCtxG_ISIS> opgs = new ArrayList<>();
@@ -423,7 +468,7 @@ public class genCorePass_ISIS {
         opgs.add(tmp1);
 
         //intfs
-        var tmp2s = handleIntfs();
+        var tmp2s = handleIntfs(isfull);
         opgs.addAll(tmp2s);
 
         //areas

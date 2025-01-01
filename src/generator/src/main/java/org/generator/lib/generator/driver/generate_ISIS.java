@@ -29,11 +29,13 @@ public class generate_ISIS {
      *  confg = confg.viewConfGraphOfRouter("r0");
      *  confg.setR_name("r0");
      * @param confGraph
+     * @param isfull
      * @return
      */
-    public static OpCtxG_ISIS generateCore(ConfGraph_ISIS confGraph){
+    // isfull means if true, there is an instruction missing "level", and if false, there is no instruction missing "level".
+    public static OpCtxG_ISIS generateCore(ConfGraph_ISIS confGraph,boolean isfull){
         var p = new genCorePass_ISIS(); 
-        var res1 = p.solve(confGraph);
+        var res1 = p.solve(confGraph, isfull);
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass_ISIS();
         q.solve(res1, confGraph);
@@ -56,6 +58,9 @@ public class generate_ISIS {
             while(true) {
                 var ctxOpa = ranHelper.randomElemOfList(ctxOps);
                 var op = genOpPass_ISIS.genRanOpByControl(ctxOpa.getOp().Type() == OpType_isis.IntfName);
+                if(op.getOperation().Type()== OpType_isis.PSNPINTERVAL||op.getOperation().Type() == OpType_isis.CSNPINTERVAL||op.getOperation().Type() == OpType_isis.HELLOINTERVAL||op.getOperation().Type() == OpType_isis.HELLOMULTIPLIER||op.getOperation().Type() == OpType_isis.ISISPRIORITY){
+                    op.getOperation().setNAME(ranHelper.randomElemOfList(List.of("level-1","level-2")));
+                }
                 var opa = OpAnalysis_ISIS.of(op.getOpIsis(), ctxOpa);
                 if (activeOpAs.contains(opa)) continue;
                 if (skipCommands(op.getOpIsis().Type())){

@@ -84,6 +84,7 @@ class diff:
                 
                 interface = circuit.get("interface", {})
                 if isinstance(interface, dict):
+                    interface.pop("adj-flaps", None)
                     interface.pop("last-ago", None)
                     interface.pop("snpa", None)
                     interface.pop("lan-id", None)
@@ -153,7 +154,8 @@ class diff:
                 interface = circuit.get("interface", {})
                 interface.pop("snpa", None)
                 interface.pop("ipv6-link-locals", None)
-
+                for level in interface.get("levels", []):
+                    level.pop("metric", None)
         return new_data
     
     def check_neighbors(self, rt, rd):

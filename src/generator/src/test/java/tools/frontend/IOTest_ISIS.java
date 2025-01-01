@@ -205,7 +205,7 @@ public class IOTest_ISIS {
         var core_confg = getSetConfG_ISIS(core);
         //System.out.println(core_confg);
         //System.out.println("===============");
-        var confg_to_core= generate_ISIS.generateCore(core_confg);
+        var confg_to_core= generate_ISIS.generateCore(core_confg, true);
         System.out.println(confg_to_core);
         var confg_to_core_to_confg = getSetConfG_ISIS(confg_to_core);
         //System.out.println(confg_to_core_to_confg);
@@ -230,7 +230,7 @@ public class IOTest_ISIS {
             var ori = genOp.genRandom(10000, 0.2, 0.6, 4, 0, 1, "r1");
             var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
             var confg = getSetConfG_ISIS(ori_use);
-            var gen = generate_ISIS.generateCore(confg);
+            var gen = generate_ISIS.generateCore(confg, true);
             var confg_core = getSetConfG_ISIS(gen);
             if (!confg_core.equals(confg)) {
                 try {
@@ -500,13 +500,13 @@ public class IOTest_ISIS {
            i++;
            System.out.printf("testCase %d\n", i);
            var genOp = new genOps_ISIS();
-           //var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-           var ori = new ConfReader_ISIS().read(test_st);
+           var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+           //var ori = new ConfReader_ISIS().read(test_st);
 
            var ori_use = new ConfReader_ISIS().read(new IsisConfWriter().write(ori));
            //System.out.println(ori_use);
            var confg = getSetConfG_ISIS(ori_use);
-           var gen = generate_ISIS.generateCore(confg);
+           var gen = generate_ISIS.generateCore(confg, true);
            //var gen = new ConfReader().read(test_st1);
            //System.out.println(gen.getOps().size());
            //System.out.println(reducer.reduceToCore(ori));
