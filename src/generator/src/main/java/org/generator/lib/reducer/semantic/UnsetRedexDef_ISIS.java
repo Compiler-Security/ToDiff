@@ -24,7 +24,7 @@ public class UnsetRedexDef_ISIS extends BaseRedexDef_ISIS{
                 {NOTNET, new OpType_isis[]{NET}},
                 //FIXME: we need "NOATTACHEDBIT"!
                 //{NOATTACHEDBIT, new OpType_isis[]{ATTACHEDBIT}},
-                {NOMETRICSTYLE, new OpType_isis[]{METRICSTYLE}},
+                //{NOMETRICSTYLE, new OpType_isis[]{METRICSTYLE}},
                 {NOADVERTISEHIGHMETRIC, new OpType_isis[]{ADVERTISEHIGHMETRIC}},
                 {NOSETOVERLOADBIT, new OpType_isis[]{SETOVERLOADBIT}},
                 {NOSETOVERLOADBITONSTARTUP, new OpType_isis[]{SETOVERLOADBITONSTARTUP}},

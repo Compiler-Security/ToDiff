@@ -120,7 +120,7 @@ class diff:
                     level.pop("last-run-elapsed", None)
                     level.pop("last-run-duration-usec", None)
                     level.pop("last-run-count", None)
-
+                    level.pop("lsp-purged", None)
             return new_data
     def shrink_ospfIntfs(self, n_dict:dict):
         new_dict1 = copy.deepcopy(n_dict)

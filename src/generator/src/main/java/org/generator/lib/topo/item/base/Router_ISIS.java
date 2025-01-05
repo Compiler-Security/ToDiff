@@ -26,6 +26,9 @@ public class Router_ISIS {
         return intfs.stream().filter(intf -> intf.networkId == -1).collect(Collectors.toList());
     }
 
+    public List<Intf_ISIS> getConnectedIntfs(){
+        return intfs.stream().filter(intf -> intf.networkId != -1).collect(Collectors.toList());
+    }
     public Integer getArea(){
         return area;
     }

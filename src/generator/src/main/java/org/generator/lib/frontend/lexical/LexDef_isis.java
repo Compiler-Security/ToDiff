@@ -54,7 +54,7 @@ public class LexDef_isis {
                 
                 //FIXME: we need "ATTACHEDBIT"!
                 //{ATTACHEDBIT, "attached-bit {NAME(receive ignore,send)}"},
-                {METRICSTYLE, "metric-style {NAME(narrow,transition,wide)}"},
+                //{METRICSTYLE, "metric-style {NAME(narrow,transition,wide)}"},
                 {ADVERTISEHIGHMETRIC, "advertise-high-metrics"},
                 {SETOVERLOADBIT, "set-overload-bit"},
                 {SETOVERLOADBITONSTARTUP, "set-overload-bit on-startup {NUM(0-86400)}"},
@@ -83,7 +83,7 @@ public class LexDef_isis {
                 {NOTNET, "no net {NET}"},
                 //FIXME: we need "NOATTACHEDBIT"!
                 //{NOATTACHEDBIT, "no attached-bit {NAME(receive ignore,send)}"},
-                {NOMETRICSTYLE, "no metric-style {NAME(narrow,transition,wide)}"},
+                //{NOMETRICSTYLE, "no metric-style {NAME(narrow,transition,wide)}"},
                 {NOADVERTISEHIGHMETRIC, "no advertise-high-metrics"},
                 {NOSETOVERLOADBIT, "no set-overload-bit"},
                 {NOSETOVERLOADBITONSTARTUP, "no set-overload-bit on-startup {NUM(0-86400)}"},

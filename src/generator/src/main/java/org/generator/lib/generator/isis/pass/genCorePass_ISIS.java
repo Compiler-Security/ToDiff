@@ -59,10 +59,10 @@ public class genCorePass_ISIS {
         var isis_daemon_name = NodeGen_ISIS.getISISDaemonName(isis_name);
         if (confg.containsNode(isis_daemon_name)){
             ISISDaemon daemon = confg.getNodeNotNull(isis_daemon_name);
-            {
-                var op = addOp(opCtxG, OpType_isis.METRICSTYLE);
-                op.setNAME(daemon.getMetricStyle().toString());
-            }
+            // {
+            //     var op = addOp(opCtxG, OpType_isis.METRICSTYLE);
+            //     op.setNAME(daemon.getMetricStyle().toString());
+            // }
             {
                 if(daemon.isAdvertisehighmetrics()){
                     var op = addOp(opCtxG, OpType_isis.ADVERTISEHIGHMETRIC);

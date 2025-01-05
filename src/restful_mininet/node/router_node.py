@@ -300,6 +300,15 @@ class FrrNode(Node):
         #warnaln("end dump ospf json", "")
         return j
     
+    def dump_isis_database(self):
+        info = self.daemon_cmds(["show isis database detail json"])
+        return info
+        # try:
+        #     return json.loads(info)
+        # except Exception as e:
+        #     traceback.print_exception(e)
+        #     return None
+
     def dump_neighbor_info(self):
         info = self.daemon_cmds(["show ip ospf neighbor json"])
         try:
@@ -339,6 +348,14 @@ class FrrNode(Node):
         except Exception as e:
             traceback.print_exception(e)
             return None
+    def dump_isis_route_info(self):
+        info = self.daemon_cmds(["show isis route "])
+        return info
+        # try:
+        #     return json.loads(info)
+        # except Exception as e:
+        #     traceback.print_exception(e)
+        #     return None
 if __name__ == "__main__":
     setLogLevel('info')
     WORK_DIR = path.join(path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__))))), "test",

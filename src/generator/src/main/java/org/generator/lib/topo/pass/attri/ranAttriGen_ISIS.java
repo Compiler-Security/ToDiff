@@ -87,7 +87,7 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
         daemon.setLspmtu(ranHelper.randomInt(128, 4352));
         daemon.setOverloadbitonstartup(ranHelper.randomInt(0, 86400));
         daemon.setSetoverloadbit(ranHelper.randomInt(0, 1) == 0);
-        daemon.setMetricStyle(ranHelper.randomElemOfList(Arrays.asList(ISISDaemon.metricstyle.values())));
+        //daemon.setMetricStyle(ranHelper.randomElemOfList(Arrays.asList(ISISDaemon.metricstyle.values())));
     }
 
     private void generate_ISIS_Intf_by_same_network(List<ISISIntf> isisIntfs){
