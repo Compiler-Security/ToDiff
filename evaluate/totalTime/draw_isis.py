@@ -3,7 +3,7 @@ import numpy as np
 import json
 
 # 读取 JSON 数据
-with open("/home/binshui/topo-fuzz/evaluate/totalTime/dataISIS.json") as fp:
+with open("/home/binshui/topo-fuzz/evaluate/totalTime/dataOSPF.json") as fp:
     res = json.load(fp)
 
 # 获取路由器数量和时间数据
@@ -27,19 +27,19 @@ print(command_count.sum() / 8 / 15)
 x_pos = np.arange(len(router_count))  # 为每个刻度点生成一个相同间距的索引
 
 # 创建图形
-fig, ax1 = plt.subplots()
+fig, ax1 = plt.subplots(figsize=(12, 6))
 
 # 绘制堆叠柱状图
 #ax1.bar(x_pos, part4_time, label='Differentiating Results Time', color='orange')
-ax1.bar(x_pos, part3_time, bottom=part1_time + part2_time, label='Stage1: Generating Valid AS', color='gold')
-ax1.bar(x_pos, part2_time, bottom=part1_time, label='Stage2: Generating Equivalent Topology', color='lightcoral')
-ax1.bar(x_pos, part1_time, label='Stage3: Convergence Determination \nAnd Result comparision', color='skyblue')
+ax1.bar(x_pos, part3_time, bottom=part1_time + part2_time, label='Step1: Valid Network Generation', color='gold')
+ax1.bar(x_pos, part2_time, bottom=part1_time, label='Stage2: Topology Synthesis', color='lightcoral')
+ax1.bar(x_pos, part1_time, label='Stage3: Network Execution \n And Result Comparison', color='skyblue')
 
 
 
 # 设置左轴标签
-ax1.set_xlabel('Router Count')
-ax1.set_ylabel('Execution Time (seconds)', color='black')
+ax1.set_xlabel('# Routers')
+ax1.set_ylabel('Execution Time (s)', color='black')
 #ax1.set_title('Four Stages Time and Command Count for Different Router Counts')
 
 # 设置横轴刻度
@@ -48,7 +48,7 @@ ax1.set_xticklabels(router_count)
 
 # 添加右侧的y轴
 ax2 = ax1.twinx()  # 创建一个共享x轴的右侧y轴
-ax2.plot(x_pos, command_count, label='Command Count', color='green', marker='o', linestyle='-', linewidth=2)
+ax2.plot(x_pos, command_count, label='# Commands', color='green', marker='o', linestyle='-', linewidth=2)
 ax2.set_ylabel('Command Count', color='black')
 
 # 设置图例
@@ -60,7 +60,7 @@ fig.subplots_adjust(right=0.85)
 fig.tight_layout()
 
 # 显示图形
-plt.savefig("/home/binshui/topo-fuzz/evaluate/totalTime/diagramISIS.png", format='png')
+plt.savefig("/home/binshui/topo-fuzz/evaluate/totalTime/diagramOSPF.png", format='png')
 
 # 显示图形
 plt.show()
