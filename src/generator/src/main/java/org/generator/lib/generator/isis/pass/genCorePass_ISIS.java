@@ -262,6 +262,16 @@ public class genCorePass_ISIS {
                 var op = addOp(opCtxG, OpType_isis.ISISPASSIVE);
             }
         }
+        {
+            if(!isis_intf.isThreeWayHandshake()){
+                var op = addOp(opCtxG, OpType_isis.NOTHREEWAYHANDSHAKE);
+            }
+        }
+        {
+            if(!isis_intf.isHelloPadding()){
+                var op = addOp(opCtxG, OpType_isis.NOHELLOPADDING);
+            }
+        }
 
         {
             if(isis_intf.getNetType() == ISISIntf.ISISNetType.POINTTOPOINT){

@@ -105,6 +105,14 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
                 cur_isis_intf.setPassive(true);
             }
 
+            case NOHELLOPADDING ->{
+                cur_isis_intf.setHelloPadding(false);
+            }
+
+            case NOTHREEWAYHANDSHAKE ->{
+                cur_isis_intf.setThreeWayHandshake(false);
+            }
+
             case NETWORKPOINTTOPOINT ->{
                 cur_isis_intf.setNetType(ISISIntf.ISISNetType.POINTTOPOINT);
             }

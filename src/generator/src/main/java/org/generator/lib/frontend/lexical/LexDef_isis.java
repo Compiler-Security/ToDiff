@@ -67,7 +67,7 @@ public class LexDef_isis {
                 {IPAddr, "ip address {IP}"},
                 {CIRCUITTYPE, "isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
                 {CSNPINTERVAL, "isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2,_)}"},
-                //{HELLOPADDING, "isis hello padding"},
+                {HELLOPADDING, "isis hello padding"},
                 {HELLOINTERVAL, "isis hello-interval {NAME(level-1,level-2,_)} {NUM(1-600)} "},
                 {HELLOMULTIPLIER, "isis hello-multiplier {NAME(level-1,level-2,_)} {NUM(2-100)}"},
                 //{ISISMETRICLEVEL1, "isis metric level-1 {NUM(0-255)}"},
@@ -76,7 +76,7 @@ public class LexDef_isis {
                 {ISISPASSIVE, "isis passive"},
                 {ISISPRIORITY, "isis priority {NUM(0-127)} {NAME(level-1,level-2,_)}"},
                 {PSNPINTERVAL, "isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2,_)}"},
-                //{THREEWAYHANDSHAKE, "isis three-way-handshake"},
+                {THREEWAYHANDSHAKE, "isis three-way-handshake"},
 
                 // no isis
                 {NORISIS, "no router isis 1"},
@@ -94,7 +94,7 @@ public class LexDef_isis {
                 {NOIPAddr, "no ip address {IP}"},
                 {NOCIRCUITTYPE, "no isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
                 {NOCSNPINTERVAL, "no isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2,_)}"},
-                //{NOHELLOPADDING, "no isis hello padding"},
+                {NOHELLOPADDING, "no isis hello padding"},
                 {NOHELLOINTERVAL, "no isis hello-interval {NAME(level-1,level-2,_)} {NUM(1-600)} "},
                 {NOHELLOMULTIPLIER, "no isis hello-multiplier {NAME(level-1,level-2,_)} {NUM(2-100)}"},
                 //{NOISISMETRICLEVEL1, "no isis metric level-1 {NUM(0-255)}"},
@@ -103,7 +103,7 @@ public class LexDef_isis {
                 {NOISISPASSIVE, "no isis passive"},
                 {NOISISPRIORITY, "no isis priority {NUM(0-127)} {NAME(level-1,level-2,_)}"},
                 {NOPSNPINTERVAL, "no isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2,_)}"},
-                //{NOTHREEWAYHANDSHAKE, "no isis three-way-handshake"},
+                {NOTHREEWAYHANDSHAKE, "no isis three-way-handshake"},
                 
 
               

@@ -76,8 +76,8 @@ public class baseGenTest_ISIS {
             }catch (IOException e){
                 e.printStackTrace();
             }
-            System.out.println(stringWriter.toString());
-            System.out.println("===============");
+            //System.out.println(stringWriter.toString());
+            //System.out.println("===============");
             var b = new topoBuild_ISIS();
             var confG = b.solve(routers);
             //System.out.println(confG.toDot(false));
@@ -101,32 +101,32 @@ public class baseGenTest_ISIS {
             for(int i = 0; i < router_count; i++) {
                 isis_cores_isfull.add(getConfOfRouter(routers_name.get(i), confG, false, true));
             }
-            // List<OpCtxG_ISIS> isis_cores_equal = new ArrayList<>();
-            // for(int i = 0; i < router_count; i++) {
-            //     var opCtxG = generate_ISIS.generateEqualOfCore(isis_cores.get(i), false);
-            //     isis_cores_equal.add(opCtxG);
-            // }
+            List<OpCtxG_ISIS> isis_cores_equal = new ArrayList<>();
+            for(int i = 0; i < router_count; i++) {
+                var opCtxG = generate_ISIS.generateEqualOfCore(isis_cores.get(i), true);
+                isis_cores_equal.add(opCtxG);
+            }
 
-            // for(int i = 0; i < router_count; i++) {
-            //     var confg_equal = getSetConfG_ISIS(isis_cores_equal.get(i), routers.get(i), i);
-            //     var confg_gen = getSetConfG_ISIS(isis_cores_isfull.get(i), routers.get(i), i);
-            //     if (!confg_equal.equals(confg_gen)){
-            //         System.out.println(isis_cores_isfull.get(i));
-            //         System.out.println("===============");
-            //         System.out.println(isis_cores_equal.get(i));
-            //         System.out.println(compareJson(confg_gen.toJson(), confg_equal.toJson()));
-            //     }
+            for(int i = 0; i < router_count; i++) {
+                var confg_equal = getSetConfG_ISIS(isis_cores_equal.get(i), routers.get(i), i);
+                var confg_gen = getSetConfG_ISIS(isis_cores_isfull.get(i), routers.get(i), i);
+                if (!confg_equal.equals(confg_gen)){
+                    System.out.println(isis_cores_isfull.get(i));
+                    System.out.println("===============");
+                    System.out.println(isis_cores_equal.get(i));
+                    System.out.println(compareJson(confg_gen.toJson(), confg_equal.toJson()));
+                }
 
-            // }
+             }
             // System.out.println(isis_cores.get(0));
             // System.out.println("===============");
             // System.out.println(isis_cores_equal.get(0));
-            for(int i = 0; i < router_count; i++) {
-                System.out.println(routers_name.get(i));
-                System.out.println(new IsisConfWriter().write(isis_cores.get(i)));
-                System.out.println("===============");
-            }
-            if(x == 1)
+            // for(int j = 0; j < router_count; j++) {
+            //     System.out.println(routers_name.get(j));
+            //     System.out.println(new IsisConfWriter().write(isis_cores.get(j)));
+            //     System.out.println("===============");
+            // }
+            if(x == 100)
             {
                 break;
             }

@@ -511,11 +511,11 @@ public class IOTest_ISIS {
            //System.out.println(gen.getOps().size());
            //System.out.println(reducer.reduceToCore(ori));
            //System.out.println("========");
-           System.out.println(gen);
-		   System.out.println("========");
+           //System.out.println(gen);
+		   //System.out.println("========");
            var confg_core = getSetConfG_ISIS(gen);
-           System.out.println(confg);
-		   System.out.println("========");
+           //System.out.println(confg);
+		   //System.out.println("========");
            //System.out.println(confg_core);
            if (!confg_core.equals(confg)) {
                System.out.println(gen);
@@ -525,7 +525,7 @@ public class IOTest_ISIS {
            assert confg_core.equals(confg) : "CORE WRONG";
            reducer.s = 0;
            var gen_equal = generate_ISIS.generateEqualOfCore(gen, true);
-           System.out.println(gen_equal);
+           //System.out.println(gen_equal);
            var gen_equal_use = new ConfReader_ISIS().read(new IsisConfWriter().write(gen_equal));
            //System.out.println(gen_equal_use);
            var confg_equal = getSetConfG_ISIS(gen_equal);
@@ -536,7 +536,7 @@ public class IOTest_ISIS {
                System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
            }
            assert confg_equal.equals(confg) : "MUTATE WRONG";
-           if(i == 1){
+           if(i == 100){
                break;
         }
     }

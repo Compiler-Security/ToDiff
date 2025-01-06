@@ -34,7 +34,7 @@ public class UnsetRedexDef_ISIS extends BaseRedexDef_ISIS{
                 {NOIPAddr, new OpType_isis[]{IPAddr}},
                 {NOCIRCUITTYPE, new OpType_isis[]{CIRCUITTYPE}},
                 {NOCSNPINTERVAL, new OpType_isis[]{CSNPINTERVAL}},
-                //{NOHELLOPADDING, new OpType_isis[]{HELLOPADDING}},
+                {HELLOPADDING, new OpType_isis[]{NOHELLOPADDING}},
                 {NOHELLOINTERVAL, new OpType_isis[]{HELLOINTERVAL}},
                 {NOHELLOMULTIPLIER, new OpType_isis[]{HELLOMULTIPLIER}},
                 //{NOISISMETRICLEVEL1, new OpType_isis[]{ISISMETRICLEVEL1}},
@@ -43,7 +43,7 @@ public class UnsetRedexDef_ISIS extends BaseRedexDef_ISIS{
                 {NOISISPASSIVE, new OpType_isis[]{ISISPASSIVE}},
                 {NOISISPRIORITY, new OpType_isis[]{ISISPRIORITY}},
                 {NOPSNPINTERVAL, new OpType_isis[]{PSNPINTERVAL}},
-                //{NOTHREEWAYHANDSHAKE, new OpType_isis[]{THREEWAYHANDSHAKE}},
+                {THREEWAYHANDSHAKE, new OpType_isis[]{NOTHREEWAYHANDSHAKE}},
 
         };
         var seeds = new ArrayList<Object[]>();

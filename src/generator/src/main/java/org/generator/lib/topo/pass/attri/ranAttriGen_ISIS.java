@@ -111,6 +111,8 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
             //self
             //FIXME for testing this ratio should be considered
             isisIntf.setPassive(ranHelper.randomInt(0, 10) == 0);
+            isisIntf.setHelloPadding(ranHelper.randomInt(0, 1) == 0);
+            isisIntf.setThreeWayHandshake(ranHelper.randomInt(0, 1) == 0);
             //isisIntf.setCost(ranHelper.randomInt(1, 65535));
             isisIntf.setPriorityLevel1(ranHelper.randomInt(0, 127));
             isisIntf.setPriorityLevel2(ranHelper.randomInt(0, 127));
