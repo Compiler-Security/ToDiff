@@ -116,11 +116,11 @@ ARG commit
 ARG build_mode="interested"
 
 #download frr source code
-RUN cd && pwd && ls -al && git clone https://github.com/Shbinging/frr.git
+RUN cd && pwd && ls -al && git clone https://github.com/FRRouting/frr.git
 
-#checkout frr to interested commit
-RUN cd /home/frr/frr && \
-    git checkout -b test origin/test
+# checkout frr to interested commit
+# RUN cd /home/frr/frr && \
+#     git checkout -b test origin/test
 
 #build and install frr to /usr/lib/frr
 RUN if [ "$build_mode" = "full" ]; then \
