@@ -105,23 +105,23 @@ class diff:
         return new_dict
     
     def shrink_isisDaemon(self, data: dict) -> dict:
-            new_data = copy.deepcopy(data)
-
-            new_data.pop("process-id", None)
-            new_data.pop("up-time", None)
-
-            for area in new_data.get("areas", []):
+        new_data = copy.deepcopy(data)
+        
+        for vrf in new_data.get("vrfs", []):
+            vrf.pop("process-id", None)
+            vrf.pop("up-time", None)
+            
+            for area in vrf.get("areas", []):
                 area.pop("tx-pdu-type", None)
                 area.pop("rx-pdu-type", None)
                 
-                # 处理 levels 数组中的字段
                 for level in area.get("levels", []):
                     level.pop("lsp0-regenerated", None)
                     level.pop("last-run-elapsed", None)
                     level.pop("last-run-duration-usec", None)
                     level.pop("last-run-count", None)
-                    level.pop("lsp-purged", None)
-            return new_data
+        
+        return new_data
     def shrink_ospfIntfs(self, n_dict:dict):
         new_dict1 = copy.deepcopy(n_dict)
         for ospf_intf in new_dict1.values():

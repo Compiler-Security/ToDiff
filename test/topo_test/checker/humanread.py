@@ -151,7 +151,7 @@ import util
 if __name__ == "__main__":
     #rd from 0
     #human_read_ospf(0, 0, "/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744_r1/test1726036744_r1_res.json")
-    test_name = util.get_test_name_5("61414")
+    test_name = util.get_test_name_5("49526")
     h = humandReader(util.get_result_file_path(test_name))
     # h = humandReader("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1735885079.json")
     h.readAll()

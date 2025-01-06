@@ -27,6 +27,6 @@ h.run_phys("""
 h.net.net.start()
 time.sleep(10)
 # h.run_isis("r1", "interface r1-eth0;isis circuit-type level-2")
-h.run_isis("r1", "show isis interface detail")
+h.run_isis("r1", "show running-config")
 CLI(h.net.net)
 

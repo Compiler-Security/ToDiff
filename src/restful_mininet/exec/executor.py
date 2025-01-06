@@ -158,12 +158,13 @@ class executor:
             if res == None:
                 warnln(f"    -check router {r_name} n")
                 return False
-            for area in res.get("areas", []):
-                # 处理 levels 数组中的字段
-                for level in area.get("levels", []):
-                    if level["spf"] != "no pending":
-                        warnln(f"    -check router {r_name} da")
-                        return False
+
+            for vrf in res.get("vrfs", []):
+                for area in vrf.get("areas", []):
+                    for level in area.get("levels", []):
+                        if level.get("spf") != "no pending":
+                            warnln(f"    -check router {r_name} da")
+                            return False
             res = net.net.nameToNode[r_name].dump_isis_intfs_info()
 
             for area in res.get("areas", []):
@@ -364,5 +365,5 @@ class executor:
         return res
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1735961414.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 30, 600)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1736081045.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 30, 600)
     t.test()
