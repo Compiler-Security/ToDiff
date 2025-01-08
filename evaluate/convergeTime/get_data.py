@@ -25,6 +25,6 @@ for test_name in os.listdir(confDir):
         else:
             res[r_num]["after"] = r["test"]["total_test_time"]
 res = {key:res[key] for key in sorted(res.keys())}
-with open(path.join(up(path.abspath(__file__ )), "data4.txt"), "w") as fp:
+with open(path.join(up(path.abspath(__file__ )), "OSPFdata8.txt"), "w") as fp:
     for r in res.keys():
         fp.write(str(res[r]["before"]) + '\t' + str(res[r]["after"]) + "\n")
