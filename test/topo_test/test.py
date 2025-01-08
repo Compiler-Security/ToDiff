@@ -7,7 +7,7 @@ dockerDir = up(up(up(path.abspath(__file__))))
 #topo-fuzz/test/topo_test/
 dataDir = up(path.abspath(__file__))
 
-gridNum = 5
+gridNum = 10
 mxWaitTime = 600
 minWaitTime = 5
 
