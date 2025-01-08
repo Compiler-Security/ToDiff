@@ -29,11 +29,13 @@ public class generate_ISIS {
      *  confg = confg.viewConfGraphOfRouter("r0");
      *  confg.setR_name("r0");
      * @param confGraph
+     * @param isfull
      * @return
      */
-    public static OpCtxG_ISIS generateCore(ConfGraph_ISIS confGraph){
+    // isfull means if true, there is an instruction missing "level", and if false, there is no instruction missing "level".
+    public static OpCtxG_ISIS generateCore(ConfGraph_ISIS confGraph,boolean isfull){
         var p = new genCorePass_ISIS(); 
-        var res1 = p.solve(confGraph);
+        var res1 = p.solve(confGraph, isfull);
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass_ISIS();
         q.solve(res1, confGraph);
@@ -56,12 +58,14 @@ public class generate_ISIS {
             while(true) {
                 var ctxOpa = ranHelper.randomElemOfList(ctxOps);
                 var op = genOpPass_ISIS.genRanOpByControl(ctxOpa.getOp().Type() == OpType_isis.IntfName);
+                if(op.getOperation().Type()== OpType_isis.PSNPINTERVAL||op.getOperation().Type() == OpType_isis.CSNPINTERVAL||op.getOperation().Type() == OpType_isis.HELLOINTERVAL||op.getOperation().Type() == OpType_isis.HELLOMULTIPLIER||op.getOperation().Type() == OpType_isis.ISISPRIORITY){
+                    op.getOperation().setNAME(ranHelper.randomElemOfList(List.of("level-1","level-2")));
+                }
                 var opa = OpAnalysis_ISIS.of(op.getOpIsis(), ctxOpa);
                 if (activeOpAs.contains(opa)) continue;
                 if (skipCommands(op.getOpIsis().Type())){
                     continue;
                 }
-                //System.out.println(opa);
                 //System.out.printf("add totally irrelevant op %s\n", opa.op);
                 controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.REMOVED);
                 break;
@@ -100,6 +104,9 @@ public class generate_ISIS {
                 if (skipCommands(ori_opa.getOp().Type())){
                     continue;
                 }
+                if(ori_opa.getOp().Type() == OpType_isis.IPROUTERISIS){
+                    continue;
+                }
                 var mutate_opa = actionRulePass_ISIS.mutate(ori_opa);
                 if (mutate_opa != null){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis_ISIS.STATE.REMOVED, OpAnalysis_ISIS.STATE.REMOVED);
                     //System.out.printf("add mutate op %s\n", mutate_opa.op);
@@ -112,8 +119,8 @@ public class generate_ISIS {
     public static boolean skipCommands(OpType_isis opType){
         if (generate_ISIS.fastConvergence){
             switch (opType){
-                // case HELLOINTERVAL,HELLOMULTIPLIER,CSNPINTERVAL,PSNPINTERVAL
-                //         -> {return true;}
+                case IPROUTERISIS,NET,HELLOINTERVAL,HELLOMULTIPLIER
+                        -> {return true;}
             }
         }
         return false;
@@ -149,10 +156,13 @@ public class generate_ISIS {
 
 
         var gen_opag = genEqualPass_ISIS.solve(normal_controller, opas);
+        //System.out.printf("gen_opag  %s\n", gen_opag);
+        //System.out.printf("opas  %s\n", opas);
         //remove original core ops
         if (!full) {
             gen_opag.setOpgroup(gen_opag.getOps().subList(opas.getOps().size(), gen_opag.getOps().size()));
         }
+        //System.out.printf("gen_opag  %s\n", gen_opag);
         return gen_opag.toOpCtxGLeaner();
     }
 

@@ -3,7 +3,10 @@ package tools.topo;
 import org.generator.lib.generator.driver.generate_ISIS;
 import org.generator.lib.item.conf.graph.ConfGraph_ISIS;
 import org.generator.lib.item.conf.node.NodeGen_ISIS;
+import org.generator.lib.item.conf.node.phy.Intf_ISIS;
+import org.generator.lib.topo.item.base.Router_ISIS;
 import org.generator.lib.item.opg.OpCtxG_ISIS;
+import org.generator.lib.reducer.driver.reducer_ISIS;
 import org.generator.lib.reducer.pass.phyArgPass_ISIS;
 import org.generator.lib.topo.driver.topo_ISIS;
 import org.generator.lib.topo.pass.attri.ranAttriGen_ISIS;
@@ -23,7 +26,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
-
+import static org.generator.util.diff.differ.compareJson;
 public class baseGenTest_ISIS {
     @Test
     public void testRandomBaseGen(){
@@ -33,7 +36,7 @@ public class baseGenTest_ISIS {
             x++;
             System.out.printf("testCase %d\n", x);
             var ran = new ranBaseGen_ISIS();
-            var routers = ran.generate(3, 2, 2, 3);
+            var routers = ran.generate(5, 3, 3, 3);
             Graph graph = new MultiGraph("BaseGraph");
             for(int i = 0; i < routers.size(); i++){
                 var node = graph.addNode("r%d".formatted(i));
@@ -81,8 +84,8 @@ public class baseGenTest_ISIS {
             //System.out.println("===============");
             var c = new ranAttriGen_ISIS();
             c.generate(confG, routers);
-            System.out.println(confG.toJson().toPrettyString());
-            System.out.println("===============");
+            //System.out.println(confG.toJson().toPrettyString());
+            //System.out.println("===============");
              //generate isis core commands, all the round is same
             var router_count = routers.size();
             var routers_name = new ArrayList<String>();
@@ -92,33 +95,73 @@ public class baseGenTest_ISIS {
             List<OpCtxG_ISIS> isis_cores = new ArrayList<>();
             //System.out.println(confG);
             for(int i = 0; i < router_count; i++) {
-                isis_cores.add(getConfOfRouter(routers_name.get(i), confG, false));
+                isis_cores.add(getConfOfRouter(routers_name.get(i), confG, false, false));
             }
+            List<OpCtxG_ISIS> isis_cores_isfull = new ArrayList<>();
             for(int i = 0; i < router_count; i++) {
-                System.out.println(routers_name.get(i));
-                System.out.println(new IsisConfWriter().write(isis_cores.get(i)));
-                System.out.println("===============");
+                isis_cores_isfull.add(getConfOfRouter(routers_name.get(i), confG, false, true));
             }
-            if(x == 1)
+            List<OpCtxG_ISIS> isis_cores_equal = new ArrayList<>();
+            for(int i = 0; i < router_count; i++) {
+                var opCtxG = generate_ISIS.generateEqualOfCore(isis_cores.get(i), true);
+                isis_cores_equal.add(opCtxG);
+            }
+
+            for(int i = 0; i < router_count; i++) {
+                var confg_equal = getSetConfG_ISIS(isis_cores_equal.get(i), routers.get(i), i);
+                var confg_gen = getSetConfG_ISIS(isis_cores_isfull.get(i), routers.get(i), i);
+                if (!confg_equal.equals(confg_gen)){
+                    System.out.println(isis_cores_isfull.get(i));
+                    System.out.println("===============");
+                    System.out.println(isis_cores_equal.get(i));
+                    System.out.println(compareJson(confg_gen.toJson(), confg_equal.toJson()));
+                }
+
+             }
+            // System.out.println(isis_cores.get(0));
+            // System.out.println("===============");
+            // System.out.println(isis_cores_equal.get(0));
+            // for(int j = 0; j < router_count; j++) {
+            //     System.out.println(routers_name.get(j));
+            //     System.out.println(new IsisConfWriter().write(isis_cores.get(j)));
+            //     System.out.println("===============");
+            // }
+            if(x == 100)
             {
                 break;
             }
         }
         
     }
-    OpCtxG_ISIS getConfOfRouter(String r_name, ConfGraph_ISIS g, boolean mutate){
+    OpCtxG_ISIS getConfOfRouter(String r_name, ConfGraph_ISIS g, boolean mutate, boolean isfull){
         var confg = g.viewConfGraphOfRouter(r_name);
         confg.setR_name(r_name);
         if (mutate) {
-            return generate_ISIS.generateEqualOfCore(generate_ISIS.generateCore(confg), false);
+            return generate_ISIS.generateEqualOfCore(generate_ISIS.generateCore(confg, isfull), false);
         }else{
-            return generate_ISIS.generateCore(confg);
+            return generate_ISIS.generateCore(confg, isfull);
         }
     }
     @Test
     public void testDiffTopo(){
         var d = new diffTopo();
         d.main();
+    }
+
+    ConfGraph_ISIS getSetConfG_ISIS(OpCtxG_ISIS conf, Router_ISIS router, int i){
+        ConfGraph_ISIS g = getConfG_ISIS(NodeGen_ISIS.getRouterName(i), router);
+        reducer_ISIS.reduceToConfG(conf, g);
+        return g;
+    }
+    ConfGraph_ISIS getConfG_ISIS(String r_name, Router_ISIS router){
+        var confg = new ConfGraph_ISIS(r_name);
+        confg.addNode(new org.generator.lib.item.conf.node.phy.Router_ISIS(r_name));
+        for(int i = 0; i < router.intfs.size(); i++){
+            var intf_name = NodeGen_ISIS.getIntfName(r_name, i);
+            confg.addNode(new Intf_ISIS(intf_name));
+            confg.addIntfRelation(intf_name, r_name);
+        }
+        return confg;
     }
 
     // @Test

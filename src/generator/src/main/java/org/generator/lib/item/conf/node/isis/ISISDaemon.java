@@ -53,42 +53,42 @@ public class ISISDaemon extends AbstractNode_ISIS {
         this.lspmtu = lspmtu;
     }
 
-    public enum metricstyle implements StringEnum{
-        NARROW("narrow"),
-        TRANSITION("transition"),
-        WIDE("wide");
+    // public enum metricstyle implements StringEnum{
+    //     NARROW("narrow"),
+    //     TRANSITION("transition"),
+    //     WIDE("wide");
 
-        private final String template;
-        metricstyle(String template){
-            this.template = template;
-        }
+    //     private final String template;
+    //     metricstyle(String template){
+    //         this.template = template;
+    //     }
 
-        @Override
-        public boolean match(String st) {
-            return new AbstractStringEnum(template).match(st);
-        }
+    //     @Override
+    //     public boolean match(String st) {
+    //         return new AbstractStringEnum(template).match(st);
+    //     }
 
-        static public Optional<metricstyle> of(String st){
-            return Arrays.stream(metricstyle.values())
-                    .filter(x -> x.match(st))
-                    .findFirst();
-        }
+    //     static public Optional<metricstyle> of(String st){
+    //         return Arrays.stream(metricstyle.values())
+    //                 .filter(x -> x.match(st))
+    //                 .findFirst();
+    //     }
 
-        @Override
-        public String toString() {
-            return template;
-        }
-    }
+    //     @Override
+    //     public String toString() {
+    //         return template;
+    //     }
+    // }
 
-    metricstyle metricStyle;
+    // metricstyle metricStyle;
 
-    public metricstyle getMetricStyle() {
-        return metricStyle;
-    }
+    // public metricstyle getMetricStyle() {
+    //     return metricStyle;
+    // }
 
-    public void setMetricStyle(metricstyle metricStyle) {
-        this.metricStyle = metricStyle;
-    }
+    // public void setMetricStyle(metricstyle metricStyle) {
+    //     this.metricStyle = metricStyle;
+    // }
 
     boolean advertisehighmetrics;
 
@@ -105,7 +105,7 @@ public class ISISDaemon extends AbstractNode_ISIS {
         setoverloadbit = false;
         overloadbitonstartup = 0;
         lspmtu = 1492; 
-        metricStyle = metricstyle.WIDE;
+        //metricStyle = metricstyle.WIDE;
         advertisehighmetrics = false;
     }
 

@@ -158,11 +158,20 @@ class executor:
             if res == None:
                 warnln(f"    -check router {r_name} n")
                 return False
+
+            for vrf in res.get("vrfs", []):
+                for area in vrf.get("areas", []):
+                    for level in area.get("levels", []):
+                        if level.get("spf") != "no pending":
+                            warnln(f"    -check router {r_name} da")
+                            return False
+            res = net.net.nameToNode[r_name].dump_isis_intfs_info()
+
             for area in res.get("areas", []):
-                # 处理 levels 数组中的字段
-                for level in area.get("levels", []):
-                    if level["spf"] != "no pending":
-                        warnln(f"    -check router {r_name} da")
+                for circuit in area.get("circuits", []):
+                    interface = circuit.get("interface", {})
+                    if interface.get("state") == "Initializing":
+                        warnln(f"    -check router {r_name} in")
                         return False
             warnln(f"    -check router {r_name} y")
         return True
@@ -308,7 +317,7 @@ class executor:
             
             sleep_time = commands[i]['waitTime']
             erroraln(f"wait {sleep_time} s ", "")
-            
+            res[i]['database']={}
             if sleep_time == -1:
                 #handle convergence
                     #min(_check_convergence() + minWaitTime, maxWaitTime)
@@ -328,6 +337,12 @@ class executor:
                             break
                         else:
                             time.sleep(10)
+                for r_name in self.routers:
+                #some routers may be deleted
+                    if r_name not in net.net.nameToNode:
+                        continue
+                    res[i]['database'][r_name] = net.net.nameToNode[r_name].dump_isis_route_info()
+                    print(net.net.nameToNode[r_name].dump_isis_route_info())
             else:
                 time.sleep(sleep_time)
             erroraln("+ collect result", "")
@@ -350,5 +365,5 @@ class executor:
         return res
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1728371895_r0.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 30)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1736081045.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 30, 600)
     t.test()

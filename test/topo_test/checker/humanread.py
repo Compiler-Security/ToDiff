@@ -65,11 +65,34 @@ class humandReader():
                     res.write(f"    {c}\n")
                 res.write(f"        result: '{command_res}'\n\n")
         self.dump_to_file(new_name, res.getvalue())
-    
+
+    def readIsisOfRoundOfRouter(self, rd, rt):
+        new_name = path.basename(self.file_path)
+        #test298239_ospf_rd2_rt1.txt
+        new_name = new_name.split(".")[0] + f"_isis_rd{rd}_rt{rt}.txt"
+        router_name = self.routers[rt]
+
+        res = io.StringIO()
+        step_nums = self.data["step_nums"][rd]
+        res.write(f"round {rd}, router{rt}, total_step{step_nums}\n")
+        for i in range(step_nums):
+            res.write(f"step {i}\n")
+            isis_commands = self.data["commands"][rd][i]["isis"][rt]
+            if i == 0:
+                commands_res = [""] * len(isis_commands)
+            else:
+                commands_res = self.data["test"]["result"][rd][i]["exec"]["isis"][router_name]
+            for command, command_res in zip(isis_commands, commands_res):
+                for c in command.split(";"):
+                    res.write(f"    {c}\n")
+                res.write(f"        result: '{command_res}'\n\n")
+        self.dump_to_file(new_name, res.getvalue())
+
+
     def readCore(self, router_name):
         new_name = path.basename(self.file_path)
         #test298239_ospf_core_rt1.txt
-        new_name = new_name.split(".")[0] + f"_ospf_core_rt{router_name[1:]}.txt"
+        new_name = new_name.split(".")[0] + f"_isis_core_rt{router_name[1:]}.txt"
         res = self.data["genInfo"]["core_commands"][router_name]
         self.dump_to_file(new_name, res)
     
@@ -93,7 +116,7 @@ class humandReader():
             self.readPhyOfRound(rd)
         for rd in range(self.round_num):
             for rt in range(len(self.routers)):
-                self.readOspfOfRoundOfRouter(rd, rt)
+                self.readIsisOfRoundOfRouter(rd, rt)
         for router_name in self.routers:
             self.readCore(router_name)
         self.readGraph()
@@ -128,9 +151,10 @@ import util
 if __name__ == "__main__":
     #rd from 0
     #human_read_ospf(0, 0, "/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744_r1/test1726036744_r1_res.json")
-    test_name = util.get_test_name_5("63766")
+    test_name = util.get_test_name_5("49526")
     h = humandReader(util.get_result_file_path(test_name))
+    # h = humandReader("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1735885079.json")
     h.readAll()
 
-    # h = humandReader("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1728543505.json")
+    # h = humandReader("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1735885079.json")
     # h.readPhyOfRound(1)

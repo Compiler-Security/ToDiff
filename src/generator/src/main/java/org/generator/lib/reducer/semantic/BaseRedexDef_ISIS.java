@@ -25,7 +25,15 @@ public  class BaseRedexDef_ISIS {
             }
             for(var targetType: (OpType_isis[]) item[1]){
                 rdcDef.targetOps.add(targetType);
-                rdcDef.equalArgs.add(LexDef_isis.getLexDef(targetType).get(0).Args.subList(0, (int) item[2]));
+                var args = LexDef_isis.getLexDef(targetType).get(0).Args;
+                int count = (int)item[2];
+                if(count > 0) {
+                    // take the first count args
+                    rdcDef.equalArgs.add(args.subList(0, count));
+                } else {
+                    // take the last count args
+                    rdcDef.equalArgs.add(args.subList(args.size() + count, args.size()));
+                }
             }
         }
     }

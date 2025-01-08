@@ -28,6 +28,7 @@ public class ISISIntf extends AbstractNode_ISIS {
      * 15. metricLevel1
      * 16. metricLevel2
      * 17. HELLOPADDING
+     * 18. threeWayHandshake
      */
     public ISISIntf(String name){
         setName(name);
@@ -65,7 +66,25 @@ public class ISISIntf extends AbstractNode_ISIS {
     boolean passive;
     int vrf;
 
+    boolean helloPadding;
 
+    public boolean isHelloPadding() {
+        return helloPadding;
+    }
+
+    public void setHelloPadding(boolean helloPadding) {
+        this.helloPadding = helloPadding;
+    }
+
+    boolean threeWayHandshake;
+
+    public boolean isThreeWayHandshake() {
+        return threeWayHandshake;
+    }
+
+    public void setThreeWayHandshake(boolean threeWayHandshake) {
+        this.threeWayHandshake = threeWayHandshake;
+    }
 
     public enum ISISNetType implements StringEnum {
         BROADCAST("broadcast"),
@@ -142,6 +161,8 @@ public class ISISIntf extends AbstractNode_ISIS {
     @Override
     public void initFiled() {
         passive = false;
+        helloPadding = true;
+        threeWayHandshake = true;
         vrf = 0;
         // FIXME: helloIntervalLevel1 and helloIntervalLevel2 should be set to what?
         helloIntervalLevel1 = 3;  //timerHelloInMsecs

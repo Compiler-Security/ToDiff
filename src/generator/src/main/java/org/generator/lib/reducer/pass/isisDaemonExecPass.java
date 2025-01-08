@@ -52,11 +52,11 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
         SETOVERLOADBITONSTARTUP,
         LSPMTU, */
         switch (op.Type()){
-            case METRICSTYLE -> {
-                assert ISISDaemon.metricstyle.of(op.getNAME()).isPresent() : "metric style name not right %s".formatted(op.getNAME());
-                isis_daemon.setMetricStyle(ISISDaemon.metricstyle.of(op.getNAME()).get());
-                return ExecStat.SUCC;
-            }
+            // case METRICSTYLE -> {
+            //     assert ISISDaemon.metricstyle.of(op.getNAME()).isPresent() : "metric style name not right %s".formatted(op.getNAME());
+            //     isis_daemon.setMetricStyle(ISISDaemon.metricstyle.of(op.getNAME()).get());
+            //     return ExecStat.SUCC;
+            // }
 
             case LSPMTU -> {
                 isis_daemon.setLspmtu(op.getNUM());

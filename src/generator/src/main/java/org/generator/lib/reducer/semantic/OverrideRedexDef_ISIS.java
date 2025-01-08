@@ -33,28 +33,12 @@ public class OverrideRedexDef_ISIS extends BaseRedexDef_ISIS {
                 {RISIS, new OpType_isis[]{}, 0},
                 {IntfName, new OpType_isis[]{}, 0},
                 {IPAddr, new OpType_isis[]{IPAddr}, 1},
-                //FIXME: this is not right
-                //{NET, new OpType_isis[]{NET}, 1},
-                {ISISPRIORITY, new OpType_isis[]{ISISPRIORITY}, 2},
-                {HELLOMULTIPLIER, new OpType_isis[]{HELLOMULTIPLIER}, 2},
-                {HELLOINTERVAL, new OpType_isis[]{HELLOINTERVAL}, 2},
-                {PSNPINTERVAL, new OpType_isis[]{PSNPINTERVAL}, 2},
-                {CSNPINTERVAL, new OpType_isis[]{CSNPINTERVAL}, 2},
-
-                // {AreaRangeNoAd, new OpType_isis[]{AreaRange, AreaRangeSub, AreaRangeCost, AreaRangeNoAd}, 2},
-                // {AreaRange, new OpType_isis[]{AreaRange, AreaRangeNoAd}, 2},
-                // {AreaRangeSub, new OpType_isis[]{AreaRange, AreaRangeSub, AreaRangeNoAd}, 2},
-                // {AreaRangeCost, new OpType_isis[]{AreaRange, AreaRangeCost, AreaRangeNoAd}, 2},
-                // //FIXME areaVLINK
-                // //{AreaVLink, new OpType[]{AreaVLink}, 1},
-                // {AreaShortcut, new OpType_isis[]{AreaShortcut}, 1},
-
-                // {AreaStub, new OpType_isis[]{AreaStub, AreaStubTotal, AreaNSSA}, 1},
-                // {AreaStubTotal, new OpType_isis[]{AreaStubTotal, AreaStub, AreaNSSA}, 1},
-                // {AreaNSSA, new OpType_isis[]{AreaStub, AreaNSSA, AreaStubTotal}, 1},
-
-                // {IpIsisDeadInterMulti, new OpType_isis[]{IpIsisDeadInter, IpIsisDeadInterMulti}, 0},
-                // {IpIsisDeadInter, new OpType_isis[]{IpIsisDeadInter, IpIsisDeadInterMulti}, 0}
+                // -1 means from the end
+                {ISISPRIORITY, new OpType_isis[]{ISISPRIORITY}, -1},
+                {HELLOMULTIPLIER, new OpType_isis[]{HELLOMULTIPLIER}, 1},
+                {HELLOINTERVAL, new OpType_isis[]{HELLOINTERVAL}, 1},
+                {PSNPINTERVAL, new OpType_isis[]{PSNPINTERVAL}, -1},
+                {CSNPINTERVAL, new OpType_isis[]{CSNPINTERVAL}, -1},
                 //Other set instruction
                 //{XXX, new OpType[XXX], 0}
 

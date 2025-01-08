@@ -47,31 +47,38 @@ class reducer:
                     commands[step]["phy"].pop(i)
                     return True
             for rt in range(0, self.rt_num):
-                for i in range(0, len(commands[step]["ospf"][rt])):
+                for i in range(0, len(commands[step]["isis"][rt])):
                     skip += 1
                     if (skip > skip_num):
-                        commands[step]["ospf"][rt].pop(i)
+                        commands[step]["isis"][rt].pop(i)
                         return True
         
     #abr in val
     def compareFunc(self, net):
         time.sleep(10)
-        val = net.nameToNode["r2"].daemon_cmds(["show ip ospf database json"])
+        val = net.nameToNode["r0"].daemon_cmds(["show isis route json"])
+        val = json.loads(val)
         res = False
-        if "asbrSummaryLinkStatesCount" in val:
-            res = True
-        # if "areas" in val:
-        #     if "0.0.0.1" in val["areas"]:
-        #         if "asbrSummaryLinkStatesCount" in val["areas"]["0.0.0.1"]:
-        #             res = True
-        os.system("mn -c 2> /dev/null")
-        return res
+        # 遍历路由表
+        # 如果val是列表，遍历列表
+        for item in val:
+                level2 = item.get('level-2', {})
+                if not level2:
+                    continue
+                print("check!")
+                for route in level2.get('ipv4', []):
+                    if route.get('prefix') == "130.64.0.0/13":
+                        print(f"找到匹配前缀: {route['prefix']}")
+                        return False
+                            
+        return True
     
     def reduce(self, minWaitTime, mxWaitTime, compareFunc):
         test_dir_path = path.join(util.checkDir, "reduce", self.test_name)
         os.makedirs(test_dir_path, exist_ok=True)
         skip_num = 0
         commands = self.commands
+        print(commands)
         new_commands = copy.deepcopy(commands)
         delete_num = 0
         while(self.delete_one_command(new_commands, skip_num)):
@@ -92,7 +99,7 @@ class reducer:
         self.dump_file(test_final_path, new_commands)
 
 if __name__ == "__main__":
-    r = reducer("/home/frr/topo-fuzz/test/topo_test/data/check/reduce/test1728544999_r1/test1728544999_r1_back0.json")
+    r = reducer("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1735961414.json")
     r.reduce(0, 30, None)
 
     # def _step_phy(self, cur: cursor, commands):

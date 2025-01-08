@@ -7,6 +7,7 @@ import org.generator.lib.frontend.driver.IO_ISIS;
 import org.generator.lib.frontend.lexical.OpType_isis;
 import org.generator.lib.generator.driver.generate_ISIS;
 import org.generator.lib.item.IR.OpCtx_ISIS;
+import org.generator.lib.item.IR.OpIsis;
 import org.generator.lib.item.IR.OpPhy_ISIS;
 import org.generator.lib.item.conf.graph.ConfGraph_ISIS;
 import org.generator.lib.item.conf.node.NodeGen_ISIS;
@@ -25,8 +26,10 @@ import org.generator.util.timer.timer;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class diffTopo_ISIS {
 
@@ -46,13 +49,13 @@ public class diffTopo_ISIS {
         assert splits.size() == split_num;
         return splits;
     }
-    OpCtxG_ISIS getConfOfRouter(String r_name, ConfGraph_ISIS g, boolean mutate){
+    OpCtxG_ISIS getConfOfRouter(String r_name, ConfGraph_ISIS g, boolean mutate, boolean isfull){
         var confg = g.viewConfGraphOfRouter(r_name);
         confg.setR_name(r_name);
         if (mutate) {
-            return generate_ISIS.generateEqualOfCore(generate_ISIS.generateCore(confg), false);
+            return generate_ISIS.generateEqualOfCore(generate_ISIS.generateCore(confg, isfull), false);
         }else{
-            return generate_ISIS.generateCore(confg);
+            return generate_ISIS.generateCore(confg, isfull);
         }
     }
 
@@ -76,11 +79,52 @@ public class diffTopo_ISIS {
         System.out.println("phy");
         for(int i = 0; i < router_count; i++){
             var r_name = NodeGen_ISIS.getRouterName(i);
-            var opCtxG = getConfOfRouter(r_name, confg, false);
+            var opCtxG = getConfOfRouter(r_name, confg, false, true);
             System.out.println(r_name);
             System.out.println(new IsisConfWriter().write(opCtxG));
         }
     }
+
+    public List<OpCtxG_ISIS> ranSplitIsisConfWithBase(OpCtxG_ISIS opCtxG, int count) {
+        // first, we split the opCtxG
+        List<OpCtxG_ISIS> splits = ranSplitIsisConf(opCtxG, count);
+        
+        // process each split
+        for (OpCtxG_ISIS split : splits) {
+            Set<String> interfaces = new HashSet<>();
+            OpCtxG_ISIS baseConfig = OpCtxG_ISIS.Of();
+            
+            // Collect the interface name
+            for (var op : split.getOps()) {
+                if (op.getOpIsis().Type() == OpType_isis.IntfName) {
+                    interfaces.add(op.getOpIsis().getNAME());
+                }
+            }
+            
+            // Add the base configuration
+            for (String intf : interfaces) {
+                // add interface name command
+                var intfOp = OpIsis.of(OpType_isis.IntfName);
+                intfOp.setNAME(intf);
+                var intfOpCtx = OpCtx_ISIS.of(intfOp);
+                baseConfig.addOp(intfOpCtx);
+                
+                // add ip router isis command
+                var iprouteOp = OpIsis.of(OpType_isis.IPROUTERISIS);
+                var iprouteOpCtx = OpCtx_ISIS.of(iprouteOp);
+                baseConfig.addOp(iprouteOpCtx);
+            }
+            
+            // add the base configuration to the split
+            var newSplit = OpCtxG_ISIS.Of();
+            newSplit.addOps(baseConfig.getOps());
+            newSplit.addOps(split.getOps());
+            splits.set(splits.indexOf(split), newSplit);
+        }
+        
+        return splits;
+    }
+
 
     /**
      *
@@ -124,9 +168,15 @@ public class diffTopo_ISIS {
         evaluateInfo.put("genGraphTime", genGraphTimer.getTime());
 
         //generate isis core commands, all the round is same
+        //Note: isfull is false, we don't generate full commands
         List<OpCtxG_ISIS> isis_cores = new ArrayList<>();
         for(int i = 0; i < router_count; i++) {
-            isis_cores.add(getConfOfRouter(routers_name.get(i), confg, false));
+            isis_cores.add(getConfOfRouter(routers_name.get(i), confg, false, false));
+        }
+
+        List<OpCtxG_ISIS> isis_cores_isfull = new ArrayList<>();
+        for(int i = 0; i < router_count; i++) {
+            isis_cores_isfull.add(getConfOfRouter(routers_name.get(i), confg, false, true));
         }
 
         //record each router's core commands
@@ -135,7 +185,7 @@ public class diffTopo_ISIS {
             for (int i = 0; i < router_count; i++) {
                 //record all the routers' core commands
                 var writer = new IsisConfWriter();
-                core_commands.put(routers_name.get(i), writer.write(getConfOfRouter(routers_name.get(i), confg, false)));
+                core_commands.put(routers_name.get(i), writer.write(getConfOfRouter(routers_name.get(i), confg, false, true)));
             }
         }
 
@@ -172,7 +222,8 @@ public class diffTopo_ISIS {
                 totalInstruction += opCtxG.getOps().size();
             }
             for(int r = 0; r < router_count; r++){
-                split_confs.add(ranSplitIsisConf(opCtxGS.get(r), step_num - 1));
+                //split_confs.add(ranSplitIsisConf(opCtxGS.get(r), step_num - 1));
+                split_confs.add(ranSplitIsisConfWithBase(opCtxGS.get(r), step_num - 1));
             }
 
 
@@ -184,7 +235,15 @@ public class diffTopo_ISIS {
                 isisAlive.add(Boolean.TRUE);
                 routerNametoIdx.put(routers_name.get(r), r);
             }
-
+            List<OpCtxG_ISIS> isis_cores_temp = new ArrayList<>(); 
+            if(i == 0)
+            {
+                isis_cores_temp = isis_cores_isfull;
+            }
+            else
+            {
+                isis_cores_temp = isis_cores;
+            }
             for(int step = 0; step < step_num; step++){
                 Map<String, Object> one_step = new HashMap<>();
                 steps.add(one_step);
@@ -222,7 +281,7 @@ public class diffTopo_ISIS {
                     var opctxg = OpCtxG_ISIS.Of();
                     if (step == 0){
                         //in step 0, isis is always alive
-                        opctxg = isis_cores.get(r);
+                        opctxg = isis_cores_temp.get(r);
                     }else {
                         if (isisAlive.get(r)) {
                             //if router's isis is up, we just use these commands
