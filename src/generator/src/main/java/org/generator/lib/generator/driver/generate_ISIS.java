@@ -119,7 +119,7 @@ public class generate_ISIS {
     public static boolean skipCommands(OpType_isis opType){
         if (generate_ISIS.fastConvergence){
             switch (opType){
-                case IPROUTERISIS,NET,HELLOINTERVAL,HELLOMULTIPLIER
+                case IPROUTERISIS,NET//,HELLOINTERVAL,HELLOMULTIPLIER
                         -> {return true;}
             }
         }

@@ -26,7 +26,7 @@ class rm:
                 return True
         return False
     def should_delete(self, command):
-        return self.listin(command, ["ip ospf hello-interval", "ip ospf dead-interval", "timers throttle spf"])
+        return self.listin(command, ["isis hello-interval", "isis hello-multiplier"])
     
     def delete_one_command(self):
         for rd in range(0, self.rd_num):
@@ -42,8 +42,8 @@ class rm:
         while self.delete_one_command():
             pass
 
-for file_name in os.listdir("/home/binshui/topo-fuzz/test/topo_test/data/testConf"):
-    file_path = os.path.join("/home/binshui/topo-fuzz/test/topo_test/data/testConf", file_name)
+for file_name in os.listdir("/home/frr/topo-fuzz/test/topo_test/data/testConf"):
+    file_path = os.path.join("/home/frr/topo-fuzz/test/topo_test/data/testConf", file_name)
     r = rm(file_path)
     r.delete()
-    r.dump_file(os.path.join("/home/binshui/topo-fuzz/test/topo_test/data/testConf", file_name.split(".")[0]) + "0000.json")
+    r.dump_file(os.path.join("/home/frr/topo-fuzz/test/topo_test/data/testConf", file_name.split(".")[0]) + "0000.json")
