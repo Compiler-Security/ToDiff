@@ -6,7 +6,7 @@ Todiff is a prototype implementation of the technique know as ToDiff. It aims to
 ```bash
     sh build_test.sh
 ```
-
+One should update proxy in `docker/docker-compose.yml`
 ## Test
 
 ### Step1: generate equivalent topological program
