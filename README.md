@@ -1,30 +1,25 @@
-# topo-fuzz
+# ToDiff
 
-## build image for testing
+Todiff is a prototype implementation of the technique know as ToDiff. It aims to validate IGP protocols via equivalent topology synthesis.
+
+## Build
 ```bash
-    sh build.sh
+    sh build_test.sh
 ```
 
-## create container and start fuzzing
+## Test
+
+### Step1: generate equivalent topological program
 ```bash 
-    sh run.sh topo-fuzz
+    python3 test/topo_test/gen_test.py
 ``` 
 
-## stop fuzzing
+## Step2: simulate network
 ```bash
-    sh stop.sh topo-fuzz
+    python3 test/topo-test/test.py
 ```
 
-## clean
+## Step3: differentiating results
 ```bash
-    sh clean.sh
+    python3 test/topo-test/checker/diffTest.py
 ```
-
-## dev
-1.  change args in Dockerfile.dev (proxy)
-
-2. sh clean.sh
-
-3. sh run_dev.sh
-
-4. attach to container, modify file, ** add git in the host!!! **
