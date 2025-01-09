@@ -4,7 +4,7 @@ import json
 
 from matplotlib.ticker import ScalarFormatter, LogLocator, FixedLocator, FuncFormatter
 
-fontsize = 22
+fontsize = 24
 lp = 20
 def write(protocol):
 # 读取 JSON 数据
@@ -40,15 +40,16 @@ def write(protocol):
     # 创建一个新的x轴位置用于绘制柱状图
     x_pos = np.arange(len(router_count))  # 为每个刻度点生成一个相同间距的索引
 
+    scale = 1.21
     # 创建图形
-    fig, ax1 = plt.subplots(figsize=(12, 6.5))
+    fig, ax1 = plt.subplots(figsize=(12 * scale, 6.5 * scale))
 
     
     # 绘制堆叠柱状图
     #ax1.bar(x_pos, part4_time, label='Differentiating Results Time', color='orange')
-    ax1.bar(x_pos, part3_time, label='1: Network Generation', color='gold')
+    ax1.bar(x_pos, part3_time, label='1: Network Generation', color='#FFD966')
     ax1.bar(x_pos, part2_time, bottom=part3_time, label='2: Topology Synthesis', color='lightcoral')
-    ax1.bar(x_pos, part1_time, bottom=part2_time + part3_time, label='3: Network Execution', color='skyblue')
+    ax1.bar(x_pos, part1_time, bottom=part2_time + part3_time, label='3: Network Execution', color='#9DC3E6')
 
 
 
@@ -71,7 +72,7 @@ def write(protocol):
 
     # 设置图例
     #ax1.legend(loc='upper left', bbox_to_anchor=(0, 1.0), fontsize=fontsize - 2)
-    ax1.legend(loc='upper center', bbox_to_anchor=(0.45, 1.23), ncol=3, fontsize=fontsize - 3, frameon=False)
+    ax1.legend(loc='upper center', bbox_to_anchor=(0.47, 1.23), ncol=3, fontsize=fontsize - 3, frameon=False)
     #ax2.legend(loc='lower left', bbox_to_anchor=(0, 0.9), fontsize=fontsize - 6)
 
     fig.subplots_adjust(right=0.85) 
