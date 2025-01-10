@@ -11,6 +11,7 @@ One should update proxy in `docker/docker-compose.yml`
 
 ### Step1: generate equivalent topological program
 ```bash 
+    sh test/topo-test/init.sh
     python3 test/topo_test/gen_test.py
 ``` 
 
@@ -23,3 +24,5 @@ One should update proxy in `docker/docker-compose.yml`
 ```bash
     python3 test/topo-test/checker/diffTest.py
 ```
+
+The results are in the test/topo-test/checker/data/check/diff
