@@ -42,8 +42,8 @@ x_pos = np.arange(len(router_count))  # 为每个刻度点生成一个相同间�
 
 # 绘制堆叠柱状图
 plt.bar(x_pos, part1_time, label='Part 1', color='skyblue')
-plt.bar(x_pos, part2_time, bottom=part1_time, label='Part 2', color='lightcoral')
-plt.bar(x_pos, part3_time, bottom=part1_time + part2_time, label='Part 3', color='gold')
+plt.bar(x_pos, part2_time, bottom=part1_time, label='Part 2', color='#9DC3E6')
+plt.bar(x_pos, part3_time, bottom=part1_time + part2_time, label='Part 3', color='#FFD966')
 
 # 设置横轴刻度
 plt.xticks(x_pos, router_count)  # 使用自定义的刻度点

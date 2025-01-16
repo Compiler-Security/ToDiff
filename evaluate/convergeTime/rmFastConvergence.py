@@ -93,8 +93,16 @@ class rm:
             pass
     
 
+<<<<<<< HEAD
 for file_name in os.listdir("/home/zyf/Desktop/topo-fuzz-evaluate_isis/test/topo_test/data/testConf"):
     file_path = os.path.join("/home/zyf/Desktop/topo-fuzz-evaluate_isis/test/topo_test/data/testConf", file_name)
     r = rm(file_path)
     r.modify_all_commands()
     r.dump_file(os.path.join("/home/zyf/Desktop/topo-fuzz-evaluate_isis/test/topo_test/data/testConf", file_name.split(".")[0]) + "0000.json")
+=======
+for file_name in os.listdir("/home/binshui/topo-fuzz/test/topo_test/data/testConf"):
+    file_path = os.path.join("/home/binshui/topo-fuzz/test/topo_test/data/testConf", file_name)
+    r = rm(file_path)
+    r.delete()
+    r.dump_file(os.path.join("/home/binshui/topo-fuzz/test/topo_test/data/testConf", file_name.split(".")[0]) + "0000.json")
+>>>>>>> 032d53c5379f346cfb430597817540c277aacfbf
