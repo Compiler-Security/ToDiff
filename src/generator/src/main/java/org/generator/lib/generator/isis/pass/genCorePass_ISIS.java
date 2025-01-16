@@ -37,7 +37,7 @@ public class genCorePass_ISIS {
         opCtxG.addOp(OpCtx_ISIS.of(op));
         return op;
     }
-    public OpCtxG_ISIS handleDaemon(){
+    public OpCtxG_ISIS handleDaemon(boolean isfull){
         var opCtxG = OpCtxG_ISIS.Of();
         var isis_name = NodeGen_ISIS.getISISName(r_name);
         if (confg.containsNode(isis_name)){
@@ -82,6 +82,34 @@ public class genCorePass_ISIS {
                 var op = addOp(opCtxG, OpType_isis.LSPMTU);
                 op.setNUM(daemon.getLspmtu());
             }
+            if(isfull){
+                {
+                    if(daemon.getLspgenintervalLevel1() == daemon.getLspgenintervalLevel2()){
+                        var op = addOp(opCtxG, OpType_isis.LSPGENINTERVAL);
+                        op.setNUM(daemon.getLspgenintervalLevel1());
+                        op.setNAME("");
+                    }
+                    else{
+                        var op = addOp(opCtxG, OpType_isis.LSPGENINTERVAL);
+                        op.setNUM(daemon.getLspgenintervalLevel1());
+                        op.setNAME("level-1");
+                        var op2 = addOp(opCtxG, OpType_isis.LSPGENINTERVAL);
+                        op2.setNUM(daemon.getLspgenintervalLevel2());
+                        op2.setNAME("level-2");
+                    }
+                }
+            }
+            else{
+                {
+                    var op = addOp(opCtxG, OpType_isis.LSPGENINTERVAL);
+                    op.setNUM(daemon.getLspgenintervalLevel1());
+                    op.setNAME("level-1");
+                    var op2 = addOp(opCtxG, OpType_isis.LSPGENINTERVAL);
+                    op2.setNUM(daemon.getLspgenintervalLevel2());
+                    op2.setNAME("level-2");
+                }
+            }
+
         }
         return opCtxG;
     }
@@ -473,7 +501,7 @@ public class genCorePass_ISIS {
         this.confg = confg;
         List<OpCtxG_ISIS> opgs = new ArrayList<>();
         //daemon
-        var tmp1 = handleDaemon();
+        var tmp1 = handleDaemon(isfull);
         var router_isis = !tmp1.getOps().isEmpty();
         opgs.add(tmp1);
 

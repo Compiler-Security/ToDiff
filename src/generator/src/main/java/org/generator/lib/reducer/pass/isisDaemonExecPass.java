@@ -77,6 +77,18 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
                 isis_daemon.setOverloadbitonstartup(op.getNUM());
                 return ExecStat.SUCC;
             }
+
+            case LSPGENINTERVAL -> {
+                if (op.getNAME().equals("level-1")){
+                    isis_daemon.setLspgenintervalLevel1(op.getNUM());
+                }else if (op.getNAME().equals("level-2")){
+                    isis_daemon.setLspgenintervalLevel2(op.getNUM());
+                }else if (op.getNAME().equals("")){
+                    isis_daemon.setLspgenintervalLevel1(op.getNUM());
+                    isis_daemon.setLspgenintervalLevel2(op.getNUM());
+                }
+                return ExecStat.SUCC;
+            }
         }
         assert false:String.format("should not go to here %s", op.toString());
         return ExecStat.FAIL;
