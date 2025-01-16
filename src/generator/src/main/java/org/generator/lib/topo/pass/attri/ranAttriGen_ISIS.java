@@ -98,8 +98,8 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
         var csnpInterval = ranHelper.randomInt(1, 600);
         if (generate_ISIS.fastConvergence){
             helloInterval = 1;
-            // psnpInterval = 1;
-            // csnpInterval = 1;
+            psnpInterval = 1;
+            csnpInterval = 1;
         }
         var netType = ISISIntf.ISISNetType.BROADCAST;
         if (isisIntfs.size() == 2){
@@ -121,8 +121,8 @@ public class ranAttriGen_ISIS implements genAttri_ISIS {
             //we should set helloMulti for testing
             //network
             if (generate_ISIS.fastConvergence){
-                isisIntf.setHelloMultiplierlevel1(10);
-                isisIntf.setHelloMultiplierlevel2(10);
+                isisIntf.setHelloMultiplierlevel1(2);
+                isisIntf.setHelloMultiplierlevel2(2);
 
             }else {
                 isisIntf.setHelloMultiplierlevel1(ranHelper.randomInt(1,100));

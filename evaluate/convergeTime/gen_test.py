@@ -5,7 +5,7 @@ up = path.dirname
 #topo-fuzz/
 dockerDir = up(up(up(path.abspath(__file__))))
 
-test_num = 15
+test_num = 8
 
 def _run_test_sh(cmd):
     os.chdir(dockerDir)

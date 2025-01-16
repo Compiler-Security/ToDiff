@@ -173,7 +173,7 @@ public class ranAttriGen implements genAttri {
             //we should set helloMulti for testing
             //network
             if (generate.fastConvergence){
-                ospfIntf.setHelloMulti(10);
+                ospfIntf.setHelloMulti(2);
             }else {
                 ospfIntf.setHelloMulti(ranHelper.randomInt(1, 20));
             }
