@@ -301,7 +301,7 @@ class FrrNode(Node):
         return j
     
     def dump_isis_database(self):
-        info = self.daemon_cmds(["show isis database detail json"])
+        info = self.daemon_cmds(["show isis database detail"])
         return info
         # try:
         #     return json.loads(info)
@@ -348,6 +348,9 @@ class FrrNode(Node):
         except Exception as e:
             traceback.print_exception(e)
             return None
+    def dump_route_info(self):
+        info = self.daemon_cmds(["show ip route"])
+        return info
     def dump_isis_route_info(self):
         info = self.daemon_cmds(["show isis route "])
         return info

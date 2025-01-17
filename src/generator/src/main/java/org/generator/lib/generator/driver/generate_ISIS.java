@@ -58,7 +58,7 @@ public class generate_ISIS {
             while(true) {
                 var ctxOpa = ranHelper.randomElemOfList(ctxOps);
                 var op = genOpPass_ISIS.genRanOpByControl(ctxOpa.getOp().Type() == OpType_isis.IntfName);
-                if(op.getOperation().Type()== OpType_isis.PSNPINTERVAL||op.getOperation().Type() == OpType_isis.CSNPINTERVAL||op.getOperation().Type() == OpType_isis.HELLOINTERVAL||op.getOperation().Type() == OpType_isis.HELLOMULTIPLIER||op.getOperation().Type() == OpType_isis.ISISPRIORITY){
+                if(op.getOperation().Type()== OpType_isis.PSNPINTERVAL||op.getOperation().Type() == OpType_isis.CSNPINTERVAL||op.getOperation().Type() == OpType_isis.HELLOINTERVAL||op.getOperation().Type() == OpType_isis.HELLOMULTIPLIER||op.getOperation().Type() == OpType_isis.ISISPRIORITY||op.getOperation().Type() == OpType_isis.LSPGENINTERVAL){
                     op.getOperation().setNAME(ranHelper.randomElemOfList(List.of("level-1","level-2")));
                 }
                 var opa = OpAnalysis_ISIS.of(op.getOpIsis(), ctxOpa);
@@ -119,7 +119,7 @@ public class generate_ISIS {
     public static boolean skipCommands(OpType_isis opType){
         if (generate_ISIS.fastConvergence){
             switch (opType){
-                case IPROUTERISIS,NET, HELLOINTERVAL, HELLOMULTIPLIER, PSNPINTERVAL, CSNPINTERVAL
+                case IPROUTERISIS,NET,HELLOINTERVAL,HELLOMULTIPLIER,LSPGENINTERVAL
                         -> {return true;}
             }
         }

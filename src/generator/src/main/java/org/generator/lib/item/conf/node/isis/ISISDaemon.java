@@ -53,6 +53,26 @@ public class ISISDaemon extends AbstractNode_ISIS {
         this.lspmtu = lspmtu;
     }
 
+    int LspgenintervalLevel1;
+    int LspgenintervalLevel2;
+
+    public int getLspgenintervalLevel1() {
+        return LspgenintervalLevel1;
+    }
+
+    public void setLspgenintervalLevel1(int lspgenintervalLevel1) {
+        LspgenintervalLevel1 = lspgenintervalLevel1;
+    }
+
+    public int getLspgenintervalLevel2() {
+        return LspgenintervalLevel2;
+    }
+
+    public void setLspgenintervalLevel2(int lspgenintervalLevel2) {
+        LspgenintervalLevel2 = lspgenintervalLevel2;
+    }
+
+
     // public enum metricstyle implements StringEnum{
     //     NARROW("narrow"),
     //     TRANSITION("transition"),
@@ -107,6 +127,8 @@ public class ISISDaemon extends AbstractNode_ISIS {
         lspmtu = 1492; 
         //metricStyle = metricstyle.WIDE;
         advertisehighmetrics = false;
+        LspgenintervalLevel1 = 30;
+        LspgenintervalLevel2 = 30;
     }
 
     //    @Override

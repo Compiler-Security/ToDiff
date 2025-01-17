@@ -29,6 +29,7 @@ public class UnsetRedexDef_ISIS extends BaseRedexDef_ISIS{
                 {NOSETOVERLOADBIT, new OpType_isis[]{SETOVERLOADBIT}},
                 {NOSETOVERLOADBITONSTARTUP, new OpType_isis[]{SETOVERLOADBITONSTARTUP}},
                 {NOLSPMTU, new OpType_isis[]{LSPMTU}},
+                {NOLSPGENINTERVAL, new OpType_isis[]{LSPGENINTERVAL}},
                 {NOISTYPE, new OpType_isis[]{ISTYPE}},
                 {NOIPROUTERISIS, new OpType_isis[]{IPROUTERISIS}},
                 {NOIPAddr, new OpType_isis[]{IPAddr}},

@@ -59,6 +59,7 @@ public class LexDef_isis {
                 {SETOVERLOADBIT, "set-overload-bit"},
                 {SETOVERLOADBITONSTARTUP, "set-overload-bit on-startup {NUM(0-86400)}"},
                 {LSPMTU, "lsp-mtu {NUM(128-4352)}"},
+                {LSPGENINTERVAL, "lsp-gen-interval {NAME(level-1,level-2,_)} {NUM(1-120)}"},
                 // region
                 {ISTYPE, "is-type {NAME(level-1,level-1-2,level-2-only)}"},
 
@@ -88,7 +89,7 @@ public class LexDef_isis {
                 {NOSETOVERLOADBIT, "no set-overload-bit"},
                 {NOSETOVERLOADBITONSTARTUP, "no set-overload-bit on-startup {NUM(0-86400)}"},
                 {NOLSPMTU, "no lsp-mtu {NUM(128-4352)}"},
-        
+                {NOLSPGENINTERVAL, "no lsp-gen-interval {NAME(level-1,level-2,_)} {NUM(1-120)}"},
                 {NOISTYPE, "no is-type {NAME(level-1,level-1-2,level-2-only)}"},
                 {NOIPROUTERISIS, "no ip router isis 1"},
                 {NOIPAddr, "no ip address {IP}"},

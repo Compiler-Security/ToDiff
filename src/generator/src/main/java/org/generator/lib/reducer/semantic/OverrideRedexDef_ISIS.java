@@ -34,11 +34,13 @@ public class OverrideRedexDef_ISIS extends BaseRedexDef_ISIS {
                 {IntfName, new OpType_isis[]{}, 0},
                 {IPAddr, new OpType_isis[]{IPAddr}, 1},
                 // -1 means from the end
+
                 {ISISPRIORITY, new OpType_isis[]{ISISPRIORITY}, -1},
                 {HELLOMULTIPLIER, new OpType_isis[]{HELLOMULTIPLIER}, 1},
                 {HELLOINTERVAL, new OpType_isis[]{HELLOINTERVAL}, 1},
                 {PSNPINTERVAL, new OpType_isis[]{PSNPINTERVAL}, -1},
                 {CSNPINTERVAL, new OpType_isis[]{CSNPINTERVAL}, -1},
+                {LSPGENINTERVAL, new OpType_isis[]{LSPGENINTERVAL}, 1},
                 //Other set instruction
                 //{XXX, new OpType[XXX], 0}
 

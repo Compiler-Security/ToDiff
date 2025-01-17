@@ -341,8 +341,8 @@ class executor:
                 #some routers may be deleted
                     if r_name not in net.net.nameToNode:
                         continue
-                    res[i]['database'][r_name] = net.net.nameToNode[r_name].dump_isis_route_info()
-                    print(net.net.nameToNode[r_name].dump_isis_route_info())
+                    res[i]['database'][r_name] = net.net.nameToNode[r_name].dump_isis_database()
+                    print(net.net.nameToNode[r_name].dump_route_info())
             else:
                 time.sleep(sleep_time)
             erroraln("+ collect result", "")
@@ -365,5 +365,5 @@ class executor:
         return res
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1736081045.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 30, 600)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1736149531.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 30, 600)
     t.test()

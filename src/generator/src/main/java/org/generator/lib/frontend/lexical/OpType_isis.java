@@ -35,6 +35,7 @@ public enum OpType_isis {
     SETOVERLOADBIT,
     SETOVERLOADBITONSTARTUP,
     LSPMTU,
+    LSPGENINTERVAL,
     ISISDAEMONGROUPEND,
     //===================ISIS region=====================
     ISISREGIONBEGIN,
@@ -71,6 +72,7 @@ public enum OpType_isis {
     NOSETOVERLOADBIT,
     NOSETOVERLOADBITONSTARTUP,
     NOLSPMTU,
+    NOLSPGENINTERVAL,
     NOISTYPE,
     NOIPROUTERISIS,
     NOIPAddr,

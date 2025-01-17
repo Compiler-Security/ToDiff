@@ -107,13 +107,13 @@ public class actionRulePass_ISIS {
             // }
             
             //third make unset_equal fields to be the same
-            if(overrideType == OpType_isis.IPAddr||overrideType == OpType_isis.PSNPINTERVAL||overrideType == OpType_isis.CSNPINTERVAL||overrideType == OpType_isis.HELLOINTERVAL||overrideType == OpType_isis.HELLOMULTIPLIER||overrideType == OpType_isis.ISISPRIORITY){
+            if(overrideType == OpType_isis.IPAddr||overrideType == OpType_isis.PSNPINTERVAL||overrideType == OpType_isis.CSNPINTERVAL||overrideType == OpType_isis.HELLOINTERVAL||overrideType == OpType_isis.HELLOMULTIPLIER||overrideType == OpType_isis.ISISPRIORITY||overrideType == OpType_isis.LSPGENINTERVAL){
                 genOpPass_ISIS.copyFileds(new_op.getOperation(), opA.getOp(), Collections.emptyList());
             }
             else{
                 genOpPass_ISIS.copyFileds(new_op.getOperation(), opA.getOp(), OverrideRedexDef_ISIS.getOverrideEqualArg(opA.op.Type(), overrideType));
             }
-            if(overrideType == OpType_isis.PSNPINTERVAL||overrideType == OpType_isis.CSNPINTERVAL||overrideType == OpType_isis.HELLOINTERVAL||overrideType == OpType_isis.HELLOMULTIPLIER||overrideType == OpType_isis.ISISPRIORITY){
+            if(overrideType == OpType_isis.PSNPINTERVAL||overrideType == OpType_isis.CSNPINTERVAL||overrideType == OpType_isis.HELLOINTERVAL||overrideType == OpType_isis.HELLOMULTIPLIER||overrideType == OpType_isis.ISISPRIORITY||overrideType == OpType_isis.LSPGENINTERVAL){
                 new_op.getOperation().setNAME(opA.getOp().getNAME());
             }
             if (new_op.getOpIsis().equals(opA.getOp())) continue;
