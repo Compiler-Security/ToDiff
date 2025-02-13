@@ -141,7 +141,7 @@ class MininetInst(BaseInst):
             up_node: FrrNode = self._get_node(node_name)
             if up_node is None:
                 return self.EXEC_MISS
-            res = self._run_cmd(up_node.load_frr, ["zebra", "ospfd", "mgmtd"], conf_dir=self.workdir, universe=True)
+            res = self._run_cmd(up_node.load_ospf, ["zebra", "ospfd", "mgmtd"], conf_dir=self.workdir, universe=True)
             #self._run_cmd(up_node.log_load_frr)
             return res
 
@@ -162,7 +162,7 @@ class MininetInst(BaseInst):
             up_node: FrrNode = self._get_node(node_name)
             if up_node is None:
                 return self.EXEC_MISS
-            res = self._run_cmd(up_node.load_frr_isis, ["zebra", "isisd", "mgmtd"], conf_dir=self.workdir, universe=True)
+            res = self._run_cmd(up_node.load_isis, ["zebra", "isisd", "mgmtd"], conf_dir=self.workdir, universe=True)
             #self._run_cmd(up_node.log_load_frr)
             return res
 

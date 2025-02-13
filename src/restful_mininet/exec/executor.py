@@ -16,7 +16,7 @@ import time
 class executor:
     def __init__(self):
         pass
-    def __init__(self, conf_path, output_dir_str, minWaitTime, maxWaitTime) -> None:
+    def __init__(self, conf_path, output_dir_str, minWaitTime, maxWaitTime, protocol) -> None:
         setLogLevel('info')
         self.conf_path = conf_path
         self.maxWaitTime = maxWaitTime
@@ -28,13 +28,30 @@ class executor:
         self.round_num = self.conf['round_num']
         self.output_dir = path.join(output_dir_str, self.conf_name)
         self.routers = self.conf['routers']
+        self.protocol = protocol
         os.makedirs(self.output_dir, exist_ok=True)
         ###attention conf_dir is used to Temporarily store the configuration before loading /etc/frr.conf. When ospf is closed, memory will be written and the result of the write will be copied here.
         self.conf_file_dir = path.join(self.output_dir, 'conf')
         os.makedirs(self.conf_file_dir, exist_ok=True)
         os.system("mn -c 2> /dev/null")
-        
-    def _run_phy(self, net, ctx, phy_commands):
+#==============INIT CONF====================
+    def _init_ospf(self, router_name, ospf_commands):
+        conf_name = f"{router_name}.conf"
+        with open(path.join(self.conf_file_dir, conf_name), 'w') as fp:
+            for opa in ospf_commands:
+                for op in opa.split(";"):
+                    fp.write(op)
+                    fp.write('\n')
+
+    def _init_isis(self, router_name, isis_commands):
+        conf_name = f"{router_name}.conf"
+        with open(path.join(self.conf_file_dir, conf_name), 'w') as fp:
+            for opa in isis_commands:
+                for op in opa.split(";"):
+                    fp.write(op)
+                    fp.write('\n')
+#===============RUN COMMANDS=================
+    def _run_phy_commands(self, net, ctx, phy_commands):
         res = []
         for op in phy_commands:
             ress = MininetInst(op, net, self.conf_file_dir, ctx).run()
@@ -45,7 +62,7 @@ class executor:
         warnaln("   PHY commands result:", res)
         return res
     
-    def _run_ospf(self, net:testnet.TestNet, router_name, ospf_commands):
+    def _run_ospf_commands(self, net:testnet.TestNet, router_name, ospf_commands):
         res = []
         for op in ospf_commands:
             if op in ["clear ip ospf process", "clear ip ospf neighbor", "clear ip ospf interface", "write terminal"]:
@@ -67,7 +84,7 @@ class executor:
         warnaln("   OSPF commands result:", res)
         return res
     
-    def _run_isis(self, net:testnet.TestNet, router_name, isis_commands):
+    def _run_isis_commands(self, net:testnet.TestNet, router_name, isis_commands):
         res = []
         for op in isis_commands:
             if op in ["write terminal"]:
@@ -89,46 +106,11 @@ class executor:
         warnaln("   ISIS commands result:", res)
         return res
 
-    def _init_ospf(self, router_name, ospf_commands):
-        conf_name = f"{router_name}.conf"
-        with open(path.join(self.conf_file_dir, conf_name), 'w') as fp:
-            for opa in ospf_commands:
-                for op in opa.split(";"):
-                    fp.write(op)
-                    fp.write('\n')
-
-    def _init_isis(self, router_name, isis_commands):
-        conf_name = f"{router_name}.conf"
-        with open(path.join(self.conf_file_dir, conf_name), 'w') as fp:
-            for opa in isis_commands:
-                for op in opa.split(";"):
-                    fp.write(op)
-                    fp.write('\n')
-    def test(self):
-        try:
-            res = {}
-            start = time.time()
-            res['result'] = []
-            for i in range(0, self.round_num):
-                # here is isis or ospf
-                # isis: _run_for_isis   ospf: _run
-                res['result'].append(self._run_for_isis(i))
-            stop = time.time()
-            res['total_test_time'] = stop - start
-            self.conf['test'] = res
-            result_path = path.join(self.output_dir, f"{self.conf_name}_res.json")
-            with open(result_path, "w") as fp:
-                json.dump(self.conf, fp)
-            return 0
-        except Exception as e:
-            traceback.print_exception(e)
-            os.system("mn -c")
-            return -1
-
-    def _check_converge(self, net:testnet.TestNet):
+#================CHECK CONVERGENCE============
+    def _check_converge_ospf(self, net:testnet.TestNet):
         for r_name in self.routers:
             warnln(f"    +check router {r_name}")
-            res = net.net.nameToNode[r_name].dump_neighbor_info()
+            res = net.net.nameToNode[r_name].dump_ospf_neighbor_info()
             if res == None:
                 warnln(f"    -check router {r_name} n")
                 return False
@@ -176,9 +158,8 @@ class executor:
             warnln(f"    -check router {r_name} y")
         return True
 
-
-
-    def _run(self, r):
+#================RUN PROCESSS==================
+    def _run_for_ospf(self, r):
         erroraln(f"\n\n======round{r}======","")
         erroraln("+ mininet init", "")
         net = testnet.TestNet()
@@ -200,19 +181,19 @@ class executor:
                 erroraln(f"- OSPF commands", "")
                 
                 erroraln(f"+ PHY commands", "")
-                phy_res = self._run_phy(net, ctx, commands[i]['phy'])
+                phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
                 erroraln(f"- PHY commands", "")
             
             else:
                 erroraln(f"+ PHY commands", "")
-                phy_res = self._run_phy(net, ctx, commands[i]['phy'])
+                phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
                 erroraln(f"- PHY commands", "")
 
                 erroraln(f"+ OSPF commands", "")
                 for j in range(len(self.routers) -1, -1, -1):
                     router_name = self.routers[j]
                     ospf_ops = commands[i]['ospf'][j]
-                    tmp = self._run_ospf(net, router_name, ospf_ops)
+                    tmp = self._run_ospf_commands(net, router_name, ospf_ops)
                     if j == 0:
                         print(tmp)
                     ospf_res[router_name] = tmp
@@ -236,7 +217,7 @@ class executor:
                 erroraln("+ check convergence", "")
                 begin_t = time.time()
                 while True:
-                    if self._check_converge(net):
+                    if self._check_converge_ospf(net):
                         time.sleep(self.minWaitTime)
                         res[i]['exec']['convergence'] = True
                         warnaln("   + convergence!", "")
@@ -257,7 +238,7 @@ class executor:
                 #some routers may be deleted
                 if r_name not in net.net.nameToNode:
                     continue
-                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_ospf()
             warnaln("   - collect from daemons", "")
             warnaln("   + collect from asan", "")
             for r_name in self.routers:
@@ -291,19 +272,19 @@ class executor:
                 erroraln(f"- ISIS commands", "")
 
                 erroraln(f"+ PHY commands", "")
-                phy_res = self._run_phy(net, ctx, commands[i]['phy'])
+                phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
                 erroraln(f"- PHY commands", "")
 
             else:
                 erroraln(f"+ PHY commands", "")
-                phy_res = self._run_phy(net, ctx, commands[i]['phy'])
+                phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
                 erroraln(f"- PHY commands", "")
 
                 erroraln(f"+ ISIS commands", "")
                 for j in range(len(self.routers) -1, -1, -1):
                     router_name = self.routers[j]
                     isis_ops = commands[i]['isis'][j]
-                    tmp = self._run_isis(net, router_name, isis_ops)
+                    tmp = self._run_isis_commands(net, router_name, isis_ops)
                     if j == 0:
                         print(tmp)
                     isis_res[router_name] = tmp
@@ -353,7 +334,7 @@ class executor:
                 #some routers may be deleted
                 if r_name not in net.net.nameToNode:
                     continue
-                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info()
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_isis()
             warnaln("   - collect from daemons", "")
             warnaln("   + collect from asan", "")
             for r_name in self.routers:
@@ -365,6 +346,36 @@ class executor:
         net.stop_net()
         return res
 
+#================TEST ENTRY====================
+    def test(self):
+        #FIXME we should add other process
+        self.run_pocess = {
+            "ospf": self._run_for_ospf,
+            "isis": self._run_for_isis
+        }
+        try:
+            res = {}
+            start = time.time()
+            res['result'] = []
+            for i in range(0, self.round_num):
+                # here is isis or ospf
+                # isis: _run_for_isis   ospf: _run
+                res['result'].append(self.run_pocess[self.protocol](i))
+            stop = time.time()
+            res['total_test_time'] = stop - start
+            self.conf['test'] = res
+            result_path = path.join(self.output_dir, f"{self.conf_name}_res.json")
+            with open(result_path, "w") as fp:
+                json.dump(self.conf, fp)
+            return 0
+        except Exception as e:
+            traceback.print_exception(e)
+            os.system("mn -c")
+            return -1
+
+
+
+
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1728544999_r1_rt3.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 30)
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1728544999_r1_rt3.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 30, "ospfd")
     t.test()
