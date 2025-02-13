@@ -1,6 +1,7 @@
 package org.generator.lib.topo.pass.base;
 
 import org.generator.lib.topo.item.base.Router;
+import org.generator.lib.topo.item.base.Router_ISIS;
 
 import java.util.List;
 
