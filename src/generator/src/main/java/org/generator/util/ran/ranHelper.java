@@ -4,7 +4,6 @@ import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
-import org.generator.util.net.NET;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -39,18 +38,6 @@ public class ranHelper {
 
     static public IPRange randomIpRange(){
         return IPRange.of(randomLong(0,0xffffffffL), randomInt(1, 31));
-    }
-
-    public static NET randomNet() {
-        // 随机生成 area 部分，例如 "49.0001"
-        String area = String.format("%02d.%04d", randomInt(10, 99), randomInt(0, 9999));
-        // 随机生成 systemId 部分，例如 "1234.5678.9abc"
-        String systemId = String.format("%04x.%04x.%04x", randomInt(0, 0xFFFF), randomInt(0, 0xFFFF), randomInt(0, 0xFFFF));
-        // 选择器部分，通常为 "00"
-        String selector = "00";
-        // 构建 NET 地址字符串
-        String netStr = area + "." + systemId + "." + selector;
-        return NET.of(netStr);
     }
 
     private static String getRandomString2(int length){
