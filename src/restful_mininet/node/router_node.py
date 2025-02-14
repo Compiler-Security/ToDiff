@@ -82,11 +82,12 @@ class FrrNode(Node):
     
 
     ####################### load/stop ########################
+    #-----------------------helpers---------------------------
     #testname/conf/r1.conf
     def _getConfPath(self):
         return path.join(self.conf_dir, f"{self.name}.conf")
     
-    def load_frr_conf(self):
+    def _load_frr_conf(self):
         conf_path = self._getConfPath()
         self.cmds_error(["cp", conf_path, "/etc/frr/frr.conf"])
         if self.raw_conf_check != None:
@@ -98,34 +99,15 @@ class FrrNode(Node):
         except:
             #FIXME
             pass
-
-    #conf_dir testname/conf
-    def load_frr(self, daemons, conf_dir, universe=False):
-        self.conf_dir = conf_dir
-        self.log_path = path.join(path.dirname(conf_dir), "log", self.name)
-        if len(self.daemon_dict.keys()) == 0:
-            if path.exists(self.log_path):
-                shutil.rmtree(self.log_path)
-            assert (not path.exists(self.log_path))
-            os.makedirs(self.log_path)
-        assert (path.exists(self.log_path))
-        self.daemons = daemons
-        ospf_running = "ospfd" in self.daemon_dict
-        for daemon in daemons:
-            self._load_daemon(daemon, conf_dir, universe)
-        if (universe and not ospf_running):
-            self.load_frr_conf()
-            #erroraln("cat /etc/frr/frr.conf", self.cmds(["cat", "/etc/frr/frr.conf"]))
-        if DEBUG == True:
-            self._log_load_frr()
-
-    def _log_load_frr(self):
-        infoaln("daemon_dict", self.daemon_dict)
-        infoaln("zebra_log", self.cmds(["cat", self.daemon_dict["zebra"]["log_path"]]))
-        infoaln("ospf_log", self.cmds(["cat", self.daemon_dict["ospfd"]["log_path"]]))
-        infoaln("ls log/route", self.cmds(["ls", self.log_path]))
-        infoaln("cat /etc/frr/vtysh.conf", self.cmds(["cat", "/etc/frr/vtysh.conf"]))
-        infoaln("ls run", self.cmds(["ls", "/run/frr"]))
+    
+    def _save_frr_conf(self):
+        warnaln(f"+save frr conf ", self.name)
+        raw_conf = self.daemon_cmds(["show running-config"])
+        raw_conf = raw_conf[raw_conf.find("!"):]
+        self.raw_conf_check = raw_conf
+        with open(path.join(self._getConfPath()), "w") as fp:
+            fp.write(raw_conf)
+        warnaln(f"-save frr conf ", self.name)
 
     def _load_daemon(self, daemon_name, work_dir: str, universe=False):
         #if daemon is already running, we don't need to run it again
@@ -160,38 +142,63 @@ class FrrNode(Node):
             daemon_pid = int(file.read())
             self.daemon_dict[daemon_name]["daemon_pid"] = daemon_pid
         warnaln(f"  - load daemon {daemon_name}", "")
+    
+    #load frr will load all daemons in daemons
+    #if test_daemon is stopped, it will first load backup conf via vtysh
+    def _load_frr(self, daemons, test_daemon, conf_dir, log_function, universe=False):
+        self.conf_dir = conf_dir
+        self.log_path = path.join(path.dirname(conf_dir), "log", self.name)
+        if len(self.daemon_dict.keys()) == 0:
+            if path.exists(self.log_path):
+                shutil.rmtree(self.log_path)
+            assert (not path.exists(self.log_path))
+            os.makedirs(self.log_path)
+        assert (path.exists(self.log_path))
+        self.daemons = daemons
+        test_daemon_running = test_daemon in self.daemon_dict
+        for daemon in daemons:
+            self._load_daemon(daemon, conf_dir, universe)
+        if (universe and not test_daemon_running):
+            self._load_frr_conf()
+            #erroraln("cat /etc/frr/frr.conf", self.cmds(["cat", "/etc/frr/frr.conf"]))
+        if DEBUG == True:
+            log_function()
+    
+    #------------------ LOAD TEST DAEMON--------------------------
+    #conf_dir testname/conf
+    def load_ospf(self, daemons, conf_dir, universe=False):
+        self._load_frr(daemons, "ospfd", conf_dir, self._log_load_ospf, universe)
 
-    def save_frr_conf(self):
-        warnaln(f"+save frr conf ", self.name)
-        raw_conf = self.daemon_cmds(["show running-config"])
-        raw_conf = raw_conf[raw_conf.find("!"):]
-        self.raw_conf_check = raw_conf
-        with open(path.join(self._getConfPath()), "w") as fp:
-            fp.write(raw_conf)
-        warnaln(f"-save frr conf ", self.name)
+    def load_isis(self, daemons, conf_dir, universe=False):
+        self._load_frr(daemons, "isisd", conf_dir, self._log_load_isis, universe)
+
+    
+    #------------------ STOP TEST DAEMON--------------------------
+    def stop_ospfd(self, conf_dir):
+        if "ospfd" in self.daemon_dict:
+            self._save_frr_conf()
+            kill_pid(self.daemon_dict["ospfd"]["daemon_pid"])
+            os.remove(self.daemon_dict["ospfd"]["pid_path"])
+            del self.daemon_dict["ospfd"]
+
+    def stop_isisd(self, conf_dir):
+        if "isisd" in self.daemon_dict:
+            self._save_frr_conf()
+            kill_pid(self.daemon_dict["isisd"]["daemon_pid"])
+            os.remove(self.daemon_dict["isisd"]["pid_path"])
+            del self.daemon_dict["isisd"]
 
     def stop_frr(self):
-        #infoaln("hahahah", self.log_path)
-        #FIXME this kill_pid is duplicated and can be removed
-        if "ospfd" in self.daemon_dict:
-            self.save_frr_conf()
+        #FXIME we should add all the test_daemon to stop_daemons
+        stop_daemons = [self.stop_ospfd, self.stop_isisd]
+        for stop_daemon in stop_daemons:
+            stop_daemon(self.conf_dir)
+
         self.cmds_error(["cp", "-r", "/run/frr", path.join(self.log_path, "run")])
         for v in self.daemon_dict.values():
             kill_pid(v["daemon_pid"])
         self.daemon_dict = {}
         log.info("cleaned\n")
-    
-    def check_asan(self):
-        warnln("+ check asan, TODO", "")
-        #for d in os.listdir("/run/frr"):
-        #    if ()
-        
-    def stop_ospfd(self, conf_dir):
-        if "ospfd" in self.daemon_dict:
-            self.save_frr_conf()
-            kill_pid(self.daemon_dict["ospfd"]["daemon_pid"])
-            os.remove(self.daemon_dict["ospfd"]["pid_path"])
-            del self.daemon_dict["ospfd"]
 
     def terminate(self):
         erroraln("+ stop router ", self.name)
@@ -199,10 +206,31 @@ class FrrNode(Node):
         super().terminate()
         erroraln("- stop router ", self.name)
 
-  
+
+    def check_asan(self):
+        warnln("+ check asan, TODO", "")
+    #     #for d in os.listdir("/run/frr"):        #    if ()
+    
+    #-------------------LOG Load TEST DAEMON---------------------------
+    def _log_load_ospf(self):
+        infoaln("daemon_dict", self.daemon_dict)
+        infoaln("zebra_log", self.cmds(["cat", self.daemon_dict["zebra"]["log_path"]]))
+        infoaln("ospf_log", self.cmds(["cat", self.daemon_dict["ospfd"]["log_path"]]))
+        infoaln("ls log/route", self.cmds(["ls", self.log_path]))
+        infoaln("cat /etc/frr/vtysh.conf", self.cmds(["cat", "/etc/frr/vtysh.conf"]))
+        infoaln("ls run", self.cmds(["ls", "/run/frr"]))
+    
+    def _log_load_isis(self):
+        infoaln("daemon_dict", self.daemon_dict)
+        infoaln("zebra_log", self.cmds(["cat", self.daemon_dict["zebra"]["log_path"]]))
+        infoaln("isis_log", self.cmds(["cat", self.daemon_dict["isisd"]["log_path"]]))
+        infoaln("ls log/route", self.cmds(["ls", self.log_path]))
+        infoaln("cat /etc/frr/vtysh.conf", self.cmds(["cat", "/etc/frr/vtysh.conf"]))
+        infoaln("ls run", self.cmds(["ls", "/run/frr"]))
     
     ################################### DUMP #################################
-    def collect_info(self, j, item, cmds, isjson):
+    #---------------------------------helper----------------------------------
+    def _collect_info_ospf(self, j, item, cmds, isjson):
         warnaln(f"  + collect {item}", "")
         if isjson == True:
             info = self.daemon_cmds([cmds])
@@ -215,27 +243,41 @@ class FrrNode(Node):
             j[item] = self.daemon_cmds([cmds])
         warnaln(f"  - collect {item}", "")
     
-        
-    def dump_info(self):
+    
+    def _collect_info_isis(self, j, item, cmds, isjson):
+        warnaln(f"  + collect {item}", "")
+        if isjson == True:
+            info = self.daemon_cmds([cmds])
+            if (item == "isis-daemon" and info == ""):
+                #we should handle special case of "isis-daemon"
+                j[item] = json.loads("{}")
+            else:
+                j[item] = json.loads(self.daemon_cmds([cmds]))
+        else:
+            j[item] = self.daemon_cmds([cmds])
+        warnaln(f"  - collect {item}", "")  
+
+    #------------------------OSPF-------------------------------------
+    def dump_info_ospf(self):
         j = {}
         warnaln(f"+ collect {self.name}", "")
         if "ospfd" not in self.daemon_dict:
             j["ospf-up"] = False
         else:
             j["ospf-up"] = True
-            self.collect_info(j, "ospf-daemon", "show ip ospf json", True)
-            self.collect_info(j, "ospf-intfs", "show ip ospf interface json", True)
-            self.collect_info(j, "neighbors", "show ip ospf neighbor json", True)
-            self.collect_info(j, "routing-table", "show ip ospf route json", True)
-            self.collect_info(j, "database", "show ip ospf database detail json", True)
+            self._collect_info_ospf(j, "ospf-daemon", "show ip ospf json", True)
+            self._collect_info_ospf(j, "ospf-intfs", "show ip ospf interface json", True)
+            self._collect_info_ospf(j, "neighbors", "show ip ospf neighbor json", True)
+            self._collect_info_ospf(j, "routing-table", "show ip ospf route json", True)
+            self._collect_info_ospf(j, "database", "show ip ospf database detail json", True)
         if "zebra" in self.daemon_dict:
-            self.collect_info(j, "running-config", "show running-config", False)
-            self.collect_info(j, "intfs", "show interface json", True)
+            self._collect_info_ospf(j, "running-config", "show running-config", False)
+            self._collect_info_ospf(j, "intfs", "show interface json", True)
         warnaln(f"- collect {self.name}", "")
         #warnaln("end dump ospf json", "")
         return j
     
-    def dump_neighbor_info(self):
+    def dump_ospf_neighbor_info(self):
         info = self.daemon_cmds(["show ip ospf neighbor json"])
         try:
             return json.loads(info)
@@ -250,6 +292,53 @@ class FrrNode(Node):
         except Exception as e:
             traceback.print_exception(e)
             return None
+        
+    #---------------------------------ISIS---------------------------------
+    def dump_info_isis(self):
+        j = {}
+        warnaln(f"+ collect {self.name}", "")
+        if "isisd" not in self.daemon_dict:
+            j["isis-up"] = False
+        else:
+            j["isis-up"] = True
+            self._collect_info_isis(j, "isis-daemon", "show isis summary json", True)
+            self._collect_info_isis(j, "isis-intfs", "show isis interface detail json", True)
+            self._collect_info_isis(j, "neighbors", "show isis neighbor detail json", True)
+            self._collect_info_isis(j, "routing-table", "show isis route json", True)
+        if "zebra" in self.daemon_dict:
+            self._collect_info_isis(j, "running-config", "show running-config", False)
+            self._collect_info_isis(j, "intfs", "show interface json", True)
+        warnaln(f"- collect {self.name}", "")
+        #warnaln("end dump ospf json", "")
+        return j
+    
+    def dump_isis_database(self):
+        info = self.daemon_cmds(["show isis database detail"])
+        return info
+
+    def dump_isis_intfs_info(self):
+        info = self.daemon_cmds(["show isis interface detail json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
+
+    def dump_isis_daemon_info(self):
+        info = self.daemon_cmds(["show isis summary json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
+        
+    def dump_route_info(self):
+        info = self.daemon_cmds(["show ip route"])
+        return info
+    
+    def dump_isis_route_info(self):
+        info = self.daemon_cmds(["show isis route "])
+        return info
 
 if __name__ == "__main__":
     setLogLevel('info')

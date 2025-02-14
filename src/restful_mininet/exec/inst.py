@@ -141,10 +141,10 @@ class MininetInst(BaseInst):
             up_node: FrrNode = self._get_node(node_name)
             if up_node is None:
                 return self.EXEC_MISS
-            res = self._run_cmd(up_node.load_frr, ["zebra", "ospfd", "mgmtd"], conf_dir=self.workdir, universe=True)
+            res = self._run_cmd(up_node.load_ospf, ["zebra", "ospfd", "mgmtd"], conf_dir=self.workdir, universe=True)
             #self._run_cmd(up_node.log_load_frr)
             return res
-        
+
         if _cmds_equal_prefix(op_args, ["router", "set", "OSPF", "down"]):
             up_node: FrrNode = self._get_node(node_name)
             if up_node is None:
@@ -156,7 +156,27 @@ class MininetInst(BaseInst):
             if up_node is None:
                 return self.EXEC_MISS
             return self._run_cmd(up_node.stop_frr)
-        
+
+        # isis
+        if _cmds_equal_prefix(op_args, ["router", "set", "ISIS", "up"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
+            res = self._run_cmd(up_node.load_isis, ["zebra", "isisd", "mgmtd"], conf_dir=self.workdir, universe=True)
+            #self._run_cmd(up_node.log_load_frr)
+            return res
+
+        if _cmds_equal_prefix(op_args, ["router", "set", "ISIS", "down"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
+            return self._run_cmd(up_node.stop_isisd, conf_dir=self.workdir)
+
+        if _cmds_equal_prefix(op_args, ["router", "set", "ISIS", "restart"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
+            return self._run_cmd(up_node.stop_frr_isis)
 
         raise InstErrorException("[mininet] node inst not right")
 
