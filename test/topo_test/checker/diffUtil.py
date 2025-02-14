@@ -1,15 +1,9 @@
 import json
-import sys
-from os import path
-path_to_add = path.dirname(path.dirname(path.abspath(__file__)))
-if path_to_add not in sys.path:
-    sys.path.append(path_to_add)
 
 import copy
 import util
 import pprint
-
-class diffOSPF:
+class diff:
     def __init__(self, file_path):
         self.file_path = file_path
         with open(file_path) as fp:
@@ -190,39 +184,3 @@ class diffOSPF:
         if self.conf["test"]["result"][rd][self.step_nums[rd] - 1]["exec"]["convergence"] != True:
             res = {"not_convergence":rd}
         return res
-    
-import functools
-import io
-def checkFunc(rd, diff, func, name, buf):
-    same = True
-    buf.write(f">>>>> +check {name} <<<<<\n")
-    for rt in diff.routers:
-        res = functools.partial(func)(rt, rd)
-        if (res != {} and res != []):
-            buf.write(f"----- router {rt} -----\n")
-            buf.write(json.dumps(res, indent=4))
-            buf.write("\n")
-            same = False
-    return same
-    
-def checkTest(test_name, diffAll):
-    result_path = path.join(util.get_result_dir(test_name), util.get_result_name(test_name))
-    diff_OSPF = diffOSPF(result_path)
- 
-    buf = io.StringIO()
-    for rd in range(1, diff_OSPF.round_num):
-        buf.write(f"====== round {rd} ======\n")
-        res = checkFunc(rd, diff_OSPF, diff_OSPF.check_runningConfig, "check_runningConfig", buf)
-        if (not res and not diffAll): continue
-
-        res = checkFunc(rd, diff_OSPF, diff_OSPF.check_convergence, "check_convergence", buf)
-        if (not res and not diffAll): continue
-        
-        res = checkFunc(rd, diff_OSPF, diff_OSPF.check_ospfIntfs, "check_ospfIntfs", buf)
-        res = checkFunc(rd, diff_OSPF, diff_OSPF.check_neighbors, "check_neighbors", buf)
-        res = checkFunc(rd, diff_OSPF, diff_OSPF.check_ospfDaemon, "check_ospfDaemon", buf)
-        res = checkFunc(rd, diff_OSPF, diff_OSPF.check_ospfDatabase, "check_ospfDatabase", buf)
-        res = checkFunc(rd, diff_OSPF, diff_OSPF.check_routingTable, "check_routingTable", buf)
-       
-    
-    return buf.getvalue()
