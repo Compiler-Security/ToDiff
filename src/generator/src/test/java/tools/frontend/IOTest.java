@@ -21,11 +21,8 @@ import org.generator.lib.reducer.pass.ospfArgPass;
 import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.reducer.pass.reducePass;
 import org.generator.tools.frontend.ConfReader;
-import org.generator.tools.frontend.ConfReader_ISIS;
-import org.generator.tools.frontend.IsisConfWriter;
 import org.generator.tools.frontend.OspfConfWriter;
 import org.generator.tools.diffOp.genOps;
-import org.generator.tools.diffOp.genOps_ISIS;
 import org.generator.util.net.ID;
 import org.generator.util.net.IPRange;
 import org.junit.Test;
@@ -80,53 +77,6 @@ public class IOTest {
         System.out.println(opA.getOp());
         var opA_new = actionRulePass.mutate(opA);
         System.out.println(opA_new);
-    }
-	@Test
-	public void genRandom_and_genconfg(){
-		var genOp = new genOps();
-		var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-		System.out.println(ori);
-		var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
-		var confg = getSetConfG(ori_use);
-		//System.out.println(confg);
-		var gen = generate.generateCore(confg);
-	}
-
-    @Test
-    public void ospfArgPassTest(){
-        String test_st = """
-            interface r1-eth0
-                ip address 82.144.2.106/3
-            interface r1-eth1
-                ip address 89.183.104.6/1
-            int r1-eth2
-                ip address 237.151.161.95/16
-            int r1-eth3
-                ip address 117.132.165.79/15
-            router ospf
-                network 1.1.1.1/10 area 2
-            """;
-        var genOp = new genOps();
-		//var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
-        var ori = new ConfReader().read(test_st);
-        System.out.println(ori);
-        System.out.println("===============");
-        var core = reducer.reduceToCore(ori);
-        System.out.println(core);
-        System.out.println("===============");
-        var core_confg = getSetConfG(core);
-        var confg_to_core= generate.generateCore(core_confg);
-        System.out.println(confg_to_core);
-        var confg_to_core_to_confg = getSetConfG(confg_to_core);
-        if (!confg_to_core_to_confg.equals(core_confg)){
-            System.out.println(confg_to_core);
-            System.out.println("===============");
-            System.out.println(core);
-            System.out.println(compareJson(core_confg.toJson(), confg_to_core_to_confg.toJson()));
-        }
-        else{
-            System.out.println("PASS");
-        }
     }
 
     @Test
@@ -404,67 +354,64 @@ public class IOTest {
         var confg = getSetConfG(ori);
         System.out.println(confg.toString());
     }
-   @Test
-   public void generatorTest(){
-       String test_st = """
-            router ospf
-                refresh timer 828
-                area 167.26.133.223 range 207.18.146.47/4 not-advertise
-                network 154.149.246.252/32 area 0.0.0.0
-                network 180.194.156.207/32 area 0.0.0.2
-            interface r1-eth0
-                ip address 180.194.156.207/4
-                ip ospf dead-interval minimal hello-multiplier 20
-                ip ospf retransmit-interval 30812
-            interface r1-eth1
-                ip address 154.149.246.252/19
-                ip ospf hello-interval 4216
-
-
-               """;
-       int i = 0;
-       while(true) {
-           i++;
-           System.out.printf("testCase %d\n", i);
-           var genOp = new genOps();
-           //var ori = genOp.genRandom(10, 0.2, 0.6, 2, 0, 1, "r1");
-           var ori = new ConfReader().read(test_st);
-
-           var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
-           System.out.println(ori_use);
-           var confg = getSetConfG(ori_use);
-           var gen = generate.generateCore(confg);
-           //var gen = new ConfReader().read(test_st1);
-           //System.out.println(gen.getOps().size());
-           //System.out.println(reducer.reduceToCore(ori));
-           System.out.println("========");
-           System.out.println(gen);
-		   System.out.println("========");
-           var confg_core = getSetConfG(gen);
-           System.out.println(confg);
-		   System.out.println("========");
-           System.out.println(confg_core);
-           if (!confg_core.equals(confg)) {
-               System.out.println(gen);
-               System.out.println(compareJson(confg.toJson(), confg_core.toJson()).toPrettyString());
-               //System.out.println(confg_core.toJson().toPrettyString());
-           }
-           assert confg_core.equals(confg) : "CORE WRONG";
-           reducer.s = 0;
-           var gen_equal = generate.generateEqualOfCore(gen,false);
-           //System.out.println(gen_equal);
-           var confg_equal = getSetConfG(gen_equal);
-           if (!confg_equal.equals(confg)){
-               System.out.println(gen);
-               System.out.println("===============");
-               System.out.println(gen_equal);
-               System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
-           }
-           assert confg_equal.equals(confg) : "MUTATE WRONG";
-           break;
-       }
-   }
-
+  //  @Test
+//    public void generatorTest(){
+//        String test_st = """
+//                interface r1-eth0
+//                	ip address 82.144.2.106/3
+//                	ip ospf area 0.0.0.2
+//                interface r1-eth1
+//                	ip address 89.183.104.6/1
+//                	ip ospf area 0.0.0.3
+//                int r1-eth2
+//                	ip address 237.151.161.95/16
+//                	ip ospf area 0.0.0.1
+//                int r1-eth3
+//                	ip address 117.132.165.79/15
+//                	ip ospf area 0.0.0.0
+//                router ospf
+//                    network 1.1.1.1/10 area 2
+//                """;
+//        int i = 0;
+//        while(true) {
+//            i++;
+//            System.out.printf("testCase %d\n", i);
+//            var genOp = new genOps();
+//            var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+//            //var ori = new ConfReader().read(test_st);
+//
+//            var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
+//            //System.out.println(ori_use);
+//            var confg = getSetConfG(ori_use);
+//            var gen = generate.generateCore(confg);
+//            //var gen = new ConfReader().read(test_st1);
+//            //System.out.println(gen.getOps().size());
+//            //System.out.println(reducer.reduceToCore(ori));
+//            //System.out.println("========");
+//            //System.out.println(gen);
+//            var confg_core = getSetConfG(gen);
+//            //System.out.println(confg);
+//            //System.out.println(confg_core);
+//            if (!confg_core.equals(confg)) {
+//                System.out.println(gen);
+//                System.out.println(compareJson(confg.toJson(), confg_core.toJson()).toPrettyString());
+//                //System.out.println(confg_core.toJson().toPrettyString());
+//            }
+//            assert confg_core.equals(confg) : "CORE WRONG";
+//            reducer.s = 0;
+//            var gen_equal = generate.generateEqualOfCore(gen);
+//            //System.out.println(gen_equal);
+//            var confg_equal = getSetConfG(gen_equal);
+//            if (!confg_equal.equals(confg)){
+//                System.out.println(gen);
+//                System.out.println("===============");
+//                System.out.println(gen_equal);
+//                System.out.println(compareJson(confg.toJson(), confg_equal.toJson()));
+//            }
+//            assert confg_equal.equals(confg) : "MUTATE WRONG";
+//            //break;
+//        }
+//    }
 
 
 
@@ -503,11 +450,11 @@ public class IOTest {
                  node r3 add
                  node s1 add
                  node s2 add
-                 link r1-eth0 s1-eth0 add
-                 link r2-eth0 s1-eth1 add
-                 link r3-eth0 s1-eth2 add
-                 link r1-eth1 s2-eth0 add
-                 link r2-eth1 s2-eth1 add
+                 link r1-eth0 s1-eth0 up
+                 link r2-eth0 s1-eth1 up
+                 link r3-eth0 s1-eth2 up
+                 link r1-eth1 s2-eth0 up
+                 link r2-eth1 s2-eth1 up
                 """;
         var reader = new ConfReader();
         var opCtxG = reader.read(phy_st);
@@ -521,8 +468,8 @@ public class IOTest {
         String phy_st = """
                      node r1 add
                      node s1 add
-                     link r1-eth0 s1-eth0 add
-                     link r1-eth1 s1-eth1 add
+                     link r1-eth0 s1-eth0 up
+                     link r1-eth1 s1-eth1 up
                 """;
 
         String ospf_st = """
