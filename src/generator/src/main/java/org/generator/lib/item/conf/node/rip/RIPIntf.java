@@ -1,4 +1,4 @@
-package org.generator.lib.item.conf.node.ospf;
+package org.generator.lib.item.conf.node.rip;
 
 import org.generator.lib.item.conf.node.NodeType;
 import org.generator.lib.item.conf.node.AbstractNode;
@@ -9,10 +9,10 @@ import org.generator.util.net.ID;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class OSPFIntf extends AbstractNode {
-    public OSPFIntf(String name){
+public class RIPIntf extends AbstractNode {
+    public RIPIntf(String name){
         setName(name);
-        setNodeType(NodeType.OSPFIntf);
+        setNodeType(NodeType.RIPIntf);
         initFiled();
     }
 

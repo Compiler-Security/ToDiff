@@ -1,9 +1,8 @@
 package org.generator.tools.diffOp;
 
 import org.generator.lib.item.conf.graph.ConfGraph;
-import org.generator.lib.item.conf.node.ospf.OSPF;
-import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
-import org.generator.lib.item.conf.node.ospf.OSPFIntf;
+import org.generator.lib.item.conf.node.rip.RIP;
+import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
 
 public class diffFrr {
@@ -16,15 +15,15 @@ public class diffFrr {
         for(var node: base.getNodes()){
             System.out.println(node.getName());
             switch (node.getNodeType()){
-                case OSPF -> {
-                    var ospf = (OSPF) node;
+                case RIP -> {
+                    var ospf = (RIP) node;
                     assert  ext.containsNode(ospf.getName());
-                    var ospf_ext = (OSPF) ext.getNodeNotNull(ospf.getName());
+                    var ospf_ext = (RIP) ext.getNodeNotNull(ospf.getName());
                     //assert ospf.getRouterId().equals(ospf_ext.getRouterId());
                     assert ospf.getStatus().equals(ospf_ext.getStatus());
-                    assert ospf.getInitDelay() == ospf_ext.getInitDelay();
-                    assert ospf.getMinHoldTime() == ospf_ext.getMinHoldTime();
-                    assert ospf.getMaxHoldTime() == ospf_ext.getMaxHoldTime();
+                    assert ospf.getUpdate() == ospf_ext.getUpdate();
+                    assert ospf.getTimeout() == ospf_ext.getTimeout();
+                    assert ospf.getGarbage() == ospf_ext.getGarbage();
                 }
                 case OSPFDaemon -> {
                     var daemon = (OSPFDaemon) node;
@@ -42,10 +41,10 @@ public class diffFrr {
                     assert intf.isPersudo() == intf_ext.isPersudo();
                 }
 
-                case OSPFIntf -> {
-                    var ospfintf = (OSPFIntf) node;
+                case RIPIntf -> {
+                    var ospfintf = (RIPIntf) node;
                     assert  ext.containsNode(ospfintf.getName());
-                    var ospfintf_ext = (OSPFIntf) ext.getNodeNotNull(ospfintf.getName());
+                    var ospfintf_ext = (RIPIntf) ext.getNodeNotNull(ospfintf.getName());
                     assert ospfintf.getCost() == ospfintf_ext.getCost();
                     assert ospfintf.getArea().equals(ospfintf_ext.getArea());
                     //assert ospfintf.getDeadInterval() == ospfintf_ext.getDeadInterval() : "%d:%d".formatted(ospfintf.getDeadInterval(), ospfintf_ext.getDeadInterval());

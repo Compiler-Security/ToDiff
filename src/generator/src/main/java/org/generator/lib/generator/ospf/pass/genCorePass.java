@@ -11,10 +11,8 @@ import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
-import org.generator.lib.item.conf.node.ospf.OSPF;
-import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
-import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
-import org.generator.lib.item.conf.node.ospf.OSPFIntf;
+import org.generator.lib.item.conf.node.rip.RIP;
+import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
@@ -41,33 +39,33 @@ public class genCorePass {
         var opCtxG = OpCtxG.Of();
         var ospf_name = NodeGen.getOSPFName(r_name);
         if (confg.containsNode(ospf_name)){
-            OSPF ospf = confg.getNodeNotNull(NodeGen.getOSPFName(r_name));
+            RIP ospf = confg.getNodeNotNull(NodeGen.getOSPFName(r_name));
             addOp(opCtxG, OpType.ROSPF);
             if (ospf.getRouterId() != null){
                 var op = addOp(opCtxG, OpType.RID);
                 op.setID(ospf.getRouterId());
             }
 
-            if (ospf.getAbrType() != null){
+            if (ospf.getVersion() != null){
                 var op = addOp(opCtxG, OpType.RABRTYPE);
-                op.setNAME(ospf.getAbrType().toString());
+                op.setNAME(ospf.getVersion().toString());
             }
 
             {
                 var op = addOp(opCtxG, OpType.TIMERSTHROTTLESPF);
-                op.setNUM(ospf.getInitDelay());
-                op.setNUM2(ospf.getMinHoldTime());
-                op.setNUM3(ospf.getMaxHoldTime());
+                op.setNUM(ospf.getUpdate());
+                op.setNUM2(ospf.getTimeout());
+                op.setNUM3(ospf.getGarbage());
             }
             //refresh timer <- lsaRefreshTime
             {
                 var op = addOp(opCtxG, OpType.RefreshTimer);
-                op.setNUM(ospf.getLsaRefreshTime());
+                op.setNUM(ospf.getMetric());
             }
             //timers lsa throttle all <- lsaIntervalTime
             {
                 var op = addOp(opCtxG, OpType.TimersLsaThrottle);
-                op.setNUM(ospf.getLsaIntervalTime());
+                op.setNUM(ospf.getDistance());
             }
            // opCtxG.addOp(new Op);
         }
@@ -107,7 +105,7 @@ public class genCorePass {
         return opCtxG;
     }
 
-    private  OpCtxG handleIntf(OSPFIntf ospf_intf){
+    private  OpCtxG handleIntf(RIPIntf ospf_intf){
         var opCtxG = OpCtxG.Of();
         Intf intf = (Intf) confg.getDstsByType(ospf_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
         {

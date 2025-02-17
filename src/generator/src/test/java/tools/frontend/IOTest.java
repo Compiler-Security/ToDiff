@@ -13,7 +13,7 @@ import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.graph.ConfGraph;
-import org.generator.lib.item.conf.node.ospf.OSPF;
+import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.lib.reducer.driver.reducer;
@@ -44,9 +44,9 @@ public class IOTest {
     }
     @Test
     public void jsonTest(){
-        var node = new OSPF("r1");
-        var node1 = new OSPF("r2");
-        node1.setInitDelay(10);
+        var node = new RIP("r1");
+        var node1 = new RIP("r2");
+        node1.setUpdate(10);
         System.out.println(node1.getJsonNode());
         System.out.println( node.getJsonNode().equals(node1.getJsonNode()));
     }

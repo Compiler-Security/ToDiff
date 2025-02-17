@@ -1,9 +1,7 @@
 package org.generator.lib.topo.pass.build;
 
-import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
-import org.generator.lib.item.conf.node.ospf.OSPFIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Switch;
 import org.generator.lib.topo.item.base.Router;

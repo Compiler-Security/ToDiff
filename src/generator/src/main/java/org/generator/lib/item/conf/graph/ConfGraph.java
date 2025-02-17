@@ -6,10 +6,8 @@ import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.node.AbstractNode;
 import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.NodeType;
-import org.generator.lib.item.conf.node.ospf.OSPF;
-import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
-import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
-import org.generator.lib.item.conf.node.ospf.OSPFIntf;
+import org.generator.lib.item.conf.node.rip.RIP;
+import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.lib.item.conf.node.phy.Switch;
@@ -147,22 +145,22 @@ public class ConfGraph extends AbstractRelationGraph {
         return getEdgesByType(nodes, typ).stream().map(s->(T) s.getDst()).collect(Collectors.toSet());
      }
 
-     public OSPF getOspfOfRouter(String r_name){
-        return this.<OSPF>getDstsByType(r_name, RelationEdge.EdgeType.OSPF).stream().findFirst().get();
+     public RIP getOspfOfRouter(String r_name){
+        return this.<RIP>getDstsByType(r_name, RelationEdge.EdgeType.OSPF).stream().findFirst().get();
      }
 
      public Set<Intf> getIntfsOfRouter(String r_name){
         return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF);
      }
-     public Set<OSPFIntf> getOSPFIntfOfRouter(String r_name){
-        return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF).stream().map(x->this.<OSPFIntf>getDstsByType(x.getName(), RelationEdge.EdgeType.OSPFINTF)).flatMap(Collection::stream).collect(Collectors.toSet());
+     public Set<RIPIntf> getOSPFIntfOfRouter(String r_name){
+        return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF).stream().map(x->this.<RIPIntf>getDstsByType(x.getName(), RelationEdge.EdgeType.OSPFINTF)).flatMap(Collection::stream).collect(Collectors.toSet());
      }
 
      public Set<OSPFAreaSum> getOSPFAreaSumOfOSPF(String ospf_name){
         return this.<OSPFAreaSum> getDstsByType(ospf_name, RelationEdge.EdgeType.OSPFAREASUM);
      }
-    public OSPFIntf getOSPFIntf(String nodeName) {
-        return (OSPFIntf) getNode(nodeName).get();
+    public RIPIntf getOSPFIntf(String nodeName) {
+        return (RIPIntf) getNode(nodeName).get();
     }
 
     public OSPFDaemon getOSPFDaemonOfOSPF(String ospf_name){

@@ -1,9 +1,10 @@
 package org.generator.lib.item.conf.node;
 
-import org.generator.lib.item.conf.node.ospf.*;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.lib.item.conf.node.phy.Switch;
+import org.generator.lib.item.conf.node.rip.RIP;
+import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.net.ID;
 import org.generator.util.net.IPBase;
@@ -74,13 +75,13 @@ public class NodeGen {
         return new Switch(name);
     }
 
-    public static OSPF new_OSPF(String name){
-        return new OSPF(name);
+    public static RIP new_OSPF(String name){
+        return new RIP(name);
     }
 
     public static Intf new_Intf(String name) {return new Intf(name);}
 
-    public static OSPFIntf new_OSPF_Intf(String name) {return new OSPFIntf(name);}
+    public static RIPIntf new_OSPF_Intf(String name) {return new RIPIntf(name);}
 
     public static <T extends  AbstractNode> T newNode(String name, NodeType type){;
         return (T)new_node(name, type);
@@ -99,10 +100,10 @@ public class NodeGen {
             case Switch -> {
                 return new_Switch(name);
             }
-            case OSPF -> {
+            case RIP -> {
                 return new_OSPF(name);
             }
-            case OSPFIntf -> {
+            case RIPIntf -> {
                 return new_OSPF_Intf(name);
             }
             case OSPFDaemon -> {

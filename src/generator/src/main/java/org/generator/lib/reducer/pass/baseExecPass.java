@@ -3,9 +3,8 @@ package org.generator.lib.reducer.pass;
 import org.generator.lib.item.IR.Op;
 import org.generator.lib.item.opg.OpArgG;
 import org.generator.lib.item.conf.graph.ConfGraph;
-import org.generator.lib.item.conf.node.ospf.OSPF;
-import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
-import org.generator.lib.item.conf.node.ospf.OSPFIntf;
+import org.generator.lib.item.conf.node.rip.RIP;
+import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.util.collections.Pair;
@@ -32,11 +31,11 @@ public abstract class baseExecPass {
         return l;
     }
 
-    public OSPF getCur_ospf() {
+    public RIP getCur_ospf() {
         return cur_ospf;
     }
 
-    public void setCur_ospf(OSPF cur_ospf) {
+    public void setCur_ospf(RIP cur_ospf) {
         this.cur_ospf = cur_ospf;
     }
 
@@ -64,17 +63,17 @@ public abstract class baseExecPass {
         this.cur_intf = cur_intf;
     }
 
-    public OSPFIntf getCur_ospf_intf() {
+    public RIPIntf getCur_ospf_intf() {
         return cur_ospf_intf;
     }
 
-    public void setCur_ospf_intf(OSPFIntf cur_ospf_intf) {
+    public void setCur_ospf_intf(RIPIntf cur_ospf_intf) {
         this.cur_ospf_intf = cur_ospf_intf;
     }
 
-    OSPF cur_ospf;
+    RIP cur_ospf;
     OSPFDaemon cur_ospf_daemon;
     Router cur_router;
     Intf cur_intf;
-    OSPFIntf cur_ospf_intf;
+    RIPIntf cur_ospf_intf;
 }

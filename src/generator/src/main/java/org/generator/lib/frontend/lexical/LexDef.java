@@ -41,7 +41,7 @@ public class LexDef {
                 {NETWORKN, "network {IPRANGE}"},
                 {NETWORKI, "network {NAME}"},
                 {NEIGHBOR, "neighbor {ID}"},
-                {VERSION, "version {NAME}"},
+                {VERSION, "version {NUM(1-2)}"},
                 {DEFAULTMETRIC, "default-metric {NUM(1-16)}"},
                 {DISTANCE, "distance {NUM(1-255)}"},
                 {TIMERSBASIC, "timers basic {NUM(5-2147483647)}, {NUM2(5-2147483647)}, {NUM3(5-2147483647)}"},

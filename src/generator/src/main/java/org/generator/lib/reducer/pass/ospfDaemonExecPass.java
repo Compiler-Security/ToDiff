@@ -5,8 +5,7 @@ import org.generator.lib.item.IR.Op;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.NodeType;
-import org.generator.lib.item.conf.node.ospf.OSPF;
-import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
+import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.util.exec.ExecStat;
 import org.generator.util.net.ID;
 import org.generator.util.net.IPRange;
@@ -27,8 +26,8 @@ public class ospfDaemonExecPass extends baseExecPass {
                 return ExecStat.SUCC;
             }
             case RABRTYPE -> {
-                assert OSPF.ABR_TYPE.of(op.getNAME()).isPresent() : "abr type name not right %s".formatted(op.getNAME());
-                cur_ospf.setAbrType(OSPF.ABR_TYPE.of(op.getNAME()).get());
+                assert RIP.RIP_VTYPE.of(op.getNAME()).isPresent() : "abr type name not right %s".formatted(op.getNAME());
+                cur_ospf.setVersion(RIP.RIP_VTYPE.of(op.getNAME()).get());
                 return ExecStat.SUCC;
             }
             case PASSIVEINTFDEFUALT -> {
@@ -38,19 +37,19 @@ public class ospfDaemonExecPass extends baseExecPass {
 
             case TIMERSTHROTTLESPF -> {
                 int max_number = Stream.of(op.getNUM(), op.getNUM2(), op.getNUM3()).max(Integer::compareTo).get();
-                cur_ospf.setInitDelay(op.getNUM());
-                cur_ospf.setMinHoldTime(op.getNUM2());
-                cur_ospf.setMaxHoldTime(op.getNUM3());
+                cur_ospf.setUpdate(op.getNUM());
+                cur_ospf.setTimeout(op.getNUM2());
+                cur_ospf.setGarbage(op.getNUM3());
                 return ExecStat.SUCC;
             }
 
             case RefreshTimer -> {
-                cur_ospf.setLsaRefreshTime(op.getNUM());
+                cur_ospf.setMetric(op.getNUM());
                 return ExecStat.SUCC;
             }
 
             case TimersLsaThrottle -> {
-                cur_ospf.setLsaIntervalTime(op.getNUM());
+                cur_ospf.setDistance(op.getNUM());
                 return ExecStat.SUCC;
             }
         }

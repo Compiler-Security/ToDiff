@@ -6,9 +6,8 @@ import org.generator.lib.item.opg.OpArgG;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.NodeType;
-import org.generator.lib.item.conf.node.ospf.OSPF;
-import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
-import org.generator.lib.item.conf.node.ospf.OSPFIntf;
+import org.generator.lib.item.conf.node.rip.RIP;
+import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.util.collections.Pair;
@@ -85,7 +84,7 @@ public class ospfArgPass {
                     var intf = topo.getIntf(intf_name);
                     //add ospf Intf
                     if (!intf.isPersudo() && intf.getIp() != null){
-                        var res = topo.<OSPFIntf>getOrCreateNode(NodeGen.getOSPFIntfName(intf_name), NodeType.OSPFIntf);
+                        var res = topo.<RIPIntf>getOrCreateNode(NodeGen.getOSPFIntfName(intf_name), NodeType.RIPIntf);
                         assert  !res.second();
                         res.first().setArea(op.getID());
                         topo.addOSPFIntfRelation(res.first().getName(), intf_name);
@@ -117,7 +116,7 @@ public class ospfArgPass {
                     //add ospf Intf
                     var intf_name = intf.getName();
                     if (!intf.isPersudo()){
-                        var res = topo.<OSPFIntf>getOrCreateNode(NodeGen.getOSPFIntfName(intf_name), NodeType.OSPFIntf);
+                        var res = topo.<RIPIntf>getOrCreateNode(NodeGen.getOSPFIntfName(intf_name), NodeType.RIPIntf);
                         assert  !res.second();
                         res.first().setArea(mxEntry.getValue());
                         topo.addOSPFIntfRelation(res.first().getName(), intf_name);
@@ -131,7 +130,7 @@ public class ospfArgPass {
         //add ospf && ospf daemon
         if (ospf_opg != null){
             var ospf_name = NodeGen.getOSPFName(r_name);
-            var ospf = topo.<OSPF>getOrCreateNode(ospf_name, NodeType.OSPF);
+            var ospf = topo.<RIP>getOrCreateNode(ospf_name, NodeType.RIP);
             assert !ospf.second();
             topo.addOSPFRelation(ospf_name, r_name);
             var ospf_daemon_name = NodeGen.getOSPFDaemonName(ospf_name);

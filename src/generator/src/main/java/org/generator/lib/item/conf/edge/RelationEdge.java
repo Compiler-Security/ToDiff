@@ -35,8 +35,8 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
         switch (dst.getNodeType()){
             case Intf -> setType(EdgeType.INTF);
             case Router, Host, Switch -> setType(EdgeType.PhyNODE);
-            case OSPF-> setType(EdgeType.OSPF);
-            case OSPFIntf  -> setType(EdgeType.OSPFINTF);
+            case RIP -> setType(EdgeType.OSPF);
+            case RIPIntf -> setType(EdgeType.OSPFINTF);
             case OSPFArea -> setType(EdgeType.OSPFAREA);
             case OSPFNet -> setType(EdgeType.OSPFNetwork);
             default -> throw new IllegalStateException("Unexpected value: " + dst);

@@ -5,12 +5,8 @@ public enum NodeType {
     Intf,
     Router,
     Switch,
-    OSPF,
-    OSPFArea,
-    OSPFIntf,
-    OSPFNet,
-    OSPFDaemon,
-    OSPFAreaSum,
+    RIP,
+    RIPIntf
     ;
 
     public boolean isPhyNode(){

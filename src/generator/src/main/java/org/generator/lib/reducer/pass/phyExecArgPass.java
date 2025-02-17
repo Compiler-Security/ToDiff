@@ -1,11 +1,9 @@
 package org.generator.lib.reducer.pass;
 
-import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.item.IR.Op;
-import org.generator.lib.item.IR.OpPhy;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
-import org.generator.lib.item.conf.node.ospf.OSPF;
+import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.node.NodeType;
@@ -46,8 +44,8 @@ public class phyExecArgPass extends  baseExecPass{
                 if (!topo.containsNode(r_name) || topo.containsNode(ospf_name)) return ExecStat.MISS;
 
                 //new ospf
-                OSPF ospf = NodeGen.new_OSPF(ospf_name);
-                ospf.setStatus(OSPF.OSPF_STATUS.UP);
+                RIP ospf = NodeGen.new_OSPF(ospf_name);
+                ospf.setStatus(RIP.RIP_STATUS.UP);
                 topo.addNode(ospf);
 
                 // new relation edge
@@ -60,8 +58,8 @@ public class phyExecArgPass extends  baseExecPass{
                 if (!topo.containsNode(ospf_name)) return ExecStat.MISS;
 
                 //change ospf status
-                var ospf = (OSPF) topo.getNode(ospf_name).get();
-                ospf.setStatus(OSPF.OSPF_STATUS.UP);
+                var ospf = (RIP) topo.getNode(ospf_name).get();
+                ospf.setStatus(RIP.RIP_STATUS.UP);
 
                 return ExecStat.SUCC;
             }
@@ -73,7 +71,7 @@ public class phyExecArgPass extends  baseExecPass{
 
 
                 //delete ospf
-                var ospf = (OSPF) topo.getNode(ospf_name).get();
+                var ospf = (RIP) topo.getNode(ospf_name).get();
                 topo.delNode(ospf);
 
                 return ExecStat.SUCC;

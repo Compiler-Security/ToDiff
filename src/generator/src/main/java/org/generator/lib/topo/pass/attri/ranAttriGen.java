@@ -4,10 +4,8 @@ import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
-import org.generator.lib.item.conf.node.ospf.OSPF;
-import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
-import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
-import org.generator.lib.item.conf.node.ospf.OSPFIntf;
+import org.generator.lib.item.conf.node.rip.RIP;
+import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.topo.item.base.Router;
 import org.generator.util.net.ID;
@@ -20,12 +18,12 @@ import java.util.*;
 public class ranAttriGen implements genAttri {
 
     List<OSPFDaemon> ospf_daemons;
-    List<OSPF> ospfs;
-    Map<IPRange, List<OSPFIntf>> networkToOSPFIntfs;
+    List<RIP> ospfs;
+    Map<IPRange, List<RIPIntf>> networkToOSPFIntfs;
 
     Map<ID, AreaAttri> areas;
 
-    Map<OSPF, Boolean> isABR;
+    Map<RIP, Boolean> isABR;
 
     class AreaAttri {
         public AreaAttri(ID area_id){
@@ -33,7 +31,7 @@ public class ranAttriGen implements genAttri {
             intfs = new HashSet<>();
             this.area_id = area_id;
         }
-        public Set<OSPF> ospfs;
+        public Set<RIP> ospfs;
         public Set<Intf> intfs;
         public ID area_id;
         public boolean stub;
@@ -106,21 +104,21 @@ public class ranAttriGen implements genAttri {
             }
         }
     }
-    private void generate_OSPF(OSPF ospf){
+    private void generate_OSPF(RIP ospf){
         //self, we don't think about status of ospf
         //FIXME for testing we must choose some proper value such as 0 etc.
         if (generate.fastConvergence){
-            ospf.setInitDelay(0);
-            ospf.setMaxHoldTime(1);
-            ospf.setMinHoldTime(0);
-            ospf.setLsaRefreshTime(10);
-            ospf.setLsaIntervalTime(1);
+            ospf.setUpdate(0);
+            ospf.setGarbage(1);
+            ospf.setTimeout(0);
+            ospf.setMetric(10);
+            ospf.setDistance(1);
         }else{
-            ospf.setInitDelay(ranHelper.randomInt(0, 600000));
-            ospf.setMinHoldTime(ranHelper.randomInt(0, 600000));
-            ospf.setMaxHoldTime(ranHelper.randomInt(0, 600000));
-            ospf.setLsaRefreshTime(ranHelper.randomInt(10, 1800));
-            ospf.setLsaIntervalTime(ranHelper.randomInt(0, 5000));
+            ospf.setUpdate(ranHelper.randomInt(0, 600000));
+            ospf.setTimeout(ranHelper.randomInt(0, 600000));
+            ospf.setGarbage(ranHelper.randomInt(0, 600000));
+            ospf.setMetric(ranHelper.randomInt(10, 1800));
+            ospf.setDistance(ranHelper.randomInt(0, 5000));
         }
         //FIXME we should think ABR_TYPE
     }
@@ -145,7 +143,7 @@ public class ranAttriGen implements genAttri {
         daemon.setBuffersend(ranHelper.randomLong(1, 4000000000L));
     }
 
-    private void generate_OSPF_Intf_by_same_network(List<OSPFIntf> ospfIntfs){
+    private void generate_OSPF_Intf_by_same_network(List<RIPIntf> ospfIntfs){
         //network
         //FIXME for testing we must choose some important value such as 1, 65535 etc.
         var deadInterval = ranHelper.randomInt(1, 65535);
@@ -157,11 +155,11 @@ public class ranAttriGen implements genAttri {
             retransInterval = 1;
         }
         var transDelay = ranHelper.randomInt(1, 100);
-        var netType = OSPFIntf.OSPFNetType.BROADCAST;
+        var netType = RIPIntf.OSPFNetType.BROADCAST;
         var GRHelloDelay = ranHelper.randomInt(1, 1800);
         if (ospfIntfs.size() == 2){
             //IF the network only have two interface, it can be a single line
-            netType = ranHelper.randomInt(0, 1) == 0 ? OSPFIntf.OSPFNetType.BROADCAST : OSPFIntf.OSPFNetType.POINTTOPOINT;
+            netType = ranHelper.randomInt(0, 1) == 0 ? RIPIntf.OSPFNetType.BROADCAST : RIPIntf.OSPFNetType.POINTTOPOINT;
         }
         //set all intfs
         for(var ospfIntf: ospfIntfs){
@@ -211,7 +209,7 @@ public class ranAttriGen implements genAttri {
             var r_name = NodeGen.getRouterName(i);
             var ospf_name = NodeGen.getOSPFName(r_name);
             var ospf_daemon_name = NodeGen.getOSPFDaemonName(ospf_name);
-            var ospf = new OSPF(ospf_name);
+            var ospf = new RIP(ospf_name);
             g.addNode(ospf);
             ospfs.add(ospf);
             var ospf_daemon = new OSPFDaemon(ospf_daemon_name);
@@ -224,7 +222,7 @@ public class ranAttriGen implements genAttri {
             for(int j = 0; j < r.intfs.size(); j++){
                 var intf_name  = NodeGen.getIntfName(r_name, j);
                 var ospf_intf_name = NodeGen.getOSPFIntfName(intf_name);
-                var ospf_intf = new OSPFIntf(ospf_intf_name);
+                var ospf_intf = new RIPIntf(ospf_intf_name);
                 g.addNode(ospf_intf);
                 g.addOSPFIntfRelation(ospf_intf_name, intf_name);
                 //TODO we should use random area

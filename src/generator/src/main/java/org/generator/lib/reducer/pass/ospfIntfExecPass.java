@@ -2,7 +2,7 @@ package org.generator.lib.reducer.pass;
 
 import org.generator.lib.item.IR.Op;
 import org.generator.lib.item.conf.graph.ConfGraph;
-import org.generator.lib.item.conf.node.ospf.OSPFIntf;
+import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.util.exec.ExecStat;
 import org.jetbrains.annotations.NotNull;
 
@@ -33,7 +33,7 @@ public class ospfIntfExecPass extends baseExecPass {
                 cur_ospf_intf.setGRHelloDelay(op.getNUM());
             }
             case IpOspfNet -> {
-                return OSPFIntf.OSPFNetType.of(op.getNAME())
+                return RIPIntf.OSPFNetType.of(op.getNAME())
                         .map(x -> {cur_ospf_intf.setNetType(x); return ExecStat.SUCC;})
                         .orElse(ExecStat.MISS);
             }

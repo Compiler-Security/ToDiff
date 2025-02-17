@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.NodeType;
-import org.generator.lib.item.conf.node.ospf.OSPF;
-import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
+import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
@@ -35,19 +34,19 @@ public class readFrr {
         var router_node_name = router_name;
         var ospf_node_name = NodeGen.getOSPFName(router_name);
         var ospf_daemon_name = NodeGen.getOSPFDaemonName(ospf_node_name);
-        confGraph.addNode(NodeGen.newNode(ospf_node_name, NodeType.OSPF));
+        confGraph.addNode(NodeGen.newNode(ospf_node_name, NodeType.RIP));
         confGraph.addOSPFRelation(ospf_node_name, router_node_name);
         confGraph.addNode(NodeGen.newNode(ospf_daemon_name, NodeType.OSPFDaemon));
         confGraph.addOSPFDaemonRelation(ospf_node_name, ospf_daemon_name);
-        var ospf = (OSPF) confGraph.getNodeNotNull(ospf_node_name);
+        var ospf = (RIP) confGraph.getNodeNotNull(ospf_node_name);
         var daemon = (OSPFDaemon) confGraph.getNodeNotNull(ospf_daemon_name);
         {
             ospf.setRouterId(ID.of((String)d.get("routerId")));
-            ospf.setStatus(OSPF.OSPF_STATUS.UP);
+            ospf.setStatus(RIP.RIP_STATUS.UP);
             //TODO ABRTYPE
-            ospf.setInitDelay((int)d.get("spfScheduleDelayMsecs"));
-            ospf.setMinHoldTime((int)d.get("holdtimeMinMsecs"));
-            ospf.setMaxHoldTime((int)d.get("holdtimeMaxMsecs"));
+            ospf.setUpdate((int)d.get("spfScheduleDelayMsecs"));
+            ospf.setTimeout((int)d.get("holdtimeMinMsecs"));
+            ospf.setGarbage((int)d.get("holdtimeMaxMsecs"));
         }
         {
             daemon.setMaxPaths((int)d.get("maximumPaths"));
@@ -64,7 +63,7 @@ public class readFrr {
         confGraph.addNode(NodeGen.newNode(intf_node_name, NodeType.Intf));
         confGraph.addIntfRelation(intf_node_name, router_name);
         var intf_ospf_node_name = NodeGen.getOSPFIntfName(intf_node_name);
-        confGraph.addNode(NodeGen.newNode(intf_ospf_node_name, NodeType.OSPFIntf));
+        confGraph.addNode(NodeGen.newNode(intf_ospf_node_name, NodeType.RIPIntf));
         confGraph.addOSPFIntfRelation(intf_ospf_node_name, intf_node_name);
         var intf = confGraph.getIntf(intf_node_name);
         var ospf_intf = confGraph.getOSPFIntf(intf_ospf_node_name);
