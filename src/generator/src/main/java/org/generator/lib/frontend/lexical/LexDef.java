@@ -48,13 +48,14 @@ public class LexDef {
                 {PASSIVEINTFDEFAULT, "passive-interface default"},
                 {PASSIVEINTFNAME, "passive-interface {NAME}"},
 
-                {IPSPLITHORIZION, "ip rip split-horizon"},
+                //default is no ip rip split-horizon, so the no command is ip rip split-horizon
+                {IPSPLITHORIZION, "no ip rip split-horizon"},
                 {IPSPLITPOISION, "ip rip split-horizon poisoned-reverse"},
                 {IPAddr, "ip address {IP}"},
 
 
                 {NORRIP, "no router rip"},
-                {NOIntfName, "no interface {NAME}|no int {NAME}"},
+//                {NOIntfName, "no interface {NAME}|no int {NAME}"},
 
                 {NONETWORKN, "no network {IPRANGE}"},
                 {NONETWORKI, "no network {NAME}"},
@@ -67,7 +68,7 @@ public class LexDef {
                 {NOTIMERSBASIC, "no timers basic | no timers basic {NUM(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)}, {NUM3(1-30)}"},
 
                 {NOIPSPLITPOISION, "no ip rip split-horizon poisoned-reverse"},
-                {NOIPSPLITHORIZION, "no ip split-horizon"},
+                {NOIPSPLITHORIZION, "ip split-horizon"},
                 {NOIPAddr, "no ip address | no ip address {IP}"},
 
 

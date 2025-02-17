@@ -19,60 +19,27 @@ public class UnsetRedexDef extends BaseRedexDef{
         var reduce_seed = new Object[][]{
                 //unset operation, we can assume that we compare minimal Args of NoOp with corresponding Args of OP
                 //minimal args is the first LexDef of no operation
-                {NOROSPF, new OpType[]{ROSPF}},
-                {NORID, new OpType[]{RID}},
-                {NORABRTYPE, new OpType[]{RABRTYPE}},
-                {NONETAREAID, new OpType[]{NETAREAID}},
-                {NOPASSIVEINTFDEFUALT, new OpType[]{PASSIVEINTFDEFUALT}},
-                {NOTIMERSTHROTTLESPF, new OpType[]{TIMERSTHROTTLESPF}},
-                {NOMAXIMUMPATHS, new OpType[]{MAXIMUMPATHS}},
-                {NOWRITEMULTIPLIER, new OpType[]{WRITEMULTIPLIER}},
-                {NOSOCKETBUFFERSEND, new OpType[]{SOCKETBUFFERSEND}},
-                {NOSOCKETBUFFERRECV, new OpType[]{SOCKETBUFFERRECV}},
+                {NORRIP, new OpType[]{RRIP}},
+                {NONETWORKN, new OpType[]{NONETWORKN}},
+                {NONETWORKI, new OpType[]{NONETWORKI}},
+                {NONEIGHBOR, new OpType[]{NEIGHBOR}},
+                {NOVERSION, new OpType[]{VERSION}},
+                {NODEFAULTMETRIC, new OpType[]{DEFAULTMETRIC}},
+                {NODISTANCE, new OpType[]{DISTANCE}},
+                {NOPASSIVEINTFDEFAULT, new OpType[]{PASSIVEINTFDEFAULT}},
+                {NOPASSIVEINTFNAME, new OpType[]{PASSIVEINTFNAME}},
+                {NOTIMERSBASIC, new OpType[]{TIMERSBASIC}},
                 //FIXME SOCKETBUFFERALL
                 //{NOSOCKETBUFFERALL, new OpType[]{SOCKETBUFFERALL}},
-                {SOCKETPERINTERFACE, new OpType[]{NoSOCKETPERINTERFACE}},
-
-                {NOAreaRange, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
-                {NOAreaRangeNoAd, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
-                {NOAreaRangeCost, new OpType[]{AreaRange, AreaRangeNoAd, AreaRangeSub, AreaRangeCost}},
-
-                //{NOAreaRangeSub, new OpType[]{AreaRange}},
-
-
-                //FIXME areaVLINK
-                //{NOAreaVLink, new OpType[]{AreaVLink}},
-                {NOAreaShortcut, new OpType[]{AreaShortcut}},
-
-                {NOAreaStub, new OpType[]{AreaStub, AreaStubTotal}},
-
-                {NORefreshTimer, new OpType[]{RefreshTimer}},
-                {NOTimersLsaThrottle, new OpType[]{TimersLsaThrottle}},
-
-                //FIXME simple fix of NOAreaStubTotal
-               //{NOAreaStubTotal, new OpType[]{AreaStubTotal}},
-                {NOAreaNSSA, new OpType[]{AreaNSSA}},
                 {NOIPAddr, new OpType[]{IPAddr}},
-                {NOIpOspfArea, new OpType[]{IpOspfArea}},
-                {NOIpOspfCost, new OpType[]{IpOspfCost}},
-                {NOIpOspfDeadInter, new OpType[]{IpOspfDeadInter}},
-                {NOIpOspfDeadInterMulti, new OpType[]{IpOspfDeadInterMulti}},
-                {NOIpOspfHelloInter, new OpType[]{IpOspfHelloInter}},
-                {NOIpOspfGRHelloDelay, new OpType[]{IpOspfGRHelloDelay}},
-                {NOIpOspfNet, new OpType[]{IpOspfNet}},
-                {NOIpOspfPriority, new OpType[]{IpOspfPriority}},
-                {NOIpOspfRetransInter, new OpType[]{IpOspfRetransInter}},
-                {NOIpOspfTransDelay, new OpType[]{IpOspfTransDelay}},
-                {NOIpOspfPassive, new OpType[]{IpOspfPassive}},
+
+                {NOIPSPLITPOISION, new OpType[]{IPSPLITPOISION}},
+                {NOIPSPLITHORIZION, new OpType[]{IPSPLITHORIZION, IPSPLITPOISION}},
         };
         var seeds = new ArrayList<Object[]>();
         for (var item : reduce_seed) {
             var opType = (OpType) item[0];
             switch (opType){
-//                case NoAreaRangeSub -> {seeds.add(new Object[]{item[0], item[1], 2});}
-                case NOAreaRangeCost,NOAreaRangeNoAd,NOAreaRange -> {
-                    seeds.add(new Object[]{item[0], item[1], 2});
-                }
                 default -> {
                     seeds.add(new Object[]{item[0], item[1], LexDef.getLexDef(opType).get(0).Args.size()});
                 }

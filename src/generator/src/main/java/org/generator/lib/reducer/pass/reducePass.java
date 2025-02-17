@@ -63,13 +63,13 @@ public class reducePass {
                 if (preOpa.getLineNo() >= opa.getLineNo()) break;
                 if (preOpa.state == OpAnalysis.STATE.ACTIVE){
                     //ROSPF -> OP not in intf group
-                    if (preOpa.op.Type() == OpType.ROSPF){
-                        if (CtxOpDef.shouldInROSPF(opa.op.Type()))  ctxOp  = preOpa;
+                    if (CtxOpDef.isCtxGlobalOp(preOpa.op.Type())){
+                        if (CtxOpDef.shouldInGlobal(opa.op.Type()))  ctxOp  = preOpa;
                         else ctxOp = null;
                     }
                     //INTF -> OP in intf grop
-                    if (preOpa.op.Type() == OpType.IntfName){
-                        if (CtxOpDef.shouldInIntfN(opa.op.Type())) ctxOp = preOpa;
+                    if (CtxOpDef.isCtxIntfOp(preOpa.op.Type())){
+                        if (CtxOpDef.shouldInIntf(opa.op.Type())) ctxOp = preOpa;
                         else ctxOp = null;
                     }
                 }
@@ -81,7 +81,7 @@ public class reducePass {
 
     private static boolean conflict(OpAnalysis preOpa, OpAnalysis opa){
         //ctx_op should equal except IpOspfArea vs. networkAreaId
-        if ((opa.getOp().Type() == OpType.IpOspfArea && preOpa.getOp().Type() == OpType.NETAREAID) || (preOpa.getOp().Type() == OpType.IpOspfArea && opa.getOp().Type() == OpType.NETAREAID)) return matchByRedexDef(opa, preOpa, ConflictRedexDef.getRdcDef(opa.getOp().Type()));
+        //if ((opa.getOp().Type() == OpType.IpOspfArea && preOpa.getOp().Type() == OpType.NETAREAID) || (preOpa.getOp().Type() == OpType.IpOspfArea && opa.getOp().Type() == OpType.NETAREAID)) return matchByRedexDef(opa, preOpa, ConflictRedexDef.getRdcDef(opa.getOp().Type()));
         if (!CtxOpDef.isCtxOp(opa.op.Type()) && !preOpa.getCtxOp().getOp().equals(opa.getCtxOp().getOp())){return false;}
         return matchByRedexDef(opa, preOpa, ConflictRedexDef.getRdcDef(opa.getOp().Type()));
     }
@@ -91,7 +91,7 @@ public class reducePass {
     }
     private boolean hasConflict(OpAnalysis opa){
         //check ROSPF IntfName conflict
-        if (opa.getOp().Type() == OpType.ROSPF || opa.getOp().Type() == OpType.IntfName){
+        if (CtxOpDef.isSetCtxOp(opa.getOp().Type())){
             return false;
         }
         OpAnalysis ctxOp = null;
@@ -99,10 +99,7 @@ public class reducePass {
             if (preOpa.getLineNo() >= opa.getLineNo()) break;
             if (preOpa.state != OpAnalysis.STATE.ACTIVE) continue;
             //COUNT CTXOP
-            if (preOpa.op.Type() == OpType.ROSPF){
-                ctxOp  = preOpa;
-            }
-            if (preOpa.op.Type() == OpType.IntfName){
+            if (CtxOpDef.isSetCtxOp(preOpa.op.Type())){
                 ctxOp = preOpa;
             }
 

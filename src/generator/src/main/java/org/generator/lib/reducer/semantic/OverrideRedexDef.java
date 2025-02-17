@@ -30,27 +30,13 @@ public class OverrideRedexDef extends BaseRedexDef {
                 This says item[0] can override op in item[1]
                 if the first item[2] arg is same
                  */
-                {ROSPF, new OpType[]{}, 0},
+                {RRIP, new OpType[]{}, 0},
                 {IntfName, new OpType[]{}, 0},
                 {IPAddr, new OpType[]{IPAddr}, 1},
 
-                {IpOspfArea, new OpType[]{}, 0},
-                {NETAREAID, new OpType[]{NETAREAID}, 2},
-
-                {AreaRangeNoAd, new OpType[]{AreaRange, AreaRangeSub, AreaRangeCost, AreaRangeNoAd}, 2},
-                {AreaRange, new OpType[]{AreaRange, AreaRangeNoAd}, 2},
-                {AreaRangeSub, new OpType[]{AreaRange, AreaRangeSub, AreaRangeNoAd}, 2},
-                {AreaRangeCost, new OpType[]{AreaRange, AreaRangeCost, AreaRangeNoAd}, 2},
-                //FIXME areaVLINK
-                //{AreaVLink, new OpType[]{AreaVLink}, 1},
-                {AreaShortcut, new OpType[]{AreaShortcut}, 1},
-
-                {AreaStub, new OpType[]{AreaStub, AreaStubTotal, AreaNSSA}, 1},
-                {AreaStubTotal, new OpType[]{AreaStubTotal, AreaStub, AreaNSSA}, 1},
-                {AreaNSSA, new OpType[]{AreaStub, AreaNSSA, AreaStubTotal}, 1},
-
-                {IpOspfDeadInterMulti, new OpType[]{IpOspfDeadInter, IpOspfDeadInterMulti}, 0},
-                {IpOspfDeadInter, new OpType[]{IpOspfDeadInter, IpOspfDeadInterMulti}, 0}
+                {PASSIVEINTFDEFAULT, new OpType[]{PASSIVEINTFDEFAULT, PASSIVEINTFNAME}, 0},
+                {IPSPLITPOISION, new OpType[]{IPSPLITHORIZION, IPSPLITPOISION}, 0},
+                {IPSPLITHORIZION, new OpType[]{IPSPLITHORIZION, IPSPLITPOISION}, 0},
                 //Other set instruction
                 //{XXX, new OpType[XXX], 0}
 
