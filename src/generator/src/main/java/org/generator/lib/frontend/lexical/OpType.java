@@ -25,7 +25,6 @@ public enum OpType {
     VERSION,
     DEFAULTMETRIC,
     DISTANCE,
-    DISTANCEMATCH,
     TIMERSBASIC,
     PASSIVEINTFDEFAULT,
     PASSIVEINTFNAME,
@@ -36,7 +35,6 @@ public enum OpType {
 
 
     NORRIP,
-    NOIntfName,
 
     NONETWORKN,
     NONETWORKI,
