@@ -16,8 +16,9 @@ public enum OpType {
 
     //Don't change this!
     CONF,
-
     RRIP,
+    IntfName,
+
     NETWORKN,
     NETWORKI,
     NEIGHBOR,
@@ -26,54 +27,49 @@ public enum OpType {
     DISTANCE,
     DISTANCEMATCH,
     TIMERSBASIC,
+    PASSIVEINTFDEFAULT,
+    PASSIVEINTFNAME,
 
-    PASSIVEINTF,
     IPAddr,
+    IPSPLITPOISION,
     IPSPLITHORIZION,
 
 
     NORRIP,
+    NOIntfName,
+
     NONETWORKN,
     NONETWORKI,
     NONEIGHBOR,
     NOVERSION,
     NODEFAULTMETRIC,
     NODISTANCE,
-    NODISTANCEMATCH,
+    NOPASSIVEINTFDEFAULT,
+    NOPASSIVEINTFNAME,
     NOTIMERSBASIC,
 
-    NOPASSIVEINTF,
     NOIPAddr,
+    NOIPSPLITPOISION,
     NOIPSPLITHORIZION,
 
-    INVALID,
 
-    //FIXME we should remove these in the future
-    OSPFROUTERBEGIN,
-    OSPFROUTEREND,
-    OSPFDAEMONGROUPBEGIN,
-    OSPFDAEMONGROUPEND,
-    OSPFAREAGROUPBEGIN,
-    OSPFAREAGROUPEND,
-    OSPFIntfGroupBEGIN,
-    OSPFIntfGroupEND
-    ;
+    INVALID;
 
-    public  boolean inOSPFRouterWithTopo() {
-        return this.ordinal() > OSPFROUTERBEGIN.ordinal() && this.ordinal() < OSPFROUTEREND.ordinal();
-    }
-
-    public boolean inOSPFDAEMON(){
-        return this.ordinal() > OSPFDAEMONGROUPBEGIN.ordinal() && this.ordinal() < OSPFDAEMONGROUPEND.ordinal();
-    }
-
-    public  boolean inOSPFAREA(){
-        return this.ordinal() > OSPFAREAGROUPBEGIN.ordinal() && this.ordinal() < OSPFAREAGROUPEND.ordinal();
-    }
-
-    public  boolean inOSPFINTF(){
-        return this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal();
-    }
+//    public  boolean inOSPFRouterWithTopo() {
+//        return this.ordinal() > OSPFROUTERBEGIN.ordinal() && this.ordinal() < OSPFROUTEREND.ordinal();
+//    }
+//
+//    public boolean inOSPFDAEMON(){
+//        return this.ordinal() > OSPFDAEMONGROUPBEGIN.ordinal() && this.ordinal() < OSPFDAEMONGROUPEND.ordinal();
+//    }
+//
+//    public  boolean inOSPFAREA(){
+//        return this.ordinal() > OSPFAREAGROUPBEGIN.ordinal() && this.ordinal() < OSPFAREAGROUPEND.ordinal();
+//    }
+//
+//    public  boolean inOSPFINTF(){
+//        return this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal();
+//    }
 
     /**
      * All unset Op
@@ -96,7 +92,7 @@ public enum OpType {
      * @return
      */
     public boolean isRouterOp(){
-        return (this.ordinal() >= RRIP.ordinal() && this.ordinal() <= TIMERSBASIC.ordinal()) || (this.ordinal() >= NORRIP.ordinal() && this.ordinal() <= NOTIMERSBASIC.ordinal());
+        return (this.ordinal() >= NETWORKN.ordinal() && this.ordinal() <= PASSIVEINTFNAME.ordinal()) || (this.ordinal() >= NONETWORKN.ordinal() && this.ordinal() <= NOTIMERSBASIC.ordinal());
     }
 
     /**
@@ -104,6 +100,6 @@ public enum OpType {
      * @return
      */
     public boolean isIntfOp(){
-        return (this.ordinal() >= PASSIVEINTF.ordinal() && this.ordinal() <= IPSPLITHORIZION.ordinal()) || (this.ordinal() >= NOPASSIVEINTF.ordinal() && this.ordinal() <= NOIPSPLITHORIZION.ordinal()) ;
+        return (this.ordinal() >= IPAddr.ordinal() && this.ordinal() <= IPSPLITHORIZION.ordinal()) || (this.ordinal() >= NOIPAddr.ordinal() && this.ordinal() <= NOIPSPLITHORIZION.ordinal()) ;
     }
 }

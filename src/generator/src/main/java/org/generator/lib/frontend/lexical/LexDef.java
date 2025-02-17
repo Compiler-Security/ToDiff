@@ -36,34 +36,37 @@ public class LexDef {
                 {CONF, "ROSPFCONF"},
 
                 {RRIP, "router rip"},
+                {IntfName, "interface {NAME}|int {NAME}"},
+
                 {NETWORKN, "network {IPRANGE}"},
                 {NETWORKI, "network {NAME}"},
                 {NEIGHBOR, "neighbor {ID}"},
-                {VERSION, "version {NUM(1-2)}"},
-                {DEFAULTMETRIC, "defaultmetric {NUM(1-16)}"},
+                {VERSION, "version {NAME}"},
+                {DEFAULTMETRIC, "default-metric {NUM(1-16)}"},
                 {DISTANCE, "distance {NUM(1-255)}"},
-                {DISTANCEMATCH, "distance {NUM(1-255)} {IPRANGE}"},
-                //FIXME the number is not correct
-                {TIMERSBASIC, "timers basic {NUM(1-30)}, {NUM2(1-30)}, {NUM3(1-30)}"},
-                //FIXME is this command in the interface?
-                {PASSIVEINTF, "passive-interface"},
-                {IPSPLITHORIZION, "ip split-horizon"},
+                {TIMERSBASIC, "timers basic {NUM(5-2147483647)}, {NUM2(5-2147483647)}, {NUM3(5-2147483647)}"},
+                {PASSIVEINTFDEFAULT, "passive-interface default"},
+                {PASSIVEINTFNAME, "passive-interface {NAME}"},
+
+                {IPSPLITHORIZION, "ip rip split-horizon"},
+                {IPSPLITPOISION, "ip rip split-horizon poisoned-reverse"},
                 {IPAddr, "ip address {IP}"},
 
 
-                {NORRIP, "router rip"},
+                {NORRIP, "no router rip"},
+                {NOIntfName, "no interface {NAME}|no int {NAME}"},
+
                 {NONETWORKN, "no network {IPRANGE}"},
                 {NONETWORKI, "no network {NAME}"},
                 {NONEIGHBOR, "no neighbor {ID}"},
                 {NOVERSION, "no version|no version {NUM(1-2)}"},
-                {NODEFAULTMETRIC, "no defaultmetric|no defaultmetric {NUM(1-16)}"},
+                {NODEFAULTMETRIC, "no default-metric|no default-metric {NUM(1-16)}"},
                 {NODISTANCE, "no distance |no distance {NUM(1-255)}"},
-                //FIXME
-                {NODISTANCEMATCH, "no distance {NUM(1-255)} {IPRANGE}"},
-
+                {NOPASSIVEINTFDEFAULT, "no passive-interface default"},
+                {NOPASSIVEINTFNAME, "no passive-interface {NAME}"},
                 {NOTIMERSBASIC, "no timers basic | no timers basic {NUM(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)}, {NUM3(1-30)}"},
-                //FIXME is this command in the interface?
-                {NOPASSIVEINTF, "no passive-interface"},
+
+                {NOIPSPLITPOISION, "no ip rip split-horizon poisoned-reverse"},
                 {NOIPSPLITHORIZION, "no ip split-horizon"},
                 {NOIPAddr, "no ip address | no ip address {IP}"},
 
