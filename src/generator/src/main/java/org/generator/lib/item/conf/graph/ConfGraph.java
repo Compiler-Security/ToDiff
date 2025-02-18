@@ -107,11 +107,30 @@ public class ConfGraph extends AbstractRelationGraph {
         return g;
     }
 
+    private ConfGraph viewConfGraphOfRouterRIP(String r_name){
+        var g = new ConfGraph(r_name);
+        g.addNode(getNodeNotNull(r_name));
+        var rip_name = NodeGen.getOSPFName(r_name);
+        if (containsNode(rip_name)){
+            g.addNode(getNodeNotNull(rip_name));
+            g.addRIPRelation(rip_name, r_name);
+        }
+        for(var intf: getIntfsOfRouter(r_name)){
+            g.addNode(intf);
+            g.addIntfRelation(intf.getName(), r_name);
+            var rip_intf_name = NodeGen.getRIPIntfName(intf.getName());
+            if (containsNode(rip_intf_name)){
+                g.addNode(getNodeNotNull(rip_intf_name));
+                g.addRIPIntfRelation(rip_intf_name, intf.getName());
+            }
+        }
+        return g;
+    }
 
     public ConfGraph viewConfGraphOfRouter(String r_name){
         switch (generate.protocol){
             case OSPF -> {return viewConfGraphOfRouterOSPF(r_name);}
-
+            case RIP -> {return viewConfGraphOfRouterRIP(r_name);}
         }
         assert false;
         return null;
