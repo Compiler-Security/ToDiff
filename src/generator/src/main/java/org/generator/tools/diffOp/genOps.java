@@ -23,10 +23,11 @@ public class genOps {
         intfOp = OpType.getIntfSetOps();
         routerOp = OpType.getRouterSetOps();
         if (generate.protocol == generate.Protocol.OSPF) {
-            intfOp.remove(OpType.IPAddr);
             routerOp.remove(OpType.NETAREAID);
             routerOp.remove(OpType.IpOspfArea);
         }
+        intfOp.remove(OpType.IPAddr);
+        
         allOp = new ArrayList<>();
         allOp.addAll(intfOp);
         allOp.addAll(routerOp);
