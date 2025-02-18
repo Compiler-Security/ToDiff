@@ -152,6 +152,8 @@ public class LexDef {
 
                 {NOIPSPLITPOISION, "no ip rip split-horizon poisoned-reverse"},
                 {NOIPSPLITHORIZION, "ip split-horizon"},
+
+                //MULTI:
                 //INVALID will not to match, it can read/write invalid str to bypass [NAME]
                 {INVALID, "{NAME}"},
         };

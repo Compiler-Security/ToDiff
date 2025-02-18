@@ -78,6 +78,8 @@ public class NodeGen {
         return String.format("%s-rip", intf_name);
     }
 
+    //MULTI:
+
     public static Router new_Router(String name){
         return new Router(name);
     }
@@ -98,6 +100,7 @@ public class NodeGen {
 
     public static RIPIntf new_RIP_Intf(String name){ return new RIPIntf(name);}
 
+    //MULTI:
     public static <T extends  AbstractNode> T newNode(String name, NodeType type){;
         return (T)new_node(name, type);
     }
@@ -133,6 +136,7 @@ public class NodeGen {
             case RIPIntf -> {
                 return new_RIP_Intf(name);
             }
+            //MULTI:
             case null, default -> {
                 new Unimplemented();
             }

@@ -29,6 +29,8 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
         //==========RIP============
         RIP,
         RIPINTF,
+
+        //MULTI:
     }
 
     protected void generateType(){
@@ -45,6 +47,7 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
             case OSPFNet -> setType(EdgeType.OSPFNetwork);
             case RIP -> setType(EdgeType.RIP);
             case RIPIntf -> setType(EdgeType.RIPINTF);
+            //MULTI:
             default -> throw new IllegalStateException("Unexpected value: " + dst);
         }
     }

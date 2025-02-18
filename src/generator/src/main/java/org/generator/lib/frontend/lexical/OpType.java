@@ -153,6 +153,7 @@ public enum OpType {
 
     NOIPSPLITPOISION,
     NOIPSPLITHORIZION,
+    //MULTI:
 
     //============================INVALID=========================
     INVALID;
@@ -267,6 +268,7 @@ public enum OpType {
 
     public static Set<OpType> OSPFOps, RIPOps;
     public static List<OpType> OSPFIntfSetOps, OSPFRouterSetOps, RIPRouterSetOps, RIPIntfSetOps;
+    //MULTI:
     static{
         OSPFOps = new HashSet<OpType>(Arrays.asList(ROSPF, NOROSPF));
         RIPOps = new HashSet<OpType>(Arrays.asList(RRIP, NORRIP));
