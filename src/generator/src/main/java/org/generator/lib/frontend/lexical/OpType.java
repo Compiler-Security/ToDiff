@@ -1,8 +1,14 @@
 package org.generator.lib.frontend.lexical;
 
+import org.generator.lib.generator.driver.generate;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 public enum OpType {
+    //=============PHY=====================
     NODEADD,
     NODEDEL,
     NODESETOSPFUP,
@@ -15,85 +21,56 @@ public enum OpType {
     LINKDOWN,
     LINKREMOVE,
 
-
-    //Don't change this!
-    OSPFCONF,
-
-    ROSPF,
-
-    //TODO ROSPFNUM,
-    //TODO ROSPFVRF,
-
+    //==============ZEBRA===================
     IntfName,
-    OSPFCONFEND,
+    IPAddr,
+    NOIPAddr,
 
-    //=================OSPF ROUTER==================
-
-    OSPFROUTERBEGIN,
+    //==============OSPF====================
+    ROSPF,
+    //--------------ROUTER------------------
     RID,
     RABRTYPE,
     NETAREAID,
-
     PASSIVEINTFDEFUALT,
-
     TIMERSTHROTTLESPF,
     //TODO max-metric...
     //TODO auto-cost it's hard to equal
     RefreshTimer,
     TimersLsaThrottle,
-    OSPFROUTEREND,
-    //=============OSPFDAEMON===================
+    //--------------DAEMON------------------
     //TODO proactive-arp
-    CLEARIPOSPFPROCESS,
-    CLEARIPOSPFNEIGHBOR,
-    OSPFDAEMONGROUPBEGIN,
+    //CLEARIPOSPFPROCESS,
+    //CLEARIPOSPFNEIGHBOR,
     //FIXME this instruction's ctx is OSPFCONF
     MAXIMUMPATHS,
     WRITEMULTIPLIER,
     SOCKETBUFFERSEND,
     SOCKETBUFFERRECV,
-
     //FIXME SOCKETBUFFERALL
     //SOCKETBUFFERALL,
     NoSOCKETPERINTERFACE,
-
-    OSPFDAEMONGROUPEND,
-    //===================OSPF AREA=====================
+    //---------------AREA---------------------
     //FIXME what if we already have the same area range
-
-    OSPFAREAGROUPBEGIN,
-
     //FIXME IP equal is prefix ==, mask & ip ==
     AreaRange,
     AreaRangeNoAd,
     AreaRangeSub,
     AreaRangeCost,
-
     //FIXME area can have multiple virtual-link
     //FIXME areaVLINK
     //AreaVLink,
-
     AreaShortcut,
     AreaStub,
     AreaStubTotal,
-
     AreaNSSA,
     //TODO AREA LEFT
-
-    OSPFAREAGROUPEND,
-
-
-
-
+    //--------------INTF----------------------
     //FIXME we can set multiple ip to one interface, so here we should only generate one
-    IPAddr,
-
-    OSPFIntfGroupBEGIN,
     //NOT CONSIDER ip ospf authentication-key AUTH_KEY
     //NOT Consider ip ospf authentication message-digest
     //NOT consider ip ospf message-digest-key KEYID md5 KEY
     //NOT consider ip ospf authentication key-chain KEYCHAIN
-
     IpOspfArea,
     IpOspfCost,
     IpOspfDeadInter,
@@ -106,18 +83,15 @@ public enum OpType {
     IpOspfRetransInter,
     IpOspfTransDelay,
     IpOspfPassive,
-//    TODO IpOspfPrefixSupp,
-
-    OSPFIntfGroupEND,
-    INVALID,
+    //---------------UNSET----------------------
     NOROSPF,
     NORID,
     NORABRTYPE,
     NONETAREAID,
     NOPASSIVEINTFDEFUALT,
     NOTIMERSTHROTTLESPF,
-    NOCLEARIPOSPFPROCESS,
-    NOCLEARIPOSPFNEIGHBOR,
+    //NOCLEARIPOSPFPROCESS,
+    //NOCLEARIPOSPFNEIGHBOR,
     NOMAXIMUMPATHS,
     NOWRITEMULTIPLIER,
     NOSOCKETBUFFERSEND,
@@ -138,7 +112,6 @@ public enum OpType {
     NORefreshTimer,
     NOTimersLsaThrottle,
     NOAreaNSSA,
-    NOIPAddr,
     NOIpOspfArea,
     NOIpOspfCost,
     NOIpOspfDeadInter,
@@ -153,7 +126,7 @@ public enum OpType {
 
     //====================RIP======================
     RRIP,
-
+    //--------------------ROUTER-------------------
     NETWORKN,
     NETWORKI,
     NEIGHBOR,
@@ -163,10 +136,10 @@ public enum OpType {
     TIMERSBASIC,
     PASSIVEINTFDEFAULT,
     PASSIVEINTFNAME,
-
+    //---------------------INTF---------------------
     IPSPLITPOISION,
     IPSPLITHORIZION,
-
+    //---------------------UNSET--------------------
 
     NORRIP,
 
@@ -181,41 +154,48 @@ public enum OpType {
     NOTIMERSBASIC,
 
     NOIPSPLITPOISION,
-    NOIPSPLITHORIZION;
+    NOIPSPLITHORIZION,
+
+    //============================INVALID=========================
+    INVALID;
 
     //=======OSPF Function============
     public static boolean inPhy(@NotNull OpType typ) {
         return typ.ordinal() >= NODEADD.ordinal() && typ.ordinal() <= LINKREMOVE.ordinal();
     }
 
-    public static boolean inOSPF(@NotNull OpType typ) {
-        return typ.ordinal() > OSPFCONF.ordinal() && typ.ordinal() < OSPFIntfGroupEND.ordinal();
-    }
+//    public static boolean inOSPF(@NotNull OpType typ) {
+//        return typ.ordinal() > OSPFCONF.ordinal() && typ.ordinal() < OSPFIntfGroupEND.ordinal();
+//    }
 
     public  boolean inOSPFRouterWithTopo() {
-        return this.ordinal() > OSPFROUTERBEGIN.ordinal() && this.ordinal() < OSPFROUTEREND.ordinal();
+        return this.ordinal() >= RID.ordinal() && this.ordinal() <= TimersLsaThrottle.ordinal();
     }
 
     public boolean inOSPFDAEMON(){
-        return this.ordinal() > OSPFDAEMONGROUPBEGIN.ordinal() && this.ordinal() < OSPFDAEMONGROUPEND.ordinal();
+        return this.ordinal() >= MAXIMUMPATHS.ordinal() && this.ordinal() <= NoSOCKETPERINTERFACE.ordinal();
     }
 
     public  boolean inOSPFAREA(){
-        return this.ordinal() > OSPFAREAGROUPBEGIN.ordinal() && this.ordinal() < OSPFAREAGROUPEND.ordinal();
+        return this.ordinal() >= AreaRange.ordinal() && this.ordinal() <= AreaNSSA.ordinal();
     }
 
     public  boolean inOSPFINTF(){
-        return this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal();
+        return this.ordinal() >= IpOspfArea.ordinal() && this.ordinal() <= IpOspfPassive.ordinal();
     }
 
 
     //==========COMMON Function======================
-    private boolean isOSPFUnsetOp(){
+    public boolean isZEBRAUnsetOp(){
+        return this == NOIPAddr;
+    }
+
+    public boolean isOSPFUnsetOp(){
         return this.ordinal() >= NOROSPF.ordinal() && this.ordinal() <= NOIpOspfPassive.ordinal();
     }
 
-    private boolean isRIPUnsetOp(){
-        return this.ordinal() >= NORRIP.ordinal() && this.ordinal() <= NOIPSPLITHORIZION.ordinal();
+    public boolean isRIPUnsetOp(){
+        return (this.ordinal() >= NORRIP.ordinal() && this.ordinal() <= NOIPSPLITHORIZION.ordinal()) || this==NOIPAddr;
     }
 
     /**
@@ -223,16 +203,20 @@ public enum OpType {
      * @return
      */
     public boolean isUnsetOp(){
-        return  isOSPFUnsetOp() || isRIPUnsetOp();
+        return  isZEBRAUnsetOp() || isOSPFUnsetOp() || isRIPUnsetOp();
     }
 
     //-------------------------------------------------
-    private boolean isOSPFSetOp(){
-        return this.ordinal() > OSPFCONF.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal();
+    public boolean isZEBRASetOp(){
+        return this.ordinal() >= IntfName.ordinal() && this.ordinal() <= IPAddr.ordinal();
     }
 
-    private boolean isRIPSetOp(){
-        return this.ordinal() >= RRIP.ordinal() && this.ordinal() <= IPSPLITHORIZION.ordinal();
+    public boolean isOSPFSetOp(){
+        return this.ordinal() >= ROSPF.ordinal() && this.ordinal() <= IpOspfPassive.ordinal();
+    }
+
+    public boolean isRIPSetOp(){
+        return (this.ordinal() >= RRIP.ordinal() && this.ordinal() <= IPSPLITHORIZION.ordinal()) || this== IntfName || this == IPAddr;
     }
 
     /**
@@ -240,12 +224,16 @@ public enum OpType {
      * @return
      */
     public boolean isSetOp(){
-        return isOSPFSetOp() || isRIPSetOp();
+        return isZEBRASetOp() || isOSPFSetOp() || isRIPSetOp();
     }
 
     //-----------------------------------------------------
-    private boolean isOSPFRouterOp(){
-        return (this.ordinal() > OSPFROUTERBEGIN.ordinal() && this.ordinal() < OSPFAREAGROUPEND.ordinal()) || (this.ordinal() >= NORID.ordinal() && this.ordinal() <= NOAreaNSSA.ordinal());
+    public boolean isZEBRARouterOp(){
+        return false;
+    }
+
+    public boolean isOSPFRouterOp(){
+        return (this.ordinal() >= RID.ordinal() && this.ordinal() <= AreaNSSA.ordinal()) || (this.ordinal() >= NORID.ordinal() && this.ordinal() <= NOAreaNSSA.ordinal());
     }
 
     private boolean isRIPRouterOp(){
@@ -256,22 +244,48 @@ public enum OpType {
      * @return
      */
     public boolean isRouterOp(){
-        return isOSPFRouterOp() || isRIPRouterOp();
+        return isZEBRARouterOp() || isOSPFRouterOp() || isRIPRouterOp();
     }
 
     //------------------------------------------------------
-    private boolean isOSPFIntfOp(){
-        return (this.ordinal() > OSPFIntfGroupBEGIN.ordinal() && this.ordinal() < OSPFIntfGroupEND.ordinal()) || (this.ordinal() > NOAreaStub.ordinal()) || this == IPAddr || this == NOIPAddr;
+    public boolean isZEBRAIntfOp(){
+        return this == IPAddr || this == NOIPAddr;
+    }
+    public boolean isOSPFIntfOp(){
+        return (this.ordinal() >= IpOspfArea.ordinal() && this.ordinal() <= IpOspfPassive.ordinal()) || (this.ordinal() >= NOIpOspfArea.ordinal() && this.ordinal() <= NOIpOspfPassive.ordinal());
     }
 
-    private boolean isRIPIntfOp(){
-        return (this.ordinal() >= IPSPLITPOISION.ordinal() && this.ordinal() <= IPSPLITHORIZION.ordinal()) || (this.ordinal() >= NOIPSPLITPOISION.ordinal() && this.ordinal() <= NOIPSPLITHORIZION.ordinal()) ;
+    public boolean isRIPIntfOp(){
+        return (this.ordinal() >= IPSPLITPOISION.ordinal() && this.ordinal() <= IPSPLITHORIZION.ordinal()) || (this.ordinal() >= NOIPSPLITPOISION.ordinal() && this.ordinal() <= NOIPSPLITHORIZION.ordinal()) || this==IPAddr;
     }
     /**
      * all ops(set/unset) in interface {name}, don't include router ospf, no router ospf, intfname, include ip address
      * @return
      */
     public boolean isIntfOp(){
-        return isOSPFIntfOp() || isRIPIntfOp();
+        return isZEBRAIntfOp() || isOSPFIntfOp() || isRIPIntfOp();
+    }
+
+    public static Set<OpType> OSPFOps, RIPOps;
+    static{
+        OSPFOps = new HashSet<OpType>(Arrays.asList(ROSPF, NOROSPF));
+        RIPOps = new HashSet<OpType>(Arrays.asList(RRIP, NORRIP));
+        for (var op: OpType.values()){
+            if (op.isOSPFSetOp() || op.isOSPFUnsetOp()) OSPFOps.add(op);
+            if (op.isRIPSetOp() || op.isRIPUnsetOp()) RIPOps.add(op);
+        }
+    }
+
+    public static Set<OpType> getOpsOfProtocol(generate.Protocol protocol){
+        switch (protocol){
+            case OSPF: return OSPFOps;
+            case RIP: return RIPOps;
+        }
+        assert false;
+        return null;
+    }
+
+    public static Set<OpType> getAllOps(){
+        return getOpsOfProtocol(generate.protocol);
     }
 }

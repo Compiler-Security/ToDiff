@@ -21,7 +21,7 @@ public class genOps {
         intfOp = new ArrayList<>();
         OspfOp = new ArrayList<>();
         allOp = new ArrayList<>();
-        for (var op_type: OpType.values()){
+        for (var op_type: OpType.getAllOps()){
             //FIXME areaVLINK
             //if (op_type == OpType.AreaVLink) continue;
             if (op_type == OpType.NETAREAID) continue;

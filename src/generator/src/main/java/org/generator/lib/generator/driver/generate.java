@@ -1,7 +1,6 @@
 package org.generator.lib.generator.driver;
 
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.lib.generator.ospf.controller.CapacityController;
 import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.ospf.pass.*;
 import org.generator.lib.generator.phy.pass.genPhyCorePass;
@@ -175,4 +174,12 @@ public class generate {
         //ip ospf dead-interval multiplier 10
     //this is worked by set topo Attribute
     public static final boolean fastConvergence = true;
+
+    public static enum Protocol{
+        OSPF,
+        ISIS,
+        RIP
+    }
+
+    public static Protocol protocol = Protocol.OSPF;
 }

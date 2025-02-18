@@ -376,6 +376,7 @@ public class IOTest {
         while(true) {
             i++;
             System.out.printf("testCase %d\n", i);
+            generate.protocol = generate.Protocol.OSPF;
             var genOp = new genOps();
             var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
             //var ori = new ConfReader().read(test_st);

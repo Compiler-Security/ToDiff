@@ -33,7 +33,7 @@ public class LexDef {
                 {NODESETOSPFUP, "node {NAME} set OSPF up"},
                 {NODESETOSPFSHUTDOWN, "node {NAME} set OSPF down"},
                 {NODESETOSPFRE, "node {NAME} set OSPF restart"},
-                {OSPFCONF, "ROSPFCONF"},
+                //{OSPFCONF, "ROSPFCONF"},
 
                 {ROSPF, "router ospf"},
                 {IntfName, "interface {NAME}|int {NAME}"},
@@ -42,8 +42,8 @@ public class LexDef {
                 {NETAREAID, "network {IPRANGE} area {ID(NUM)}"},
                 {PASSIVEINTFDEFUALT, "passive-interface default"},
                 {TIMERSTHROTTLESPF, "timers throttle spf {NUM(0-600000)} {NUM2(0-600000)} {NUM3(0-600000)}"},
-                {CLEARIPOSPFPROCESS, "clear ip ospf process"},
-                {CLEARIPOSPFNEIGHBOR, "clear ip ospf neighbor"},
+                //{CLEARIPOSPFPROCESS, "clear ip ospf process"},
+                //{CLEARIPOSPFNEIGHBOR, "clear ip ospf neighbor"},
                 {MAXIMUMPATHS, "maximum-paths {NUM(1-64)}"},
                 {WRITEMULTIPLIER, "write-multiplier {NUM(1-100)}"},
                 {SOCKETBUFFERSEND, "socket buffer send {LONGNUM(1-4000000000)}"},
@@ -121,7 +121,37 @@ public class LexDef {
                 {NOIpOspfTransDelay, "no ip ospf transmit-delay | no ip ospf transmit-delay {NUM(1-65535)}"},
                 {NOIpOspfPassive, "no ip ospf passive"},
 
+                {RRIP, "router rip"},
 
+                {NETWORKN, "network {IPRANGE}"},
+                {NETWORKI, "network {NAME}"},
+                {NEIGHBOR, "neighbor {ID}"},
+                {VERSION, "version {NUM(1-2)}"},
+                {DEFAULTMETRIC, "default-metric {NUM(1-16)}"},
+                {DISTANCE, "distance {NUM(1-255)}"},
+                {TIMERSBASIC, "timers basic {NUM(5-2147483647)}, {NUM2(5-2147483647)}, {NUM3(5-2147483647)}"},
+                {PASSIVEINTFDEFAULT, "passive-interface default"},
+                {PASSIVEINTFNAME, "passive-interface {NAME}"},
+
+                //default is no ip rip split-horizon, so the no command is ip rip split-horizon
+                {IPSPLITHORIZION, "no ip rip split-horizon"},
+                {IPSPLITPOISION, "ip rip split-horizon poisoned-reverse"},
+
+
+                {NORRIP, "no router rip"},
+
+                {NONETWORKN, "no network {IPRANGE}"},
+                {NONETWORKI, "no network {NAME}"},
+                {NONEIGHBOR, "no neighbor {ID}"},
+                {NOVERSION, "no version|no version {NUM(1-2)}"},
+                {NODEFAULTMETRIC, "no default-metric|no default-metric {NUM(1-16)}"},
+                {NODISTANCE, "no distance |no distance {NUM(1-255)}"},
+                {NOPASSIVEINTFDEFAULT, "no passive-interface default"},
+                {NOPASSIVEINTFNAME, "no passive-interface {NAME}"},
+                {NOTIMERSBASIC, "no timers basic | no timers basic {NUM(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)}, {NUM3(1-30)}"},
+
+                {NOIPSPLITPOISION, "no ip rip split-horizon poisoned-reverse"},
+                {NOIPSPLITHORIZION, "ip split-horizon"},
                 //INVALID will not to match, it can read/write invalid str to bypass [NAME]
                 {INVALID, "{NAME}"},
         };
