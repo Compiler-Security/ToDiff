@@ -2,6 +2,7 @@ package org.generator.lib.item.conf.graph;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.node.AbstractNode;
 import org.generator.lib.item.conf.node.NodeGen;
@@ -76,8 +77,8 @@ public class ConfGraph extends AbstractRelationGraph {
         return g;
     }
 
-
-    public ConfGraph viewConfGraphOfRouter(String r_name){
+    //MULTI:
+    private ConfGraph viewConfGraphOfRouterOSPF(String r_name){
         var g = new ConfGraph(r_name);
         g.addNode(getNodeNotNull(r_name));
         var ospf_name = NodeGen.getOSPFName(r_name);
@@ -104,6 +105,16 @@ public class ConfGraph extends AbstractRelationGraph {
             }
         }
         return g;
+    }
+
+
+    public ConfGraph viewConfGraphOfRouter(String r_name){
+        switch (generate.protocol){
+            case OSPF -> {return viewConfGraphOfRouterOSPF(r_name);}
+
+        }
+        assert false;
+        return null;
     }
 
     public ObjectNode toJson(){
@@ -201,6 +212,7 @@ public class ConfGraph extends AbstractRelationGraph {
 
     public RIPIntf getRIPIntf(String nodeName){ return (RIPIntf) getNode(nodeName).get();}
 
+    //MULTI:
     //=================ADD==========================
     public void addIntfLink(String intf1_name, String intf2_name){
         addEdge(intf1_name, intf2_name, RelationEdge.EdgeType.LINK);
@@ -261,6 +273,7 @@ public class ConfGraph extends AbstractRelationGraph {
         return ExecStat.SUCC;
     }
 
+    //MULTI:
 
     public boolean containsOSPFOfRouter(String r_name){
         return this.containsNode(NodeGen.getOSPFName(r_name));
