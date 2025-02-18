@@ -255,6 +255,13 @@ public class ConfGraph extends AbstractRelationGraph {
         return ExecStat.SUCC;
     }
 
+    public ExecStat addRIPIntfRelation(String rip_intf_name, String intf_name){
+        var res1 = addEdge(rip_intf_name, intf_name, RelationEdge.EdgeType.INTF);
+        var res2 = addEdge(intf_name, rip_intf_name, RelationEdge.EdgeType.RIPINTF);
+        return ExecStat.SUCC;
+    }
+
+
     public boolean containsOSPFOfRouter(String r_name){
         return this.containsNode(NodeGen.getOSPFName(r_name));
     }
