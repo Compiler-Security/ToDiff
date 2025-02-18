@@ -9,6 +9,7 @@ import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.node.NodeGen;
+import org.generator.lib.reducer.semantic.CtxOpDef;
 import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
 import org.generator.util.ran.ranHelper;
@@ -162,7 +163,7 @@ public class genOps {
         }
         if (opg.getOps().get(0).getOperation().Type() == OpType.IntfName){
             opg.addOp(genRanOpByControl(true, false));
-        }else if (opg.getOps().get(0).getOperation().Type() == OpType.ROSPF){
+        }else if (opg.getOps().get(0).getOperation().Type() == CtxOpDef.getCtxRouterOp()){
             opg.addOp(genRanOpByControl(false, true));
         }else {
             opg.addOp(genRanOpByControl(false, false));
@@ -219,7 +220,7 @@ public class genOps {
         all = false;
         //fixme we should only generate one ip address XXX at once
         var opg1 = OpCtxG.Of();
-        opg1.addOp(genOp(OpType.ROSPF));
+        opg1.addOp(genOp(CtxOpDef.getCtxRouterOp()));
         opgs.push(opg1);
         while(total_num < inst_num){
             if (rest_num > 0){
@@ -229,9 +230,9 @@ public class genOps {
             }else{
                 switch (selectCtx()) {
                     case 0 -> {
-                        if (opgs.empty() || (getCtxOpType(opgs.peek()) != OpType.ROSPF || ran.nextDouble(1) > merge_ratio)) {
+                        if (opgs.empty() || (getCtxOpType(opgs.peek()) != CtxOpDef.getCtxRouterOp() || ran.nextDouble(1) > merge_ratio)) {
                             var opg = OpCtxG.Of();
-                            opg.addOp(genOp(OpType.ROSPF));
+                            opg.addOp(genOp(CtxOpDef.getCtxRouterOp()));
                             opgs.push(opg);
                         }
                         all = false;

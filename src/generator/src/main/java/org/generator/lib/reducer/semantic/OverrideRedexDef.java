@@ -30,10 +30,11 @@ public class OverrideRedexDef extends BaseRedexDef {
                 This says item[0] can override op in item[1]
                 if the first item[2] arg is same
                  */
-                {ROSPF, new OpType[]{}, 0},
+                //=====ZEBRA============
                 {IntfName, new OpType[]{}, 0},
                 {IPAddr, new OpType[]{IPAddr}, 1},
-
+                //======OSPF============
+                {ROSPF, new OpType[]{}, 0},
                 {IpOspfArea, new OpType[]{}, 0},
                 {NETAREAID, new OpType[]{NETAREAID}, 2},
 
@@ -50,7 +51,14 @@ public class OverrideRedexDef extends BaseRedexDef {
                 {AreaNSSA, new OpType[]{AreaStub, AreaNSSA, AreaStubTotal}, 1},
 
                 {IpOspfDeadInterMulti, new OpType[]{IpOspfDeadInter, IpOspfDeadInterMulti}, 0},
-                {IpOspfDeadInter, new OpType[]{IpOspfDeadInter, IpOspfDeadInterMulti}, 0}
+                {IpOspfDeadInter, new OpType[]{IpOspfDeadInter, IpOspfDeadInterMulti}, 0},
+
+                //==========RIP====================
+                {RRIP, new OpType[]{}, 0},
+                {PASSIVEINTFDEFAULT, new OpType[]{PASSIVEINTFDEFAULT, PASSIVEINTFNAME}, 0},
+                {IPSPLITPOISION, new OpType[]{IPSPLITHORIZION, IPSPLITPOISION}, 0},
+                {IPSPLITHORIZION, new OpType[]{IPSPLITHORIZION, IPSPLITPOISION}, 0},
+
                 //Other set instruction
                 //{XXX, new OpType[XXX], 0}
 

@@ -10,6 +10,7 @@ import org.generator.lib.reducer.driver.reducer;
 import org.generator.lib.topo.driver.topo;
 import org.generator.tools.diffOp.genOps;
 import org.generator.tools.frontend.ConfReader;
+import org.generator.tools.frontend.OspfConfWriter;
 import org.junit.Test;
 import org.generator.lib.topo.pass.base.ranBaseGen;
 
@@ -130,5 +131,20 @@ public class generateTest {
         System.out.println(str);
         var t = topo.genGraph(5, 3, 2, 2,false, null);
         System.out.println(t);
+    }
+
+    @Test
+    public void multiProtocolTest() {
+        String test_st = """
+                """;
+        generate.protocol = generate.Protocol.RIP;
+        for(int i = 0; i < 1; i++) {
+            System.out.printf("testCase %d\n", i);
+            var genOp = new genOps();
+            var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+            var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
+            System.out.println(ori_use);
+            System.out.println(reducer.reduceToCore(ori_use));
+        }
     }
 }
