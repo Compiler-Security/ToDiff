@@ -3,9 +3,7 @@ package org.generator.lib.frontend.lexical;
 import org.generator.lib.generator.driver.generate;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public enum OpType {
     //=============PHY=====================
@@ -251,6 +249,7 @@ public enum OpType {
     public boolean isZEBRAIntfOp(){
         return this == IPAddr || this == NOIPAddr;
     }
+
     public boolean isOSPFIntfOp(){
         return (this.ordinal() >= IpOspfArea.ordinal() && this.ordinal() <= IpOspfPassive.ordinal()) || (this.ordinal() >= NOIpOspfArea.ordinal() && this.ordinal() <= NOIpOspfPassive.ordinal());
     }
@@ -267,13 +266,42 @@ public enum OpType {
     }
 
     public static Set<OpType> OSPFOps, RIPOps;
+    public static List<OpType> OSPFIntfSetOps, OSPFRouterSetOps, RIPRouterSetOps, RIPIntfSetOps;
     static{
         OSPFOps = new HashSet<OpType>(Arrays.asList(ROSPF, NOROSPF));
         RIPOps = new HashSet<OpType>(Arrays.asList(RRIP, NORRIP));
+        OSPFIntfSetOps = new ArrayList<>();
+        OSPFRouterSetOps = new ArrayList<>();
+        RIPIntfSetOps = new ArrayList<>();
+        RIPRouterSetOps = new ArrayList<>();
         for (var op: OpType.values()){
-            if (op.isOSPFSetOp() || op.isOSPFUnsetOp()) OSPFOps.add(op);
-            if (op.isRIPSetOp() || op.isRIPUnsetOp()) RIPOps.add(op);
+            if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isOSPFSetOp() || op.isOSPFUnsetOp()) OSPFOps.add(op);
+            if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isRIPSetOp() || op.isRIPUnsetOp()) RIPOps.add(op);
+            if (op.isOSPFIntfOp() && op.isSetOp()) OSPFIntfSetOps.add(op);
+            if (op.isOSPFRouterOp()  && op.isSetOp()) OSPFRouterSetOps.add(op);
+            if (op.isRIPIntfOp()  && op.isSetOp()) RIPIntfSetOps.add(op);
+            if (op.isRIPRouterOp()  && op.isSetOp()) RIPRouterSetOps.add(op);
         }
+    }
+
+    //not include IPAddr, IntfName
+    public static List<OpType> getIntfSetOps(){
+        switch (generate.protocol){
+            case RIP : return RIPIntfSetOps;
+            case OSPF: return OSPFIntfSetOps;
+        }
+        assert false;
+        return null;
+    }
+
+    //not include RXXX, NORXXX
+    public static List<OpType> getRouterSetOps(){
+        switch (generate.protocol){
+            case RIP: return RIPRouterSetOps;
+            case OSPF: return OSPFRouterSetOps;
+        }
+        assert false;
+        return null;
     }
 
     public static Set<OpType> getOpsOfProtocol(generate.Protocol protocol){

@@ -1,6 +1,7 @@
 package org.generator.tools.diffOp;
 
 import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.generator.ospf.pass.actionRulePass;
 import org.generator.lib.generator.ospf.pass.genOpPass;
 import org.generator.lib.item.IR.OpAnalysis;
@@ -16,23 +17,18 @@ import java.util.*;
 
 public class genOps {
     private Stack<OpCtxG> opgs;
-    private static final List<OpType> intfOp, OspfOp, allOp;
+    private static final List<OpType> intfOp, routerOp, allOp;
     static {
-        intfOp = new ArrayList<>();
-        OspfOp = new ArrayList<>();
-        allOp = new ArrayList<>();
-        for (var op_type: OpType.getAllOps()){
-            //FIXME areaVLINK
-            //if (op_type == OpType.AreaVLink) continue;
-            if (op_type == OpType.NETAREAID) continue;
-            if (op_type == OpType.IpOspfArea) continue;
-            if (op_type == OpType.IPAddr) continue;
-            if (op_type.inOSPFINTF()){intfOp.add(op_type); allOp.add(op_type);}
-            else if (op_type.inOSPFAREA() || op_type.inOSPFDAEMON() || op_type.inOSPFRouterWithTopo()){
-                OspfOp.add(op_type);
-                allOp.add(op_type);
-            }
+        intfOp = OpType.getIntfSetOps();
+        routerOp = OpType.getRouterSetOps();
+        if (generate.protocol == generate.Protocol.OSPF) {
+            intfOp.remove(OpType.IPAddr);
+            routerOp.remove(OpType.NETAREAID);
+            routerOp.remove(OpType.IpOspfArea);
         }
+        allOp = new ArrayList<>();
+        allOp.addAll(intfOp);
+        allOp.addAll(routerOp);
     }
 
     private static  int getRanIntNum(Map<String, Object> argRange, String field){
@@ -145,7 +141,7 @@ public class genOps {
         if (onlyIntf){
             op_type = intfOp.get(ran.nextInt(intfOp.size()));
         }else if (onlyOSPF){
-            op_type = OspfOp.get(ran.nextInt(OspfOp.size()));
+            op_type = routerOp.get(ran.nextInt(routerOp.size()));
         }else {
             op_type = allOp.get(ran.nextInt(allOp.size()));
         }
@@ -266,8 +262,11 @@ public class genOps {
             var intf = addOp(res, OpType.IntfName);
             intf.setNAME(NodeGen.getIntfName(r_name, i));
             var ip = addOp(res, OpType.IPAddr);
-            var area = addOp(res, OpType.IpOspfArea);
-            area.setID(ID.of(ranHelper.randomInt(0, 3)));
+
+            if (generate.protocol == generate.Protocol.OSPF) {
+                var area = addOp(res, OpType.IpOspfArea);
+                area.setID(ID.of(ranHelper.randomInt(0, 3)));
+            }
         }
         return res;
     }
