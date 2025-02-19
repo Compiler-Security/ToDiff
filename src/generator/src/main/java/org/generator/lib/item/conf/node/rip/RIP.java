@@ -6,7 +6,6 @@ import org.generator.lib.item.conf.node.NodeType;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
 import org.generator.util.net.ID;
-import org.generator.util.net.IPRange;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -119,18 +118,18 @@ public class RIP extends AbstractNode {
     int metric; //refresh timer 10
     int distance; // timers throttle lsa all
 
-    public List<IPRange> getNeighbors(){
+    public List<ID> getNeighbors(){
         return neighbors;
     }
 
-    public void addNeighbor(IPRange neighbor){
+    public void addNeighbor(ID neighbor){
         neighbors.add(neighbor);
     }
 
-    public void addNeighbors(List<IPRange> _neighbors){
+    public void addNeighbors(List<ID> _neighbors){
         neighbors.addAll(_neighbors);
     }
-    List<IPRange> neighbors;
+    List<ID> neighbors;
     @Override
     public void initFiled() {
         status = RIP_STATUS.UP;
@@ -140,6 +139,6 @@ public class RIP extends AbstractNode {
         garbage = 120; //holdtimeMaxMsecs
         metric = 1;
         distance = 120;
-        neighbors = new ArrayList<>();
+        neighbors = new ArrayList<org.generator.util.net.ID>();
     }
 }

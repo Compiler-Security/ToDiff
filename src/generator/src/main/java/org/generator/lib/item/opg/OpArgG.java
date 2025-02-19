@@ -29,7 +29,9 @@ public class OpArgG extends BaseOpG<Op>{
         Intf,
         OSPF,
         OSPFIntf,
-        Attri
+        Attri,
+        RIP,
+        RIPIntf
     }
 
     public OpGType getTyp() {
