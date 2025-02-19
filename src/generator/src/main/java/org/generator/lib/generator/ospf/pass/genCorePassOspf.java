@@ -27,16 +27,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class genCorePassOspf {
+public class genCorePassOspf extends genCorePass{
 
     String r_name;
     ConfGraph confg;
     public genCorePassOspf(){}
-    private OpOspf addOp(OpCtxG opCtxG, OpType typ){
-        var op = OpOspf.of(typ);
-        opCtxG.addOp(OpCtx.of(op));
-        return op;
-    }
+
     public OpCtxG handleDaemon(){
         var opCtxG = OpCtxG.Of();
         var ospf_name = NodeGen.getOSPFName(r_name);
@@ -329,24 +325,12 @@ public class genCorePassOspf {
     }
 
 
-    public static List<OpCtxG> mergeOpCtxgToEach(List<OpCtxG> opCtxG){
-        Map<OpOspf, OpCtxG> merge = new HashMap<>();
-        for(var opctxg: opCtxG){
-            //TO check correctness, don't deal
-            opctxg.toString();
-            if (opctxg.getOps().isEmpty()) continue;
-            var ctxOp = (OpOspf) opctxg.getOps().getFirst().getOperation();
-            merge.putIfAbsent(ctxOp, OpCtxG.Of());
-            merge.get(ctxOp).addOps(opctxg.getOps());
-        }
-        return merge.values().stream().toList();
-    }
-
     /**
      * This pass will return generate core config
      * @param confg
      * @return each opCtxG is one interface or router ospf
      */
+    @Override
     public  List<OpCtxG> solve(ConfGraph confg){
         this.r_name = confg.getR_name();
         this.confg = confg;
