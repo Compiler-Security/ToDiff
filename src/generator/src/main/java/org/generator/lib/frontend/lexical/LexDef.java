@@ -123,8 +123,8 @@ public class LexDef {
 
                 {RRIP, "router rip"},
 
-                {NETWORKN, "network {IPRANGE}"},
-                {NETWORKI, "network {NAME}"},
+                {NETWORKN, "network {NAME}"},
+                {NETWORKI, "network {IPRANGE}"},
                 {NEIGHBOR, "neighbor {ID}"},
                 {VERSION, "version {NUM(1-2)}"},
                 {DEFAULTMETRIC, "default-metric {NUM(1-16)}"},
