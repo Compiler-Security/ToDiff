@@ -27,11 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class genCorePass {
+public class genCorePassOspf {
 
     String r_name;
     ConfGraph confg;
-    public genCorePass(){}
+    public genCorePassOspf(){}
     private OpOspf addOp(OpCtxG opCtxG, OpType typ){
         var op = OpOspf.of(typ);
         opCtxG.addOp(OpCtx.of(op));

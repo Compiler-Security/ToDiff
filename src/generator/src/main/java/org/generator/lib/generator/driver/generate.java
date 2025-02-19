@@ -31,12 +31,12 @@ public class generate {
      * @return
      */
     public static OpCtxG generateCore(ConfGraph confGraph){
-        var p = new genCorePass();
+        var p = new genCorePassOspf();
         var res1 = p.solve(confGraph);
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass();
         q.solve(res1, confGraph);
-        return reducer.reduceToCore(genCorePass.mergeOpCtxgToOne(res1));
+        return reducer.reduceToCore(genCorePassOspf.mergeOpCtxgToOne(res1));
     }
 
     public static void addRemovedOpToController(OpAG opas, NormalController controller){
