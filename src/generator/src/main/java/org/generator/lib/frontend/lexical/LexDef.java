@@ -135,8 +135,12 @@ public class LexDef {
 
                 //default is no ip rip split-horizon, so the no command is ip rip split-horizon
                 {IPSPLITHORIZION, "no ip rip split-horizon"},
-                {IPSENDVERSION, "ip rip send version {NAME}"},
-                {IPRECVVERSION, "ip rip receive version {NAME}"},
+                {IPSENDVERSION1, "ip rip send version 1"},
+                {IPSENDVERSION2, "ip rip send version 2"},
+                {IPSENDVERSION12, "ip rip send version 1 2"},
+                {IPRECVVERSION1, "ip rip receive version 1"},
+                {IPRECVVERSION2, "ip rip receive version 2"},
+                {IPRECVVERSION12, "ip rip receive version 1 2"},
                 {IPSPLITPOISION, "ip rip split-horizon poisoned-reverse"},
 
 
@@ -153,8 +157,12 @@ public class LexDef {
                 {NOTIMERSBASIC, "no timers basic | no timers basic {NUM(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)}, {NUM3(1-30)}"},
 
                 {NOIPSPLITPOISION, "no ip rip split-horizon poisoned-reverse"},
-                {NOIPSENDVERSION, "no ip rip send version|no ip rip send version {NAME}"},
-                {NOIPRECVVERSION, "no ip rip receive version|no ip rip receive version {NAME}"},
+                {NOIPSENDVERSION1, "no ip rip send version 1"},
+                {NOIPSENDVERSION2, "no ip rip send version 2"},
+                {NOIPSENDVERSION12, "no ip rip send version 1 2"},
+                {NOIPRECVVERSION1, "no ip rip receive version 1"},
+                {NOIPRECVVERSION2, "no ip rip receive version 2"},
+                {NOIPRECVVERSION12, "no ip rip receive version 1 2"},
                 {NOIPSPLITHORIZION, "ip split-horizon"},
 
                 //MULTI:

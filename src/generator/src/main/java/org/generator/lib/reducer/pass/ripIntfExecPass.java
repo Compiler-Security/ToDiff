@@ -22,21 +22,23 @@ public class ripIntfExecPass extends baseExecPass{
                 cur_rip_intf.setPoison(true);
                 cur_rip_intf.setSplitHorizon(false);
             }
-            case IPSENDVERSION -> {
-                switch (op.getNAME()){
-                    case "1" -> {cur_rip_intf.setSendVersion(RIP.RIP_VTYPE.V1);}
-                    case "2" -> {cur_rip_intf.setSendVersion(RIP.RIP_VTYPE.V2);}
-                    case "1 2" -> {cur_rip_intf.setSendVersion(RIP.RIP_VTYPE.V12);}
-                    default -> {return ExecStat.MISS;}
-                }
+            case IPSENDVERSION1 -> {
+                cur_rip_intf.setSendVersion(RIP.RIP_VTYPE.V1);
             }
-            case IPRECVVERSION -> {
-                switch (op.getNAME()){
-                    case "1" -> {cur_rip_intf.setRecvVersion(RIP.RIP_VTYPE.V1);}
-                    case "2" -> {cur_rip_intf.setRecvVersion(RIP.RIP_VTYPE.V2);}
-                    case "1 2" -> {cur_rip_intf.setRecvVersion(RIP.RIP_VTYPE.V12);}
-                    default -> {return ExecStat.MISS;}
-                }
+            case IPSENDVERSION2 -> {
+                cur_rip_intf.setSendVersion(RIP.RIP_VTYPE.V2);
+            }
+            case IPSENDVERSION12 -> {
+                cur_rip_intf.setSendVersion(RIP.RIP_VTYPE.V12);
+            }
+            case IPRECVVERSION1 -> {
+                cur_rip_intf.setRecvVersion(RIP.RIP_VTYPE.V1);
+            }
+            case IPRECVVERSION2 -> {
+                cur_rip_intf.setRecvVersion(RIP.RIP_VTYPE.V2);
+            }
+            case IPRECVVERSION12 -> {
+                cur_rip_intf.setRecvVersion(RIP.RIP_VTYPE.V12);
             }
         }
         return ExecStat.SUCC;
