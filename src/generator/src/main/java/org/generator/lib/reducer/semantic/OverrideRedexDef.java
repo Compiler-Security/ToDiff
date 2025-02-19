@@ -55,6 +55,8 @@ public class OverrideRedexDef extends BaseRedexDef {
 
                 //==========RIP====================
                 {RRIP, new OpType[]{}, 0},
+                {NETWORKI, new OpType[]{}, 1},
+                {NETWORKN, new OpType[]{}, 1},
                 {PASSIVEINTFDEFAULT, new OpType[]{PASSIVEINTFDEFAULT, PASSIVEINTFNAME}, 0},
                 {IPSPLITPOISION, new OpType[]{IPSPLITHORIZION, IPSPLITPOISION}, 0},
                 {IPSPLITHORIZION, new OpType[]{IPSPLITHORIZION, IPSPLITPOISION}, 0},

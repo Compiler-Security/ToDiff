@@ -143,8 +143,9 @@ public class generateTest {
             var genOp = new genOps();
             var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
             var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
-            System.out.println(ori_use);
+            //System.out.println(ori_use);
             System.out.println(reducer.reduceToCore(ori_use));
+            System.out.println(getSetConfG(ori_use));
         }
     }
 }

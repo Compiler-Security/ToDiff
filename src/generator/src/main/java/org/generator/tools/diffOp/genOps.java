@@ -7,6 +7,7 @@ import org.generator.lib.generator.ospf.pass.genOpPass;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;
+import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.reducer.semantic.CtxOpDef;
@@ -268,6 +269,12 @@ public class genOps {
             if (generate.protocol == generate.Protocol.OSPF) {
                 var area = addOp(res, OpType.IpOspfArea);
                 area.setID(ID.of(ranHelper.randomInt(0, 3)));
+            }
+
+            if (generate.protocol == generate.Protocol.RIP){
+                addOp(res, OpType.RRIP);
+                var network = addOp(res, OpType.NETWORKN);
+                network.setNAME(intf.getNAME());
             }
         }
         return res;
