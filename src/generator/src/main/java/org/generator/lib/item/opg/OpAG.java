@@ -140,7 +140,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
             }
             merge.get(ctxOp).addOp(opa.getOp().getOpCtx());
         }
-        return genCorePassOspf.mergeOpCtxgToOne(merge.values().stream().toList());
+        return OpCtxG.mergeOpCtxgToOne(merge.values().stream().toList());
     }
 
     /**

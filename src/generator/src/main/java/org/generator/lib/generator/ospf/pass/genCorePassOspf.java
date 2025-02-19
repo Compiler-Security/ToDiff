@@ -342,13 +342,6 @@ public class genCorePassOspf {
         return merge.values().stream().toList();
     }
 
-    public static OpCtxG mergeOpCtxgToOne(List<OpCtxG> opCtxGS){
-        var opCtxg = OpCtxG.Of();
-        for(var opctxg: opCtxGS){
-            opCtxg.addOps(opctxg.getOps());
-        }
-        return opCtxg;
-    }
     /**
      * This pass will return generate core config
      * @param confg

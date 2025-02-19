@@ -23,6 +23,14 @@ public class OpCtxG extends BaseOpG<OpCtx>{
         return opctxg;
     }
 
+    public static OpCtxG mergeOpCtxgToOne(List<OpCtxG> opCtxGS){
+        var opCtxg = OpCtxG.Of();
+        for(var opctxg: opCtxGS){
+            opCtxg.addOps(opctxg.getOps());
+        }
+        return opCtxg;
+    }
+
     @Override
     public String toString() {
         var ospfConfWriter = new OspfConfWriter();

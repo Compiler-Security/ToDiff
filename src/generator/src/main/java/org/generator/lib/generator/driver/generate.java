@@ -36,7 +36,7 @@ public class generate {
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass();
         q.solve(res1, confGraph);
-        return reducer.reduceToCore(genCorePassOspf.mergeOpCtxgToOne(res1));
+        return reducer.reduceToCore(OpCtxG.mergeOpCtxgToOne(res1));
     }
 
     public static void addRemovedOpToController(OpAG opas, NormalController controller){
