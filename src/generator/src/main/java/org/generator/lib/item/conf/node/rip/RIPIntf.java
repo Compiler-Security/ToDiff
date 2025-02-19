@@ -2,12 +2,6 @@ package org.generator.lib.item.conf.node.rip;
 
 import org.generator.lib.item.conf.node.NodeType;
 import org.generator.lib.item.conf.node.AbstractNode;
-import org.generator.util.collections.AbstractStringEnum;
-import org.generator.util.collections.StringEnum;
-import org.generator.util.net.ID;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 public class RIPIntf extends AbstractNode {
     public RIPIntf(String name){
@@ -42,26 +36,38 @@ public class RIPIntf extends AbstractNode {
         this.poison = poison;
     }
 
-    public RIP.RIP_VTYPE getVersion() {
-        return version;
+    public RIP.RIP_VTYPE getRecvVersion() {
+        return recvVersion;
     }
 
-    public void setVersion(RIP.RIP_VTYPE version) {
-        this.version = version;
+    public void setRecvVersion(RIP.RIP_VTYPE recvVersion) {
+        this.recvVersion = recvVersion;
     }
 
     boolean splitHorizon;
 
     boolean poison;
 
-    RIP.RIP_VTYPE version;
+    RIP.RIP_VTYPE recvVersion;
+
+    public RIP.RIP_VTYPE getSendVersion() {
+        return sendVersion;
+    }
+
+    public void setSendVersion(RIP.RIP_VTYPE sendVersion) {
+        this.sendVersion = sendVersion;
+    }
+
+    RIP.RIP_VTYPE sendVersion;
 
 
     @Override
     public void initFiled() {
         passive = false;
-        version = RIP.RIP_VTYPE.V2;
+        recvVersion = RIP.RIP_VTYPE.V2;
         poison = false;
         splitHorizon = true;
+        sendVersion = RIP.RIP_VTYPE.V2;
+        recvVersion = RIP.RIP_VTYPE.V12;
     }
 }

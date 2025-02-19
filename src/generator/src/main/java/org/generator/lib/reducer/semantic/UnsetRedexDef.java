@@ -82,6 +82,8 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOTIMERSBASIC, new OpType[]{TIMERSBASIC}},
                 {NOIPSPLITPOISION, new OpType[]{IPSPLITPOISION}},
                 {NOIPSPLITHORIZION, new OpType[]{IPSPLITHORIZION, IPSPLITPOISION}},
+                {NOIPSENDVERSION, new OpType[]{IPSENDVERSION}},
+                {NOIPRECVVERSION, new OpType[]{IPRECVVERSION}},
         };
         var seeds = new ArrayList<Object[]>();
         for (var item : reduce_seed) {

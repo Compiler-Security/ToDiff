@@ -18,10 +18,15 @@ public class ripDaemonExecPass extends baseExecPass{
             }
             case VERSION -> {
                 var version = op.getNUM();
+                var vtype = RIP.RIP_VTYPE.V1;
                 switch (version){
-                    case 1 -> {cur_rip.setVersion(RIP.RIP_VTYPE.V1);}
-                    case 2 -> {cur_rip.setVersion(RIP.RIP_VTYPE.V2);}
+                    case 1 -> {vtype = RIP.RIP_VTYPE.V1;}
+                    case 2 -> {vtype = RIP.RIP_VTYPE.V2;}
                     default -> {return ExecStat.MISS;}
+                }
+                for(var rip_intf:topo.getRIPIntfOfRouter(cur_router.getName())){
+                    rip_intf.setSendVersion(vtype);
+                    rip_intf.setRecvVersion(vtype);
                 }
             }
             case DEFAULTMETRIC -> {

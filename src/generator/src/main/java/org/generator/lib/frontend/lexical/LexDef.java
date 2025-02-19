@@ -135,13 +135,15 @@ public class LexDef {
 
                 //default is no ip rip split-horizon, so the no command is ip rip split-horizon
                 {IPSPLITHORIZION, "no ip rip split-horizon"},
+                {IPSENDVERSION, "ip rip send version {NAME}"},
+                {IPRECVVERSION, "ip rip receive version {NAME}"},
                 {IPSPLITPOISION, "ip rip split-horizon poisoned-reverse"},
 
 
                 {NORRIP, "no router rip"},
 
-                {NONETWORKN, "no network {IPRANGE}"},
-                {NONETWORKI, "no network {NAME}"},
+                {NONETWORKN, "no network {NAME}"},
+                {NONETWORKI, "no network {IPRANGE}"},
                 {NONEIGHBOR, "no neighbor {ID}"},
                 {NOVERSION, "no version|no version {NUM(1-2)}"},
                 {NODEFAULTMETRIC, "no default-metric|no default-metric {NUM(1-16)}"},
@@ -151,6 +153,8 @@ public class LexDef {
                 {NOTIMERSBASIC, "no timers basic | no timers basic {NUM(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)}, {NUM3(1-30)}"},
 
                 {NOIPSPLITPOISION, "no ip rip split-horizon poisoned-reverse"},
+                {NOIPSENDVERSION, "no ip rip send version|no ip rip send version {NAME}"},
+                {NOIPRECVVERSION, "no ip rip receive version|no ip rip receive version {NAME}"},
                 {NOIPSPLITHORIZION, "ip split-horizon"},
 
                 //MULTI:

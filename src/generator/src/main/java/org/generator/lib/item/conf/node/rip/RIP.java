@@ -61,16 +61,6 @@ public class RIP extends AbstractNode {
 
     RIP_STATUS status;
 
-    public RIP_VTYPE getVersion() {
-        return version;
-    }
-
-    public void setVersion(RIP_VTYPE version) {
-        this.version = version;
-    }
-
-    RIP_VTYPE version;
-
     public int getUpdate() {
         return update;
     }
@@ -133,7 +123,6 @@ public class RIP extends AbstractNode {
     @Override
     public void initFiled() {
         status = RIP_STATUS.UP;
-        version = RIP_VTYPE.V2; //we default use V2 version of RIP
         update = 30; //spfScheduleDelayMsecs
         timeout = 180; //holdtimeMinMsecs
         garbage = 120; //holdtimeMaxMsecs

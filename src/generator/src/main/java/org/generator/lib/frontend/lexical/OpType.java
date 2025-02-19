@@ -136,6 +136,8 @@ public enum OpType {
     PASSIVEINTFNAME,
     //---------------------INTF---------------------
     IPSPLITPOISION,
+    IPSENDVERSION,
+    IPRECVVERSION,
     IPSPLITHORIZION,
     //---------------------UNSET--------------------
 
@@ -152,6 +154,8 @@ public enum OpType {
     NOTIMERSBASIC,
 
     NOIPSPLITPOISION,
+    NOIPSENDVERSION,
+    NOIPRECVVERSION,
     NOIPSPLITHORIZION,
     //MULTI:
 

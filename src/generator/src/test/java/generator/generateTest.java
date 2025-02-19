@@ -14,6 +14,7 @@ import org.generator.tools.frontend.OspfConfWriter;
 import org.junit.Test;
 import org.generator.lib.topo.pass.base.ospfRanBaseGen;
 
+import static org.generator.lib.topo.driver.topo.dumpGraphOspf;
 import static org.generator.util.diff.differ.compareJson;
 
 public class generateTest {
@@ -127,7 +128,7 @@ public class generateTest {
     public void baseGraphDumpTest(){
         var ran = new ospfRanBaseGen();
         var rs = ran.generate(5, 3, 2, 4);
-        var str = topo.dumpGraph(rs, ran);
+        var str = dumpGraphOspf(rs, ran);
         System.out.println(str);
         var t = topo.genGraph(5, 3, 2, 2,false, null);
         System.out.println(t);
@@ -138,7 +139,7 @@ public class generateTest {
         String test_st = """
                 """;
         generate.protocol = generate.Protocol.RIP;
-        for(int i = 0; i < 1; i++) {
+        for(int i = 0; i < 100; i++) {
             System.out.printf("testCase %d\n", i);
             var genOp = new genOps();
             var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
@@ -147,5 +148,13 @@ public class generateTest {
             System.out.println(reducer.reduceToCore(ori_use));
             System.out.println(getSetConfG(ori_use));
         }
+    }
+
+    @Test
+    public void baseGenTest(){
+        var ran = new ospfRanBaseGen();
+        var routers = ran.generate(5, 1, 3, 0);
+        var baseGraphStr = dumpGraphOspf(routers, ran);
+        System.out.println(baseGraphStr);
     }
 }
