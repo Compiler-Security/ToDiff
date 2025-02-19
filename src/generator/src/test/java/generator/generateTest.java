@@ -12,7 +12,7 @@ import org.generator.tools.diffOp.genOps;
 import org.generator.tools.frontend.ConfReader;
 import org.generator.tools.frontend.OspfConfWriter;
 import org.junit.Test;
-import org.generator.lib.topo.pass.base.ranBaseGen;
+import org.generator.lib.topo.pass.base.ospfRanBaseGen;
 
 import static org.generator.util.diff.differ.compareJson;
 
@@ -125,7 +125,7 @@ public class generateTest {
 
     @Test
     public void baseGraphDumpTest(){
-        var ran = new ranBaseGen();
+        var ran = new ospfRanBaseGen();
         var rs = ran.generate(5, 3, 2, 4);
         var str = topo.dumpGraph(rs, ran);
         System.out.println(str);

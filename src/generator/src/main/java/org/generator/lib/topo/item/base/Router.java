@@ -1,7 +1,5 @@
 package org.generator.lib.topo.item.base;
 
-import org.generator.lib.topo.pass.base.ranBaseGen;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

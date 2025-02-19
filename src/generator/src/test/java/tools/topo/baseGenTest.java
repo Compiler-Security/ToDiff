@@ -5,8 +5,8 @@ import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.reducer.pass.phyArgPass;
 import org.generator.lib.topo.driver.topo;
-import org.generator.lib.topo.pass.attri.ranAttriGen;
-import org.generator.lib.topo.pass.base.ranBaseGen;
+import org.generator.lib.topo.pass.attri.ospfRanAttriGen;
+import org.generator.lib.topo.pass.base.ospfRanBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
 import org.generator.tools.diffOp.genOps;
 import org.generator.tools.diffTopo.diffTopo;
@@ -23,7 +23,7 @@ import java.io.StringWriter;
 public class baseGenTest {
     @Test
     public void testRandomBaseGen(){
-        var ran = new ranBaseGen();
+        var ran = new ospfRanBaseGen();
         var routers = ran.generate(3, 2, 2, 3);
         Graph graph = new MultiGraph("BaseGraph");
         for(int i = 0; i < routers.size(); i++){
@@ -63,7 +63,7 @@ public class baseGenTest {
         var confG = b.solve(routers);
         System.out.println(confG.toDot(false));
 
-        var c = new ranAttriGen();
+        var c = new ospfRanAttriGen();
         c.generate(confG, routers);
         System.out.println(confG.toJson().toPrettyString());
     }

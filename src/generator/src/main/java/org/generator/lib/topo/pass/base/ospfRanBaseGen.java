@@ -102,8 +102,8 @@ class ranConnect{
     Map<Router, Integer> routerToId;
     Map<Integer, Router> idToRouter;
 }
-public class ranBaseGen implements genBase{
-    public ranBaseGen(){}
+public class ospfRanBaseGen implements genBase{
+    public ospfRanBaseGen(){}
     public int networkId;
 
     List<Router> getRoutersOfArea(int area){

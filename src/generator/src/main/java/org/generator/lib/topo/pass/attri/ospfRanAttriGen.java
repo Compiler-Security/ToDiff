@@ -17,7 +17,7 @@ import org.generator.util.ran.ranHelper;
 
 import java.util.*;
 
-public class ranAttriGen implements genAttri {
+public class ospfRanAttriGen implements genAttri {
 
     List<OSPFDaemon> ospf_daemons;
     List<OSPF> ospfs;

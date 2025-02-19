@@ -2,11 +2,10 @@ package org.generator.lib.topo.driver;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import org.apache.commons.cli.*;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.topo.item.base.Router;
-import org.generator.lib.topo.pass.attri.ranAttriGen;
-import org.generator.lib.topo.pass.base.ranBaseGen;
+import org.generator.lib.topo.pass.attri.ospfRanAttriGen;
+import org.generator.lib.topo.pass.base.ospfRanBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
@@ -18,7 +17,7 @@ import java.util.List;
 
 public class topo {
 
-    public static String dumpGraph(List<Router> routers, ranBaseGen ran){
+    public static String dumpGraph(List<Router> routers, ospfRanBaseGen ran){
         Graph graph = new MultiGraph("BaseGraph");
         for(int i = 0; i < routers.size(); i++){
             graph.addNode("r%d".formatted(i));
@@ -59,7 +58,7 @@ public class topo {
     }
 
     public static ConfGraph genGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, ObjectNode dumpInfo){
-        var ran = new ranBaseGen();
+        var ran = new ospfRanBaseGen();
         var routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
         var baseGraphStr = dumpGraph(routers, ran);
         if (dumpInfo != null) dumpInfo.put("routerGraph", TextNode.valueOf(baseGraphStr));
@@ -68,7 +67,7 @@ public class topo {
         }
         var b = new topoBuild();
         var confg = b.solve(routers);
-        var c = new ranAttriGen();
+        var c = new ospfRanAttriGen();
         c.generate(confg, routers);
         var confgAttrStr = confg.toString();
         if (dumpInfo != null){
