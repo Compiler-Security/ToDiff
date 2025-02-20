@@ -136,7 +136,7 @@ public class genCorePassRip extends genCorePass{
             if (vtype != rip_intf.getSendVersion()) isVTypeSame = false;
             if (vtype != rip_intf.getRecvVersion()) isVTypeSame = false;
         }
-        if (isVTypeSame){
+        if (isVTypeSame & vtype != RIP.RIP_VTYPE.V12){
             var opCtxg = OpCtxG.Of();
             addOp(opCtxg, OpType.RRIP);
             if (vtype == RIP.RIP_VTYPE.V1){
