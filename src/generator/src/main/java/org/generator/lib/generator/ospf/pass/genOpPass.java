@@ -94,6 +94,7 @@ public class genOpPass {
                 case "LONGNUM" -> {
                     new_op.setLONGNUM(getRanLongNum(argsRange, "LONGNUM"));
                 }
+                //FIXME random NAME we should generate some meaningful name
                 case "NAME" -> {
                     new_op.setNAME(getRanName(argsRange, "NAME"));
                 }
