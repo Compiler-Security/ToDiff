@@ -165,6 +165,7 @@ class FrrNode(Node):
             log_function()
     
     #------------------ LOAD TEST DAEMON--------------------------
+    #MULTI:
     #conf_dir testname/conf
     def load_ospf(self, daemons, conf_dir, universe=False):
         self._load_frr(daemons, "ospfd", conf_dir, self._log_load_ospf, universe)
@@ -172,7 +173,9 @@ class FrrNode(Node):
     def load_isis(self, daemons, conf_dir, universe=False):
         self._load_frr(daemons, "isisd", conf_dir, self._log_load_isis, universe)
 
-    
+    def load_rip(self, daemons, conf_dir, universe=False):
+        self._load_frr(daemons, "ripd", conf_dir, self._log_load_isis, universe)
+
     #------------------ STOP TEST DAEMON--------------------------
     def stop_ospfd(self, conf_dir):
         if "ospfd" in self.daemon_dict:
@@ -187,10 +190,18 @@ class FrrNode(Node):
             kill_pid(self.daemon_dict["isisd"]["daemon_pid"])
             os.remove(self.daemon_dict["isisd"]["pid_path"])
             del self.daemon_dict["isisd"]
+    
+    def stop_ripd(self, conf_dir):
+        if "isisd" in self.daemon_dict:
+            self._save_frr_conf()
+            kill_pid(self.daemon_dict["ripd"]["daemon_pid"])
+            os.remove(self.daemon_dict["ripd"]["pid_path"])
+            del self.daemon_dict["ripd"]
 
     def stop_frr(self):
+        #MULTI:
         #FXIME we should add all the test_daemon to stop_daemons
-        stop_daemons = [self.stop_ospfd, self.stop_isisd]
+        stop_daemons = [self.stop_ospfd, self.stop_isisd, self.stop_ripd]
         for stop_daemon in stop_daemons:
             stop_daemon(self.conf_dir)
 
@@ -228,6 +239,13 @@ class FrrNode(Node):
         infoaln("cat /etc/frr/vtysh.conf", self.cmds(["cat", "/etc/frr/vtysh.conf"]))
         infoaln("ls run", self.cmds(["ls", "/run/frr"]))
     
+    def _log_load_rip(self):
+        infoaln("daemon_dict", self.daemon_dict)
+        infoaln("zebra_log", self.cmds(["cat", self.daemon_dict["zebra"]["log_path"]]))
+        infoaln("isis_log", self.cmds(["cat", self.daemon_dict["ripd"]["log_path"]]))
+        infoaln("ls log/route", self.cmds(["ls", self.log_path]))
+        infoaln("cat /etc/frr/vtysh.conf", self.cmds(["cat", "/etc/frr/vtysh.conf"]))
+        infoaln("ls run", self.cmds(["ls", "/run/frr"]))
     ################################### DUMP #################################
     #---------------------------------helper----------------------------------
     def _collect_info_ospf(self, j, item, cmds, isjson):
@@ -255,7 +273,7 @@ class FrrNode(Node):
                 j[item] = json.loads(self.daemon_cmds([cmds]))
         else:
             j[item] = self.daemon_cmds([cmds])
-        warnaln(f"  - collect {item}", "")  
+        warnaln(f"  - collect {item}", "") 
 
     #------------------------OSPF-------------------------------------
     def dump_info_ospf(self):
@@ -339,6 +357,25 @@ class FrrNode(Node):
     def dump_isis_route_info(self):
         info = self.daemon_cmds(["show isis route "])
         return info
+    
+    #---------------------------------RIP---------------------------------
+    def dump_info_rip(self):
+        j = {}
+        warnaln(f"+ collect {self.name}", "")
+        if "ripd" not in self.daemon_dict:
+            j["rip-up"] = False
+        else:
+            j["rip-up"] = True
+            self._collect_info_ospf(j, "rip-route", "show ip rip", False)
+            self._collect_info_ospf(j, "status", "show ip rip status", False)
+            self._collect_info_ospf(j, "routing-table", "show ip route json", True)
+        if "zebra" in self.daemon_dict:
+            self._collect_info_ospf(j, "running-config", "show running-config", False)
+            self._collect_info_ospf(j, "intfs", "show interface json", True)
+        warnaln(f"- collect {self.name}", "")
+        #warnaln("end dump ospf json", "")
+        return j
+    #MULTI:
 
 if __name__ == "__main__":
     setLogLevel('info')
