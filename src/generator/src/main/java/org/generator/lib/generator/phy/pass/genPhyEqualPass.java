@@ -25,15 +25,6 @@ public class genPhyEqualPass {
                 case NODEDEL -> {
                     slots.add(NormalController.getNodeCatg(0, 0, op.getNAME(), OpType.NODEDEL, NormalController.CType.NODE));
                 }
-                case NODESETOSPFUP -> {
-                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETOSPFUP, NormalController.CType.OSPF));
-                }
-                case NODESETOSPFSHUTDOWN -> {
-                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETOSPFSHUTDOWN, NormalController.CType.OSPF));
-                }
-                case NODESETOSPFRE -> {
-                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETOSPFRE, NormalController.CType.OSPF));
-                }
                 case INTFUP -> {
                     slots.add(NormalController.getIntfCatg(0, 0, op.getNAME(), OpType.INTFUP, NormalController.CType.INTF));
                 }
@@ -48,6 +39,25 @@ public class genPhyEqualPass {
                 }
                 case LINKREMOVE -> {
                     slots.add(NormalController.getLinkCatg(0, 0, 0, op.getNAME(), op.getNAME2(), OpType.LINKREMOVE, NormalController.CType.LINK));
+                }
+                //MULTI:
+                case NODESETOSPFUP -> {
+                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETOSPFUP, NormalController.CType.OSPF));
+                }
+                case NODESETOSPFSHUTDOWN -> {
+                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETOSPFSHUTDOWN, NormalController.CType.OSPF));
+                }
+                case NODESETOSPFRE -> {
+                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETOSPFRE, NormalController.CType.OSPF));
+                }
+                case NODESETRIPUP -> {
+                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETRIPUP, NormalController.CType.RIP));
+                }
+                case NODESETRIPSHUTDOWN -> {
+                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETRIPSHUTDOWN, NormalController.CType.RIP));
+                }
+                case NODESETRIPRE -> {
+                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETRIPRE, NormalController.CType.RIP));
                 }
                 default -> {
                     assert false: "error op %s".formatted(op.toString());
@@ -81,10 +91,14 @@ public class genPhyEqualPass {
                 var opType =  getSlot(NormalController.CType.LINK, targetOp.getNAME(), null).getCurType();
                 return opType == OpType.LINKADD;
             }
+            case NODEADD, NODEDEL ->{ return  true;}
+            //MULTI:
             case NODESETOSPFUP,NODESETOSPFRE, NODESETOSPFSHUTDOWN ->{
                 return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
             }
-            case NODEADD, NODEDEL ->{ return  true;}
+            case NODESETRIPUP,NODESETRIPRE, NODESETRIPSHUTDOWN ->{
+                return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
+            }
         }
         return false;
     }
@@ -105,12 +119,24 @@ public class genPhyEqualPass {
                     }
                     slot.setCurType(null);
                 }
-                //every router NODE should have OSPF
-                var slot = getSlot(NormalController.CType.OSPF, targetOp.getNAME(), null);
-                if (slot.getCurType() == OpType.NODESETOSPFUP) {
-                    slot.deltaTypeNum(OpType.NODESETOSPFUP, 1);
-                    slot.setCurType(OpType.NODESETOSPFSHUTDOWN);
+                //MULTI:
+                if (generate.protocol == generate.Protocol.OSPF){
+                    //every router NODE should have OSPF
+                    var slot = getSlot(NormalController.CType.OSPF, targetOp.getNAME(), null);
+                    if (slot.getCurType() == OpType.NODESETOSPFUP) {
+                        slot.deltaTypeNum(OpType.NODESETOSPFUP, 1);
+                        slot.setCurType(OpType.NODESETOSPFSHUTDOWN);
+                    }
                 }
+                if (generate.protocol == generate.Protocol.RIP){
+                    //every router NODE should have OSPF
+                    var slot = getSlot(NormalController.CType.RIP, targetOp.getNAME(), null);
+                    if (slot.getCurType() == OpType.NODESETRIPUP) {
+                        slot.deltaTypeNum(OpType.NODESETRIPUP, 1);
+                        slot.setCurType(OpType.NODESETRIPSHUTDOWN);
+                    }
+                }
+
             }
             case LINKREMOVE -> {
                 var slot = getSlot(NormalController.CType.INTF, targetOp.getNAME(), null);
@@ -148,8 +174,12 @@ public class genPhyEqualPass {
                 //we don't change  switch node
                 if (slot.getcType() == NormalController.CType.NODE && slot.getName().charAt(0) == 's') continue;
                 slot.deltaAllTypeNum(ranHelper.randomInt(0, mxRound));
+                //MULTI:
                 if (slot.getcType() == NormalController.CType.OSPF){
                     slot.deltaTypeNum(OpType.NODESETOSPFRE, -slot.getCounterOfType(OpType.NODESETOSPFRE));
+                }
+                if (slot.getcType() == NormalController.CType.RIP){
+                    slot.deltaTypeNum(OpType.NODESETRIPRE, -slot.getCounterOfType(OpType.NODESETRIPRE));
                 }
             }
         }

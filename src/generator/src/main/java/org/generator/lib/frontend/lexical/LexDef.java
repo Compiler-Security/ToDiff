@@ -33,6 +33,10 @@ public class LexDef {
                 {NODESETOSPFUP, "node {NAME} set OSPF up"},
                 {NODESETOSPFSHUTDOWN, "node {NAME} set OSPF down"},
                 {NODESETOSPFRE, "node {NAME} set OSPF restart"},
+                {NODESETRIPUP, "node {NAME} set RIP up"},
+                {NODESETRIPSHUTDOWN, "node {NAME} set RIP down"},
+                {NODESETRIPRE, "node {NAME} set RIP restart"},
+
                 //{OSPFCONF, "ROSPFCONF"},
 
                 {ROSPF, "router ospf"},
