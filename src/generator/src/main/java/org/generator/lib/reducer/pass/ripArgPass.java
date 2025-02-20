@@ -77,8 +77,9 @@ public class ripArgPass {
                 var intf_name = op.getNAME();
                 if (topo.containsNode(intf_name)){
                     var res = topo.<RIPIntf>getOrCreateNode(NodeGen.getRIPIntfName(intf_name), NodeType.RIPIntf);
-                    assert !res.second();
-                    topo.addRIPIntfRelation(res.first().getName(), intf_name);
+                    if (!res.second()) {
+                        topo.addRIPIntfRelation(res.first().getName(), intf_name);
+                    }
                 }
             }
             for(var op: rip_opg.popOpsOfType(OpType.NETWORKI)){
@@ -88,8 +89,9 @@ public class ripArgPass {
                     //FIXME is this right?
                     if (op.getIPRANGE().containsId(intf.getIp().getAddressOfIp())){
                         var res = topo.<RIPIntf>getOrCreateNode(NodeGen.getRIPIntfName(intf_name), NodeType.RIPIntf);
-                        assert !res.second();
-                        topo.addRIPIntfRelation(res.first().getName(), intf_name);
+                        if (!res.second()) {
+                            topo.addRIPIntfRelation(res.first().getName(), intf_name);
+                        }
                     }
                 }
             }

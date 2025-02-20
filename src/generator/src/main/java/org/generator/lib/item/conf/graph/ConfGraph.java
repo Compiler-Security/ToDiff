@@ -110,7 +110,7 @@ public class ConfGraph extends AbstractRelationGraph {
     private ConfGraph viewConfGraphOfRouterRIP(String r_name){
         var g = new ConfGraph(r_name);
         g.addNode(getNodeNotNull(r_name));
-        var rip_name = NodeGen.getOSPFName(r_name);
+        var rip_name = NodeGen.getRIPName(r_name);
         if (containsNode(rip_name)){
             g.addNode(getNodeNotNull(rip_name));
             g.addRIPRelation(rip_name, r_name);

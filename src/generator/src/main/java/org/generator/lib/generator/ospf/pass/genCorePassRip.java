@@ -50,10 +50,17 @@ public class genCorePassRip extends genCorePass{
             var op = addOp(opCtxG, OpType.IntfName);
             op.setNAME(intf.getName());
         }
-        if (rip_intf.isPoison()){
+        /*
+        SPLIT POISON
+        True  False X
+        True True X
+        False True poison
+        False False HORIZON
+         */
+        if (rip_intf.isPoison() && !rip_intf.isSplitHorizon()){
             var op = addOp(opCtxG, OpType.IPSPLITPOISION);
         }
-        if (!rip_intf.isSplitHorizon()){
+        if (!rip_intf.isSplitHorizon() && !rip_intf.isPoison()){
             var op = addOp(opCtxG, OpType.IPSPLITHORIZION);
         }
         return opCtxG;

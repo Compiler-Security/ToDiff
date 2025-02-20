@@ -59,6 +59,9 @@ public class ripRanAttriGen implements genAttri{
         rip_intf.setPassive(ranHelper.randomInt(0, 10) == 0);
         rip_intf.setPoison(ranHelper.randomInt(0, 3) == 0);
         rip_intf.setSplitHorizon(ranHelper.randomInt(0, 10) > 0);
+        if (rip_intf.isPoison()){
+            rip_intf.setSplitHorizon(false);
+        }
     }
     @Override
     public void generate(ConfGraph g, List<Router> routers) {

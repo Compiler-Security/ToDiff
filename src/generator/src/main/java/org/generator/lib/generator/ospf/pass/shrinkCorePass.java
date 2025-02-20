@@ -41,6 +41,7 @@ public class shrinkCorePass {
             var g = confG.copyPhyGraph();
             reducer.reduceToConfG(opCtxG, g);
             System.out.println(opCtxG);
+            System.out.println(confG);
             System.out.println(compareJson(confG.toJson(),g.toJson()).toPrettyString());
             assert false:"genCorePass's core is not equal to confG";
         }
