@@ -51,13 +51,13 @@ public class genPhyEqualPass {
                     slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETOSPFRE, NormalController.CType.OSPF));
                 }
                 case NODESETRIPUP -> {
-                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETRIPUP, NormalController.CType.RIP));
+                    slots.add(NormalController.getRIPCatg(0, 0, 0, op.getNAME(), OpType.NODESETRIPUP, NormalController.CType.RIP));
                 }
                 case NODESETRIPSHUTDOWN -> {
-                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETRIPSHUTDOWN, NormalController.CType.RIP));
+                    slots.add(NormalController.getRIPCatg(0, 0, 0, op.getNAME(), OpType.NODESETRIPSHUTDOWN, NormalController.CType.RIP));
                 }
                 case NODESETRIPRE -> {
-                    slots.add(NormalController.getOSPFCatg(0, 0, 0, op.getNAME(), OpType.NODESETRIPRE, NormalController.CType.RIP));
+                    slots.add(NormalController.getRIPCatg(0, 0, 0, op.getNAME(), OpType.NODESETRIPRE, NormalController.CType.RIP));
                 }
                 default -> {
                     assert false: "error op %s".formatted(op.toString());

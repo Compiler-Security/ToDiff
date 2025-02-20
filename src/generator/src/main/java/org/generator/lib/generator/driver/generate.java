@@ -31,8 +31,17 @@ public class generate {
      * @return
      */
     public static OpCtxG generateCore(ConfGraph confGraph){
-        var p = new genCorePassOspf();
-        var res1 = p.solve(confGraph);
+        List<OpCtxG> res1 = null;
+        //MULTI:
+        switch (generate.protocol){
+            case OSPF -> {
+                var p = new genCorePassOspf();
+                res1 = p.solve(confGraph);}
+            case RIP -> {
+                var p = new genCorePassRip();
+                res1 = p.solve(confGraph);
+            }
+        }
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass();
         q.solve(res1, confGraph);
