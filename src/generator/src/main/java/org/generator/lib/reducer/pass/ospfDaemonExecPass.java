@@ -95,9 +95,9 @@ public class ospfDaemonExecPass extends baseExecPass {
                 ospf_daemon.setSocketPerInterface(false);
                 return ExecStat.SUCC;
             }
-            case CLEARIPOSPFNEIGHBOR, CLEARIPOSPFPROCESS ->{
-                return ExecStat.SUCC;
-            }
+//            case CLEARIPOSPFNEIGHBOR, CLEARIPOSPFPROCESS ->{
+//                return ExecStat.SUCC;
+//            }
         }
         assert false:String.format("should not go to here %s", op.toString());
         return ExecStat.FAIL;

@@ -23,7 +23,7 @@ public class shrinkCorePass {
         return jsonObject;
     }
     boolean check(List<OpCtxG> opCtxGS, ConfGraph confG, String r_name){
-        var opCtxG = genCorePass.mergeOpCtxgToOne(opCtxGS);
+        var opCtxG = OpCtxG.mergeOpCtxgToOne(opCtxGS);
         var g = confG.copyPhyGraph();
         reducer.reduceToConfG(opCtxG, g);
         return getJson(confG).equals(getJson(g));
@@ -37,10 +37,11 @@ public class shrinkCorePass {
     public void solve(List<OpCtxG> opCtxGs, ConfGraph confG){
         String r_name = confG.getR_name();
         if (!check(opCtxGs, confG, r_name)){
-            var opCtxG = genCorePass.mergeOpCtxgToOne(opCtxGs);
+            var opCtxG = OpCtxG.mergeOpCtxgToOne(opCtxGs);
             var g = confG.copyPhyGraph();
             reducer.reduceToConfG(opCtxG, g);
             System.out.println(opCtxG);
+            System.out.println(confG);
             System.out.println(compareJson(confG.toJson(),g.toJson()).toPrettyString());
             assert false:"genCorePass's core is not equal to confG";
         }

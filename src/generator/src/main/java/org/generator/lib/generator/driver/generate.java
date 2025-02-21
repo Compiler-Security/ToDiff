@@ -1,7 +1,6 @@
 package org.generator.lib.generator.driver;
 
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.lib.generator.ospf.controller.CapacityController;
 import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.ospf.pass.*;
 import org.generator.lib.generator.phy.pass.genPhyCorePass;
@@ -32,12 +31,21 @@ public class generate {
      * @return
      */
     public static OpCtxG generateCore(ConfGraph confGraph){
-        var p = new genCorePass();
-        var res1 = p.solve(confGraph);
+        List<OpCtxG> res1 = null;
+        //MULTI:
+        switch (generate.protocol){
+            case OSPF -> {
+                var p = new genCorePassOspf();
+                res1 = p.solve(confGraph);}
+            case RIP -> {
+                var p = new genCorePassRip();
+                res1 = p.solve(confGraph);
+            }
+        }
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass();
         q.solve(res1, confGraph);
-        return reducer.reduceToCore(genCorePass.mergeOpCtxgToOne(res1));
+        return reducer.reduceToCore(OpCtxG.mergeOpCtxgToOne(res1));
     }
 
     public static void addRemovedOpToController(OpAG opas, NormalController controller){
@@ -175,4 +183,12 @@ public class generate {
         //ip ospf dead-interval multiplier 10
     //this is worked by set topo Attribute
     public static final boolean fastConvergence = true;
+
+    public static enum Protocol{
+        OSPF,
+        ISIS,
+        RIP
+    }
+
+    public static Protocol protocol = Protocol.OSPF;
 }

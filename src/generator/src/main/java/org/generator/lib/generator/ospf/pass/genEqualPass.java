@@ -92,15 +92,16 @@ public class genEqualPass {
                 for(var opa: actionOpas){
                     assert slots.hasConfigOfOpa(opa);
                     if (slots.getConfigStateOfOpa(opa) != slots.getConfigFinalStateOfOpa(opa)){
+                        System.out.println(opa);
                         wrongOps.add(slots.getConfigOfOpa(opa));
                     }
                 }
                 if (!wrongOps.isEmpty()) {
-                    assert false: "all ops can not move!";
                     System.out.println("=====wrong_slots========");
                     System.out.println(wrongOps);
                     System.out.println("=====cur_opag_core=======");
                     System.out.println(reducer.reduceToCore(cur_opag.toOpCtxGActiveSet()));
+                    assert false: "all ops can not move!";
                 } else{
                     break;
                 }

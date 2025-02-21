@@ -2,6 +2,7 @@ package org.generator.lib.item.conf.graph;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.node.AbstractNode;
 import org.generator.lib.item.conf.node.NodeGen;
@@ -13,6 +14,8 @@ import org.generator.lib.item.conf.node.ospf.OSPFIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.lib.item.conf.node.phy.Switch;
+import org.generator.lib.item.conf.node.rip.RIP;
+import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.util.collections.Pair;
 import org.generator.util.exec.ExecStat;
 import org.graphstream.graph.Graph;
@@ -74,7 +77,8 @@ public class ConfGraph extends AbstractRelationGraph {
         return g;
     }
 
-    public ConfGraph viewConfGraphOfRouter(String r_name){
+    //MULTI:
+    private ConfGraph viewConfGraphOfRouterOSPF(String r_name){
         var g = new ConfGraph(r_name);
         g.addNode(getNodeNotNull(r_name));
         var ospf_name = NodeGen.getOSPFName(r_name);
@@ -101,6 +105,35 @@ public class ConfGraph extends AbstractRelationGraph {
             }
         }
         return g;
+    }
+
+    private ConfGraph viewConfGraphOfRouterRIP(String r_name){
+        var g = new ConfGraph(r_name);
+        g.addNode(getNodeNotNull(r_name));
+        var rip_name = NodeGen.getRIPName(r_name);
+        if (containsNode(rip_name)){
+            g.addNode(getNodeNotNull(rip_name));
+            g.addRIPRelation(rip_name, r_name);
+        }
+        for(var intf: getIntfsOfRouter(r_name)){
+            g.addNode(intf);
+            g.addIntfRelation(intf.getName(), r_name);
+            var rip_intf_name = NodeGen.getRIPIntfName(intf.getName());
+            if (containsNode(rip_intf_name)){
+                g.addNode(getNodeNotNull(rip_intf_name));
+                g.addRIPIntfRelation(rip_intf_name, intf.getName());
+            }
+        }
+        return g;
+    }
+
+    public ConfGraph viewConfGraphOfRouter(String r_name){
+        switch (generate.protocol){
+            case OSPF -> {return viewConfGraphOfRouterOSPF(r_name);}
+            case RIP -> {return viewConfGraphOfRouterRIP(r_name);}
+        }
+        assert false;
+        return null;
     }
 
     public ObjectNode toJson(){
@@ -139,6 +172,10 @@ public class ConfGraph extends AbstractRelationGraph {
         }
     }
 
+    //=================GET==========================
+    public <T> List<T> getNodesByType(NodeType type){
+        return getNodes().stream().filter(node -> node.getNodeType().equals(type)).map(node-> (T) node).collect(Collectors.toList());
+    }
     public <T extends  AbstractNode> T getNodeNotNull(String node_name){
         return (T) getNode(node_name).get();
     }
@@ -147,14 +184,28 @@ public class ConfGraph extends AbstractRelationGraph {
         return getEdgesByType(nodes, typ).stream().map(s->(T) s.getDst()).collect(Collectors.toSet());
      }
 
-     public OSPF getOspfOfRouter(String r_name){
-        return this.<OSPF>getDstsByType(r_name, RelationEdge.EdgeType.OSPF).stream().findFirst().get();
+     public List<Switch> getSwitches(){
+        return getNodes().stream().filter(node -> node.getNodeType() == NodeType.Switch).map(node -> (Switch)node).collect(Collectors.toList());
      }
+
+     public List<Router> getRouters(){
+        return getNodesByType(NodeType.Router);
+    }
 
      public Set<Intf> getIntfsOfRouter(String r_name){
         return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF);
      }
-     public Set<OSPFIntf> getOSPFIntfOfRouter(String r_name){
+
+     public Intf getIntf(String nodeName){
+        return (Intf) getNode(nodeName).get();
+    }
+
+    //------------------OSPF----------------------------
+    public OSPF getOspfOfRouter(String r_name){
+        return this.<OSPF>getDstsByType(r_name, RelationEdge.EdgeType.OSPF).stream().findFirst().get();
+    }
+
+    public Set<OSPFIntf> getOSPFIntfOfRouter(String r_name){
         return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF).stream().map(x->this.<OSPFIntf>getDstsByType(x.getName(), RelationEdge.EdgeType.OSPFINTF)).flatMap(Collection::stream).collect(Collectors.toSet());
      }
 
@@ -169,10 +220,30 @@ public class ConfGraph extends AbstractRelationGraph {
         return this.<OSPFDaemon>getDstsByType(ospf_name, RelationEdge.EdgeType.OSPFDAEMON).stream().findFirst().get();
     }
 
-    public Intf getIntf(String nodeName){
-        return (Intf) getNode(nodeName).get();
+    //------------------RIP---------------------------------
+    public RIP getRipOfRouter(String r_name){
+        return this.<RIP>getDstsByType(r_name, RelationEdge.EdgeType.RIP).stream().findFirst().get();
     }
 
+    public Set<RIPIntf> getRIPIntfOfRouter(String r_name){
+        return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF).stream().map(x->this.<RIPIntf>getDstsByType(x.getName(), RelationEdge.EdgeType.RIPINTF)).flatMap(Collection::stream).collect(Collectors.toSet());
+    }
+
+    public RIPIntf getRIPIntf(String nodeName){ return (RIPIntf) getNode(nodeName).get();}
+
+    //MULTI:
+    //=================ADD==========================
+    public void addIntfLink(String intf1_name, String intf2_name){
+        addEdge(intf1_name, intf2_name, RelationEdge.EdgeType.LINK);
+        addEdge(intf2_name, intf1_name, RelationEdge.EdgeType.LINK);
+    }
+
+    public ExecStat addIntfRelation(String intfName, String routerName){
+        addEdge(intfName, routerName, RelationEdge.EdgeType.PhyNODE);
+        addEdge(routerName, intfName, RelationEdge.EdgeType.INTF);
+        return ExecStat.SUCC;
+    }
+    //------------------OSPF-------------------------
     public ExecStat addOSPFRelation(String ospf_name, String phynode_name){
         var res1 = addEdge(phynode_name, ospf_name, RelationEdge.EdgeType.OSPF);
         var res2 =  addEdge(ospf_name, phynode_name, RelationEdge.EdgeType.PhyNODE);
@@ -185,12 +256,6 @@ public class ConfGraph extends AbstractRelationGraph {
         return ExecStat.SUCC;
     }
 
-    public ExecStat addIntfRelation(String intfName, String routerName){
-        addEdge(intfName, routerName, RelationEdge.EdgeType.PhyNODE);
-        addEdge(routerName, intfName, RelationEdge.EdgeType.INTF);
-        return ExecStat.SUCC;
-    }
-
     public ExecStat addOSPFAreaRelation(String area_name, String intf_name){
         var res1 = addEdge(area_name, intf_name, RelationEdge.EdgeType.INTF);
         var res2 = addEdge(intf_name, area_name, RelationEdge.EdgeType.OSPFAREA);
@@ -198,10 +263,6 @@ public class ConfGraph extends AbstractRelationGraph {
         return ExecStat.SUCC;
     }
 
-    public void addIntfLink(String intf1_name, String intf2_name){
-        addEdge(intf1_name, intf2_name, RelationEdge.EdgeType.LINK);
-        addEdge(intf2_name, intf1_name, RelationEdge.EdgeType.LINK);
-    }
 
     public ExecStat addOSPFAreaSumRelation(String areaSum_name, String ospf_name){
         var res1 = addEdge(areaSum_name, ospf_name, RelationEdge.EdgeType.OSPF);
@@ -217,21 +278,30 @@ public class ConfGraph extends AbstractRelationGraph {
         return ExecStat.SUCC;
     }
 
+    //-----------------RIP--------------------
+    public ExecStat addRIPRelation(String rip_name, String phynode_name){
+        var res1 = addEdge(phynode_name, rip_name, RelationEdge.EdgeType.RIP);
+        var res2 =  addEdge(rip_name, phynode_name, RelationEdge.EdgeType.PhyNODE);
+        assert res1.join(res2) == ExecStat.SUCC;
+        return ExecStat.SUCC;
+    }
+
+    public ExecStat addRIPIntfRelation(String rip_intf_name, String intf_name){
+        var res1 = addEdge(rip_intf_name, intf_name, RelationEdge.EdgeType.INTF);
+        var res2 = addEdge(intf_name, rip_intf_name, RelationEdge.EdgeType.RIPINTF);
+        return ExecStat.SUCC;
+    }
+
+    //MULTI:
+
     public boolean containsOSPFOfRouter(String r_name){
         return this.containsNode(NodeGen.getOSPFName(r_name));
     }
 
-    public List<Switch> getSwitches(){
-        return getNodes().stream().filter(node -> node.getNodeType() == NodeType.Switch).map(node -> (Switch)node).collect(Collectors.toList());
+    public boolean containsRIPOfRouter(String r_name){
+        return this.containsNode(NodeGen.getRIPName(r_name));
     }
 
-    public List<Router> getRouters(){
-        return getNodesByType(NodeType.Router);
-    }
-
-    public <T> List<T> getNodesByType(NodeType type){
-        return getNodes().stream().filter(node -> node.getNodeType().equals(type)).map(node-> (T) node).collect(Collectors.toList());
-    }
     @Override
     public String toDot(boolean verbose) {
         Graph graph = new SingleGraph("RelationGraph");

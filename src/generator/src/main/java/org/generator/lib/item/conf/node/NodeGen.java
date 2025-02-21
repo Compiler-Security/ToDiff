@@ -4,6 +4,8 @@ import org.generator.lib.item.conf.node.ospf.*;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.lib.item.conf.node.phy.Switch;
+import org.generator.lib.item.conf.node.rip.RIP;
+import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.net.ID;
 import org.generator.util.net.IPBase;
@@ -20,11 +22,6 @@ public class NodeGen {
             default -> {assert false: "phy node name error";}
         }
         return NodeType.Host;
-    }
-
-    static public String getOSPFName(String r_name){
-        assert getPhyNodeTypeByName(r_name) == NodeType.Router: "only router can has ospf";
-        return String.format("%s-OSPF", r_name);
     }
 
     static public String getSwitchName(int id){
@@ -44,14 +41,19 @@ public class NodeGen {
 
     static public String getRouterName(int id){ return "r%d".formatted(id);}
 
-    static public String getOSPFDaemonName(String ospf_name){
-        return String.format("%s-daemon", ospf_name);
-    }
     static public String getIntfName(String r_name, int port){
         getPhyNodeTypeByName(r_name);
         return String.format("%s-eth%d", r_name, port);
     }
 
+    //========OSPF===============
+    static public String getOSPFName(String r_name){
+        assert getPhyNodeTypeByName(r_name) == NodeType.Router: "only router can has ospf";
+        return String.format("%s-OSPF", r_name);
+    }
+    static public String getOSPFDaemonName(String ospf_name){
+        return String.format("%s-daemon", ospf_name);
+    }
     static  public String getOSPFAreaName(String ospf_name, ID area){
         return String.format("%s-area-%s", ospf_name, area.toString());
     }
@@ -65,6 +67,18 @@ public class NodeGen {
     static public String getOSPFIntfName(String intf_name){
         return String.format("%s-ospf",intf_name);
     }
+
+    //==========RIP=====================
+    static public String getRIPName(String r_name){
+        assert getPhyNodeTypeByName(r_name) == NodeType.Router: "only router can has ospf";
+        return String.format("%s-RIP", r_name);
+    }
+
+    static public String getRIPIntfName(String intf_name){
+        return String.format("%s-rip", intf_name);
+    }
+
+    //MULTI:
 
     public static Router new_Router(String name){
         return new Router(name);
@@ -82,6 +96,11 @@ public class NodeGen {
 
     public static OSPFIntf new_OSPF_Intf(String name) {return new OSPFIntf(name);}
 
+    public static RIP new_RIP(String name){ return new RIP(name);}
+
+    public static RIPIntf new_RIP_Intf(String name){ return new RIPIntf(name);}
+
+    //MULTI:
     public static <T extends  AbstractNode> T newNode(String name, NodeType type){;
         return (T)new_node(name, type);
     }
@@ -111,6 +130,13 @@ public class NodeGen {
             case OSPFAreaSum -> {
                 return new OSPFAreaSum(name);
             }
+            case RIP -> {
+                return new_RIP(name);
+            }
+            case RIPIntf -> {
+                return new_RIP_Intf(name);
+            }
+            //MULTI:
             case null, default -> {
                 new Unimplemented();
             }

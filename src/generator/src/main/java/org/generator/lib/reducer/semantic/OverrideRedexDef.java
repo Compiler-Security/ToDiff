@@ -30,10 +30,11 @@ public class OverrideRedexDef extends BaseRedexDef {
                 This says item[0] can override op in item[1]
                 if the first item[2] arg is same
                  */
-                {ROSPF, new OpType[]{}, 0},
+                //=====ZEBRA============
                 {IntfName, new OpType[]{}, 0},
                 {IPAddr, new OpType[]{IPAddr}, 1},
-
+                //======OSPF============
+                {ROSPF, new OpType[]{}, 0},
                 {IpOspfArea, new OpType[]{}, 0},
                 {NETAREAID, new OpType[]{NETAREAID}, 2},
 
@@ -50,7 +51,23 @@ public class OverrideRedexDef extends BaseRedexDef {
                 {AreaNSSA, new OpType[]{AreaStub, AreaNSSA, AreaStubTotal}, 1},
 
                 {IpOspfDeadInterMulti, new OpType[]{IpOspfDeadInter, IpOspfDeadInterMulti}, 0},
-                {IpOspfDeadInter, new OpType[]{IpOspfDeadInter, IpOspfDeadInterMulti}, 0}
+                {IpOspfDeadInter, new OpType[]{IpOspfDeadInter, IpOspfDeadInterMulti}, 0},
+
+                //==========RIP====================
+                {RRIP, new OpType[]{}, 0},
+                {NETWORKI, new OpType[]{}, 1},
+                {NETWORKN, new OpType[]{}, 1},
+                {PASSIVEINTFDEFAULT, new OpType[]{PASSIVEINTFDEFAULT, PASSIVEINTFNAME}, 0},
+                {PASSIVEINTFNAME, new OpType[]{PASSIVEINTFNAME}, 1},
+                {IPSPLITPOISION, new OpType[]{IPSPLITHORIZION, IPSPLITPOISION}, 0},
+                {IPSPLITHORIZION, new OpType[]{IPSPLITHORIZION, IPSPLITPOISION}, 0},
+                {IPSENDVERSION1, new OpType[]{IPSENDVERSION1, IPSENDVERSION2, IPSENDVERSION12}, 0},
+                {IPSENDVERSION2, new OpType[]{IPSENDVERSION1, IPSENDVERSION2, IPSENDVERSION12}, 0},
+                {IPSENDVERSION12, new OpType[]{IPSENDVERSION1, IPSENDVERSION2, IPSENDVERSION12}, 0},
+                {IPRECVVERSION1, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}, 0},
+                {IPRECVVERSION2, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}, 0},
+                {IPRECVVERSION12, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}, 0},
+
                 //Other set instruction
                 //{XXX, new OpType[XXX], 0}
 

@@ -172,12 +172,14 @@ public class diffTopo {
                 for(var op: phyOps){
                     phy_ops.add(IO.writeOp(op));
                     //update ospfAlive
+                    //MULTI:
+                    //FIXME: if we want to generate multiple protocols' cmd, we should track multiple alive
                     switch (op.getOpPhy().Type()){
-                        case NODESETOSPFUP -> {
+                        case NODESETOSPFUP,NODESETRIPUP -> {
                             var router_name = op.getOpPhy().getNAME();
                             ospfAlive.set(routerNametoIdx.get(router_name), true);
                         }
-                        case NODEDEL,NODESETOSPFSHUTDOWN -> {
+                        case NODEDEL,NODESETOSPFSHUTDOWN,NODESETRIPSHUTDOWN -> {
                             var router_name = op.getOpPhy().getNAME();
                             ospfAlive.set(routerNametoIdx.get(router_name), false);
                         }
@@ -216,16 +218,18 @@ public class diffTopo {
                         }else{
                             //append op to last line of router_commands with split symbol `;`
                             router_commands.set(router_commands.size() - 1, router_commands.get(router_commands.size() -1) + ';' + IO.writeOp(op));
-                            //This is for ospf router-id command, it should use clear ip ospf process after this command
-                            if (op.getOpOspf().Type() == OpType.RID || op.getOpOspf().Type() == OpType.NORID){
-                                router_commands.add("clear ip ospf process");
-                                router_commands.add(front_ctx);
-                            }else if (ranHelper.randomInt(0, 50) == 0){
-                                //we can random add some control command like clear ip ospf database like this
-                                //FIXME we should use better method to insert control command to test_file
-                                List<String> control_commands = List.of("clear ip ospf process", "clear ip ospf neighbor", "clear ip ospf interface");
-                                router_commands.add(ranHelper.randomElemOfList(control_commands));
-                                router_commands.add(front_ctx);
+                            if (generate.protocol == generate.Protocol.OSPF) {
+                                //This is for ospf router-id command, it should use clear ip ospf process after this command
+                                if (op.getOpOspf().Type() == OpType.RID || op.getOpOspf().Type() == OpType.NORID) {
+                                    router_commands.add("clear ip ospf process");
+                                    router_commands.add(front_ctx);
+                                } else if (ranHelper.randomInt(0, 50) == 0) {
+                                    //we can random add some control command like clear ip ospf database like this
+                                    //FIXME we should use better method to insert control command to test_file
+                                    List<String> control_commands = List.of("clear ip ospf process", "clear ip ospf neighbor", "clear ip ospf interface");
+                                    router_commands.add(ranHelper.randomElemOfList(control_commands));
+                                    router_commands.add(front_ctx);
+                                }
                             }
                         }
                     }

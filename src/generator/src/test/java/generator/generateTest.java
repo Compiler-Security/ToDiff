@@ -9,10 +9,13 @@ import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.reducer.driver.reducer;
 import org.generator.lib.topo.driver.topo;
 import org.generator.tools.diffOp.genOps;
+import org.generator.tools.diffTopo.diffTopo;
 import org.generator.tools.frontend.ConfReader;
+import org.generator.tools.frontend.OspfConfWriter;
 import org.junit.Test;
-import org.generator.lib.topo.pass.base.ranBaseGen;
+import org.generator.lib.topo.pass.base.ospfRanBaseGen;
 
+import static org.generator.lib.topo.driver.topo.dumpGraphOspf;
 import static org.generator.util.diff.differ.compareJson;
 
 public class generateTest {
@@ -124,11 +127,58 @@ public class generateTest {
 
     @Test
     public void baseGraphDumpTest(){
-        var ran = new ranBaseGen();
+        var ran = new ospfRanBaseGen();
         var rs = ran.generate(5, 3, 2, 4);
-        var str = topo.dumpGraph(rs, ran);
+        var str = dumpGraphOspf(rs, ran);
         System.out.println(str);
         var t = topo.genGraph(5, 3, 2, 2,false, null);
         System.out.println(t);
+    }
+
+    @Test
+    public void multiProtocolTest() {
+        String test_st = """
+                interface r1-eth0
+                        ip address 222.62.75.121/15
+                interface r1-eth0
+                        ip rip split-horizon poisoned-reverse
+                router rip
+                        distance 213
+                        default-metric 15
+                        timers basic 5, 10, 5
+                router rip
+                        network r1-eth0
+                router rip
+                router rip
+                """;
+        generate.protocol = generate.Protocol.RIP;
+        for(int i = 0; i < 1; i++) {
+            System.out.printf("testCase %d\n", i);
+            var genOp = new genOps();
+
+            //var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+            //var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
+
+            var ori_use = new ConfReader().read(test_st);
+            //System.out.println(ori_use);
+            //System.out.println(reducer.reduceToCore(ori_use));
+            System.out.println(getSetConfG(ori_use));
+        }
+    }
+    @Test
+    public void mainTest(){
+        for(int i = 0; i < 100; i++){
+            System.out.printf("testCase %d\n", i);
+            int routerCount = 3,maxStep = 3,maxStepTime = 10, roundNum = 2;
+            var diff = new diffTopo();
+            var res = diff.gen(routerCount, maxStep, maxStepTime, roundNum);
+        }
+    }
+    @Test
+    public void baseGenTest(){
+        var ran = new ospfRanBaseGen();
+        var routers = ran.generate(5, 1, 3, 0);
+        var baseGraphStr = dumpGraphOspf(routers, ran);
+        System.out.println(baseGraphStr);
     }
 }

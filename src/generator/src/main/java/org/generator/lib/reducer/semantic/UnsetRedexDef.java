@@ -19,6 +19,10 @@ public class UnsetRedexDef extends BaseRedexDef{
         var reduce_seed = new Object[][]{
                 //unset operation, we can assume that we compare minimal Args of NoOp with corresponding Args of OP
                 //minimal args is the first LexDef of no operation
+                //============ZEBRA=================
+                {NOIPAddr, new OpType[]{IPAddr}},
+
+                //=============OSPF=================
                 {NOROSPF, new OpType[]{ROSPF}},
                 {NORID, new OpType[]{RID}},
                 {NORABRTYPE, new OpType[]{RABRTYPE}},
@@ -52,7 +56,7 @@ public class UnsetRedexDef extends BaseRedexDef{
                 //FIXME simple fix of NOAreaStubTotal
                //{NOAreaStubTotal, new OpType[]{AreaStubTotal}},
                 {NOAreaNSSA, new OpType[]{AreaNSSA}},
-                {NOIPAddr, new OpType[]{IPAddr}},
+
                 {NOIpOspfArea, new OpType[]{IpOspfArea}},
                 {NOIpOspfCost, new OpType[]{IpOspfCost}},
                 {NOIpOspfDeadInter, new OpType[]{IpOspfDeadInter}},
@@ -64,6 +68,26 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOIpOspfRetransInter, new OpType[]{IpOspfRetransInter}},
                 {NOIpOspfTransDelay, new OpType[]{IpOspfTransDelay}},
                 {NOIpOspfPassive, new OpType[]{IpOspfPassive}},
+
+                //==================RIP=============================
+                {NORRIP, new OpType[]{RRIP}},
+                {NONETWORKN, new OpType[]{NETWORKN}},
+                {NONETWORKI, new OpType[]{NETWORKI}},
+                {NONEIGHBOR, new OpType[]{NEIGHBOR}},
+                {NOVERSION, new OpType[]{VERSION}},
+                {NODEFAULTMETRIC, new OpType[]{DEFAULTMETRIC}},
+                {NODISTANCE, new OpType[]{DISTANCE}},
+                {NOPASSIVEINTFDEFAULT, new OpType[]{PASSIVEINTFDEFAULT}},
+                {NOPASSIVEINTFNAME, new OpType[]{PASSIVEINTFNAME}},
+                {NOTIMERSBASIC, new OpType[]{TIMERSBASIC}},
+                {NOIPSPLITPOISION, new OpType[]{IPSPLITPOISION}},
+                {NOIPSPLITHORIZION, new OpType[]{IPSPLITHORIZION, IPSPLITPOISION}},
+                {NOIPSENDVERSION1, new OpType[]{IPSENDVERSION1, IPSENDVERSION2, IPSENDVERSION12}},
+                {NOIPSENDVERSION2, new OpType[]{IPSENDVERSION1, IPSENDVERSION2, IPSENDVERSION12}},
+                {NOIPSENDVERSION12, new OpType[]{IPSENDVERSION1, IPSENDVERSION2, IPSENDVERSION12}},
+                {NOIPRECVVERSION1, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}},
+                {NOIPRECVVERSION2, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}},
+                {NOIPRECVVERSION12, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}},
         };
         var seeds = new ArrayList<Object[]>();
         for (var item : reduce_seed) {

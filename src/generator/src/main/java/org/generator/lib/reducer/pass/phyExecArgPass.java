@@ -9,6 +9,7 @@ import org.generator.lib.item.conf.node.ospf.OSPF;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.exec.ExecStat;
 
@@ -38,46 +39,7 @@ public class phyExecArgPass extends  baseExecPass{
                     return topo.delNode(node.get());
                 }
             }
-            case NODESETOSPFUP -> {
-                var r_name = op.getNAME();
-                var ospf_name = NodeGen.getOSPFName(r_name);
 
-                //check miss condition
-                if (!topo.containsNode(r_name) || topo.containsNode(ospf_name)) return ExecStat.MISS;
-
-                //new ospf
-                OSPF ospf = NodeGen.new_OSPF(ospf_name);
-                ospf.setStatus(OSPF.OSPF_STATUS.UP);
-                topo.addNode(ospf);
-
-                // new relation edge
-                return topo.addOSPFRelation(ospf_name, r_name);
-            }
-            case NODESETOSPFRE -> {
-                var r_name = op.getNAME();
-                var ospf_name = NodeGen.getOSPFName(r_name);
-                //check condition
-                if (!topo.containsNode(ospf_name)) return ExecStat.MISS;
-
-                //change ospf status
-                var ospf = (OSPF) topo.getNode(ospf_name).get();
-                ospf.setStatus(OSPF.OSPF_STATUS.UP);
-
-                return ExecStat.SUCC;
-            }
-            case NODESETOSPFSHUTDOWN -> {
-                var r_name = op.getNAME();
-                var ospf_name = NodeGen.getOSPFName(r_name);
-                //check condition
-                if (!topo.containsNode(ospf_name)) return ExecStat.MISS;
-
-
-                //delete ospf
-                var ospf = (OSPF) topo.getNode(ospf_name).get();
-                topo.delNode(ospf);
-
-                return ExecStat.SUCC;
-            }
             case INTFUP -> {
                 var intf_name = op.getNAME();
 
@@ -157,6 +119,87 @@ public class phyExecArgPass extends  baseExecPass{
                 //delete edges in both directions
                 topo.delEdge(intf1_name, intf2_name, RelationEdge.EdgeType.LINK);
                 topo.delEdge(intf2_name, intf1_name, RelationEdge.EdgeType.LINK);
+                return ExecStat.SUCC;
+            }
+            //MULTI:
+            case NODESETOSPFUP -> {
+                var r_name = op.getNAME();
+                var ospf_name = NodeGen.getOSPFName(r_name);
+
+                //check miss condition
+                if (!topo.containsNode(r_name) || topo.containsNode(ospf_name)) return ExecStat.MISS;
+
+                //new ospf
+                OSPF ospf = NodeGen.new_OSPF(ospf_name);
+                ospf.setStatus(OSPF.OSPF_STATUS.UP);
+                topo.addNode(ospf);
+
+                // new relation edge
+                return topo.addOSPFRelation(ospf_name, r_name);
+            }
+            case NODESETOSPFRE -> {
+                var r_name = op.getNAME();
+                var ospf_name = NodeGen.getOSPFName(r_name);
+                //check condition
+                if (!topo.containsNode(ospf_name)) return ExecStat.MISS;
+
+                //change ospf status
+                var ospf = (OSPF) topo.getNode(ospf_name).get();
+                ospf.setStatus(OSPF.OSPF_STATUS.UP);
+
+                return ExecStat.SUCC;
+            }
+            case NODESETOSPFSHUTDOWN -> {
+                var r_name = op.getNAME();
+                var ospf_name = NodeGen.getOSPFName(r_name);
+                //check condition
+                if (!topo.containsNode(ospf_name)) return ExecStat.MISS;
+
+
+                //delete ospf
+                var ospf = (OSPF) topo.getNode(ospf_name).get();
+                topo.delNode(ospf);
+
+                return ExecStat.SUCC;
+            }
+            case NODESETRIPUP -> {
+                var r_name = op.getNAME();
+                var rip_name = NodeGen.getRIPName(r_name);
+
+                //check miss condition
+                if (!topo.containsNode(r_name) || topo.containsNode(rip_name)) return ExecStat.MISS;
+
+                //new ospf
+                RIP rip = NodeGen.new_RIP(rip_name);
+                rip.setStatus(RIP.RIP_STATUS.UP);
+                topo.addNode(rip);
+
+                // new relation edge
+                return topo.addRIPRelation(rip_name, r_name);
+            }
+            case NODESETRIPRE -> {
+                var r_name = op.getNAME();
+                var rip_name = NodeGen.getRIPName(r_name);
+                //check condition
+                if (!topo.containsNode(rip_name)) return ExecStat.MISS;
+
+                //change ospf status
+                var rip = (RIP) topo.getNode(rip_name).get();
+                rip.setStatus(RIP.RIP_STATUS.UP);
+
+                return ExecStat.SUCC;
+            }
+            case NODESETRIPSHUTDOWN -> {
+                var r_name = op.getNAME();
+                var rip_name = NodeGen.getRIPName(r_name);
+                //check condition
+                if (!topo.containsNode(rip_name)) return ExecStat.MISS;
+
+
+                //delete ospf
+                var rip = (RIP) topo.getNode(rip_name).get();
+                topo.delNode(rip);
+
                 return ExecStat.SUCC;
             }
             default -> {
