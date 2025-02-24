@@ -435,7 +435,7 @@ class executor:
                 #some routers may be deleted
                 if r_name not in net.net.nameToNode:
                     continue
-                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_ospf()
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_rip()
             warnaln("   - collect from daemons", "")
             warnaln("   + collect from asan", "")
             for r_name in self.routers:
@@ -478,5 +478,5 @@ class executor:
 
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1740047079.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "rip")
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1740387816.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "rip")
     t.test()
