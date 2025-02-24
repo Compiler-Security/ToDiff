@@ -387,7 +387,7 @@ class executor:
                 erroraln(f"+ RIP commands", "")
                 for j in range(0, len(self.routers)):
                     router_name = self.routers[j]
-                    rip_ops = commands[i]['ospf'][j]
+                    rip_ops = commands[i]['rip'][j]
                     self._init_rip(router_name, rip_ops)
                 erroraln(f"- RIP commands", "")
                 
@@ -478,5 +478,5 @@ class executor:
 
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1728544999_r1_rt3.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 30, "ospfd")
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1740047079.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "rip")
     t.test()
