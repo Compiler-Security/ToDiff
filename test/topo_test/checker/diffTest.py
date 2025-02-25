@@ -6,6 +6,7 @@ from os import path
 up = path.dirname
 import diffTestUtil.diffOSPF
 import diffTestUtil.diffISIS
+import diffTestUtil.diffRIP
 import util
 import json
 import os
@@ -18,10 +19,12 @@ def checkTests(protocol):
             res = diffTestUtil.diffOSPF.checkTest(test_name, False)
         if protocol == "isis":
             res = diffTestUtil.diffISIS.checkTest(test_name, False)
+        if protocol == "rip":
+            res = diffTestUtil.diffRIP.checkTest(test_name, False)
         with open(path.join(diff_dir, f"{test_name}.txt"), "w") as fp:
             fp.write(res)
 
         
 if __name__ == "__main__":
     #checkTest(util.get_test_name_5("44999"), False)
-    checkTests("isis")
+    checkTests("rip")
