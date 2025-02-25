@@ -120,8 +120,9 @@ RUN cd && pwd && ls -al && git clone https://github.com/Shbinging/frr.git
 
 #checkout frr to interested commit
 RUN cd /home/frr/frr && \
-    git checkout -b test origin/test
-
+    git fetch --all && \
+    git checkout -b fix_no_ip_split-horizon_poisoned-reverse origin/fix_no_ip_split-horizon_poisoned-reverse
+     
 #build and install frr to /usr/lib/frr
 RUN if [ "$build_mode" = "full" ]; then \
     echo "Building full project..." && \
@@ -162,17 +163,13 @@ RUN if [ "$build_mode" = "full" ]; then \
        --enable-snmp=agentx \
        --enable-scripting \
        --disable-doc \
-       --disable-ripd \
        --disable-ripngd \
        --disable-ldpd \
        --disable-nhrpd \
-       --disable-eigrpd \
-       --disable-babeld \
        --disable-pimd \
        --disable-pim6d \
        --disable-pbrd \
        --disable-staticd \
-        --disable-fabricd \
         --disable-vrrpd \
         --disable-pathd \
        --with-pkg-extra-version=-my-manual-build && \

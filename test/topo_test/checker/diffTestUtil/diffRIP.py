@@ -120,43 +120,16 @@ class diffRIP:
     def check_routingTable(self, rt, rd):
         return util.dict_diff(self.shrink_routingTable(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
     
-    def check_interface(self, str_0, str_1):
-        intfs_0 = {item.split("\r\n")[1]:item.split("\r\n")[2:-1]
-            for item in re.findall("!\r\ninterface[\s\S]+?exit", str_0)}
-        intfs_1 = {item.split("\r\n")[1]:item.split("\r\n")[2:-1]
-            for item in re.findall("!\r\ninterface[\s\S]+?exit", str_1)}
-        list_diff = []
-        for val in intfs_0:
-            if (not util.deep_compare(intfs_0[val], intfs_1[val])):
-                res = util.compare_lists(intfs_0[val], intfs_1[val])
-                if len(res["unique_to_first"]) > 0:
-                    list_diff.extend([val] + [f"+ {item}" for item in res["unique_to_first"]])
-                if len(res["unique_to_second"]) > 0:
-                    list_diff.extend([val] + [f"- {item}" for item in res["unique_to_second"]])
-        return list_diff
-    
-    def check_router(self, str_0, str_1):
-        intfs_0 = {item.split("\r\n")[1]:item.split("\r\n")[2:-1]
-            for item in re.findall("!\r\nrouter rip[\s\S]+?exit", str_0)}
-        intfs_1 = {item.split("\r\n")[1]:item.split("\r\n")[2:-1]
-            for item in re.findall("!\r\nrouter rip[\s\S]+?exit", str_1)}
-        list_diff = []
-        for val in intfs_0:
-            if (not util.deep_compare(intfs_0[val], intfs_1[val])):
-                res = util.compare_lists(intfs_0[val], intfs_1[val])
-                if len(res["unique_to_first"]) > 0:
-                    list_diff.extend([val] + [f"+ {item}" for item in res["unique_to_first"]])
-                if len(res["unique_to_second"]) > 0:
-                    list_diff.extend([val] + [f"- {item}" for item in res["unique_to_second"]])
-        return list_diff
     
     def check_runningConfig(self, rt, rd):
         str_0 = self.runningConfig(0, self.step_nums[0] - 1, rt)
         str_1 = self.runningConfig(rd, self.step_nums[rd] - 1, rt)
-        res = self.check_interface(str_0, str_1)
-        res.extend(self.check_router(str_0, str_1))
-        return res
-            
+        intfs_0 = {item.split("\r\n")[1]:item.split("\r\n")[2:-1]
+            for item in re.findall("!\r\ninterface[\s\S]+?exit|!\r\nrouter rip[\s\S]+?exit", str_0)}
+        intfs_1 = {item.split("\r\n")[1]:item.split("\r\n")[2:-1]
+            for item in re.findall("!\r\ninterface[\s\S]+?exit|!\r\nrouter rip[\s\S]+?exit", str_1)}
+        return util.dict_diff(intfs_0, intfs_1)
+
     def check_convergence(self, rt, rd):
         res = {}
         if self.conf["test"]["result"][rd][self.step_nums[rd] - 1]["exec"]["convergence"] != True:
