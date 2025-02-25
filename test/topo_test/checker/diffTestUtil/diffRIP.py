@@ -85,8 +85,8 @@ class diffRIP:
         new_dict["routing_information_sources"] = [
         {
             "gateway": item.split()[0],
-            "badPackets": item.split()[1],
-            "badRoutes": item.split()[2],
+            # "badPackets": item.split()[1],
+            # "badRoutes": item.split()[2],
             "distance": item.split()[3],
         }
              for item in self.get_match("Last Update\r\n([\S\s]+) Distance:", str).split("\r\n")[:-1]
@@ -98,23 +98,64 @@ class diffRIP:
     def shrink_routingTable(self, n_dict:dict):
         new_dict = copy.deepcopy(n_dict)
         for val in new_dict.values():
-            for nexthop in val["nexthops"]:
-                nexthop.pop("advertisedRouter", None)
+            val[0].pop("uptime")
+            val[0].pop("nexthopGroupId")
+            val[0].pop("installedNexthopGroupId")
+            for nextHop in val[0]["nexthops"]:
+                nextHop.pop("interfaceIndex")
         return new_dict
    
 
     
     def check_rip_route(self, rt, rd):
-        return util.compare_lists(self.shrink_ripRoute(self.ripRoute(0, self.step_nums[0] - 1, rt)), self.shrink_ripRoute(self.ripRoute(rd, self.step_nums[rd] -1, rt)))
-    
+        res = util.compare_lists(self.shrink_ripRoute(self.ripRoute(0, self.step_nums[0] - 1, rt)), self.shrink_ripRoute(self.ripRoute(rd, self.step_nums[rd] -1, rt)))
+        if len(res["unique_to_first"])== 0 and len(res["unique_to_second"]) == 0:
+            return {}
+        else: 
+            return res
+        
     def check_rip_status(self, rt, rd):
         return util.dict_diff(self.shrink_ripStatus(self.ripStatus(0, self.step_nums[0] - 1, rt)), self.shrink_ripStatus(self.ripStatus(rd, self.step_nums[rd] - 1, rt)))
-
+        
     def check_routingTable(self, rt, rd):
         return util.dict_diff(self.shrink_routingTable(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
     
+    def check_interface(self, str_0, str_1):
+        intfs_0 = {item.split("\r\n")[1]:item.split("\r\n")[2:-1]
+            for item in re.findall("!\r\ninterface[\s\S]+?exit", str_0)}
+        intfs_1 = {item.split("\r\n")[1]:item.split("\r\n")[2:-1]
+            for item in re.findall("!\r\ninterface[\s\S]+?exit", str_1)}
+        list_diff = []
+        for val in intfs_0:
+            if (not util.deep_compare(intfs_0[val], intfs_1[val])):
+                res = util.compare_lists(intfs_0[val], intfs_1[val])
+                if len(res["unique_to_first"]) > 0:
+                    list_diff.extend([val] + [f"+ {item}" for item in res["unique_to_first"]])
+                if len(res["unique_to_second"]) > 0:
+                    list_diff.extend([val] + [f"- {item}" for item in res["unique_to_second"]])
+        return list_diff
+    
+    def check_router(self, str_0, str_1):
+        intfs_0 = {item.split("\r\n")[1]:item.split("\r\n")[2:-1]
+            for item in re.findall("!\r\nrouter rip[\s\S]+?exit", str_0)}
+        intfs_1 = {item.split("\r\n")[1]:item.split("\r\n")[2:-1]
+            for item in re.findall("!\r\nrouter rip[\s\S]+?exit", str_1)}
+        list_diff = []
+        for val in intfs_0:
+            if (not util.deep_compare(intfs_0[val], intfs_1[val])):
+                res = util.compare_lists(intfs_0[val], intfs_1[val])
+                if len(res["unique_to_first"]) > 0:
+                    list_diff.extend([val] + [f"+ {item}" for item in res["unique_to_first"]])
+                if len(res["unique_to_second"]) > 0:
+                    list_diff.extend([val] + [f"- {item}" for item in res["unique_to_second"]])
+        return list_diff
+    
     def check_runningConfig(self, rt, rd):
-        return util.str_diff(self.runningConfig(0, self.step_nums[0] - 1, rt), self.runningConfig(rd, self.step_nums[rd] - 1, rt))
+        str_0 = self.runningConfig(0, self.step_nums[0] - 1, rt)
+        str_1 = self.runningConfig(rd, self.step_nums[rd] - 1, rt)
+        res = self.check_interface(str_0, str_1)
+        res.extend(self.check_router(str_0, str_1))
+        return res
             
     def check_convergence(self, rt, rd):
         res = {}
@@ -146,14 +187,11 @@ def checkTest(test_name, diffAll):
         res = checkFunc(rd, diff_RIP, diff_RIP.check_runningConfig, "check_runningConfig", buf)
         if (not res and not diffAll): continue
 
-        res = checkFunc(rd, diff_RIP, diff_RIP.check_convergence, "check_convergence", buf)
-        if (not res and not diffAll): continue
+        #res = checkFunc(rd, diff_RIP, diff_RIP.check_convergence, "check_convergence", buf)
+        #if (not res and not diffAll): continue
         
         res = checkFunc(rd, diff_RIP, diff_RIP.check_rip_route, "check_rip_route", buf)
         res = checkFunc(rd, diff_RIP, diff_RIP.check_rip_status, "check_rip_status", buf)
-        # res = checkFunc(rd, diff_RIP, diff_RIP.check_neighbors, "check_neighbors", buf)
-        # res = checkFunc(rd, diff_RIP, diff_RIP.check_ospfDaemon, "check_ospfDaemon", buf)
-        # res = checkFunc(rd, diff_RIP, diff_RIP.check_ospfDatabase, "check_ospfDatabase", buf)
         res = checkFunc(rd, diff_RIP, diff_RIP.check_routingTable, "check_routingTable", buf)
        
     

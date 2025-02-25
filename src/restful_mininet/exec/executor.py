@@ -419,7 +419,7 @@ class executor:
             
             sleep_time = commands[i]['waitTime']
             erroraln(f"wait {sleep_time} s ", "")
-            
+            #CLI(net.net)
             if sleep_time == -1:
                 #We wait 30s for RIP to convergence
                 erroraln("+ check convergence", "")
