@@ -28,6 +28,8 @@ public class ConflictRedexDef extends  BaseRedexDef{
                 {IpOspfArea, new OpType[]{IpOspfArea}, 0},
 
                 {AreaRange, new OpType[]{AreaRangeSub, AreaRangeCost}, 2},
+                //============RIP================
+                {PASSIVEINTFNAME, new OpType[]{PASSIVEINTFDEFAULT}, 0},
 
                 //{IpOspfDeadInter, new OpType[]{IpOspfDeadInterMulti}, 0},
                 //{IpOspfHelloInter, new OpType[]{IpOspfDeadInterMulti}, 0},
