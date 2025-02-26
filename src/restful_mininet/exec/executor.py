@@ -387,7 +387,7 @@ class executor:
                 erroraln(f"+ RIP commands", "")
                 for j in range(0, len(self.routers)):
                     router_name = self.routers[j]
-                    rip_ops = commands[i]['ospf'][j]
+                    rip_ops = commands[i]['rip'][j]
                     self._init_rip(router_name, rip_ops)
                 erroraln(f"- RIP commands", "")
                 
@@ -419,7 +419,7 @@ class executor:
             
             sleep_time = commands[i]['waitTime']
             erroraln(f"wait {sleep_time} s ", "")
-            
+            #CLI(net.net)
             if sleep_time == -1:
                 #We wait 30s for RIP to convergence
                 erroraln("+ check convergence", "")
@@ -435,7 +435,7 @@ class executor:
                 #some routers may be deleted
                 if r_name not in net.net.nameToNode:
                     continue
-                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_ospf()
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_rip()
             warnaln("   - collect from daemons", "")
             warnaln("   + collect from asan", "")
             for r_name in self.routers:
@@ -478,5 +478,5 @@ class executor:
 
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1728544999_r1_rt3.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 30, "ospfd")
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1740472514.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "rip")
     t.test()

@@ -235,7 +235,11 @@ public class diffTopo {
                     }
                 }
 
-                one_step.put("ospf", ops);
+                //MULTI:
+                switch(generate.protocol){
+                    case OSPF -> one_step.put("ospf", ops);
+                    case RIP -> one_step.put("rip", ops);
+                }
 
                 //add waitTime
                 var waitTime = ranHelper.randomInt(1, max_step_time);
