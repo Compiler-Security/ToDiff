@@ -9,6 +9,7 @@ import copy
 import util
 import pprint
 import re
+from datetime import datetime
 class diffRIP:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -65,6 +66,8 @@ class diffRIP:
     def get_match_two(self, r_str, text):
         match = re.search(r_str, text)
         return match.group(1), match.group(2)
+    def get_time(self, time_obj):
+        return time_obj.hour * 3600 + time_obj.minute * 60 + time_obj.second
     def shrink_ripStatus(self, str):
         new_dict = {}
         new_dict["update"] = self.get_match("every ([0-9]+) seconds", str)
@@ -89,7 +92,7 @@ class diffRIP:
             # "badRoutes": item.split()[2],
             "distance": item.split()[3],
         }
-             for item in self.get_match("Last Update\r\n([\S\s]+) Distance:", str).split("\r\n")[:-1]
+             for item in self.get_match("Last Update\r\n([\S\s]+) Distance:", str).split("\r\n")[:-1] if self.get_time(datetime.strptime(item.split()[4], "%H:%M:%S").time()) < 30
         ]
         new_dict["distance"] = self.get_match("default is ([0-9]+)", str)
         return new_dict
