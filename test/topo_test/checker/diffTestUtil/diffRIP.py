@@ -9,6 +9,7 @@ import copy
 import util
 import pprint
 import re
+from datetime import datetime
 class diffRIP:
     def __init__(self, file_path):
         self.file_path = file_path
@@ -49,11 +50,14 @@ class diffRIP:
         for i, route in enumerate(routes):
             r = route.split()
             if (len(r) == 0): continue
+            if (int(r[3]) == 16): continue
             new_list.append({
-                "Network":r[0],
-                "NextHop":r[1],
-                "Metric From":r[2],
-                "TagTime":r[3]
+                "type": r[0],
+                "Network":r[1],
+                "NextHop":r[2],
+                "Metric":r[3],
+                "From": r[4],
+                "Tag":r[5]
             }
             )
         return new_list
@@ -65,6 +69,8 @@ class diffRIP:
     def get_match_two(self, r_str, text):
         match = re.search(r_str, text)
         return match.group(1), match.group(2)
+    def get_time(self, time_obj):
+        return time_obj.hour * 3600 + time_obj.minute * 60 + time_obj.second
     def shrink_ripStatus(self, str):
         new_dict = {}
         new_dict["update"] = self.get_match("every ([0-9]+) seconds", str)
@@ -89,7 +95,7 @@ class diffRIP:
             # "badRoutes": item.split()[2],
             "distance": item.split()[3],
         }
-             for item in self.get_match("Last Update\r\n([\S\s]+) Distance:", str).split("\r\n")[:-1]
+             for item in self.get_match("Last Update\r\n([\S\s]+) Distance:", str).split("\r\n")[:-1] if self.get_time(datetime.strptime(item.split()[4], "%H:%M:%S").time()) < 10
         ]
         new_dict["distance"] = self.get_match("default is ([0-9]+)", str)
         return new_dict

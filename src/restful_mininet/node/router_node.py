@@ -371,7 +371,7 @@ class FrrNode(Node):
             self._collect_info_ospf(j, "routing-table", "show ip route json", True)
         if "zebra" in self.daemon_dict:
             self._collect_info_ospf(j, "running-config", "show running-config", False)
-            self._collect_info_ospf(j, "intfs", "show interface json", True)
+            #self._collect_info_ospf(j, "intfs", "show interface json", True)
         warnaln(f"- collect {self.name}", "")
         #warnaln("end dump ospf json", "")
         return j
