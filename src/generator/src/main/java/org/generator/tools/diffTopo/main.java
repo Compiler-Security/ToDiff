@@ -54,7 +54,7 @@ public class main {
         options.addOption("maxStepTime", true, "max wait time of one step");
         options.addOption("roundNum", true, "round num");
         options.addOption("protocol", true, "protocol to generate [ospf,rip]");
-        options.addOption("mxDegree", true, "max interface per router");
+        options.addOption("maxDegree", true, "max interface per router");
         return options;
     }
     public static void main(String[] args) {
@@ -80,7 +80,7 @@ public class main {
                 roundNum = Integer.parseInt(cmd.getOptionValue("roundNum"));
             }
             if (cmd.hasOption("mxDegree")){
-                topo.mxDegree = Integer.parseInt(cmd.getOptionValue("mxDegree"));
+                topo.mxDegree = Integer.parseInt(cmd.getOptionValue("maxDegree"));
             }
             //MULTI:
             if (cmd.hasOption("protocol")){
