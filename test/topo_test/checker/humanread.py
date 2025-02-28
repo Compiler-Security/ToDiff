@@ -87,6 +87,9 @@ class humandReader():
         new_name = new_name.split(".")[0] + f"_config_graph.dot"
         res = self.data["genInfo"]["configGraph"]
         self.dump_to_file(new_name, res)
+        new_name = path.basename(self.file_path).split(".")[0] + f"_router_graph.dot"
+        res = self.data["genInfo"]["routerGraph"]
+        self.dump_to_file(new_name, res)
 
 
     def readAll(self):
@@ -129,9 +132,10 @@ import util
 if __name__ == "__main__":
     #rd from 0
     #human_read_ospf(0, 0, "/home/frr/topo-fuzz/test/topo_test/data/result/test1726036744_r1/test1726036744_r1_res.json")
-    test_name = util.get_test_name_5("72516")
-    h = humandReader(util.get_result_file_path(test_name))
-    h.readAll()
+    for test_name in util.get_all_test_name():
+        #test_name = util.get_test_name_5("72530")
+        h = humandReader(util.get_result_file_path(test_name))
+        h.readAll()
 
     # h = humandReader("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1728543505.json")
     # h.readPhyOfRound(1)

@@ -422,6 +422,7 @@ class executor:
             #CLI(net.net)
             if sleep_time == -1:
                 #We wait 30s for RIP to convergence
+                CLI(net.net)
                 erroraln("+ check convergence", "")
                 time.sleep(30)
                 warnaln("   + convergence!", "")
@@ -478,5 +479,5 @@ class executor:
 
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1740472514.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "rip")
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1740472530_r1.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "rip")
     t.test()
