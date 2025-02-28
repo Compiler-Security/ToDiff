@@ -8,6 +8,7 @@ import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.reducer.driver.reducer;
 import org.generator.lib.topo.driver.topo;
+import org.generator.lib.topo.pass.base.ripRanBaseGen;
 import org.generator.tools.diffOp.genOps;
 import org.generator.tools.diffTopo.diffTopo;
 import org.generator.tools.frontend.ConfReader;
@@ -16,6 +17,7 @@ import org.junit.Test;
 import org.generator.lib.topo.pass.base.ospfRanBaseGen;
 
 import static org.generator.lib.topo.driver.topo.dumpGraphOspf;
+import static org.generator.lib.topo.driver.topo.dumpGraphRip;
 import static org.generator.util.diff.differ.compareJson;
 
 public class generateTest {
@@ -133,6 +135,14 @@ public class generateTest {
         System.out.println(str);
         var t = topo.genGraph(5, 3, 2, 2,false, null);
         System.out.println(t);
+    }
+
+    @Test
+    public void baseGraphDumpTestRip(){
+        var ran = new ripRanBaseGen();
+        var rs = ran.generate(8, 3, 4, 4);
+        var str = dumpGraphRip(rs, ran);
+        System.out.println(str);
     }
 
     @Test
