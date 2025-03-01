@@ -135,7 +135,7 @@ public class LexDef {
                 {VERSION, "version {NUM(1-2)}"},
                 {DEFAULTMETRIC, "default-metric {NUM(1-16)}"},
                 {DISTANCE, "distance {NUM(1-255)}"},
-                {TIMERSBASIC, "timers basic {NUM(5-2147483647)}, {NUM2(5-2147483647)}, {NUM3(5-2147483647)}"},
+                {TIMERSBASIC, "timers basic {NUM(5-2147483647)} {NUM2(5-2147483647)} {NUM3(5-2147483647)}"},
                 {PASSIVEINTFDEFAULT, "passive-interface default"},
                 {PASSIVEINTFNAME, "passive-interface {NAME}"},
 
@@ -160,7 +160,7 @@ public class LexDef {
                 {NODISTANCE, "no distance |no distance {NUM(1-255)}"},
                 {NOPASSIVEINTFDEFAULT, "no passive-interface default"},
                 {NOPASSIVEINTFNAME, "no passive-interface {NAME}"},
-                {NOTIMERSBASIC, "no timers basic | no timers basic {NUM(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)} | no timers basic {NUM(1-30)}, {NUM2(1-30)}, {NUM3(1-30)}"},
+                {NOTIMERSBASIC, "no timers basic |no timers basic {NUM(5-2147483647)} {NUM2(5-2147483647)} {NUM3(5-2147483647)}"},
 
                 {NOIPSPLITPOISION, "no ip rip split-horizon poisoned-reverse"},
                 {NOIPSENDVERSION1, "no ip rip send version 1"},

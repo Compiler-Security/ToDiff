@@ -126,7 +126,6 @@ public class genOpPass {
             op_type = intfOps.get(ranHelper.randomInt(0, intfOps.size() - 1));
         }else  {
             op_type = RouterOps.get(ranHelper.randomInt(0, RouterOps.size() - 1));
-
         }
         return genRanOpOfType(op_type);
     }
