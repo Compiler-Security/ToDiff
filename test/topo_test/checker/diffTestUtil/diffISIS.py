@@ -89,12 +89,13 @@ class diffISIS:
                 
                 interface = circuit.get("interface", {})
                 if isinstance(interface, dict):
-                    interface.pop("adj-flaps", None)
+
+                    #interface.pop("adj-flaps", None)
                     interface.pop("last-ago", None)
-                    interface.pop("snpa", None)
-                    interface.pop("lan-id", None)
-                    interface.pop("lan-prio", None)
-                    interface.pop("dis-flaps", None)
+                    #interface.pop("snpa", None)
+                    #interface.pop("lan-id", None)
+                    #interface.pop("lan-prio", None)
+                    #interface.pop("dis-flaps", None)
         return new_data
     def shrink_ospfDaemon(self, n_dict:dict):
         key_set = ["routerId", "tosRoutesOnly", "rfc2328Conform", "holdtimeMinMsecs", "holdtimeMaxMsecs", "spfScheduleDelayMsecs", "maximumPaths", "writeMultiplier", "abrType", "attachedAreaCounter"]
@@ -121,6 +122,7 @@ class diffISIS:
                 area.pop("rx-pdu-type", None)
                 
                 for level in area.get("levels", []):
+                    #level.pop("lsp-purged", None)
                     level.pop("lsp0-regenerated", None)
                     level.pop("last-run-elapsed", None)
                     level.pop("last-run-duration-usec", None)
@@ -161,6 +163,9 @@ class diffISIS:
                 interface.pop("ipv6-link-locals", None)
                 for level in interface.get("levels", []):
                     level.pop("metric", None)
+                    lan = level.get("lan", {})
+                    lan.pop("is-dis", None)
+                    
         return new_data
     
     def check_neighbors(self, rt, rd):
