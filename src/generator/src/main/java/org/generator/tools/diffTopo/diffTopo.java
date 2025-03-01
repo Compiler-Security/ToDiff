@@ -308,6 +308,7 @@ public class diffTopo {
                 switch(generate.protocol){
                     case OSPF -> one_step.put("ospf", ops);
                     case RIP -> one_step.put("rip", ops);
+                    case ISIS -> one_step.put("isis", ops);
                 }
 
                 //add waitTime
