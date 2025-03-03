@@ -31,6 +31,11 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
         RIPINTF,
 
         //MULTI:
+        //=========ISIS============
+        ISIS,
+        ISISINTF,
+        ISISDAEMON,
+        ISISAREASUM,
     }
 
     protected void generateType(){
@@ -48,6 +53,8 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
             case RIP -> setType(EdgeType.RIP);
             case RIPIntf -> setType(EdgeType.RIPINTF);
             //MULTI:
+            case ISIS -> setType(EdgeType.ISIS);
+            case ISISIntf -> setType(EdgeType.ISISINTF);
             default -> throw new IllegalStateException("Unexpected value: " + dst);
         }
     }

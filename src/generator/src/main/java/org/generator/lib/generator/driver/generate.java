@@ -28,18 +28,24 @@ public class generate {
      *  confg = confg.viewConfGraphOfRouter("r0");
      *  confg.setR_name("r0");
      * @param confGraph
+     * @param ismissinglevel
      * @return
      */
-    public static OpCtxG generateCore(ConfGraph confGraph){
+    // ismissinglevel means if true, there is an instruction missing "level", and if false, there is no instruction missing "level".
+    public static OpCtxG generateCore(ConfGraph confGraph,boolean ismissinglevel){
         List<OpCtxG> res1 = null;
         //MULTI:
         switch (generate.protocol){
             case OSPF -> {
                 var p = new genCorePassOspf();
-                res1 = p.solve(confGraph);}
+                res1 = p.solve(confGraph, true);}
             case RIP -> {
                 var p = new genCorePassRip();
-                res1 = p.solve(confGraph);
+                res1 = p.solve(confGraph, true);
+            }
+            case ISIS ->{
+                var p = new genCorePassIsis();
+                res1 = p.solve(confGraph, ismissinglevel);
             }
         }
         //FIXME shrinkPass is very slow in huge case
@@ -64,6 +70,9 @@ public class generate {
             while(true) {
                 var ctxOpa = ranHelper.randomElemOfList(ctxOps);
                 var op = genOpPass.genRanOpByControl(ctxOpa.getOp().Type() == OpType.IntfName);
+                if(op.getOperation().Type()== OpType.PSNPINTERVAL||op.getOperation().Type() == OpType.CSNPINTERVAL||op.getOperation().Type() == OpType.HELLOINTERVAL||op.getOperation().Type() == OpType.HELLOMULTIPLIER||op.getOperation().Type() == OpType.ISISPRIORITY||op.getOperation().Type() == OpType.LSPGENINTERVAL||op.getOperation().Type() == OpType.SPFINTERVAL){
+                    op.getOperation().setNAME(ranHelper.randomElemOfList(List.of("level-1","level-2")));
+                }
                 var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
                 if (activeOpAs.contains(opa)) continue;
                 if (skipCommands(op.getOpOspf().Type())){
@@ -82,6 +91,9 @@ public class generate {
                 assert ori_opa != null : "opa to mutate is supposed to be not null";
                 //this skip op should not be mutate commands
                 if (skipCommands(ori_opa.getOp().Type())){
+                    continue;
+                }
+                if(ori_opa.getOp().Type() == OpType.IPROUTERISIS){
                     continue;
                 }
                 var mutate_opa = actionRulePass.mutate(ori_opa);
@@ -103,6 +115,14 @@ public class generate {
         //See https://github.com/FRRouting/frr/issues/17135
         if (opType == OpType.RID){
             return true;
+        }
+
+        //----------ISIS--------------
+        if (generate.fastConvergence){
+            switch (opType){
+                case IPROUTERISIS,NET,HELLOINTERVAL,HELLOMULTIPLIER,LSPGENINTERVAL,SPFINTERVAL
+                        -> {return true;}
+            }
         }
         return false;
     }

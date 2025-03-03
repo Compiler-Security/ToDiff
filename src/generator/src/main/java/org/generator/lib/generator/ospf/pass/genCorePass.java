@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 public abstract class genCorePass {
-    public abstract List<OpCtxG> solve(ConfGraph confg);
+    //public abstract List<OpCtxG> solve(ConfGraph confg);
+    public abstract List<OpCtxG> solve(ConfGraph confg, boolean ismissinglevel);
 
     protected OpOspf addOp(OpCtxG opCtxG, OpType typ){
         var op = OpOspf.of(typ);

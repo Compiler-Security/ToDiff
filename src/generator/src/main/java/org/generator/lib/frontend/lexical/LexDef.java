@@ -36,7 +36,9 @@ public class LexDef {
                 {NODESETRIPUP, "node {NAME} set RIP up"},
                 {NODESETRIPSHUTDOWN, "node {NAME} set RIP down"},
                 {NODESETRIPRE, "node {NAME} set RIP restart"},
-
+                {NODESETISISUP, "node {NAME} set ISIS up"},
+                {NODESETISISSHUTDOWN, "node {NAME} set ISIS down"},
+                {NODESETISISRE, "node {NAME} set ISIS restart"},
                 //{OSPFCONF, "ROSPFCONF"},
 
                 {ROSPF, "router ospf"},
@@ -167,7 +169,70 @@ public class LexDef {
                 {NOIPRECVVERSION1, "no ip rip receive version 1"},
                 {NOIPRECVVERSION2, "no ip rip receive version 2"},
                 {NOIPRECVVERSION12, "no ip rip receive version 1 2"},
-                {NOIPSPLITHORIZION, "ip rip split-horizon"},
+                {NOIPSPLITHORIZION, "ip split-horizon"},
+
+
+                //IS-IS
+                {RISIS, "router isis 1"},
+                {IntfName, "interface {NAME}|int {NAME}"},
+                //----route----
+                {NET, "net {NET}"},
+                
+                
+                //FIXME: we need "ATTACHEDBIT"!
+                //{ATTACHEDBIT, "attached-bit {NAME(receive ignore,send)}"},
+                //{METRICSTYLE, "metric-style {NAME(narrow,transition,wide)}"},
+                {ADVERTISEHIGHMETRIC, "advertise-high-metrics"},
+                {SETOVERLOADBIT, "set-overload-bit"},
+                {SETOVERLOADBITONSTARTUP, "set-overload-bit on-startup {NUM(0-86400)}"},
+                {LSPMTU, "lsp-mtu {NUM(128-4352)}"},
+                {LSPGENINTERVAL, "lsp-gen-interval {NAME(level-1,level-2,_)} {NUM(1-120)}"},
+                {SPFINTERVAL, "spf-interval {NAME(level-1,level-2,_)} {NUM(1-120)}"},
+                // ---region----
+                {ISTYPE, "is-type {NAME(level-1,level-1-2,level-2-only)}"},
+
+                // -----interface----
+                {IPROUTERISIS, "ip router isis 1"},
+                {CIRCUITTYPE, "isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
+                {CSNPINTERVAL, "isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2,_)}"},
+                {HELLOPADDING, "isis hello padding"},
+                {HELLOINTERVAL, "isis hello-interval {NAME(level-1,level-2,_)} {NUM(1-600)} "},
+                {HELLOMULTIPLIER, "isis hello-multiplier {NAME(level-1,level-2,_)} {NUM(2-100)}"},
+                //{ISISMETRICLEVEL1, "isis metric level-1 {NUM(0-255)}"},
+                //{ISISMETRICLEVEL2, "isis metric level-2 {NUM(0-16777215)}"},
+                {NETWORKPOINTTOPOINT, "isis network point-to-point"},
+                {ISISPASSIVE, "isis passive"},
+                {ISISPRIORITY, "isis priority {NUM(0-127)} {NAME(level-1,level-2,_)}"},
+                {PSNPINTERVAL, "isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2,_)}"},
+                {THREEWAYHANDSHAKE, "isis three-way-handshake"},
+
+                // no isis
+                {NORISIS, "no router isis 1"},
+                {NOTNET, "no net {NET}"},
+                //FIXME: we need "NOATTACHEDBIT"!
+                //{NOATTACHEDBIT, "no attached-bit {NAME(receive ignore,send)}"},
+                //{NOMETRICSTYLE, "no metric-style {NAME(narrow,transition,wide)}"},
+                {NOADVERTISEHIGHMETRIC, "no advertise-high-metrics"},
+                {NOSETOVERLOADBIT, "no set-overload-bit"},
+                {NOSETOVERLOADBITONSTARTUP, "no set-overload-bit on-startup {NUM(0-86400)}"},
+                {NOLSPMTU, "no lsp-mtu {NUM(128-4352)}"},
+                {NOLSPGENINTERVAL, "no lsp-gen-interval {NAME(level-1,level-2,_)} {NUM(1-120)}"},
+                {NOSPFINTERVAL, "no spf-interval {NAME(level-1,level-2,_)} {NUM(1-120)}"},
+                {NOISTYPE, "no is-type {NAME(level-1,level-1-2,level-2-only)}"},
+                {NOIPROUTERISIS, "no ip router isis 1"},
+                {NOCIRCUITTYPE, "no isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
+                {NOCSNPINTERVAL, "no isis csnp-interval {NUM(1-600)} {NAME(level-1,level-2,_)}"},
+                {NOHELLOPADDING, "no isis hello padding"},
+                {NOHELLOINTERVAL, "no isis hello-interval {NAME(level-1,level-2,_)} {NUM(1-600)} "},
+                {NOHELLOMULTIPLIER, "no isis hello-multiplier {NAME(level-1,level-2,_)} {NUM(2-100)}"},
+                //{NOISISMETRICLEVEL1, "no isis metric level-1 {NUM(0-255)}"},
+                //{NOISISMETRICLEVEL2, "no isis metric level-2 {NUM(0-16777215)}"},
+                {NONETWORKPOINTTOPOINT, "no isis network point-to-point"},
+                {NOISISPASSIVE, "no isis passive"},
+                {NOISISPRIORITY, "no isis priority {NUM(0-127)} {NAME(level-1,level-2,_)}"},
+                {NOPSNPINTERVAL, "no isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2,_)}"},
+                {NOTHREEWAYHANDSHAKE, "no isis three-way-handshake"},
+
 
                 //MULTI:
                 //INVALID will not to match, it can read/write invalid str to bypass [NAME]
@@ -204,7 +269,9 @@ public class LexDef {
                     argsRange.put(name, true);
                 }
                 if (value.contains(",")){
-                    var tmp = Arrays.stream(value.split(",")).toList();
+                    var tmp = Arrays.stream(value.split(","))
+                         .map(s -> s.equals("_") ? "" : s)  // convert "_" to ""
+                         .toList();
                     argsRange.put(name, tmp);
                 }else if (value.contains("-")){
                     var tmp = Arrays.stream(value.split("-")).map(Long::valueOf).toList();

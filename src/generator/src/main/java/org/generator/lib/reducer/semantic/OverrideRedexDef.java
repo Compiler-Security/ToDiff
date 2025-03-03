@@ -68,6 +68,18 @@ public class OverrideRedexDef extends BaseRedexDef {
                 {IPRECVVERSION2, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}, 0},
                 {IPRECVVERSION12, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}, 0},
 
+                //==========ISIS====================
+                {RISIS, new OpType[]{}, 0},
+
+                // -1 means from the end
+
+                {ISISPRIORITY, new OpType[]{ISISPRIORITY}, -1},
+                {HELLOMULTIPLIER, new OpType[]{HELLOMULTIPLIER}, 1},
+                {HELLOINTERVAL, new OpType[]{HELLOINTERVAL}, 1},
+                {PSNPINTERVAL, new OpType[]{PSNPINTERVAL}, -1},
+                {CSNPINTERVAL, new OpType[]{CSNPINTERVAL}, -1},
+                {LSPGENINTERVAL, new OpType[]{LSPGENINTERVAL}, 1},
+                {SPFINTERVAL, new OpType[]{SPFINTERVAL}, 1},
                 //Other set instruction
                 //{XXX, new OpType[XXX], 0}
 

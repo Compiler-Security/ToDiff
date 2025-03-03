@@ -8,6 +8,7 @@ public class CtxOpDef {
         return type == OpType.IntfName
                 || type == OpType.ROSPF || type == OpType.NOROSPF
                 || type == OpType.RRIP || type == OpType.NORRIP
+                || type == OpType.RISIS || type == OpType.NORISIS
                 ;
 
     }
@@ -16,6 +17,7 @@ public class CtxOpDef {
         return type == OpType.IntfName
                 || type == OpType.ROSPF
                 || type == OpType.RRIP
+                || type == OpType.RISIS
                 ;
     }
 
@@ -33,7 +35,8 @@ public class CtxOpDef {
 
     public static boolean isCtxRouterOp(OpType type){
         return  type == OpType.ROSPF ||
-                type == OpType.RRIP;
+                type == OpType.RRIP ||
+                type == OpType.RISIS;
     }
 
     public static boolean isCtxIntfOp(OpType type){return type == OpType.IntfName;}
@@ -42,6 +45,7 @@ public class CtxOpDef {
         switch (generate.protocol){
             case OSPF: return OpType.ROSPF;
             case RIP: return OpType.RRIP;
+            case ISIS: return OpType.RISIS;
         }
         assert false;
         return null;

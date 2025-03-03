@@ -27,6 +27,11 @@ public class genOps {
             routerOp.remove(OpType.NETAREAID);
             routerOp.remove(OpType.IpOspfArea);
         }
+        if (generate.protocol == generate.Protocol.ISIS){
+            //intfOp.remove(OpType.IPROUTERISIS);
+            routerOp.remove(OpType.NET);
+            //routerOp.remove(OpType.ISTYPE);
+        }
         intfOp.remove(OpType.IPAddr);
         
         allOp = new ArrayList<>();
@@ -223,6 +228,9 @@ public class genOps {
         //fixme we should only generate one ip address XXX at once
         var opg1 = OpCtxG.Of();
         opg1.addOp(genOp(CtxOpDef.getCtxRouterOp()));
+        if(generate.protocol == generate.Protocol.ISIS){
+            opg1.addOp(genOp(OpType.NET));
+        }
         opgs.push(opg1);
         while(total_num < inst_num){
             if (rest_num > 0){
@@ -275,6 +283,9 @@ public class genOps {
                 addOp(res, OpType.RRIP);
                 var network = addOp(res, OpType.NETWORKN);
                 network.setNAME(intf.getNAME());
+            }
+            if (generate.protocol == generate.Protocol.ISIS){
+                var isis = addOp(res, OpType.IPROUTERISIS);
             }
         }
         return res;

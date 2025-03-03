@@ -18,6 +18,10 @@ public interface Op {
 
     public void setID(org.generator.util.net.ID ID);
 
+    public org.generator.util.net.NET getNET();
+
+    public void setNET(org.generator.util.net.NET NET);
+
     public IPRange getIPRANGE();
 
     public void setIPRANGE(IPRange IPRANGE);

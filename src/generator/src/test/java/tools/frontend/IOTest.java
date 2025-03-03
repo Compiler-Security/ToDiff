@@ -109,7 +109,7 @@ public class IOTest {
             var ori = genOp.genRandom(10000, 0.2, 0.6, 4, 0, 1, "r1");
             var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
             var confg = getSetConfG(ori_use);
-            var gen = generate.generateCore(confg);
+            var gen = generate.generateCore(confg,true);
             var confg_core = getSetConfG(gen);
             if (!confg_core.equals(confg)) {
                 try {
@@ -384,7 +384,7 @@ public class IOTest {
             var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
             //System.out.println(ori_use);
             var confg = getSetConfG(ori_use);
-            var gen = generate.generateCore(confg);
+            var gen = generate.generateCore(confg,true);
             //var gen = new ConfReader().read(test_st1);
             //System.out.println(gen.getOps().size());
             //System.out.println(reducer.reduceToCore(ori));

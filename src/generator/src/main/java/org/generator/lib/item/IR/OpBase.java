@@ -4,6 +4,7 @@ import org.generator.lib.frontend.lexical.OpType;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
+import org.generator.util.net.NET;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
@@ -56,10 +57,17 @@ abstract public class OpBase implements Op{
         this.IPRANGE = IPRANGE;
     }
 
+    public void setNET(NET NET) {
+        this.NET = NET;
+    }
+
+    public NET getNET() {
+        return NET;
+    }
 
     public IP IP;
     public ID ID;
-
+    public NET NET;
     public IPRange IPRANGE;
 
     public Integer getNUM() {
@@ -139,7 +147,8 @@ abstract public class OpBase implements Op{
                 && argEqual(getNUM(), op.getNUM())
                 && argEqual(getNUM2(), op.getNUM2())
                 && argEqual(getNUM3(), op.getNUM3())
-                && argEqual(getLONGNUM(), op.getLONGNUM());
+                && argEqual(getLONGNUM(), op.getLONGNUM())
+                && argEqual(getNET(), op.getNET()); 
     }
 
     /**
@@ -150,7 +159,7 @@ abstract public class OpBase implements Op{
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         OpBase opBase = (OpBase) o;
-        return type == opBase.type && Objects.equals(NAME, opBase.NAME) && Objects.equals(NAME2, opBase.NAME2) && Objects.equals(IP, opBase.IP) && Objects.equals(ID, opBase.ID) && Objects.equals(IPRANGE, opBase.IPRANGE) && Objects.equals(NUM, opBase.NUM) && Objects.equals(NUM2, opBase.NUM2) && Objects.equals(NUM3, opBase.NUM3) && Objects.equals(LONGNUM, opBase.LONGNUM);
+        return type == opBase.type && Objects.equals(NAME, opBase.NAME) && Objects.equals(NAME2, opBase.NAME2) && Objects.equals(IP, opBase.IP) && Objects.equals(ID, opBase.ID) && Objects.equals(IPRANGE, opBase.IPRANGE) && Objects.equals(NUM, opBase.NUM) && Objects.equals(NUM2, opBase.NUM2) && Objects.equals(NUM3, opBase.NUM3) && Objects.equals(LONGNUM, opBase.LONGNUM)&& Objects.equals(NET, opBase.NET);
     }
 
     /**
@@ -159,7 +168,7 @@ abstract public class OpBase implements Op{
      */
     @Override
     public int hashCode() {
-        return Objects.hash(NAME, NAME2, IP, ID, IPRANGE, NUM, NUM2, NUM3, LONGNUM, type);
+        return Objects.hash(NAME, NAME2, IP, ID, IPRANGE, NET, NUM, NUM2, NUM3, LONGNUM, type);
     }
 
     public OpCtx getOpCtx() {

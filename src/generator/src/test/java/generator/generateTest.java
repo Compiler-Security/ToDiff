@@ -99,7 +99,7 @@ public class generateTest {
         var confg = topo.genGraph(1, topo.areaCount, topo.mxDegree, topo.abrRatio, false, null);
         confg = confg.viewConfGraphOfRouter("r0");
         confg.setR_name("r0");
-        var core = generate.generateCore(confg);
+        var core = generate.generateCore(confg,false);
         while(true){
             var equal = generate.generateEqualOfCore(core, true);
             for(var op: equal){

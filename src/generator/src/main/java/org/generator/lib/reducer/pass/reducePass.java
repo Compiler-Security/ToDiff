@@ -27,6 +27,7 @@ public class reducePass {
                 case "NUM2" -> {equal &= op1.getNUM2().equals(op2.getNUM2());}
                 case "NUM3" -> {equal &= op1.getNUM3().equals(op2.getNUM3());}
                 case "LONGNUM" -> {equal &= op1.getLONGNUM().equals(op2.getLONGNUM());}
+                case "NET" -> {equal &= op1.getNET().equals(op2.getNET());}
                 default -> {assert false: "arg not right";}
             }
         }

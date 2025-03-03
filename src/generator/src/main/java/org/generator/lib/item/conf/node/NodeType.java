@@ -15,8 +15,14 @@ public enum NodeType {
 
     //========RIP=============
     RIP,
-    RIPIntf
+    RIPIntf,
     //MULTI:
+    //=========ISIS============
+    ISIS,
+    ISISIntf,
+    ISISDaemon,
+    ISISAreaSum,
+
     ;
 
     public boolean isPhyNode(){

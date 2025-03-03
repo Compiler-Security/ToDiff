@@ -9,6 +9,7 @@ import org.generator.lib.item.conf.node.ospf.OSPF;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.isis.ISIS;
 import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.exec.ExecStat;
@@ -199,6 +200,48 @@ public class phyExecArgPass extends  baseExecPass{
                 //delete ospf
                 var rip = (RIP) topo.getNode(rip_name).get();
                 topo.delNode(rip);
+
+                return ExecStat.SUCC;
+            }
+
+            //------------ISIS----------------
+            case NODESETISISUP -> {
+                var r_name = op.getNAME();
+                var isis_name = NodeGen.getISISName(r_name);
+
+                //check miss condition
+                if (!topo.containsNode(r_name) || topo.containsNode(isis_name)) return ExecStat.MISS;
+
+                //new isis
+                ISIS isis = NodeGen.new_ISIS(isis_name);
+                isis.setStatus(ISIS.ISIS_STATUS.UP);
+                topo.addNode(isis);
+
+                // new relation edge
+                return topo.addISISRelation(isis_name, r_name);
+            }
+            case NODESETISISRE -> {
+                var r_name = op.getNAME();
+                var isis_name = NodeGen.getISISName(r_name);
+                //check condition
+                if (!topo.containsNode(isis_name)) return ExecStat.MISS;
+
+                //change isis status
+                var isis = (ISIS) topo.getNode(isis_name).get();
+                isis.setStatus(ISIS.ISIS_STATUS.UP);
+
+                return ExecStat.SUCC;
+            }
+            case NODESETISISSHUTDOWN -> {
+                var r_name = op.getNAME();
+                var isis_name = NodeGen.getISISName(r_name);
+                //check condition
+                if (!topo.containsNode(isis_name)) return ExecStat.MISS;
+
+
+                //delete isis
+                var isis = (ISIS) topo.getNode(isis_name).get();
+                topo.delNode(isis);
 
                 return ExecStat.SUCC;
             }

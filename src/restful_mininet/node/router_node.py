@@ -357,7 +357,13 @@ class FrrNode(Node):
     def dump_isis_route_info(self):
         info = self.daemon_cmds(["show isis route "])
         return info
-    
+    def dump_isis_neighbor_info(self):
+        info = self.daemon_cmds(["show isis neighbor detail json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
     #---------------------------------RIP---------------------------------
     def dump_info_rip(self):
         j = {}
