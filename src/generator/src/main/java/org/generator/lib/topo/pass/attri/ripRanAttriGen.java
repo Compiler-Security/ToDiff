@@ -32,11 +32,11 @@ public class ripRanAttriGen implements genAttri{
             return ipRange;
         }else{
             String ipRangeStr = "";
-            switch (ranHelper.randomInt(0, 3)){
+            switch (ranHelper.randomInt(0, 2)){
                 case 0->{ ipRangeStr = generateRandomIP(1, 127) + "/8";}
                 case 1->{ ipRangeStr = generateRandomIP(128, 191) + "/6";}
                 case 2->{ ipRangeStr = generateRandomIP(192, 223) + "/24";}
-                case 3->{ ipRangeStr = generateRandomIP(224, 239) + "/32";}
+                //case 3->{ ipRangeStr = generateRandomIP(224, 239) + "/32";}
             }
             return IPRange.of(ipRangeStr);
         }
