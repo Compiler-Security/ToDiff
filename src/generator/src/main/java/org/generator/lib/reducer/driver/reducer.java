@@ -7,6 +7,7 @@ import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.reducer.pass.ospfArgPass;
 import org.generator.lib.reducer.pass.reducePass;
 import org.generator.lib.reducer.pass.ripArgPass;
+import org.generator.lib.reducer.pass.isisArgPass;
 
 public class reducer {
     /**
@@ -38,6 +39,7 @@ public class reducer {
         switch (generate.protocol){
             case OSPF -> {ospfArgPass.solve(opaG, confG, confG.getR_name());}
             case RIP -> {ripArgPass.solve(opaG, confG, confG.getR_name());}
+            case ISIS -> {isisArgPass.solve(opaG, confG, confG.getR_name());}
         }
     }
 

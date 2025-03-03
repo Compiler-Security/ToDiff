@@ -5,11 +5,15 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.topo.item.base.Router;
+import org.generator.lib.topo.item.base.Router_ISIS;
+import org.generator.lib.topo.pass.attri.isisRanAttriGen;
 import org.generator.lib.topo.pass.attri.ospfRanAttriGen;
 import org.generator.lib.topo.pass.attri.ripRanAttriGen;
 import org.generator.lib.topo.pass.base.ospfRanBaseGen;
 import org.generator.lib.topo.pass.base.ripRanBaseGen;
+import org.generator.lib.topo.pass.base.isisRanBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
+import org.generator.lib.topo.pass.build.topoBuild_ISIS;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.file.FileSinkDOT;
@@ -80,9 +84,56 @@ public class topo {
 
         return stringWriter.toString();
     }
+    public static String dumpGraphIsis(List<Router_ISIS> routers, isisRanBaseGen ran){
+        Graph graph = new MultiGraph("BaseGraph");
+        for(int i = 0; i < routers.size(); i++){
+            var node = graph.addNode("r%d".formatted(i));
+            var router = routers.get(i);
+            node.setAttribute("label", "area=%d,level=%d".formatted(
+                router.area, 
+                router.level));
+
+        }
+        for(int i = 0; i < ran.networkId; i++){
+            var n = graph.addNode("n%d".formatted(i));
+            n.setAttribute("shape", "square");
+        }
+        for(int i = 0; i < routers.size(); i++){
+            var r = routers.get(i);
+            int j = 0;
+            for(var intf: r.intfs){
+                var gedge = graph.addEdge("r%d->n%d(%d)".formatted(i, intf.networkId, j), "r%d".formatted(i), "n%d".formatted(intf.networkId));
+                assert intf.cost > 0: "intf cost should > 0";
+                //FIXME:here has changed
+                gedge.setAttribute("label", "%d:%d".formatted(j, intf.cost));
+                j++;
+            }
+        }
+        for(int i = 0; i < ran.networkId; i++){
+            var nodeName = "n%d".formatted(i);
+            var node = graph.getNode(nodeName);
+            if (node.edges().toList().size() != 2) continue;
+            var src1 = node.getEdge(0).getSourceNode();
+            var src2 = node.getEdge(1).getSourceNode();
+            var gedge = graph.addEdge("%s->%s(%d)".formatted(src1, src2, i), src1, src2);
+            gedge.setAttribute("label", node.getEdge(0).getAttribute("label"));
+            graph.removeNode(node);
+        }
+        FileSinkDOT fileSinkDOT = new FileSinkDOT(false);
+        StringWriter stringWriter = new StringWriter();
+        try {
+            fileSinkDOT.writeAll(graph, stringWriter);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return stringWriter.toString();
+    }
+
 
     public static ConfGraph genGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, ObjectNode dumpInfo){
         List<Router> routers = null;
+        List<Router_ISIS> routersIsis = null;
         String baseGraphStr = null;
         //MULTI:
         switch (generate.protocol){
@@ -96,13 +147,26 @@ public class topo {
                 routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
                 baseGraphStr = dumpGraphRip(routers, ran);
             }
+            case ISIS -> {
+                var ran = new isisRanBaseGen();
+                routersIsis = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
+                baseGraphStr = dumpGraphIsis(routersIsis, ran);
+            }
         }
         if (dumpInfo != null) dumpInfo.put("routerGraph", TextNode.valueOf(baseGraphStr));
         if (verbose){
             System.out.println(baseGraphStr);
         }
-        var b = new topoBuild();
-        var confg = b.solve(routers);
+        
+        ConfGraph confg = null;
+        if(generate.protocol == generate.Protocol.ISIS){
+            var b = new topoBuild_ISIS();
+            confg = b.solve(routersIsis);
+        }
+        else{
+            var b = new topoBuild();
+            confg = b.solve(routers);
+        }
         //MULTI:
         switch (generate.protocol){
             case OSPF -> {
@@ -112,6 +176,10 @@ public class topo {
             case RIP -> {
                 var c = new ripRanAttriGen();
                 c.generate(confg, routers);
+            }
+            case ISIS -> {
+                var c = new isisRanAttriGen();
+                c.generate(confg, routersIsis);
             }
         }
 

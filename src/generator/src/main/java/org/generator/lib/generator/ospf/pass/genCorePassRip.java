@@ -170,7 +170,8 @@ public class genCorePassRip extends genCorePass{
         return opCtxgs;
     }
     @Override
-    public List<OpCtxG> solve(ConfGraph confg){
+    // param ismissinglevel is not used in this method
+    public List<OpCtxG> solve(ConfGraph confg, boolean ismissinglevel) {
         this.r_name = confg.getR_name();
         this.confg = confg;
         List<OpCtxG> opgs = new ArrayList<>();

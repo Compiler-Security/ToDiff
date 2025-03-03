@@ -4,6 +4,7 @@ import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
+import org.generator.util.net.NET;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,6 +39,18 @@ public class ranHelper {
 
     static public IPRange randomIpRange(){
         return IPRange.of(randomLong(0,0xffffffffL), randomInt(1, 31));
+    }
+
+    public static NET randomNet() {
+        // generate random area part, for example "12.3456"
+        String area = String.format("%02d.%04d", randomInt(10, 99), randomInt(0, 9999));
+        // generate random system ID part, for example "1234.5678.9012"
+        String systemId = String.format("%04x.%04x.%04x", randomInt(0, 0xFFFF), randomInt(0, 0xFFFF), randomInt(0, 0xFFFF));
+        // generate selector part
+        String selector = "00";
+        // combine all parts to form a random NET
+        String netStr = area + "." + systemId + "." + selector;
+        return NET.of(netStr);
     }
 
     private static String getRandomString2(int length){

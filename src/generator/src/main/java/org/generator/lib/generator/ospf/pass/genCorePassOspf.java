@@ -331,7 +331,8 @@ public class genCorePassOspf extends genCorePass{
      * @return each opCtxG is one interface or router ospf
      */
     @Override
-    public  List<OpCtxG> solve(ConfGraph confg){
+    // param ismissinglevel is not used in this method
+    public  List<OpCtxG> solve(ConfGraph confg, boolean ismissinglevel){
         this.r_name = confg.getR_name();
         this.confg = confg;
         List<OpCtxG> opgs = new ArrayList<>();

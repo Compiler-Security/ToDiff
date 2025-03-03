@@ -59,6 +59,17 @@ public class genPhyEqualPass {
                 case NODESETRIPRE -> {
                     slots.add(NormalController.getRIPCatg(0, 0, 0, op.getNAME(), OpType.NODESETRIPRE, NormalController.CType.RIP));
                 }
+
+                //---------ISIS------------
+                case NODESETISISUP -> {
+                    slots.add(NormalController.getISISCatg(0, 0, 0, op.getNAME(), OpType.NODESETISISUP, NormalController.CType.ISIS));
+                }
+                case NODESETISISSHUTDOWN -> {
+                    slots.add(NormalController.getISISCatg(0, 0, 0, op.getNAME(), OpType.NODESETISISSHUTDOWN, NormalController.CType.ISIS));
+                }
+                case NODESETISISRE -> {
+                    slots.add(NormalController.getISISCatg(0, 0, 0, op.getNAME(), OpType.NODESETISISRE, NormalController.CType.ISIS));
+                }
                 default -> {
                     assert false: "error op %s".formatted(op.toString());
                 }
@@ -92,11 +103,16 @@ public class genPhyEqualPass {
                 return opType == OpType.LINKADD;
             }
             case NODEADD, NODEDEL ->{ return  true;}
+            
             //MULTI:
             case NODESETOSPFUP,NODESETOSPFRE, NODESETOSPFSHUTDOWN ->{
                 return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
             }
             case NODESETRIPUP,NODESETRIPRE, NODESETRIPSHUTDOWN ->{
+                return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
+            }
+            //----------ISIS-----------
+            case NODESETISISUP,NODESETISISRE, NODESETISISSHUTDOWN ->{
                 return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
             }
         }
@@ -129,11 +145,19 @@ public class genPhyEqualPass {
                     }
                 }
                 if (generate.protocol == generate.Protocol.RIP){
-                    //every router NODE should have OSPF
+                    //every router NODE should have RIP
                     var slot = getSlot(NormalController.CType.RIP, targetOp.getNAME(), null);
                     if (slot.getCurType() == OpType.NODESETRIPUP) {
                         slot.deltaTypeNum(OpType.NODESETRIPUP, 1);
                         slot.setCurType(OpType.NODESETRIPSHUTDOWN);
+                    }
+                }
+                if (generate.protocol == generate.Protocol.ISIS){
+                    //every router NODE should have ISIS
+                    var slot = getSlot(NormalController.CType.ISIS, targetOp.getNAME(), null);
+                    if (slot.getCurType() == OpType.NODESETISISUP) {
+                        slot.deltaTypeNum(OpType.NODESETISISUP, 1);
+                        slot.setCurType(OpType.NODESETISISSHUTDOWN);
                     }
                 }
 
@@ -180,6 +204,9 @@ public class genPhyEqualPass {
                 }
                 if (slot.getcType() == NormalController.CType.RIP){
                     slot.deltaTypeNum(OpType.NODESETRIPRE, -slot.getCounterOfType(OpType.NODESETRIPRE));
+                }
+                if (slot.getcType() == NormalController.CType.ISIS){
+                    slot.deltaTypeNum(OpType.NODESETISISRE, -slot.getCounterOfType(OpType.NODESETISISRE));
                 }
             }
         }

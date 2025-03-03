@@ -7,6 +7,7 @@ import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpCtx;
+import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.item.IR.OpPhy;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
@@ -41,13 +42,13 @@ public class diffTopo {
         assert splits.size() == split_num;
         return splits;
     }
-    OpCtxG getConfOfRouter(String r_name, ConfGraph g, boolean mutate){
+    OpCtxG getConfOfRouter(String r_name, ConfGraph g, boolean mutate, boolean ismissinglevel){
         var confg = g.viewConfGraphOfRouter(r_name);
         confg.setR_name(r_name);
         if (mutate) {
-            return generate.generateEqualOfCore(generate.generateCore(confg), false);
+            return generate.generateEqualOfCore(generate.generateCore(confg, ismissinglevel), false);
         }else{
-            return generate.generateCore(confg);
+            return generate.generateCore(confg, ismissinglevel);
         }
     }
 
@@ -65,12 +66,51 @@ public class diffTopo {
         //System.out.println(new OspfConfWriter().write(getConfOfPhy(confg)));
         for(int i = 0; i < router_count; i++){
             var r_name = NodeGen.getRouterName(i);
-            var opCtxG = getConfOfRouter(r_name, confg, false);
+            var opCtxG = getConfOfRouter(r_name, confg, false, true);
             System.out.println(r_name);
             System.out.println(new OspfConfWriter().write(opCtxG));
         }
     }
 
+    public List<OpCtxG> ranSplitIsisConfWithBase(OpCtxG opCtxG, int count) {
+        // first, we split the opCtxG
+        List<OpCtxG> splits = ranSplitOspfConf(opCtxG, count);
+        
+        // process each split
+        for (OpCtxG split : splits) {
+            Set<String> interfaces = new HashSet<>();
+            OpCtxG baseConfig = OpCtxG.Of();
+            
+            // Collect the interface name
+            for (var op : split.getOps()) {
+                if (op.getOpOspf().Type() == OpType.IntfName) {
+                    interfaces.add(op.getOpOspf().getNAME());
+                }
+            }
+            
+            // Add the base configuration
+            for (String intf : interfaces) {
+                // add interface name command
+                var intfOp = OpOspf.of(OpType.IntfName);
+                intfOp.setNAME(intf);
+                var intfOpCtx = OpCtx.of(intfOp);
+                baseConfig.addOp(intfOpCtx);
+                
+                // add ip router isis command
+                var iprouteOp = OpOspf.of(OpType.IPROUTERISIS);
+                var iprouteOpCtx = OpCtx.of(iprouteOp);
+                baseConfig.addOp(iprouteOpCtx);
+            }
+            
+            // add the base configuration to the split
+            var newSplit = OpCtxG.Of();
+            newSplit.addOps(baseConfig.getOps());
+            newSplit.addOps(split.getOps());
+            splits.set(splits.indexOf(split), newSplit);
+        }
+        
+        return splits;
+    }
     /**
      *
      * @param router_count
@@ -101,9 +141,15 @@ public class diffTopo {
         var confg = topo.genGraph(router_count, topo.areaCount, topo.mxDegree, topo.abrRatio, false, dumpInfo);
 
         //generate ospf core commands, all the round is same
+        //For isis, noting that ismissinglevel is false, we don't generate commands that missing level
         List<OpCtxG> ospf_cores = new ArrayList<>();
         for(int i = 0; i < router_count; i++) {
-            ospf_cores.add(getConfOfRouter(routers_name.get(i), confg, false));
+            ospf_cores.add(getConfOfRouter(routers_name.get(i), confg, false, false));
+        }
+
+        List<OpCtxG> isis_cores_ismissinglevel = new ArrayList<>();
+        for(int i = 0; i < router_count; i++) {
+            isis_cores_ismissinglevel.add(getConfOfRouter(routers_name.get(i), confg, false, true));
         }
 
         //record each router's core commands
@@ -112,7 +158,7 @@ public class diffTopo {
             for (int i = 0; i < router_count; i++) {
                 //record all the routers' core commands
                 var writer = new OspfConfWriter();
-                core_commands.put(routers_name.get(i), writer.write(getConfOfRouter(routers_name.get(i), confg, false)));
+                core_commands.put(routers_name.get(i), writer.write(getConfOfRouter(routers_name.get(i), confg, false, true)));
             }
         }
 
@@ -140,9 +186,18 @@ public class diffTopo {
                 var opCtxG = generate.generateEqualOfCore(ospf_cores.get(j), false);
                 opCtxGS.add(opCtxG);
             }
-            for(int r = 0; r < router_count; r++){
-                split_confs.add(ranSplitOspfConf(opCtxGS.get(r), step_num - 1));
+            if (generate.protocol == generate.Protocol.ISIS) {
+                for(int r = 0; r < router_count; r++){
+                    //split_confs.add(ranSplitIsisConf(opCtxGS.get(r), step_num - 1));
+                    split_confs.add(ranSplitIsisConfWithBase(opCtxGS.get(r), step_num - 1));
+                }
             }
+            else{
+                for(int r = 0; r < router_count; r++){
+                    split_confs.add(ranSplitOspfConf(opCtxGS.get(r), step_num - 1));
+                }
+            }
+            
 
 
             //we should give empty ospf conf if daemon is down
@@ -152,6 +207,16 @@ public class diffTopo {
             for(int r = 0; r < router_count; r++){
                 ospfAlive.add(Boolean.TRUE);
                 routerNametoIdx.put(routers_name.get(r), r);
+            }
+
+            List<OpCtxG> isis_cores_temp = new ArrayList<>(); 
+            if(i == 0)
+            {
+                isis_cores_temp = isis_cores_ismissinglevel;
+            }
+            else
+            {
+                isis_cores_temp = ospf_cores;
             }
 
             for(int step = 0; step < step_num; step++){
@@ -175,11 +240,11 @@ public class diffTopo {
                     //MULTI:
                     //FIXME: if we want to generate multiple protocols' cmd, we should track multiple alive
                     switch (op.getOpPhy().Type()){
-                        case NODESETOSPFUP,NODESETRIPUP -> {
+                        case NODESETOSPFUP, NODESETRIPUP, NODESETISISUP -> {
                             var router_name = op.getOpPhy().getNAME();
                             ospfAlive.set(routerNametoIdx.get(router_name), true);
                         }
-                        case NODEDEL,NODESETOSPFSHUTDOWN,NODESETRIPSHUTDOWN -> {
+                        case NODEDEL, NODESETOSPFSHUTDOWN, NODESETRIPSHUTDOWN, NODESETISISSHUTDOWN -> {
                             var router_name = op.getOpPhy().getNAME();
                             ospfAlive.set(routerNametoIdx.get(router_name), false);
                         }
@@ -193,7 +258,11 @@ public class diffTopo {
                     var opctxg = OpCtxG.Of();
                     if (step == 0){
                         //in step 0, ospf is always alive
+                        if (generate.protocol == generate.Protocol.ISIS) {
+                            opctxg = isis_cores_temp.get(r);
+                        } else {
                         opctxg = ospf_cores.get(r);
+                        }
                     }else {
                         if (ospfAlive.get(r)) {
                             //if router's ospf is up, we just use these commands
@@ -239,6 +308,7 @@ public class diffTopo {
                 switch(generate.protocol){
                     case OSPF -> one_step.put("ospf", ops);
                     case RIP -> one_step.put("rip", ops);
+                    case ISIS -> one_step.put("isis", ops);
                 }
 
                 //add waitTime

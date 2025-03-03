@@ -15,6 +15,9 @@ public enum OpType {
     NODESETRIPUP,
     NODESETRIPRE,
     NODESETRIPSHUTDOWN,
+    NODESETISISUP,
+    NODESETISISRE,
+    NODESETISISSHUTDOWN,
 
     INTFUP,
     INTFDOWN,
@@ -170,6 +173,74 @@ public enum OpType {
     NOIPSPLITHORIZION,
     //MULTI:
 
+    //====================IS-IS=========================
+    RISIS,
+    //--------------ROUTER------------------
+    //ISISROUTERBEGIN,    
+    NET,
+    ISTYPE,
+    //ISISROUTEREND,
+    //--------------DAEMON----------------
+    //ISISDAEMONGROUPBEGIN,
+    //ATTACHEDBIT,
+    // METRICSTYLE,
+    ADVERTISEHIGHMETRIC,
+    SETOVERLOADBIT,
+    SETOVERLOADBITONSTARTUP,
+    LSPMTU,
+    LSPGENINTERVAL,
+    SPFINTERVAL,
+    //ISISDAEMONGROUPEND,
+    //--------------REGION------------------
+    //ISISREGIONBEGIN,
+    
+    //ISISREGIONEND,
+
+    //--------------INTERFACE----------------
+    //ISISINTFBEGIN,
+    IPROUTERISIS,
+    CIRCUITTYPE,
+    CSNPINTERVAL,
+    NOHELLOPADDING,
+    HELLOINTERVAL,
+    HELLOMULTIPLIER,
+    //ISISMETRICLEVEL1,
+    //ISISMETRICLEVEL2,
+    NETWORKPOINTTOPOINT,
+    ISISPASSIVE,
+    ISISPRIORITY,
+    NOTHREEWAYHANDSHAKE,
+    PSNPINTERVAL,
+
+    //ISISEND,
+
+    //--------------UNSET------------------
+    NORISIS,
+    NOTNET,
+    
+    //NOATTACHEDBIT,
+    // NOMETRICSTYLE,
+    NOADVERTISEHIGHMETRIC,
+    NOSETOVERLOADBIT,
+    NOSETOVERLOADBITONSTARTUP,
+    NOLSPMTU,
+    NOLSPGENINTERVAL,
+    NOSPFINTERVAL,
+    NOISTYPE,
+    NOIPROUTERISIS,
+    NOCIRCUITTYPE,
+    NOCSNPINTERVAL,
+    HELLOPADDING,
+    NOHELLOINTERVAL,
+    NOHELLOMULTIPLIER,
+    //NOISISMETRICLEVEL1,
+    //NOISISMETRICLEVEL2,
+    NONETWORKPOINTTOPOINT,
+    NOISISPASSIVE,
+    NOISISPRIORITY,
+    THREEWAYHANDSHAKE,
+    NOPSNPINTERVAL,
+
     //============================INVALID=========================
     INVALID;
 
@@ -199,6 +270,23 @@ public enum OpType {
     }
 
 
+    //=======ISIS Function============
+    public  boolean inISISRouterWithTopo() {
+        return this.ordinal() >= NET.ordinal() && this.ordinal() <=ISTYPE.ordinal();
+    }
+    
+    public boolean inISISDAEMON(){
+        return this.ordinal() >=ADVERTISEHIGHMETRIC.ordinal() && this.ordinal() <= SPFINTERVAL.ordinal();
+    }
+
+    public  boolean inISISREGION(){
+        return false;
+    }
+
+    public  boolean inISISINTF(){
+        return this.ordinal() >= IPROUTERISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal();
+    }
+    
     //==========COMMON Function======================
     public boolean isZEBRAUnsetOp(){
         return this == NOIPAddr;
@@ -212,12 +300,15 @@ public enum OpType {
         return (this.ordinal() >= NORRIP.ordinal() && this.ordinal() <= NOIPSPLITHORIZION.ordinal()) || this==NOIPAddr;
     }
 
+    public boolean isISISUnsetOp(){
+        return (this.ordinal() >= NORISIS.ordinal() && this.ordinal() <= NOPSNPINTERVAL.ordinal()) || this==NOIPAddr;
+    }
     /**
      * All unset Op
      * @return
      */
     public boolean isUnsetOp(){
-        return  isZEBRAUnsetOp() || isOSPFUnsetOp() || isRIPUnsetOp();
+        return  isZEBRAUnsetOp() || isOSPFUnsetOp() || isRIPUnsetOp() || isISISUnsetOp();
     }
 
     //-------------------------------------------------
@@ -233,12 +324,16 @@ public enum OpType {
         return (this.ordinal() >= RRIP.ordinal() && this.ordinal() <= IPSPLITHORIZION.ordinal()) || this== IntfName || this == IPAddr;
     }
 
+    public boolean isISISSetOp(){
+        return (this.ordinal() >= RISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal())|| this== IntfName || this == IPAddr;
+    }
+
     /**
      * All set op, include router XXX, interface name
      * @return
      */
     public boolean isSetOp(){
-        return isZEBRASetOp() || isOSPFSetOp() || isRIPSetOp();
+        return isZEBRASetOp() || isOSPFSetOp() || isRIPSetOp() || isISISSetOp();
     }
 
     //-----------------------------------------------------
@@ -253,12 +348,16 @@ public enum OpType {
     private boolean isRIPRouterOp(){
         return (this.ordinal() >= NETWORKN.ordinal() && this.ordinal() <= PASSIVEINTFNAME.ordinal()) || (this.ordinal() >= NONETWORKN.ordinal() && this.ordinal() <= NOTIMERSBASIC.ordinal());
     }
+
+    public boolean isISISRouterOp(){
+        return (this.ordinal() >= NET.ordinal() && this.ordinal() <= SPFINTERVAL.ordinal()) || (this.ordinal() >= NOTNET.ordinal() && this.ordinal() <= NOISTYPE.ordinal());
+    }
     /**
      * all ops(set/unset) in router XXX, don't include router XXX, no router XXX, intf name
      * @return
      */
     public boolean isRouterOp(){
-        return isZEBRARouterOp() || isOSPFRouterOp() || isRIPRouterOp();
+        return isZEBRARouterOp() || isOSPFRouterOp() || isRIPRouterOp() || isISISRouterOp();
     }
 
     //------------------------------------------------------
@@ -273,31 +372,41 @@ public enum OpType {
     public boolean isRIPIntfOp(){
         return (this.ordinal() >= IPSPLITPOISION.ordinal() && this.ordinal() <= IPSPLITHORIZION.ordinal()) || (this.ordinal() >= NOIPSPLITPOISION.ordinal() && this.ordinal() <= NOIPSPLITHORIZION.ordinal()) || this==IPAddr;
     }
+
+    public boolean isISISIntfOp(){
+        return (this.ordinal() >= IPROUTERISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal()) || (this.ordinal() >= NOCIRCUITTYPE.ordinal())|| this == IPAddr || this == NOIPAddr || this == IPROUTERISIS || this == NOIPROUTERISIS;
+    }
     /**
      * all ops(set/unset) in interface {name}, don't include router ospf, no router ospf, intfname, include ip address
      * @return
      */
     public boolean isIntfOp(){
-        return isZEBRAIntfOp() || isOSPFIntfOp() || isRIPIntfOp();
+        return isZEBRAIntfOp() || isOSPFIntfOp() || isRIPIntfOp() || isISISIntfOp();
     }
 
-    public static Set<OpType> OSPFOps, RIPOps;
-    public static List<OpType> OSPFIntfSetOps, OSPFRouterSetOps, RIPRouterSetOps, RIPIntfSetOps;
+    public static Set<OpType> OSPFOps, RIPOps, ISISOps;
+    public static List<OpType> OSPFIntfSetOps, OSPFRouterSetOps, RIPRouterSetOps, RIPIntfSetOps, ISISRouterSetOps, ISISIntfSetOps;
     //MULTI:
     static{
         OSPFOps = new HashSet<OpType>(Arrays.asList(ROSPF, NOROSPF));
         RIPOps = new HashSet<OpType>(Arrays.asList(RRIP, NORRIP));
+        ISISOps = new HashSet<OpType>(Arrays.asList(RISIS, NORISIS));
         OSPFIntfSetOps = new ArrayList<>();
         OSPFRouterSetOps = new ArrayList<>();
         RIPIntfSetOps = new ArrayList<>();
         RIPRouterSetOps = new ArrayList<>();
+        ISISRouterSetOps = new ArrayList<>();
+        ISISIntfSetOps = new ArrayList<>();
         for (var op: OpType.values()){
             if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isOSPFSetOp() || op.isOSPFUnsetOp()) OSPFOps.add(op);
             if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isRIPSetOp() || op.isRIPUnsetOp()) RIPOps.add(op);
+            if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isISISSetOp() || op.isISISUnsetOp()) ISISOps.add(op);
             if (op.isOSPFIntfOp() && op.isSetOp()) OSPFIntfSetOps.add(op);
             if (op.isOSPFRouterOp()  && op.isSetOp()) OSPFRouterSetOps.add(op);
             if (op.isRIPIntfOp()  && op.isSetOp()) RIPIntfSetOps.add(op);
             if (op.isRIPRouterOp()  && op.isSetOp()) RIPRouterSetOps.add(op);
+            if (op.isISISIntfOp() && op.isSetOp()) ISISIntfSetOps.add(op);
+            if (op.isISISRouterOp() && op.isSetOp()) ISISRouterSetOps.add(op);
         }
     }
 
@@ -305,7 +414,8 @@ public enum OpType {
     public static List<OpType> getIntfSetOps(){
         switch (generate.protocol){
             case RIP : return RIPIntfSetOps;
-            case OSPF: return OSPFIntfSetOps;
+            case OSPF : return OSPFIntfSetOps;
+            case ISIS : return ISISIntfSetOps;
         }
         assert false;
         return null;
@@ -316,6 +426,7 @@ public enum OpType {
         switch (generate.protocol){
             case RIP: return RIPRouterSetOps;
             case OSPF: return OSPFRouterSetOps;
+            case ISIS: return ISISRouterSetOps;
         }
         assert false;
         return null;
@@ -325,6 +436,7 @@ public enum OpType {
         switch (protocol){
             case OSPF: return OSPFOps;
             case RIP: return RIPOps;
+            case ISIS: return ISISOps;
         }
         assert false;
         return null;

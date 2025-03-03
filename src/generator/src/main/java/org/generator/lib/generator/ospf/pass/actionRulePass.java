@@ -100,7 +100,15 @@ public class actionRulePass {
             //second generate unset_op
             var new_op = genOpPass.genRanOpOfType(overrideType);
             //third make unset_equal fields to be the same
-            genOpPass.copyFileds(new_op.getOperation(), opA.getOp(), OverrideRedexDef.getOverrideEqualArg(opA.op.Type(), overrideType));
+            if(overrideType == OpType.IPAddr||overrideType == OpType.PSNPINTERVAL||overrideType == OpType.CSNPINTERVAL||overrideType == OpType.HELLOINTERVAL||overrideType == OpType.HELLOMULTIPLIER||overrideType == OpType.ISISPRIORITY||overrideType == OpType.LSPGENINTERVAL||overrideType == OpType.SPFINTERVAL){
+                genOpPass.copyFileds(new_op.getOperation(), opA.getOp(), Collections.emptyList());
+            }
+            else{
+                genOpPass.copyFileds(new_op.getOperation(), opA.getOp(), OverrideRedexDef.getOverrideEqualArg(opA.op.Type(), overrideType));
+            }
+            if(overrideType == OpType.PSNPINTERVAL||overrideType == OpType.CSNPINTERVAL||overrideType == OpType.HELLOINTERVAL||overrideType == OpType.HELLOMULTIPLIER||overrideType == OpType.ISISPRIORITY||overrideType == OpType.LSPGENINTERVAL||overrideType == OpType.SPFINTERVAL){
+                new_op.getOperation().setNAME(opA.getOp().getNAME());
+            }
             if (new_op.getOpOspf().equals(opA.getOp())) continue;
             else return OpAnalysis.of(new_op.getOpOspf(), opA.getCtxOp());
         }

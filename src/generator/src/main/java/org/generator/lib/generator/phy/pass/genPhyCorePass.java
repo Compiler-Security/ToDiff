@@ -50,6 +50,11 @@ public class genPhyCorePass {
                         op = new OpPhy(OpType.NODESETRIPUP);
                     }
                 }
+                case ISIS -> {
+                    if (g.containsNode(NodeGen.getISISName(r.getName()))){
+                        op = new OpPhy(OpType.NODESETISISUP);
+                    }
+                }
             }
             if (op != null) {
                 op.setNAME(r.getName());

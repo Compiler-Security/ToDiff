@@ -88,7 +88,34 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOIPRECVVERSION1, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}},
                 {NOIPRECVVERSION2, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}},
                 {NOIPRECVVERSION12, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}},
-        };
+        
+                //==================ISIS=============================
+                {NORISIS,new OpType[]{RISIS}},
+                {NOTNET, new OpType[]{NET}},
+                //FIXME: we need "NOATTACHEDBIT"!
+                //{NOATTACHEDBIT, new OpType[]{ATTACHEDBIT}},
+                //{NOMETRICSTYLE, new OpType[]{METRICSTYLE}},
+                {NOADVERTISEHIGHMETRIC, new OpType[]{ADVERTISEHIGHMETRIC}},
+                {NOSETOVERLOADBIT, new OpType[]{SETOVERLOADBIT}},
+                {NOSETOVERLOADBITONSTARTUP, new OpType[]{SETOVERLOADBITONSTARTUP}},
+                {NOLSPMTU, new OpType[]{LSPMTU}},
+                {NOLSPGENINTERVAL, new OpType[]{LSPGENINTERVAL}},
+                {NOSPFINTERVAL, new OpType[]{SPFINTERVAL}},
+                {NOISTYPE, new OpType[]{ISTYPE}},
+                {NOIPROUTERISIS, new OpType[]{IPROUTERISIS}},
+                {NOCIRCUITTYPE, new OpType[]{CIRCUITTYPE}},
+                {NOCSNPINTERVAL, new OpType[]{CSNPINTERVAL}},
+                {HELLOPADDING, new OpType[]{NOHELLOPADDING}},
+                {NOHELLOINTERVAL, new OpType[]{HELLOINTERVAL}},
+                {NOHELLOMULTIPLIER, new OpType[]{HELLOMULTIPLIER}},
+                //{NOISISMETRICLEVEL1, new OpType[]{ISISMETRICLEVEL1}},
+                //{NOISISMETRICLEVEL2, new OpType[]{ISISMETRICLEVEL2}},
+                {NONETWORKPOINTTOPOINT, new OpType[]{NETWORKPOINTTOPOINT}},
+                {NOISISPASSIVE, new OpType[]{ISISPASSIVE}},
+                {NOISISPRIORITY, new OpType[]{ISISPRIORITY}},
+                {NOPSNPINTERVAL, new OpType[]{PSNPINTERVAL}},
+                {THREEWAYHANDSHAKE, new OpType[]{NOTHREEWAYHANDSHAKE}},
+            };
         var seeds = new ArrayList<Object[]>();
         for (var item : reduce_seed) {
             var opType = (OpType) item[0];

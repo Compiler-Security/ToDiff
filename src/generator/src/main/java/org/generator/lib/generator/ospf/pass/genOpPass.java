@@ -101,6 +101,9 @@ public class genOpPass {
                 case "NAME2" -> {
                     new_op.setNAME(getRanName(argsRange, "NAME2"));
                 }
+                case "NET" -> {
+                    new_op.setNET(ranHelper.randomNet());
+                }
                 //case "NUM" -> {new_op.setNUM(argsRange.get("NUM"));}
                 default -> {
                     assert false : "%s mutate TODO %s".formatted(type, arg);
@@ -114,6 +117,11 @@ public class genOpPass {
         List<OpType> intfOps, RouterOps;
         intfOps = OpType.getIntfSetOps();
         RouterOps = OpType.getRouterSetOps();
+        if (generate.protocol == generate.Protocol.ISIS){
+            intfOps.remove(OpType.IPROUTERISIS);
+            RouterOps.remove(OpType.NET);
+            RouterOps.remove(OpType.ISTYPE);
+        }
         if (inIntf){
             op_type = intfOps.get(ranHelper.randomInt(0, intfOps.size() - 1));
         }else  {
@@ -133,6 +141,9 @@ public class genOpPass {
                 }
                 case "IP" -> {
                     dst_op.setIP(src_op.getIP());
+                }
+                case "NET" -> {
+                    dst_op.setNET(src_op.getNET());
                 }
                 case "NUM" -> {
                     dst_op.setNUM(src_op.getNUM());

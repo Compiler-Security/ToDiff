@@ -5,6 +5,9 @@ import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.lib.item.opg.OpArgG;
 import org.generator.lib.item.conf.graph.ConfGraph;
+import org.generator.lib.item.conf.node.isis.ISIS;
+import org.generator.lib.item.conf.node.isis.ISISDaemon;
+import org.generator.lib.item.conf.node.isis.ISISIntf;
 import org.generator.lib.item.conf.node.ospf.OSPF;
 import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
 import org.generator.lib.item.conf.node.ospf.OSPFIntf;
@@ -23,6 +26,12 @@ public abstract class baseExecPass {
         cur_router = null;
         cur_ospf_intf = null;
         cur_ospf_daemon = null;
+        cur_rip = null;
+        cur_rip_intf = null;
+        cur_isis = null;
+        cur_isis_daemon = null;
+        cur_isis_intf = null;
+        
     }
     abstract ExecStat execOp(Op op, ConfGraph topo);
     public List<Pair<Op, ExecStat>> execOps(OpArgG opg, ConfGraph topo){
@@ -84,6 +93,31 @@ public abstract class baseExecPass {
 
     public void setCur_rip_intf(RIPIntf cur_rip_intf) {this.cur_rip_intf = cur_rip_intf;}
 
+    //==============IS-IS=============================
+    public ISIS getCur_isis() {
+        return cur_isis;
+    }
+
+    public void setCur_isis(ISIS cur_isis) {
+        this.cur_isis = cur_isis;
+    }
+
+    public ISISDaemon getCur_isis_daemon() {
+        return cur_isis_daemon;
+    }
+
+    public void setCur_isis_daemon(ISISDaemon cur_isis_daemon) {
+        this.cur_isis_daemon = cur_isis_daemon;
+    }
+
+    public ISISIntf getCur_isis_intf() {
+        return cur_isis_intf;
+    }
+
+    public void setCur_isis_intf(ISISIntf cur_isis_intf) {
+        this.cur_isis_intf = cur_isis_intf;
+    }
+
     Router cur_router;
     Intf cur_intf;
     //==========OSPF============
@@ -93,4 +127,8 @@ public abstract class baseExecPass {
     //==========RIP=============
     RIP cur_rip;
     RIPIntf cur_rip_intf;
+    //==========ISIS============
+    ISIS cur_isis;
+    ISISDaemon cur_isis_daemon;
+    ISISIntf cur_isis_intf;
 }
