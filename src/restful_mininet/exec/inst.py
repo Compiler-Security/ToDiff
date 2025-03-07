@@ -192,6 +192,20 @@ class MininetInst(BaseInst):
                 return self.EXEC_MISS
             return self._run_cmd(up_node.stop_ripd, conf_dir=self.workdir)
 
+        if _cmds_equal_prefix(op_args, ["router", "set", "BABEL", "up"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
+            res = self._run_cmd(up_node.load_babel, ["zebra", "babeld", "mgmtd"], conf_dir=self.workdir, universe=True)
+            #self._run_cmd(up_node.log_load_frr)
+            return res
+        
+        if _cmds_equal_prefix(op_args, ["router", "set", "BABEL", "down"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
+            return self._run_cmd(up_node.stop_babeld, conf_dir=self.workdir)
+
         raise InstErrorException("[mininet] node inst not right")
 
     def _run_intf_cmd(self, args):

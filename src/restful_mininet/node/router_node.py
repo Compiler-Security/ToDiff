@@ -176,6 +176,8 @@ class FrrNode(Node):
     def load_rip(self, daemons, conf_dir, universe=False):
         self._load_frr(daemons, "ripd", conf_dir, self._log_load_isis, universe)
 
+    def load_babel(self, daemons, conf_dir, universe=False):
+        self._load_frr(daemons, "babeld", conf_dir, self._log_load_isis, universe)
     #------------------ STOP TEST DAEMON--------------------------
     def stop_ospfd(self, conf_dir):
         if "ospfd" in self.daemon_dict:
@@ -198,10 +200,17 @@ class FrrNode(Node):
             os.remove(self.daemon_dict["ripd"]["pid_path"])
             del self.daemon_dict["ripd"]
 
+    def stop_babeld(self, conf_dir):
+        if "isisd" in self.daemon_dict:
+            self._save_frr_conf()
+            kill_pid(self.daemon_dict["babeld"]["daemon_pid"])
+            os.remove(self.daemon_dict["babeld"]["pid_path"])
+            del self.daemon_dict["babeld"]
+
     def stop_frr(self):
         #MULTI:
         #FXIME we should add all the test_daemon to stop_daemons
-        stop_daemons = [self.stop_ospfd, self.stop_isisd, self.stop_ripd]
+        stop_daemons = [self.stop_ospfd, self.stop_isisd, self.stop_ripd, self.stop_babeld]
         for stop_daemon in stop_daemons:
             stop_daemon(self.conf_dir)
 
