@@ -177,8 +177,8 @@ public class LexDef {
                 {IntfName, "interface {NAME}|int {NAME}"},
                 //----route----
                 {NET, "net {NET}"},
-                
-                
+
+
                 //FIXME: we need "ATTACHEDBIT"!
                 //{ATTACHEDBIT, "attached-bit {NAME(receive ignore,send)}"},
                 //{METRICSTYLE, "metric-style {NAME(narrow,transition,wide)}"},
@@ -233,7 +233,24 @@ public class LexDef {
                 {NOPSNPINTERVAL, "no isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2,_)}"},
                 {NOTHREEWAYHANDSHAKE, "no isis three-way-handshake"},
 
+                //EIGRP
+                {REIGRP, "router eigrp 1"},
 
+                {ERID, "eigrp router-id {ID}"},
+                {EPASSIVEINTFNAME, "passive-interface {NAME}"},
+                {ETIMERSACTIVE, "timers active-time {NUM(1-65535)"},
+                {ETIMERSACTIVEDISABLE, "timers active-time disabled"},
+                {EVARIANCE, "variance {NUM(1-128)"},
+                {EMAXIMUMPATHS, "maximum-paths {NUM(1-32)}"},
+                {EMETRIC, "metric weights 0 {NUM(0-255)} 0 {NUM2(0-255)} 0 0"},
+                {ENETWORKI, "network {IPRANGE}"},
+                {ENEIGHBOR, "neighbor {ID}"},
+                {EDELAY, "delay {NUM(1-16777215)}"},
+                {EBANDWIDTH, "eigrp bandwidth {NUM(1-10000000)}"},
+
+                {EHELLOINTERVAL, "ip hello-interval eigrp {NUM(1-65535)}"},
+                {EHOLDTIME, "ip hold-time eigrp {NUM(1-65535)}"},
+                {ESUMMARY, "ip summary-address eigrp 1 {IP}"},
                 //MULTI:
                 //INVALID will not to match, it can read/write invalid str to bypass [NAME]
                 {INVALID, "{NAME}"},

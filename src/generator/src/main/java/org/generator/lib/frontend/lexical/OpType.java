@@ -241,6 +241,40 @@ public enum OpType {
     THREEWAYHANDSHAKE,
     NOPSNPINTERVAL,
 
+    //============================EIGRP====================
+    //----------------------------router-------------------
+    REIGRP,
+    ERID,
+    EPASSIVEINTFNAME,
+    ETIMERSACTIVE,
+    ETIMERSACTIVEDISABLE,
+    EVARIANCE,
+    EMAXIMUMPATHS,
+    EMETRIC,
+    ENETWORKI,
+    ENEIGHBOR,
+    EDELAY,
+    EBANDWIDTH,
+    EHELLOINTERVAL,
+    EHOLDTIME,
+    ESUMMARY,
+
+    NOREIGRP,
+    NOERID,
+    NOEPASSIVEINTFNAME,
+    NOETIMERSACTIVE,
+    NOEVARIANCE,
+    NOEMAXIMUMPATHS,
+    NOEMETRIC,
+    NOENETWORKI,
+    NOENEIGHBOR,
+    NOEDELAY,
+    NOEBANDWIDTH,
+    NOEHELLOINTERVAL,
+    NOEHOLDTIME,
+    NOESUMMARY,
+
+
     //============================INVALID=========================
     INVALID;
 
