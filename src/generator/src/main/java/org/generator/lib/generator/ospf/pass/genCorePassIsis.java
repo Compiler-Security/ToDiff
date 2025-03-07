@@ -12,7 +12,6 @@ import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.isis.ISIS;
-import org.generator.lib.item.conf.node.isis.ISISAreaSum;
 import org.generator.lib.item.conf.node.isis.ISISDaemon;
 import org.generator.lib.item.conf.node.isis.ISISIntf;
 import org.generator.lib.item.conf.node.phy.Intf;

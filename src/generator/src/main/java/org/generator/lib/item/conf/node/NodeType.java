@@ -21,7 +21,12 @@ public enum NodeType {
     ISIS,
     ISISIntf,
     ISISDaemon,
-    ISISAreaSum,
+
+    //=========OpenFabric======
+    FABRIC,
+    FABRICIntf,
+    FABRICDaemon
+
 
     ;
 

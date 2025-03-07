@@ -6,7 +6,6 @@ import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.NodeType;
 import org.generator.lib.item.conf.node.isis.ISIS;
-import org.generator.lib.item.conf.node.isis.ISISAreaSum;
 import org.generator.lib.item.conf.node.isis.ISISDaemon;
 import org.generator.util.exec.ExecStat;
 import org.generator.util.net.ID;

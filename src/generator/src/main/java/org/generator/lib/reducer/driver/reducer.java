@@ -8,6 +8,7 @@ import org.generator.lib.reducer.pass.ospfArgPass;
 import org.generator.lib.reducer.pass.reducePass;
 import org.generator.lib.reducer.pass.ripArgPass;
 import org.generator.lib.reducer.pass.isisArgPass;
+import org.generator.lib.reducer.pass.openfabricArgPass;
 
 public class reducer {
     /**
@@ -40,6 +41,7 @@ public class reducer {
             case OSPF -> {ospfArgPass.solve(opaG, confG, confG.getR_name());}
             case RIP -> {ripArgPass.solve(opaG, confG, confG.getR_name());}
             case ISIS -> {isisArgPass.solve(opaG, confG, confG.getR_name());}
+            case OpenFabric -> {openfabricArgPass.solve(opaG, confG, confG.getR_name());}
         }
     }
 

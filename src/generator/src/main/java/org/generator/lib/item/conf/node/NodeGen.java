@@ -1,9 +1,11 @@
 package org.generator.lib.item.conf.node;
 
 import org.generator.lib.item.conf.node.isis.ISIS;
-import org.generator.lib.item.conf.node.isis.ISISAreaSum;
 import org.generator.lib.item.conf.node.isis.ISISDaemon;
 import org.generator.lib.item.conf.node.isis.ISISIntf;
+import org.generator.lib.item.conf.node.openfabric.FABRIC;
+import org.generator.lib.item.conf.node.openfabric.FABRICIntf;
+import org.generator.lib.item.conf.node.openfabric.FABRICDaemon;
 import org.generator.lib.item.conf.node.ospf.*;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
@@ -88,10 +90,6 @@ public class NodeGen {
         return String.format("%s-daemon", isis_name);
     }
 
-    static public String getISISAreaSumName(String isis_name, String area_name){
-        return String.format("%s-%s", isis_name, area_name);
-    }
-
     static public String getISISIntfName(String intf_name){
         return String.format("%s-isis",intf_name);
     }
@@ -99,6 +97,20 @@ public class NodeGen {
     static public String getISISName(String r_name){
         assert getPhyNodeTypeByName(r_name) == NodeType.Router: "only router can has isis";
         return String.format("%s-ISIS", r_name);
+    }
+
+    //=========OpenFabric=====================
+    static public String getOpenFabricName(String r_name){
+        assert getPhyNodeTypeByName(r_name) == NodeType.Router: "only router can has openfabric";
+        return String.format("%s-OpenFabric", r_name);
+    }
+
+    static public String getOpenFabricDaemonName(String openfabric_name){
+        return String.format("%s-daemon", openfabric_name);
+    }
+
+    static public String getOpenFabricIntfName(String intf_name){
+        return String.format("%s-openfabric",intf_name);
     }
 
 
@@ -129,6 +141,13 @@ public class NodeGen {
     }
 
     public static ISISIntf new_ISIS_Intf(String name) {return new ISISIntf(name);}
+
+    public static FABRIC new_OpenFabric(String name){
+        return new FABRIC(name);
+    }
+
+    public static FABRICIntf new_OpenFabric_Intf(String name) {return new FABRICIntf(name);}
+
 
     public static <T extends  AbstractNode> T newNode(String name, NodeType type){;
         return (T)new_node(name, type);
@@ -175,8 +194,14 @@ public class NodeGen {
             case ISISDaemon -> {
                 return new ISISDaemon(name);
             }
-            case ISISAreaSum -> {
-                return new ISISAreaSum(name);
+            case FABRIC -> {
+                return new_OpenFabric(name);
+            }
+            case FABRICIntf -> {
+                return new_OpenFabric_Intf(name);
+            }
+            case FABRICDaemon -> {
+                return new FABRICDaemon(name);
             }
             
             case null, default -> {

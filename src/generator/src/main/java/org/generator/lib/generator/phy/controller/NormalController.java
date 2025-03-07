@@ -18,7 +18,8 @@ public class NormalController {
         //MULTI:
         OSPF,
         RIP,
-        ISIS
+        ISIS,
+        OpenFabric
     }
 
     public CType getcType() {
@@ -148,6 +149,10 @@ public class NormalController {
 
     static public NormalController getISISCatg(int up, int re, int shutDown, String name, OpType type, CType cType){
         return new NormalController(List.of(up, re, shutDown), List.of(OpType.NODESETISISUP, OpType.NODESETISISRE, OpType.NODESETISISSHUTDOWN), name, null, type, cType);
+    }
+
+    static public NormalController getOpenFabricCatg(int up, int re, int shutDown, String name, OpType type, CType cType){
+        return new NormalController(List.of(up, re, shutDown), List.of(OpType.NODESETFABRICUP, OpType.NODESETFABRICRE, OpType.NODESETFABRICSHUTDOWN), name, null, type, cType);
     }
 
     @Override

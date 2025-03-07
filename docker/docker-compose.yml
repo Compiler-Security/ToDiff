@@ -32,7 +32,7 @@ services:
         - build_mode=interested
         - frr_check=false
         - nproc=16
-        - proxy=http://114.212.189.33:7897
+        - proxy=http://192.168.124.11:7890
       ulimits:
         nofile:
           soft: 2048  # Soft limit
@@ -62,7 +62,7 @@ services:
         - build_mode=interested
         - frr_check=false
         - nproc=16
-        - proxy=http://114.212.189.33:7897
+        - proxy=http://192.168.124.11:7890
       ulimits:
         nofile:
           soft: 2048  # Soft limit

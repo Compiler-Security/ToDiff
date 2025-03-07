@@ -35,7 +35,11 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
         ISIS,
         ISISINTF,
         ISISDAEMON,
-        ISISAREASUM,
+
+        //==========OpenFabric============
+        FABRIC,
+        FABRICINTF,
+        FABRICDAEMON
     }
 
     protected void generateType(){
@@ -55,6 +59,8 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
             //MULTI:
             case ISIS -> setType(EdgeType.ISIS);
             case ISISIntf -> setType(EdgeType.ISISINTF);
+            case FABRIC -> setType(EdgeType.FABRIC);
+            case FABRICIntf -> setType(EdgeType.FABRICINTF);
             default -> throw new IllegalStateException("Unexpected value: " + dst);
         }
     }
