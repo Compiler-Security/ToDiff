@@ -111,6 +111,46 @@ public class diffTopo {
         
         return splits;
     }
+
+    public List<OpCtxG> ranSplitOpenfabricConfWithBase(OpCtxG opCtxG, int count) {
+        // first, we split the opCtxG
+        List<OpCtxG> splits = ranSplitOspfConf(opCtxG, count);
+        
+        // process each split
+        for (OpCtxG split : splits) {
+            Set<String> interfaces = new HashSet<>();
+            OpCtxG baseConfig = OpCtxG.Of();
+            
+            // Collect the interface name
+            for (var op : split.getOps()) {
+                if (op.getOpOspf().Type() == OpType.IntfName) {
+                    interfaces.add(op.getOpOspf().getNAME());
+                }
+            }
+            
+            // Add the base configuration
+            for (String intf : interfaces) {
+                // add interface name command
+                var intfOp = OpOspf.of(OpType.IntfName);
+                intfOp.setNAME(intf);
+                var intfOpCtx = OpCtx.of(intfOp);
+                baseConfig.addOp(intfOpCtx);
+                
+                // add ip router isis command
+                var iprouteOp = OpOspf.of(OpType.IPROUTERFABRIC);
+                var iprouteOpCtx = OpCtx.of(iprouteOp);
+                baseConfig.addOp(iprouteOpCtx);
+            }
+            
+            // add the base configuration to the split
+            var newSplit = OpCtxG.Of();
+            newSplit.addOps(baseConfig.getOps());
+            newSplit.addOps(split.getOps());
+            splits.set(splits.indexOf(split), newSplit);
+        }
+        
+        return splits;
+    }
     /**
      *
      * @param router_count
@@ -192,6 +232,11 @@ public class diffTopo {
                     split_confs.add(ranSplitIsisConfWithBase(opCtxGS.get(r), step_num - 1));
                 }
             }
+            else if (generate.protocol == generate.Protocol.OpenFabric) {
+                for(int r = 0; r < router_count; r++){
+                    split_confs.add(ranSplitOpenfabricConfWithBase(opCtxGS.get(r), step_num - 1));
+                }
+            }
             else{
                 for(int r = 0; r < router_count; r++){
                     split_confs.add(ranSplitOspfConf(opCtxGS.get(r), step_num - 1));
@@ -240,11 +285,11 @@ public class diffTopo {
                     //MULTI:
                     //FIXME: if we want to generate multiple protocols' cmd, we should track multiple alive
                     switch (op.getOpPhy().Type()){
-                        case NODESETOSPFUP, NODESETRIPUP, NODESETISISUP -> {
+                        case NODESETOSPFUP, NODESETRIPUP, NODESETISISUP, NODESETFABRICUP -> {
                             var router_name = op.getOpPhy().getNAME();
                             ospfAlive.set(routerNametoIdx.get(router_name), true);
                         }
-                        case NODEDEL, NODESETOSPFSHUTDOWN, NODESETRIPSHUTDOWN, NODESETISISSHUTDOWN -> {
+                        case NODEDEL, NODESETOSPFSHUTDOWN, NODESETRIPSHUTDOWN, NODESETISISSHUTDOWN, NODESETFABRICSHUTDOWN -> {
                             var router_name = op.getOpPhy().getNAME();
                             ospfAlive.set(routerNametoIdx.get(router_name), false);
                         }
@@ -309,6 +354,7 @@ public class diffTopo {
                     case OSPF -> one_step.put("ospf", ops);
                     case RIP -> one_step.put("rip", ops);
                     case ISIS -> one_step.put("isis", ops);
+                    case OpenFabric -> one_step.put("openfabric", ops);
                 }
 
                 //add waitTime
