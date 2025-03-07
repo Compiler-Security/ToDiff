@@ -67,6 +67,7 @@ public class OverrideRedexDef extends BaseRedexDef {
                 {IPRECVVERSION1, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}, 0},
                 {IPRECVVERSION2, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}, 0},
                 {IPRECVVERSION12, new OpType[]{IPRECVVERSION1, IPRECVVERSION2, IPRECVVERSION12}, 0},
+                {NEIGHBOR, new OpType[]{NEIGHBOR}, 1},
 
                 //==========ISIS====================
                 {RISIS, new OpType[]{}, 0},

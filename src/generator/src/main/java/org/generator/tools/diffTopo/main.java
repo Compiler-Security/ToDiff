@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.cli.*;
 import org.generator.lib.generator.driver.generate;
+import org.generator.lib.topo.driver.topo;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -53,6 +54,7 @@ public class main {
         options.addOption("maxStepTime", true, "max wait time of one step");
         options.addOption("roundNum", true, "round num");
         options.addOption("protocol", true, "protocol to generate [ospf,rip]");
+        options.addOption("maxDegree", true, "max interface per router");
         return options;
     }
     public static void main(String[] args) {
@@ -76,6 +78,9 @@ public class main {
             }
             if (cmd.hasOption("roundNum")){
                 roundNum = Integer.parseInt(cmd.getOptionValue("roundNum"));
+            }
+            if (cmd.hasOption("mxDegree")){
+                topo.mxDegree = Integer.parseInt(cmd.getOptionValue("maxDegree"));
             }
             //MULTI:
             if (cmd.hasOption("protocol")){
