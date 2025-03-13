@@ -1,5 +1,7 @@
 package org.generator.lib.item.conf.node;
 
+import org.generator.lib.item.conf.node.babel.BABEL;
+import org.generator.lib.item.conf.node.babel.BABELIntf;
 import org.generator.lib.item.conf.node.isis.ISIS;
 import org.generator.lib.item.conf.node.isis.ISISAreaSum;
 import org.generator.lib.item.conf.node.isis.ISISDaemon;
@@ -101,6 +103,16 @@ public class NodeGen {
         return String.format("%s-ISIS", r_name);
     }
 
+    //============BABEl==================
+    static public String getBABELName(String r_name){
+        assert getPhyNodeTypeByName(r_name) == NodeType.Router: "only router can has ospf";
+        return String.format("%s-BABEL", r_name);
+    }
+
+    static public String getBABELIntfName(String intf_name){
+        return String.format("%s-babel", intf_name);
+    }
+
 
     
     public static Router new_Router(String name){
@@ -129,6 +141,10 @@ public class NodeGen {
     }
 
     public static ISISIntf new_ISIS_Intf(String name) {return new ISISIntf(name);}
+
+    public static BABEL new_BABEL(String name){ return new BABEL(name);}
+
+    public static BABELIntf new_BABEL_Intf(String name){ return new BABELIntf(name);}
 
     public static <T extends  AbstractNode> T newNode(String name, NodeType type){;
         return (T)new_node(name, type);
@@ -177,6 +193,14 @@ public class NodeGen {
             }
             case ISISAreaSum -> {
                 return new ISISAreaSum(name);
+            }
+
+            case BABEL -> {
+                return new_BABEL(name);
+            }
+
+            case BABELIntf -> {
+                return new_BABEL_Intf(name);
             }
             
             case null, default -> {

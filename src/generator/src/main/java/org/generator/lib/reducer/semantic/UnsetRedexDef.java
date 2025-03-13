@@ -115,6 +115,24 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOISISPRIORITY, new OpType[]{ISISPRIORITY}},
                 {NOPSNPINTERVAL, new OpType[]{PSNPINTERVAL}},
                 {THREEWAYHANDSHAKE, new OpType[]{NOTHREEWAYHANDSHAKE}},
+
+                //=======================BABEL=============================
+                {NORBABEL, new OpType[]{RBABEL}},
+                //{NOBABELDI, new OpType[]{BABELDI}},
+                {NOBNETWORKINTF, new OpType[]{BNETWORKINTF}},
+                {NOBWIRE, new OpType[]{BWIRE}},
+                {NOBSPLITHORIZON, new OpType[]{BSPLITHORIZON}},
+                {NOBHELLOINTERVAL, new OpType[]{BHELLOINTERVAL}},
+                {NOBUPDATEINTERVAL, new OpType[]{BUPDATEINTERVAL}},
+                {NOBCHANELNOINTEFERING, new OpType[]{BCHANELNOINTEFERING}},
+                {NOBRXCOST, new OpType[]{BRXCOST}},
+                {NOBRTTDECAY, new OpType[]{BRTTDECAY}},
+                {NOBRTTMIN, new OpType[]{BRTTMIN}},
+                {NOBRTTMAX, new OpType[]{BRTTMAX}},
+                {NOBMAXRTT, new OpType[]{BMAXRTT}},
+                {NOBENABLETIMESTAMP, new OpType[]{BENABLETIMESTAMP}},
+                {NOBRESENDDELAY, new OpType[]{BRESENDDELAY}},
+                {NOBSOMMOTHING, new OpType[]{BSOMMOTHING}},
             };
         var seeds = new ArrayList<Object[]>();
         for (var item : reduce_seed) {

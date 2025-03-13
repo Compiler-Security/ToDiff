@@ -7,6 +7,8 @@ import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.node.AbstractNode;
 import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.babel.BABEL;
+import org.generator.lib.item.conf.node.babel.BABELIntf;
 import org.generator.lib.item.conf.node.ospf.OSPF;
 import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
 import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
@@ -165,6 +167,26 @@ public class ConfGraph extends AbstractRelationGraph {
         return g;
     }
 
+    private ConfGraph viewConfGraphOfRouterBABEL(String r_name) {
+        var g = new ConfGraph(r_name);
+        g.addNode(getNodeNotNull(r_name));
+        var babel_name = NodeGen.getBABELName(r_name);
+        if (containsNode(babel_name)) {
+            g.addNode(getNodeNotNull(babel_name));
+            g.addBABELRelation(babel_name, r_name);
+        }
+        for (var intf : getIntfsOfRouter(r_name)) {
+            g.addNode(intf);
+            g.addIntfRelation(intf.getName(), r_name);
+            var babel_intf_name = NodeGen.getBABELIntfName(intf.getName());
+            if (containsNode(babel_intf_name)) {
+                g.addNode(getNodeNotNull(babel_intf_name));
+                g.addBABELIntfRelation(babel_intf_name, intf.getName());
+            }
+        }
+        return g;
+    }
+
     public ConfGraph viewConfGraphOfRouter(String r_name) {
         switch (generate.protocol) {
             case OSPF -> {
@@ -176,6 +198,11 @@ public class ConfGraph extends AbstractRelationGraph {
             case ISIS -> {
                 return viewConfGraphOfRouterISIS(r_name);
             }
+            case BABEL -> {
+                return viewConfGraphOfRouterBABEL(r_name);
+            }
+
+            //MULTI:
         }
         assert false;
         return null;
@@ -312,6 +339,21 @@ public class ConfGraph extends AbstractRelationGraph {
                 .get();
     }
 
+    // ------------------BABEL---------------------------------
+    public BABEL getBABELOfRouter(String r_name) {
+        return this.<BABEL>getDstsByType(r_name, RelationEdge.EdgeType.BABEL).stream().findFirst().get();
+    }
+
+    public Set<BABELIntf> getBABELIntfOfRouter(String r_name) {
+        return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF).stream()
+                .map(x -> this.<BABELIntf>getDstsByType(x.getName(), RelationEdge.EdgeType.BABELINTF))
+                .flatMap(Collection::stream).collect(Collectors.toSet());
+    }
+
+    public BABELIntf getBABELIntf(String nodeName) {
+        return (BABELIntf) getNode(nodeName).get();
+    }
+
     // =================ADD==========================
     public void addIntfLink(String intf1_name, String intf2_name) {
         addEdge(intf1_name, intf2_name, RelationEdge.EdgeType.LINK);
@@ -400,6 +442,20 @@ public class ConfGraph extends AbstractRelationGraph {
         var res1 = addEdge(isis_name, isis_daemon_name, RelationEdge.EdgeType.ISISDAEMON);
         var res2 = addEdge(isis_daemon_name, isis_name, RelationEdge.EdgeType.ISIS);
         assert res1.join(res2) == ExecStat.SUCC;
+        return ExecStat.SUCC;
+    }
+
+    // -----------------BABEL--------------------
+    public ExecStat addBABELRelation(String babel_name, String phynode_name) {
+        var res1 = addEdge(phynode_name, babel_name, RelationEdge.EdgeType.BABEL);
+        var res2 = addEdge(babel_name, phynode_name, RelationEdge.EdgeType.PhyNODE);
+        assert res1.join(res2) == ExecStat.SUCC;
+        return ExecStat.SUCC;
+    }
+
+    public ExecStat addBABELIntfRelation(String babel_intf_name, String intf_name) {
+        var res1 = addEdge(babel_intf_name, intf_name, RelationEdge.EdgeType.INTF);
+        var res2 = addEdge(intf_name, babel_intf_name, RelationEdge.EdgeType.BABELINTF);
         return ExecStat.SUCC;
     }
 

@@ -207,7 +207,8 @@ public class generate {
     public static enum Protocol{
         OSPF,
         ISIS,
-        RIP
+        RIP,
+        BABEL
     }
 
     public static Protocol protocol = Protocol.OSPF;

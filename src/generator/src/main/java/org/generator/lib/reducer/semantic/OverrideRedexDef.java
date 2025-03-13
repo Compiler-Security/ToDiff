@@ -81,6 +81,10 @@ public class OverrideRedexDef extends BaseRedexDef {
                 {CSNPINTERVAL, new OpType[]{CSNPINTERVAL}, -1},
                 {LSPGENINTERVAL, new OpType[]{LSPGENINTERVAL}, 1},
                 {SPFINTERVAL, new OpType[]{SPFINTERVAL}, 1},
+
+                //============BABEL=====================
+                {RBABEL, new OpType[]{}, 0},
+                {BNETWORKINTF, new OpType[]{BNETWORKINTF}, 1},
                 //Other set instruction
                 //{XXX, new OpType[XXX], 0}
 
