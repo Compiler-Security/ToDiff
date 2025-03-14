@@ -68,7 +68,7 @@ public class babelArgPass {
             var babel_name = NodeGen.getBABELName(r_name);
             var babel = topo.<BABEL>getOrCreateNode(babel_name, NodeType.BABEL);
             assert !babel.second();
-            topo.addRIPRelation(babel_name, r_name);
+            topo.addBABELRelation(babel_name, r_name);
             for(var op: babel_opg.popOpsOfType(OpType.BNETWORKINTF)){
                 var intf_name = op.getNAME();
                 if (topo.containsNode(intf_name)){

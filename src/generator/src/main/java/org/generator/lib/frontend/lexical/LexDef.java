@@ -21,6 +21,7 @@ public class LexDef {
     private static final Map<OpType, List<LexDef>> preprocess;
     static {
         var lexical_seed = new Object[][]{
+                //MULTI:
                 {NODEADD, "node {NAME} add"},
                 {NODEDEL, "node {NAME} del"},
                 {NODESETOSPFUP, "node {NAME} set ospf up"},
@@ -39,6 +40,9 @@ public class LexDef {
                 {NODESETISISUP, "node {NAME} set ISIS up"},
                 {NODESETISISSHUTDOWN, "node {NAME} set ISIS down"},
                 {NODESETISISRE, "node {NAME} set ISIS restart"},
+                {NODESETBABELUP, "node {NAME} set BABEL up"},
+                {NODESETBABELSHUTDOWN, "node {NAME} set BABEL down"},
+                {NODESETBABELRE, "node {NAME} set BABEL restart"},
                 //{OSPFCONF, "ROSPFCONF"},
 
                 {ROSPF, "router ospf"},

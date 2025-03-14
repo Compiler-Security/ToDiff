@@ -240,11 +240,11 @@ public class diffTopo {
                     //MULTI:
                     //FIXME: if we want to generate multiple protocols' cmd, we should track multiple alive
                     switch (op.getOpPhy().Type()){
-                        case NODESETOSPFUP, NODESETRIPUP, NODESETISISUP -> {
+                        case NODESETOSPFUP, NODESETRIPUP, NODESETISISUP, NODESETBABELUP -> {
                             var router_name = op.getOpPhy().getNAME();
                             ospfAlive.set(routerNametoIdx.get(router_name), true);
                         }
-                        case NODEDEL, NODESETOSPFSHUTDOWN, NODESETRIPSHUTDOWN, NODESETISISSHUTDOWN -> {
+                        case NODEDEL, NODESETOSPFSHUTDOWN, NODESETRIPSHUTDOWN, NODESETISISSHUTDOWN, NODESETBABELSHUTDOWN -> {
                             var router_name = op.getOpPhy().getNAME();
                             ospfAlive.set(routerNametoIdx.get(router_name), false);
                         }
