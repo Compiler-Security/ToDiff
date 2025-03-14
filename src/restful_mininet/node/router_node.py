@@ -390,6 +390,25 @@ class FrrNode(Node):
         warnaln(f"- collect {self.name}", "")
         #warnaln("end dump ospf json", "")
         return j
+
+    def dump_info_babel(self):
+        j = {}
+        warnaln(f"+ collect {self.name}", "")
+        if "babeld" not in self.daemon_dict:
+            j["babel-up"] = False
+        else:
+            j["babel-up"] = True
+            self._collect_info_ospf(j, "babel-route", "show babel route", False)
+            self._collect_info_ospf(j, "babel-interface", "show babel interface", False)
+            self._collect_info_ospf(j, "babel-neighbor", "show babel neighbor", False)
+            self._collect_info_ospf(j, "babel-parameters", "show babel parameters", False)
+            #self._collect_info_ospf(j, "routing-table", "show ip route json", True)
+        if "zebra" in self.daemon_dict:
+            self._collect_info_ospf(j, "running-config", "show running-config", False)
+            #self._collect_info_ospf(j, "intfs", "show interface json", True)
+        warnaln(f"- collect {self.name}", "")
+        #warnaln("end dump ospf json", "")
+        return j
     #MULTI:
 
 if __name__ == "__main__":
