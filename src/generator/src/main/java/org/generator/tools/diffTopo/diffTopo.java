@@ -309,6 +309,7 @@ public class diffTopo {
                     case OSPF -> one_step.put("ospf", ops);
                     case RIP -> one_step.put("rip", ops);
                     case ISIS -> one_step.put("isis", ops);
+                    case BABEL -> one_step.put("babel", ops);
                 }
 
                 //add waitTime

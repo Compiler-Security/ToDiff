@@ -6,6 +6,7 @@ import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.topo.item.base.Router;
 import org.generator.lib.topo.item.base.Router_ISIS;
+import org.generator.lib.topo.pass.attri.babelRanAttriGen;
 import org.generator.lib.topo.pass.attri.isisRanAttriGen;
 import org.generator.lib.topo.pass.attri.ospfRanAttriGen;
 import org.generator.lib.topo.pass.attri.ripRanAttriGen;
@@ -142,7 +143,7 @@ public class topo {
                 routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
                 baseGraphStr = dumpGraphOspf(routers, ran);
             }
-            case RIP -> {
+            case RIP, BABEL -> {
                 var ran = new ripRanBaseGen();
                 routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
                 baseGraphStr = dumpGraphRip(routers, ran);
@@ -180,6 +181,10 @@ public class topo {
             case ISIS -> {
                 var c = new isisRanAttriGen();
                 c.generate(confg, routersIsis);
+            }
+            case BABEL -> {
+                var c = new babelRanAttriGen();
+                c.generate(confg, routers);
             }
         }
 

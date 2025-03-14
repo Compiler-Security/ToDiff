@@ -471,6 +471,10 @@ public class ConfGraph extends AbstractRelationGraph {
         return this.containsNode(NodeGen.getISISName(r_name));
     }
 
+
+    public boolean containsBABELOfRouter(String r_name) {
+        return this.containsNode(NodeGen.getBABELName(r_name));
+    }
     @Override
     public String toDot(boolean verbose) {
         Graph graph = new SingleGraph("RelationGraph");

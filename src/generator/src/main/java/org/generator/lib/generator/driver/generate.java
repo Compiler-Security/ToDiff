@@ -47,6 +47,10 @@ public class generate {
                 var p = new genCorePassIsis();
                 res1 = p.solve(confGraph, ismissinglevel);
             }
+            case BABEL -> {
+                var p = new genCorePassBabel();
+                res1 = p.solve(confGraph, true);
+            }
         }
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass();

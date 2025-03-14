@@ -1,6 +1,8 @@
 package org.generator.lib.reducer.pass;
 
 import org.generator.lib.item.IR.Op;
+import org.generator.lib.item.conf.node.babel.BABEL;
+import org.generator.lib.item.conf.node.babel.BABELIntf;
 import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.lib.item.opg.OpArgG;
@@ -117,6 +119,23 @@ public abstract class baseExecPass {
     public void setCur_isis_intf(ISISIntf cur_isis_intf) {
         this.cur_isis_intf = cur_isis_intf;
     }
+    //============BABEL================================
+
+    public BABEL getCur_babel() {
+        return cur_babel;
+    }
+
+    public void setCur_babel(BABEL cur_babel) {
+        this.cur_babel = cur_babel;
+    }
+
+    public BABELIntf getCur_babel_intf() {
+        return cur_babel_intf;
+    }
+
+    public void setCur_babel_intf(BABELIntf cur_babel_intf) {
+        this.cur_babel_intf = cur_babel_intf;
+    }
 
     Router cur_router;
     Intf cur_intf;
@@ -131,4 +150,7 @@ public abstract class baseExecPass {
     ISIS cur_isis;
     ISISDaemon cur_isis_daemon;
     ISISIntf cur_isis_intf;
+    //===========BABEL==========
+    BABEL cur_babel;
+    BABELIntf cur_babel_intf;
 }

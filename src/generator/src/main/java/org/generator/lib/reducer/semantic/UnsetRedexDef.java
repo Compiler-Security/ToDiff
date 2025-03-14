@@ -129,7 +129,7 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOBRTTDECAY, new OpType[]{BRTTDECAY}},
                 {NOBRTTMIN, new OpType[]{BRTTMIN}},
                 {NOBRTTMAX, new OpType[]{BRTTMAX}},
-                {NOBMAXRTT, new OpType[]{BMAXRTT}},
+                {NOBPENALTY, new OpType[]{BPENALTY}},
                 {NOBENABLETIMESTAMP, new OpType[]{BENABLETIMESTAMP}},
                 {NOBRESENDDELAY, new OpType[]{BRESENDDELAY}},
                 {NOBSOMMOTHING, new OpType[]{BSOMMOTHING}},

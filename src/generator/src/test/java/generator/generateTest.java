@@ -169,6 +169,7 @@ public class generateTest {
     }
     @Test
     public void mainTest(){
+        generate.protocol = generate.Protocol.BABEL;
         for(int i = 0; i < 100; i++){
             System.out.printf("testCase %d\n", i);
             int routerCount = 3,maxStep = 3,maxStepTime = 10, roundNum = 2;

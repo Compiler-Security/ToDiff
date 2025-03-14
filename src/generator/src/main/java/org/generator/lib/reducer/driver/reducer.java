@@ -4,10 +4,7 @@ import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.opg.OpAG;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.graph.ConfGraph;
-import org.generator.lib.reducer.pass.ospfArgPass;
-import org.generator.lib.reducer.pass.reducePass;
-import org.generator.lib.reducer.pass.ripArgPass;
-import org.generator.lib.reducer.pass.isisArgPass;
+import org.generator.lib.reducer.pass.*;
 
 public class reducer {
     /**
@@ -36,10 +33,12 @@ public class reducer {
     public static void reduceToConfG(OpCtxG opCtxG, ConfGraph confG){
         var r = new reducePass();
         var opaG = r.solve(opCtxG).activeSetView();
+        //MULTI:
         switch (generate.protocol){
             case OSPF -> {ospfArgPass.solve(opaG, confG, confG.getR_name());}
             case RIP -> {ripArgPass.solve(opaG, confG, confG.getR_name());}
             case ISIS -> {isisArgPass.solve(opaG, confG, confG.getR_name());}
+            case BABEL -> {babelArgPass.solve(opaG, confG, confG.getR_name());}
         }
     }
 
