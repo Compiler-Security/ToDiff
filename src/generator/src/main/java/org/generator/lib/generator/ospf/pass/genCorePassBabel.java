@@ -4,6 +4,7 @@ import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
+import org.generator.lib.item.conf.node.babel.BABEL;
 import org.generator.lib.item.conf.node.babel.BABELIntf;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.rip.RIPIntf;
@@ -34,6 +35,21 @@ public class genCorePassBabel extends genCorePass {
         return opCtxg;
     }
 
+    OpCtxG handleRouter(){
+        var opCtxg = OpCtxG.Of();
+        BABEL babel = confg.getBABELOfRouter(r_name);
+        if (babel == null) return opCtxg;
+        addOp(opCtxg, OpType.RBABEL);
+        {
+            var op = addOp(opCtxg, OpType.BRESENDDELAY);
+            op.setNUM(babel.getResendDelay());
+        }
+        {
+            var op = addOp(opCtxg, OpType.BSOMMOTHING);
+            op.setNUM(babel.getSmoothing());
+        }
+        return opCtxg;
+    }
     OpCtxG handleIntf(BABELIntf babel_intf){
         var opCtxG = OpCtxG.Of();
         Intf intf = (Intf) confg.getDstsByType(babel_intf.getName(), RelationEdge.EdgeType.INTF).stream().findAny().get();
@@ -95,14 +111,6 @@ public class genCorePassBabel extends genCorePass {
                 var op = addOp(opCtxG, OpType.BENABLETIMESTAMP);
             }
         }
-        {
-            var op = addOp(opCtxG, OpType.BRESENDDELAY);
-            op.setNUM(babel_intf.getResendDelay());
-        }
-        {
-            var op = addOp(opCtxG, OpType.BSOMMOTHING);
-            op.setNUM(babel_intf.getSmoothing());
-        }
         return opCtxG;
     }
 
@@ -135,6 +143,7 @@ public class genCorePassBabel extends genCorePass {
         //intfs
         opgs.addAll(handleIntfs());
 
+        opgs.add(handleRouter());
         //network
         opgs.add(handleNetwork());
         return opgs;

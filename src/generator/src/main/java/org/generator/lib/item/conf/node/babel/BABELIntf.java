@@ -99,22 +99,6 @@ public class BABELIntf extends AbstractNode {
         this.timeStamps = timeStamps;
     }
 
-    public int getResendDelay() {
-        return resendDelay;
-    }
-
-    public void setResendDelay(int resendDelay) {
-        this.resendDelay = resendDelay;
-    }
-
-    public int getSmoothing() {
-        return smoothing;
-    }
-
-    public void setSmoothing(int smoothing) {
-        this.smoothing = smoothing;
-    }
-
     boolean wired;
     boolean splitHorizon;
     int helloInterval;
@@ -126,8 +110,6 @@ public class BABELIntf extends AbstractNode {
     int rttMax;
     int penalty;
     boolean timeStamps;
-    int resendDelay;
-    int smoothing;
     @Override
     public void initFiled() {
         wired = true;
@@ -141,7 +123,5 @@ public class BABELIntf extends AbstractNode {
         rttMax = 120000;
         penalty = 150;
         timeStamps = false;
-        resendDelay = 2000;
-        smoothing = 4;
     }
 }

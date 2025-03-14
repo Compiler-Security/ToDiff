@@ -54,12 +54,6 @@ public class babelIntfExecPass extends baseExecPass{
             case BENABLETIMESTAMP -> {
                 cur_babel_intf.setTimeStamps(true);
             }
-            case BRESENDDELAY -> {
-                cur_babel_intf.setResendDelay(op.getNUM());
-            }
-            case BSOMMOTHING -> {
-                cur_babel_intf.setSmoothing(op.getNUM());
-            }
             default -> {
                 assert false: "no exec op %s".formatted(op);
             }

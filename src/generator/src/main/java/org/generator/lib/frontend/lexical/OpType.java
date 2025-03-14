@@ -248,6 +248,9 @@ public enum OpType {
     RBABEL,
     //BABELDI,
     BNETWORKINTF,
+    BRESENDDELAY,
+    BSOMMOTHING,
+
     BWIRE,
     BSPLITHORIZON,
     BHELLOINTERVAL,
@@ -259,12 +262,14 @@ public enum OpType {
     BRTTMAX,
     BPENALTY,
     BENABLETIMESTAMP,
-    BRESENDDELAY,
-    BSOMMOTHING,
+
 
     NORBABEL,
     //NOBABELDI,
     NOBNETWORKINTF,
+    NOBRESENDDELAY,
+    NOBSOMMOTHING,
+
     NOBWIRE,
     NOBSPLITHORIZON,
     NOBHELLOINTERVAL,
@@ -276,8 +281,6 @@ public enum OpType {
     NOBRTTMAX,
     NOBPENALTY,
     NOBENABLETIMESTAMP,
-    NOBRESENDDELAY,
-    NOBSOMMOTHING,
     //============================INVALID=========================
     INVALID;
 
@@ -342,7 +345,7 @@ public enum OpType {
     }
 
     public boolean isBABELUnsetOp(){
-        return (this.ordinal() >= NORBABEL.ordinal() && this.ordinal() <= NOBSOMMOTHING.ordinal()) || this==NOIPAddr;
+        return (this.ordinal() >= NORBABEL.ordinal() && this.ordinal() <= NOBENABLETIMESTAMP.ordinal()) || this==NOIPAddr;
     }
     /**
      * All unset Op
@@ -370,7 +373,7 @@ public enum OpType {
     }
 
     public boolean isBABELSetOp(){
-        return (this.ordinal() >= RBABEL.ordinal() && this.ordinal() <= BSOMMOTHING.ordinal()) || this==IntfName || this == IPAddr;
+        return (this.ordinal() >= RBABEL.ordinal() && this.ordinal() <= BENABLETIMESTAMP.ordinal()) || this==IntfName || this == IPAddr;
     }
 
     /**
@@ -399,7 +402,7 @@ public enum OpType {
     }
 
     public boolean isBABELRouterOp(){
-        return (this.ordinal() >= BNETWORKINTF.ordinal() && this.ordinal() <= BNETWORKINTF.ordinal()) || (this.ordinal() >= NOBNETWORKINTF.ordinal() && this.ordinal() <= NOBNETWORKINTF.ordinal());
+        return (this.ordinal() >= BNETWORKINTF.ordinal() && this.ordinal() <= BSOMMOTHING.ordinal()) || (this.ordinal() >= NOBNETWORKINTF.ordinal() && this.ordinal() <= NOBSOMMOTHING.ordinal());
     }
     /**
      * all ops(set/unset) in router XXX, don't include router XXX, no router XXX, intf name
@@ -427,7 +430,7 @@ public enum OpType {
     }
 
     public boolean isBABELIntfOp(){
-        return (this.ordinal() >= BSPLITHORIZON.ordinal() && this.ordinal() <= BSOMMOTHING.ordinal()) || (this.ordinal() >= NOBSPLITHORIZON.ordinal() && this.ordinal() <= NOBSOMMOTHING.ordinal());
+        return (this.ordinal() >= BWIRE.ordinal() && this.ordinal() <= BENABLETIMESTAMP.ordinal()) || (this.ordinal() >= NOBWIRE.ordinal() && this.ordinal() <= NOBENABLETIMESTAMP.ordinal());
     }
     /**
      * all ops(set/unset) in interface {name}, don't include router ospf, no router ospf, intfname, include ip address

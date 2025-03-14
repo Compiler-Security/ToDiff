@@ -92,7 +92,20 @@ public class babelArgPass {
             exec.execOps(intf_opg, topo);
         }
 
-        //remove OSPF interface if OSPF daemon not running
+        //rip other commands
+        //execute other ospf ops
+        if (babel_opg != null){
+            var exec = new babelDaemonExecPass();
+            exec.setCur_router(topo.getNodeNotNull(r_name));
+            var babel_name = NodeGen.getBABELName(r_name);
+            if (topo.containsNode(babel_name)) {
+                exec.setCur_babel(topo.getNodeNotNull(babel_name));
+            }
+            exec.execOps(babel_opg, topo);
+        }
+
+
+        //remove BABEL interface if BABEL daemon not running
         if (!topo.containsBABELOfRouter(r_name)){
             for(var babelintf : topo.getBABELIntfOfRouter(r_name)){
                 topo.delNode(babelintf);

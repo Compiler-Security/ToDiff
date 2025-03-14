@@ -18,6 +18,14 @@ import java.util.List;
 
 public class babelRanAttriGen implements genAttri{
 
+    void generate_babel_router(BABEL babel){
+        if (generate.fastConvergence){
+            babel.setResendDelay(20);
+        }else{
+            babel.setResendDelay(ranHelper.randomInt(20, 655340));
+        }
+        babel.setSmoothing(0);
+    }
     void generate_babel_intf(BABELIntf babel_intf){
         //for wired network
         babel_intf.setWired(true);
@@ -28,14 +36,10 @@ public class babelRanAttriGen implements genAttri{
         if (generate.fastConvergence){
             babel_intf.setHelloInterval(20);
             babel_intf.setUpdateInterval(20);
-            babel_intf.setResendDelay(20);
-            //FIXME is it right?
-            babel_intf.setSmoothing(0);
+
         }else{
             babel_intf.setHelloInterval(ranHelper.randomInt(20, 655340));
             babel_intf.setUpdateInterval(ranHelper.randomInt(20, 655340));
-            babel_intf.setResendDelay(ranHelper.randomInt(20, 655340));
-            babel_intf.setSmoothing(ranHelper.randomInt(0, 65534));
         }
 
         //FIXME we should use router's cost
@@ -55,6 +59,7 @@ public class babelRanAttriGen implements genAttri{
             var babel = new BABEL(babel_name);
             g.addNode(babel);
             g.addBABELRelation(babel_name, r_name);
+            generate_babel_router(babel);
             for (int j = 0; j < r.intfs.size(); j++) {
                 var intf_name = NodeGen.getIntfName(r_name, j);
                 var babel_intf_name = NodeGen.getBABELIntfName(intf_name);
