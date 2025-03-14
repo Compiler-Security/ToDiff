@@ -94,6 +94,9 @@ public class main {
                     case "isis" -> {
                         generate.protocol = generate.Protocol.ISIS;
                     }
+                    case "babel" -> {
+                        generate.protocol = generate.Protocol.BABEL;
+                    }
                     default -> {
                         System.out.println("Unknown protocol: " + cmd.getOptionValue("protocol"));
                         System.exit(-1);
