@@ -515,7 +515,7 @@ class executor:
                 erroraln(f"+ BABEL commands", "")
                 for j in range(0, len(self.routers)):
                     router_name = self.routers[j]
-                    babel_ops = commands[i]['rip'][j]
+                    babel_ops = commands[i]['babel'][j]
                     self._init_rip(router_name, babel_ops)
                 erroraln(f"- BABEL commands", "")
                 
@@ -531,7 +531,7 @@ class executor:
                 erroraln(f"+ BABEL commands", "")
                 for j in range(len(self.routers) -1, -1, -1):
                     router_name = self.routers[j]
-                    babel_ops = commands[i]['rip'][j]
+                    babel_ops = commands[i]['babel'][j]
                     tmp = self._run_babel_commands(net, router_name, babel_ops)
                     if j == 0:
                         print(tmp)
@@ -543,14 +543,14 @@ class executor:
             res.append({})
             res[i]['exec'] = {}
             res[i]['exec']['phy'] = phy_res
-            res[i]['exec']['rip'] = babel_res
+            res[i]['exec']['babel'] = babel_res
             
             sleep_time = commands[i]['waitTime']
             erroraln(f"wait {sleep_time} s ", "")
             #CLI(net.net)
             if sleep_time == -1:
                 #We wait 30s for RIP to convergence
-                CLI(net.net)
+                #CLI(net.net)
                 erroraln("+ check convergence", "")
                 time.sleep(30)
                 warnaln("   + convergence!", "")
@@ -564,7 +564,7 @@ class executor:
                 #some routers may be deleted
                 if r_name not in net.net.nameToNode:
                     continue
-                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_rip()
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_babel()
             warnaln("   - collect from daemons", "")
             warnaln("   + collect from asan", "")
             for r_name in self.routers:
@@ -608,5 +608,5 @@ class executor:
 
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1740472530_r1.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "rip")
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1741938838.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "babel")
     t.test()
