@@ -15,9 +15,9 @@ h.run_phys("""
            link r2-eth0 s7-eth1 add
            link r2-eth1 s1-eth0 add
            link r3-eth0 s1-eth1 add
-           node r1 set RIP up
-           node r2 set RIP up
-           node r3 set RIP up
+           node r1 set BABEL up
+           node r2 set BABEL up
+           node r3 set BABEL up
            """)
 
 h.net.net.start()

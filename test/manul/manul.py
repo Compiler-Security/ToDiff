@@ -2,6 +2,12 @@ from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.node import  Node
 from mininet.log import setLogLevel
+import sys
+import traceback
+from os import path
+path_to_add = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
+if path_to_add not in sys.path:
+    sys.path.append(path_to_add)
 from src.restful_mininet.node.router_node import FrrNode
 from src.restful_mininet.net.testnet import TestNet
 from src.restful_mininet.exec.inst import MininetInst
