@@ -112,7 +112,7 @@ public class BABELIntf extends AbstractNode {
     boolean timeStamps;
     @Override
     public void initFiled() {
-        wired = true;
+        wired = false;
         splitHorizon = true;
         helloInterval = 4000;
         updateInterval = 16000;
