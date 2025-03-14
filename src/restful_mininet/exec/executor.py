@@ -58,6 +58,14 @@ class executor:
                 for op in opa.split(";"):
                     fp.write(op)
                     fp.write('\n')
+
+    def _init_babel(self, router_name, isis_commands):
+        conf_name = f"{router_name}.conf"
+        with open(path.join(self.conf_file_dir, conf_name), 'w') as fp:
+            for opa in isis_commands:
+                for op in opa.split(";"):
+                    fp.write(op)
+                    fp.write('\n')
 #===============RUN COMMANDS=================
     def _run_phy_commands(self, net, ctx, phy_commands):
         res = []
@@ -132,6 +140,26 @@ class executor:
                 res.append(resStr)
         warnaln("   RIP commands result:", res)
         return res
+
+    def _run_babel_commands(self, net:testnet.TestNet, router_name, ospf_commands):
+        res = []
+        for op in ospf_commands:
+            resStr = ""
+            sub_ops = op.split(";")
+            ctx_op = sub_ops[0]
+                #single ctx_op eg. router ospf
+            if (len(sub_ops) == 1):
+                res.append(net.run_frr_cmds( router_name, ['configure terminal', ctx_op]))
+            else:
+                sub_ops = sub_ops[1:]
+                for sub_op in sub_ops:
+                    r = net.run_frr_cmds(router_name, ['configure terminal', ctx_op, sub_op])
+                    if r != "":
+                        resStr += sub_op + "<-" + r + ";"
+                res.append(resStr)
+        warnaln("   BABEL commands result:", res)
+        return res
+    
 #================CHECK CONVERGENCE============
     def _check_converge_ospf(self, net:testnet.TestNet):
         for r_name in self.routers:
@@ -471,13 +499,90 @@ class executor:
             erroraln("- collect result", "")
         net.stop_net()
         return res
+    
+    def _run_for_babel(self, r):
+        erroraln(f"\n\n======round{r}======","")
+        erroraln("+ mininet init", "")
+        net = testnet.TestNet()
+        erroraln("- mininet init", "")
+        ctx = {"intf":{}}
+        commands = self.conf['commands'][r]
+        res = []
+        for i in range(0, self.step_nums[r]):
+            erroraln(f"\n\n>>>> + step{i} <<<<", "")
+            babel_res = {}
+            if i == 0:
+                erroraln(f"+ BABEL commands", "")
+                for j in range(0, len(self.routers)):
+                    router_name = self.routers[j]
+                    babel_ops = commands[i]['rip'][j]
+                    self._init_rip(router_name, babel_ops)
+                erroraln(f"- BABEL commands", "")
+                
+                erroraln(f"+ PHY commands", "")
+                phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
+                erroraln(f"- PHY commands", "")
+            
+            else:
+                erroraln(f"+ PHY commands", "")
+                phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
+                erroraln(f"- PHY commands", "")
+
+                erroraln(f"+ BABEL commands", "")
+                for j in range(len(self.routers) -1, -1, -1):
+                    router_name = self.routers[j]
+                    babel_ops = commands[i]['rip'][j]
+                    tmp = self._run_babel_commands(net, router_name, babel_ops)
+                    if j == 0:
+                        print(tmp)
+                    babel_res[router_name] = tmp
+                erroraln(f"- RIP commands", "")
+            
+            if i == 0:    
+                net.start_net()
+            res.append({})
+            res[i]['exec'] = {}
+            res[i]['exec']['phy'] = phy_res
+            res[i]['exec']['rip'] = babel_res
+            
+            sleep_time = commands[i]['waitTime']
+            erroraln(f"wait {sleep_time} s ", "")
+            #CLI(net.net)
+            if sleep_time == -1:
+                #We wait 30s for RIP to convergence
+                CLI(net.net)
+                erroraln("+ check convergence", "")
+                time.sleep(30)
+                warnaln("   + convergence!", "")
+            else:
+                time.sleep(sleep_time)
+
+            erroraln("+ collect result", "")
+            warnaln("   + collect from daemons", "")
+            res[i]['watch'] = {}
+            for r_name in self.routers:
+                #some routers may be deleted
+                if r_name not in net.net.nameToNode:
+                    continue
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_rip()
+            warnaln("   - collect from daemons", "")
+            warnaln("   + collect from asan", "")
+            for r_name in self.routers:
+                if r_name not in net.net.nameToNode:
+                    continue
+                net.net.nameToNode[r_name].check_asan()
+            warnaln("   - collect from asan", "")
+            erroraln("- collect result", "")
+        net.stop_net()
+        return res
 #================TEST ENTRY====================
     def test(self):
         #FIXME we should add other process
         self.run_pocess = {
             "ospf": self._run_for_ospf,
             "isis": self._run_for_isis,
-            "rip": self._run_for_rip
+            "rip": self._run_for_rip,
+            "babel": self._run_for_babel
         }
         try:
             res = {}
