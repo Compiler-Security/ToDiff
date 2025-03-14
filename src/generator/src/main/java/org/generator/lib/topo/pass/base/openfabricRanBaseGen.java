@@ -9,109 +9,150 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-class ranConnect_ISIS {
-    private void init() {
-        routerToId = new HashMap<>();
-        idToRouter = new HashMap<>();
-        int s = 0;
-        for (var router : nodes) {
-            routerToId.put(router, s);
-            idToRouter.put(s, router);
-            s++;
-        }
-        subGraph = new UnionFind(nodes.size());
-    }
 
-    private List<Router_ISIS> getRouterOfSubGraphId(int subId) {
-        return routerToId.entrySet().stream().filter(entry -> subGraph.find(entry.getValue()) == subId).map(Map.Entry::getKey).collect(Collectors.toList());
-    }
-
-    private Integer getSubGraphIdOfRouter(Router_ISIS r) {
-        return subGraph.find(routerToId.get(r));
-    }
-
-    private Map<Integer, Set<Intf_ISIS>> getIntfOfSubGraphs() {
-        Map<Integer, Set<Intf_ISIS>> res = new HashMap<>();
-        for (var subId : subGraph.getComponents()) {
-            Set<Intf_ISIS> s = new HashSet<>();
-            res.put(subId, s);
-            for (var r : getRouterOfSubGraphId(subId)) {
-                s.addAll(r.getUnconnectedIntfs());
-            }
-        }
-        return res;
-    }
-
-    private void addOneNetwork(Map<Integer, Set<Intf_ISIS>> subgraphIntfs) {
-        handleOrals(subgraphIntfs);
-        handleConnect(subgraphIntfs);
-    }
-
-    private void handleConnect(Map<Integer, Set<Intf_ISIS>> subgraphIntfs){
-        var choseGraphs = ranHelper.randomElemsOfList(subgraphIntfs.keySet().stream().toList());
-        for(int i = 1; i < choseGraphs.size(); i++){
-            subGraph.union(choseGraphs.get(0), choseGraphs.get(i));
-        }
-        List<Intf_ISIS> choseIntfs = new ArrayList<>();
-        for(var subId: choseGraphs){
-            choseIntfs.addAll(ranHelper.randomElemsOfList(subgraphIntfs.get(subId).stream().toList(), 1));
-        }
-        //1 2 or 3...
-        for(var intf: choseIntfs){
-            intf.networkId = networkId;
-        }
-        networkId++;
-    }
-    private void handleOrals(Map<Integer, Set<Intf_ISIS>> subgraphIntfs) {
-        for (var entry : subgraphIntfs.entrySet()) {
-            var subId = entry.getKey();
-            var s = entry.getValue();
-            if (s.isEmpty()) {
-                if (getRouterOfSubGraphId(subId).isEmpty()) {
-                    System.out.println("ok");
-                }
-                var routers = ranHelper.randomElemsOfList(getRouterOfSubGraphId(subId));
-                for (var r : routers) {
-                    var intf = new Intf_ISIS();
-                    r.intfs.add(intf);
-                    intf.cost = ranHelper.randomInt(1, 65535);
-                    s.add(intf);
-                }
-            }
-        }
-    }
-
-    public void generate(List<Router_ISIS> nodes, int area, int networkId) {
-        this.nodes = nodes;
-        this.area = area;
-        this.networkId = networkId;
-        init();
-        while (true) {
-            var subGraphIntfs = getIntfOfSubGraphs();
-            if (subGraphIntfs.size() == 1 && subGraphIntfs.values().stream().findAny().get().isEmpty()) break;
-            addOneNetwork(subGraphIntfs);
-        }
-    }
-
-    public int networkId;
-    int area;
-    List<Router_ISIS> nodes;
-    UnionFind subGraph;
-    Map<Router_ISIS, Integer> routerToId;
-    Map<Integer, Router_ISIS> idToRouter;
-}
 
 public class openfabricRanBaseGen implements genBase_ISIS {
     public openfabricRanBaseGen() {}
 
     public int networkId;
 
+    /**
+     * @param area (0: T0, 1: T1, 2: T2)
+     * @return routers in the same area
+     */
     List<Router_ISIS> getRoutersOfArea(int area) {
         return routers.stream().filter(router -> router.area == area).collect(Collectors.toList());
     }
 
     List<Router_ISIS> routers;
 
+    public List<Router_ISIS> generate_network(int t0Count, int t1Count, int t2Count, int maxremainingIntfs) {
+        routers = new ArrayList<>();
+        networkId = 0;
+        
+        // 路由器ID计数器
+        int routerId = 0;
+        
+        // 第一阶段: 生成不同层次的路由器
+        // T0层路由器(边缘层)
+        for (int i = 0; i < t0Count; i++) {
+            // T0层路由器使用Area 0标识
+            Router_ISIS router = new Router_ISIS(routerId++, 2, 0);
+            // 为连接到T1层预留足够的接口
+            int intfCount = t1Count;
+            for (int j = 0; j < intfCount; j++) {
+                Intf_ISIS intf = new Intf_ISIS();
+                intf.cost = ranHelper.randomInt(1, 65535);
+                router.intfs.add(intf);
+            }
+            routers.add(router);
+        }
+        
+        // T1层路由器(核心层)
+        for (int i = 0; i < t1Count; i++) {
+            // T1层路由器使用Area 1标识
+            Router_ISIS router = new Router_ISIS(routerId++, 2, 1);
+            // 需要足够的接口连接T0和T2
+            int intfCount = t0Count + t2Count;
+            for (int j = 0; j < intfCount; j++) {
+                Intf_ISIS intf = new Intf_ISIS();
+                intf.cost = ranHelper.randomInt(1, 65535);
+                router.intfs.add(intf);
+            }
+            routers.add(router);
+        }
+        
+        // T2层路由器(超核心层)
+        for (int i = 0; i < t2Count; i++) {
+            // T2层路由器使用Area 2标识
+            Router_ISIS router = new Router_ISIS(routerId++, 2, 2);
+            // 需要足够的接口连接T1层
+            int intfCount = t1Count;
+            for (int j = 0; j < intfCount; j++) {
+                Intf_ISIS intf = new Intf_ISIS();
+                intf.cost = ranHelper.randomInt(1, 65535);
+                router.intfs.add(intf);
+            }
+            routers.add(router);
+        }
+        
+        // 第二阶段: 连接T0和T1层路由器
+        List<Router_ISIS> t0Routers = getRoutersOfArea(0);
+        List<Router_ISIS> t1Routers = getRoutersOfArea(1);
+        
+        // 每个T0设备都应连接到每个T1设备(如果接口数量允许)
+        for (Router_ISIS t0Router : t0Routers) {
+            List<Intf_ISIS> t0Intfs = t0Router.getUnconnectedIntfs();
+            int t0IntfIndex = 0;
+            
+            for (Router_ISIS t1Router : t1Routers) {
+                // 如果T0没有足够接口，则停止连接
+                if (t0IntfIndex >= t0Intfs.size()) {
+                    break;
+                }
+                
+                List<Intf_ISIS> t1Intfs = t1Router.getUnconnectedIntfs();
+                // 确保T1也有未连接的接口
+                if (t1Intfs.isEmpty()) {
+                    continue;
+                }
+                
+                // 连接T0和T1的接口
+                Intf_ISIS t0Intf = t0Intfs.get(t0IntfIndex++);
+                Intf_ISIS t1Intf = t1Intfs.get(0);
+                
+                // 设置相同的networkId以表示连接
+                t0Intf.networkId = networkId;
+                t1Intf.networkId = networkId;
+                networkId++;
+            }
+        }
+        
+        // 第三阶段: 连接T1和T2层路由器
+        List<Router_ISIS> t2Routers = getRoutersOfArea(2);
+        
+        // 每个T1设备都应连接到每个T2设备(如果接口数量允许)
+        for (Router_ISIS t1Router : t1Routers) {
+            List<Intf_ISIS> t1Intfs = t1Router.getUnconnectedIntfs();
+            int t1IntfIndex = 0;
+            
+            for (Router_ISIS t2Router : t2Routers) {
+                // 如果T1没有足够接口，则停止连接
+                if (t1IntfIndex >= t1Intfs.size()) {
+                    break;
+                }
+                
+                List<Intf_ISIS> t2Intfs = t2Router.getUnconnectedIntfs();
+                // 确保T2也有未连接的接口
+                if (t2Intfs.isEmpty()) {
+                    continue;
+                }
+                
+                // 连接T1和T2的接口
+                Intf_ISIS t1Intf = t1Intfs.get(t1IntfIndex++);
+                Intf_ISIS t2Intf = t2Intfs.get(0);
+                
+                // 设置相同的networkId以表示连接
+                t1Intf.networkId = networkId;
+                t2Intf.networkId = networkId;
+                networkId++;
+            }
+        }
+        // third: add network for remaining interfaces
+        for (Router_ISIS router : routers) {
+            var remainingIntfnum = ranHelper.randomInt(0, maxremainingIntfs);
+            for (int i = 0; i < remainingIntfnum; i++) {
+                var intf = new Intf_ISIS();
+                intf.cost = ranHelper.randomInt(1, 65535);
+                intf.networkId = networkId;
+                networkId++;
+                router.intfs.add(intf);
+            }
+        }
+        
+
+        return routers;
+    }
     /**
      * we generate cost, area, network connection of routers/interfaces here
      *
@@ -122,141 +163,39 @@ public class openfabricRanBaseGen implements genBase_ISIS {
      * @return
      */
     public List<Router_ISIS> generate(int totalRouter, int areaCount, int mxDegree, int abrRatio) {
-        routers = new ArrayList<>();
-        networkId = 0;
-        Set<Integer> actualArea = new HashSet<>();
-        var backboneRouters = new ArrayList<Router_ISIS>();
-        // first stage: generate routers
-        for (int i = 0; i < totalRouter; i++) {
-            int level = ranHelper.randomInt(0, 1); // 0: L1, 1: L2, 2: L1-2
-            int area;
-            int tmp_area = ranHelper.randomInt(1, areaCount);
-            if (level == 0) { // L1 router is in non-backbone area
-                area = tmp_area;
-            } else { // L2 router is in backbone area
-                area = 0;
+        // 根据比例分配路由器
+        int ratio = areaCount > 0 ? areaCount: 4; // 默认比例为4:2:1
+        int totalParts = ratio + (ratio/2) + 1; // 如果ratio是4，则总份数为4+2+1=7
+        
+        int t0Count = totalRouter * ratio / totalParts;
+        int t1Count = totalRouter * (ratio/2) / totalParts;
+        int t2Count = totalRouter / totalParts;
+        
+        // 确保每层至少有一个设备
+        t0Count = Math.max(1, t0Count);
+        t1Count = Math.max(1, t1Count);
+        t2Count = Math.max(1, t2Count);
+        
+        // 调整总数以匹配分配
+        int adjustedTotal = t0Count + t1Count + t2Count;
+        if (adjustedTotal > totalRouter) {
+            // 如果超出，优先减少T2和T1
+            int excess = adjustedTotal - totalRouter;
+            while (excess > 0 && t2Count > 1) {
+                t2Count--;
+                excess--;
             }
-            var intfNum = ranHelper.randomInt(1, mxDegree);
-            var isL12 = (ranHelper.randomInt(1, 10) <= abrRatio) && intfNum > 1;
-            var L12_num = getRoutersOfArea(tmp_area).stream().filter(r -> r.level == 2).count();
-            if (isL12 && L12_num == 0) {
-                level = 2;
-                area = tmp_area;
+            while (excess > 0 && t1Count > 1) {
+                t1Count--;
+                excess--;
             }
-            var r = new Router_ISIS(i, level, area);
-            routers.add(r);
-            actualArea.add(area);
-            // generate interfaces
-            for (int j = 0; j < intfNum; j++) {
-                var intf = new Intf_ISIS();
-                intf.cost = ranHelper.randomInt(1, 65535);
-                r.intfs.add(intf);
+            while (excess > 0 && t0Count > 1) {
+                t0Count--;
+                excess--;
             }
-        }
-
-        Map<Integer, Integer> renumber = new HashMap<>();
-        int ns = 0;
-        for(int i = 0; i <= areaCount; i++){
-            if (actualArea.contains(i)) renumber.put(i, ns++);
-        }
-        for(var r: routers){
-            r.area = renumber.get(r.area);
-        }
-        areaCount = ns - 1;
-        //make sure all routers in the area 0 are L2 routers
-        var l2Routers = getRoutersOfArea(0);
-        for (var r : l2Routers) {
-            if (r.level == 0 || r.level == 2) {
-                r.level = 1;
-            }
-        }
-
-        //add all L2 routers in the backbone area
-        for(var r : l2Routers){
-            backboneRouters.add(r);
         }
         
-
-        // second stage: connect routers in the same non-backbone area
-        for (int i = 1; i <= areaCount; i++) {
-            var areaRouters = getRoutersOfArea(i);
-            var c = new ranConnect_ISIS();
-            c.generate(areaRouters, i, networkId); 
-            networkId = c.networkId;
-        }
-
-        // third stage: connect L1-2 with L1 and add L1-2 in the backbone area
-        l2Routers = backboneRouters.stream()
-            .filter(r -> r.level == 1)
-            .collect(Collectors.toList());
-        for(int i = 1; i <= areaCount; i++) {
-            var areaRouters = getRoutersOfArea(i);
-            if(areaRouters.isEmpty()) continue;
-            var l12Routers = areaRouters.stream()
-                .filter(r -> r.level == 2)
-                .collect(Collectors.toList());
-            if(l12Routers.isEmpty()){
-                // if there is no L1-2 router, choose a L1 router to become a L1-2 router
-                var selectedRouter = ranHelper.randomElemsOfList(areaRouters, 1).get(0);
-                selectedRouter.level = 2;
-                l12Routers.add(selectedRouter);
-            }
-            if (l12Routers.size()>1) {
-                throw new RuntimeException("L1-2 routers are more than 1");
-                
-            }
-            else{
-                // if all the intfs of L1-2 routers are not connected, choose a L1 router to connect with L1-2 routers
-                var connectedL12Intfs = l12Routers.stream().flatMap(r -> r.getConnectedIntfs().stream()).collect(Collectors.toList());
-                if(connectedL12Intfs.isEmpty()){
-                    while(true){
-                        var selectedRouter = ranHelper.randomElemsOfList(areaRouters, 1).get(0);
-                        if(l12Routers.contains(selectedRouter)){
-                            continue;
-                        }
-                        // add intfs
-                        var intf1 = new Intf_ISIS();
-                        var intf2 = new Intf_ISIS();
-                        intf1.cost = ranHelper.randomInt(1, 65535);
-                        intf2.cost = ranHelper.randomInt(1, 65535);
-                        selectedRouter.intfs.add(intf1);
-                        l12Routers.get(0).intfs.add(intf2);
-
-                        // set networkId
-                        intf1.networkId = networkId;
-                        intf2.networkId = networkId;
-                        networkId++;
-                    }
-                }
-            }
-            for (var r : l12Routers) {
-                backboneRouters.add(r);
-            }
-        }  
-
-
-
-        // fourth stage: connect L1-2 routers
-        // var alll12Routers = backboneRouters.stream()
-        //     .filter(r -> r.level == 2)
-        //     .collect(Collectors.toList());
-
-        // if(alll12Routers.isEmpty() == false) {
-        //     var c = new ranConnect_ISIS();
-        //     c.generate(alll12Routers, 0, networkId);  
-        //     networkId = c.networkId;
-        // }
-
-
-        // fifth stage: connect routers in the backbone area 
-        var allbackbonerouters = backboneRouters.stream()
-            .filter(r -> r.level == 1||r.level == 2)
-            .collect(Collectors.toList());
-
-        var c = new ranConnect_ISIS();
-        c.generate(allbackbonerouters, 0, networkId); 
-        networkId = c.networkId;
-        
-        return routers;
+        return generate_network(t0Count, t1Count, t2Count, mxDegree);
     }
+    
 }

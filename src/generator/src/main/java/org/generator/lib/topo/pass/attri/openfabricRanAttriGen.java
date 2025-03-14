@@ -50,7 +50,7 @@ public class openfabricRanAttriGen implements genAttri_ISIS {
         //all attribute is random
         //FIXME for testing we must choose some important value such as 1, 65535 etc.
         daemon.setSetoverloadbit(ranHelper.randomInt(0, 1) == 0);
-        daemon.setTier(ranHelper.randomInt(0, 14));
+        //daemon.setTier(ranHelper.randomInt(0, 14));
         if(generate.fastConvergence){
             daemon.setLspgeninterval(30);
         }
@@ -138,20 +138,25 @@ public class openfabricRanAttriGen implements genAttri_ISIS {
             NET net = NET.of(areaId + "." + systemId + ".00");
             openfabric.setNET(net);
 
-            // set router type
-            // if(r.level == 0){
-            //     openfabric.setRouterType(FABRIC.RouterType.LEVEL1);
-            // }else if(r.level == 1){
-            //     openfabric.setRouterType(FABRIC.RouterType.LEVEL2);
-            // }else if(r.level == 2){
-            //     openfabric.setRouterType(FABRIC.RouterType.LEVEL1_2);
-            // }
-            // else{
-            //     throw new RuntimeException("level should be 0, 1, 2");
-            // }
             g.addNode(openfabric);
             openfabrics.add(openfabric);
             var openfabric_daemon = new FABRICDaemon(openfabric_daemon_name);
+            // set tier
+
+            if(r.area == 0){
+                openfabric_daemon.setTier(0);
+            }
+            else if(r.area == 1){
+                openfabric_daemon.setTier(1);
+            }
+            else if(r.area == 2){
+                openfabric_daemon.setTier(2);
+            }
+            else{
+                throw new RuntimeException("area should be 0, 1, 2");
+            }
+
+
             openfabric_daemons.add(openfabric_daemon);
             g.addNode(openfabric_daemon);
             g.addOpenFabricRelation(openfabric_name, r_name);

@@ -39,6 +39,9 @@ public class LexDef {
                 {NODESETISISUP, "node {NAME} set ISIS up"},
                 {NODESETISISSHUTDOWN, "node {NAME} set ISIS down"},
                 {NODESETISISRE, "node {NAME} set ISIS restart"},
+                {NODESETFABRICUP, "node {NAME} set FABRIC up"},
+                {NODESETFABRICSHUTDOWN, "node {NAME} set FABRIC down"},
+                {NODESETFABRICRE, "node {NAME} set FABRIC restart"},
                 //{OSPFCONF, "ROSPFCONF"},
 
                 {ROSPF, "router ospf"},
@@ -246,8 +249,8 @@ public class LexDef {
                 {IPROUTERFABRIC, "ip router openfabric 1"},
                 {FABRICCSNPINTERVAL, "openfabric csnp-interval {NUM(1-600)}"},
                 {FABRICHELLOINTERVAL, "openfabric hello-interval {NUM(1-600)}"},
-                {FABRICHELLOMULTIPLIER, "openfabric hello-multiplier {NUM(2-100)"},
-                {FABRICPSNPINTERVAL, "openfabric psnp-interval {NUM(1-120)"},
+                {FABRICHELLOMULTIPLIER, "openfabric hello-multiplier {NUM(2-100)}"},
+                {FABRICPSNPINTERVAL, "openfabric psnp-interval {NUM(1-120)}"},
                 {FABRICPASSIVE, "openfabric passive"},
 
                 // ----no openfabric----
@@ -259,8 +262,8 @@ public class LexDef {
                 {NOIPROUTERFABRIC, "no ip router openfabric 1"},
                 {NOFABRICCSNPINTERVAL, "no openfabric csnp-interval {NUM(1-600)}"},
                 {NOFABRICHELLOINTERVAL, "no openfabric hello-interval {NUM(1-600)}"},
-                {NOFABRICHELLOMULTIPLIER, "no openfabric hello-multiplier {NUM(2-100)"},
-                {NOFABRICPSNPINTERVAL, "no openfabric psnp-interval {NUM(1-120)"},
+                {NOFABRICHELLOMULTIPLIER, "no openfabric hello-multiplier {NUM(2-100)}"},
+                {NOFABRICPSNPINTERVAL, "no openfabric psnp-interval {NUM(1-120)}"},
                 {NOFABRICPASSIVE, "no openfabric passive"},
 
                 //MULTI:

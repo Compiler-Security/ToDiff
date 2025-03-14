@@ -57,7 +57,7 @@ public class genCorePassOpenfabric extends genCorePass {
             // }
             {
                 if(daemon.isSetoverloadbit()){
-                    var op = addOp(opCtxG, OpType.SETOVERLOADBIT);
+                    var op = addOp(opCtxG, OpType.FABRICSETOVERLOADBIT);
                 }
             }
             {

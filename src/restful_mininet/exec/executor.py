@@ -12,6 +12,7 @@ from mininet.cli import CLI
 import os
 import json
 import time
+import re
 
 class executor:
     def __init__(self):
@@ -55,6 +56,14 @@ class executor:
         conf_name = f"{router_name}.conf"
         with open(path.join(self.conf_file_dir, conf_name), 'w') as fp:
             for opa in isis_commands:
+                for op in opa.split(";"):
+                    fp.write(op)
+                    fp.write('\n')
+
+    def _init_openfabric(self, router_name, openfabric_commands):
+        conf_name = f"{router_name}.conf"
+        with open(path.join(self.conf_file_dir, conf_name), 'w') as fp:
+            for opa in openfabric_commands:
                 for op in opa.split(";"):
                     fp.write(op)
                     fp.write('\n')
@@ -132,6 +141,28 @@ class executor:
                 res.append(resStr)
         warnaln("   RIP commands result:", res)
         return res
+    
+    def _run_openfabric_commands(self, net:testnet.TestNet, router_name, openfabric_commands):
+        res = []
+        for op in openfabric_commands:
+            if op in ["write terminal"]:
+                res.append(net.run_frr_cmds(router_name, [op]))
+            else:
+                resStr = ""
+                sub_ops = op.split(";")
+                ctx_op = sub_ops[0]
+                #single ctx_op eg. router openfabric
+                if (len(sub_ops) == 1):
+                    res.append(net.run_frr_cmds( router_name, ['configure terminal', ctx_op]))
+                else:
+                    sub_ops = sub_ops[1:]
+                    for sub_op in sub_ops:
+                        r = net.run_frr_cmds(router_name, ['configure terminal', ctx_op, sub_op])
+                        if r != "":
+                            resStr += sub_op + "<-" + r + ";"
+                    res.append(resStr)
+        warnaln("   openfabric commands result:", res)
+        return res
 #================CHECK CONVERGENCE============
     def _check_converge_ospf(self, net:testnet.TestNet):
         for r_name in self.routers:
@@ -189,7 +220,7 @@ class executor:
             match = re.search(r'hostname\s+(\S+)', running_config)
             hostname = match.group(1)
 
-            res = net.net.nameToNode[r_name].dump_neighbor_info_isis()
+            res = net.net.nameToNode[r_name].dump_isis_neighbor_info()
             for area in res.get("areas", []):
                 for circuit in area.get("circuits", []): 
                     if circuit.get("adj") == None:
@@ -208,6 +239,54 @@ class executor:
 
         return True
 
+    def _check_converge_openfabric(self, net:testnet.TestNet):
+        for r_name in self.routers:
+            warnln(f"    +check router {r_name}")
+            res = net.net.nameToNode[r_name].dump_openfabric_daemon_info()
+            if res == None:
+                warnln(f"    -check router {r_name} n")
+                return False
+
+            for vrf in res.get("vrfs", []):
+                for area in vrf.get("areas", []):
+                    for level in area.get("levels", []):
+                        if level.get("spf") != "no pending":
+                            warnln(f"    -check router {r_name} daspf")
+                            return False
+                        # if level.get("lsp-purged") != 0:
+                        #     warnln(f"    -check router {r_name} dapurged")
+                        #     return False
+            res = net.net.nameToNode[r_name].dump_openfabric_intfs_info()
+
+            for area in res.get("areas", []):
+                for circuit in area.get("circuits", []):
+                    interface = circuit.get("interface", {})
+                    if interface.get("state") == "Initializing":
+                        warnln(f"    -check router {r_name} in")
+                        return False
+            
+            running_config = net.net.nameToNode[r_name].dump_openfabric_running_config()
+            match = re.search(r'hostname\s+(\S+)', running_config)
+            hostname = match.group(1)
+
+            res = net.net.nameToNode[r_name].dump_openfabric_neighbor_info()
+            for area in res.get("areas", []):
+                for circuit in area.get("circuits", []): 
+                    if circuit.get("adj") == None:
+                        continue
+                    if circuit.get("adj") != hostname:
+                        warnln(f"    -check router {r_name} adj")
+                        print(circuit.get("adj"))
+                        print(hostname)
+                        return False    
+                    interface = circuit.get("interface", {})
+                    if interface.get("state") == "Initializing":
+                        warnln(f"    -check router {r_name} nb")
+                        return False
+            
+            warnln(f"    -check router {r_name} y")
+
+        return True
 #================RUN PROCESSS==================
     def _run_for_ospf(self, r):
         erroraln(f"\n\n======round{r}======","")
@@ -471,13 +550,111 @@ class executor:
             erroraln("- collect result", "")
         net.stop_net()
         return res
+    
+
+    def _run_for_openfabric(self, r):
+        erroraln(f"\n\n======round{r}======","")
+        erroraln("+ mininet init", "")
+        net = testnet.TestNet()
+        erroraln("- mininet init", "")
+        ctx = {"intf":{}}
+        commands = self.conf['commands'][r]
+        res = []
+        for i in range(0, self.step_nums[r]):
+            erroraln(f"\n\n>>>> + step{i} <<<<", "")
+
+
+            openfabric_res = {}
+            if i == 0:
+                erroraln(f"+ openfabric commands", "")
+                for j in range(0, len(self.routers)):
+                    router_name = self.routers[j]
+                    openfabric_ops = commands[i]['openfabric'][j]
+                    self._init_openfabric(router_name, openfabric_ops)
+                erroraln(f"- openfabric commands", "")
+
+                erroraln(f"+ PHY commands", "")
+                phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
+                erroraln(f"- PHY commands", "")
+
+            else:
+                erroraln(f"+ PHY commands", "")
+                phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
+                erroraln(f"- PHY commands", "")
+
+                erroraln(f"+ openfabric commands", "")
+                for j in range(len(self.routers) -1, -1, -1):
+                    router_name = self.routers[j]
+                    openfabric_ops = commands[i]['openfabric'][j]
+                    tmp = self._run_openfabric_commands(net, router_name, openfabric_ops)
+                    if j == 0:
+                        print(tmp)
+                    openfabric_res[router_name] = tmp
+                erroraln(f"- openfabric commands", "")
+
+            if i == 0:
+                net.start_net()
+            res.append({})
+            res[i]['exec'] = {}
+            res[i]['exec']['phy'] = phy_res
+            res[i]['exec']['openfabric'] = openfabric_res
+
+            sleep_time = commands[i]['waitTime']
+            erroraln(f"wait {sleep_time} s ", "")
+            res[i]['database']={}
+            if sleep_time == -1:
+                #handle convergence
+                    #min(_check_convergence() + minWaitTime, maxWaitTime)
+                    #for simplicity, maxWaitTime % minWaitTime == 0
+                erroraln("+ check convergence", "")
+                begin_t = time.time()
+                while True:
+                    if self._check_converge_openfabric(net):
+                        time.sleep(self.minWaitTime)
+                        res[i]['exec']['convergence'] = True
+                        warnaln("   + convergence!", "")
+                        break
+                    else:
+                        if time.time() - begin_t >= self.maxWaitTime:
+                            res[i]['exec']['convergence'] = False
+                            warnaln("   + not convergence!", "")
+                            break
+                        else:
+                            time.sleep(10)
+                for r_name in self.routers:
+                #some routers may be deleted
+                    if r_name not in net.net.nameToNode:
+                        continue
+                    res[i]['database'][r_name] = net.net.nameToNode[r_name].dump_openfabric_database()
+                    print(net.net.nameToNode[r_name].dump_route_info())
+            else:
+                time.sleep(sleep_time)
+            erroraln("+ collect result", "")
+            warnaln("   + collect from daemons", "")
+            res[i]['watch'] = {}
+            for r_name in self.routers:
+                #some routers may be deleted
+                if r_name not in net.net.nameToNode:
+                    continue
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_openfabric()
+            warnaln("   - collect from daemons", "")
+            warnaln("   + collect from asan", "")
+            for r_name in self.routers:
+                if r_name not in net.net.nameToNode:
+                    continue
+                net.net.nameToNode[r_name].check_asan()
+            warnaln("   - collect from asan", "")
+            erroraln("- collect result", "")
+        net.stop_net()
+        return res
 #================TEST ENTRY====================
     def test(self):
         #FIXME we should add other process
         self.run_pocess = {
             "ospf": self._run_for_ospf,
             "isis": self._run_for_isis,
-            "rip": self._run_for_rip
+            "rip": self._run_for_rip,
+            "openfabric": self._run_for_openfabric
         }
         try:
             res = {}
@@ -503,5 +680,5 @@ class executor:
 
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1740472530_r1.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "rip")
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1741926902.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 110, 600, "openfabric")
     t.test()
