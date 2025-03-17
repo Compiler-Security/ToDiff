@@ -86,6 +86,7 @@ public class OverrideRedexDef extends BaseRedexDef {
                 {RBABEL, new OpType[]{}, 0},
                 {BNETWORKINTF, new OpType[]{BNETWORKINTF}, 1},
                 {BWIRE, new OpType[]{BWIRE}, 1},
+                {IPAddr6, new OpType[]{IPAddr6}, 1}
                 //Other set instruction
                 //{XXX, new OpType[XXX], 0}
 

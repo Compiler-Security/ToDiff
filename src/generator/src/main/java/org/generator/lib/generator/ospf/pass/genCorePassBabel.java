@@ -13,12 +13,42 @@ import org.generator.util.net.IPRange;
 import org.generator.util.ran.ranHelper;
 import org.jetbrains.annotations.NotNull;
 
+import java.net.Inet6Address;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class genCorePassBabel extends genCorePass {
     String r_name;
     ConfGraph confg;
+
+    static String toFormattedLinkLocalIPv6(String ipv4) throws UnknownHostException {
+        InetAddress ipv4Address = InetAddress.getByName(ipv4);
+        byte[] ipv4Bytes = ipv4Address.getAddress();
+
+        // Initialize IPv6 address with FE80::/10
+        byte[] ipv6Bytes = new byte[16];
+        ipv6Bytes[0] = (byte) 0xFE;
+        ipv6Bytes[1] = (byte) 0x80;
+        for (int i = 2; i < 8; i++) {
+            ipv6Bytes[i] = 0x00;
+        }
+
+        // Use part of IPv4 to create "X:X::X:X" format
+        ipv6Bytes[8] = (byte) (ipv4Bytes[0] ^ 0xAA);  // Use first IPv4 byte with XOR
+        ipv6Bytes[9] = (byte) (ipv4Bytes[1] ^ 0x55);
+        ipv6Bytes[10] = 0x00; // Set 0 to force "::"
+        ipv6Bytes[11] = 0x00; // Keep "::"
+        ipv6Bytes[12] = (byte) (ipv4Bytes[2] ^ 0x33);
+        ipv6Bytes[13] = ipv4Bytes[3];
+        ipv6Bytes[14] = 0x00; // Keep consistent format
+        ipv6Bytes[15] = (byte) (ipv4Bytes[3] ^ 0x77);
+
+        // Convert to IPv6 address
+        InetAddress ipv6Address = Inet6Address.getByAddress(ipv6Bytes);
+        return ipv6Address.getHostAddress().replace("::0", "::") + "/64";
+    }
 
     private OpCtxG handleNetwork(){
         var opCtxg = OpCtxG.Of();
@@ -47,6 +77,9 @@ public class genCorePassBabel extends genCorePass {
         {
             var op = addOp(opCtxg, OpType.BSOMMOTHING);
             op.setNUM(babel.getSmoothing());
+        }
+        {
+            var op = addOp(opCtxg, OpType.BREDISTRIBUTE);
         }
         return opCtxg;
     }
@@ -126,6 +159,14 @@ public class genCorePassBabel extends genCorePass {
             {
                 var op = addOp(opCtxG, OpType.IPAddr);
                 op.setIP(intf.getIp());
+            }
+            {
+                var op = addOp(opCtxG, OpType.IPAddr6);
+                try {
+                    op.setNAME(toFormattedLinkLocalIPv6(intf.getIp().getAddress()));
+                } catch (UnknownHostException e) {
+                    throw new RuntimeException(e);
+                }
             }
             opgs.add(opCtxG);
         }

@@ -54,6 +54,7 @@ public class babelIntfExecPass extends baseExecPass{
             case BENABLETIMESTAMP -> {
                 cur_babel_intf.setTimeStamps(true);
             }
+            case IPAddr6 -> {}
             default -> {
                 assert false: "no exec op %s".formatted(op);
             }

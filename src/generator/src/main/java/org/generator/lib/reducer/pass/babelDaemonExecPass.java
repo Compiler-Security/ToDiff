@@ -19,6 +19,7 @@ public class babelDaemonExecPass extends baseExecPass{
             case BSOMMOTHING -> {
                 cur_babel.setSmoothing(op.getNUM());
             }
+            case BREDISTRIBUTE -> {}
             default -> {assert false: "unknown commands %s".formatted((OpOspf) op);}
         }
         return ExecStat.SUCC;

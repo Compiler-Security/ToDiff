@@ -248,10 +248,13 @@ public enum OpType {
     RBABEL,
     //BABELDI,
     BNETWORKINTF,
+    BREDISTRIBUTE,
     BRESENDDELAY,
     BSOMMOTHING,
 
     BWIRE,
+    //currently we set this command in babel for safety, it should be in zebra
+    IPAddr6,
     BSPLITHORIZON,
     BHELLOINTERVAL,
     BUPDATEINTERVAL,
@@ -267,10 +270,12 @@ public enum OpType {
     NORBABEL,
     //NOBABELDI,
     NOBNETWORKINTF,
+    NOBREDISTRIBUTE,
     NOBRESENDDELAY,
     NOBSOMMOTHING,
 
     NOBWIRE,
+    NOIPAddr6,
     NOBSPLITHORIZON,
     NOBHELLOINTERVAL,
     NOBUPDATEINTERVAL,

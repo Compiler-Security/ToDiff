@@ -121,6 +121,8 @@ public class UnsetRedexDef extends BaseRedexDef{
                 //{NOBABELDI, new OpType[]{BABELDI}},
                 {NOBNETWORKINTF, new OpType[]{BNETWORKINTF}},
                 {NOBWIRE, new OpType[]{BWIRE}},
+                {NOIPAddr6, new OpType[]{IPAddr6}},
+                {NOBREDISTRIBUTE, new OpType[]{BREDISTRIBUTE}},
                 {NOBSPLITHORIZON, new OpType[]{BSPLITHORIZON}},
                 {NOBHELLOINTERVAL, new OpType[]{BHELLOINTERVAL}},
                 {NOBUPDATEINTERVAL, new OpType[]{BUPDATEINTERVAL}},

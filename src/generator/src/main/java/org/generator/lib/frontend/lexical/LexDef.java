@@ -241,7 +241,9 @@ public class LexDef {
                 //FIXME is there babel id?
                 //{BABELDI, "babel diversity"},
                 {BNETWORKINTF, "network {NAME}"},
+                {BREDISTRIBUTE, "redistribute ipv4 connected"},
                 {BWIRE, "babel {NAME(wired,wireless)}"},
+                {IPAddr6, "ipv6 address {NAME}"},
                 {BSPLITHORIZON, "no babel split-horizon"},
                 {BHELLOINTERVAL, "babel hello-interval {NUM(20-655340)}"},
                 {BUPDATEINTERVAL, "babel update-interval {NUM(20-655340)}"},
@@ -258,7 +260,9 @@ public class LexDef {
                 {NORBABEL, "no router babel"},
                 //{NOBABELDI, "no babel diversity"},
                 {NOBNETWORKINTF, "no network {NAME}"},
+                {NOBREDISTRIBUTE, "no redistribute ipv4 connected"},
                 {NOBWIRE, "no babel {NAME(wired,wireless)}"},
+                {NOIPAddr6, "no ipv6 address {NAME}"},
                 {NOBSPLITHORIZON, "babel split-horizon"},
                 //FIXME Current implementation is wrong as we should ignore the arguments
                 {NOBHELLOINTERVAL, "no babel hello-interval {NUM(20-655340)}"},
