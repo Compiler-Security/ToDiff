@@ -292,6 +292,8 @@ class MininetInst(BaseInst):
                     self._save_intf_to_ctx(self._get_pair_intf(intf2, "R"))
                     self.net.net.delLink(intf2.link)
                 l: Link = self.net.net.addLink(node1, node2, intfName1=intfname1, intfName2=intfname2, cls=TCLink)
+                node1.cmd(f"ip -6 addr flush dev {intfname1}")
+                node2.cmd(f"ip -6 addr flush dev {intfname2}")
                 self._load_intf_to_ctx(l.intf1)
                 self._load_intf_to_ctx(l.intf2)
                 self._save_intf_to_ctx(l.intf1)

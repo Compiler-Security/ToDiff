@@ -3,7 +3,7 @@ import manul
 import os
 from os import path
 os.system("mn -c 2> /dev/null")
-h = manulTest(path.join(WORK_DIR, "rip", "conf"))
+h = manulTest(path.join(WORK_DIR, "babel", "conf"))
 h.net.router_nodes = ["r1", "r2", "r3"]
 h.run_phys("""
            node r1 add
