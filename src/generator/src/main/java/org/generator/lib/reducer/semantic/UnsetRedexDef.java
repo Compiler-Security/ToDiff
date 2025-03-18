@@ -120,7 +120,7 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NORBABEL, new OpType[]{RBABEL}},
                 //{NOBABELDI, new OpType[]{BABELDI}},
                 {NOBNETWORKINTF, new OpType[]{BNETWORKINTF}},
-                {NOBWIRE, new OpType[]{BWIRE}},
+                {NOBWIRE, new OpType[]{BWIRE, BRXCOST,BCHANELNOINTEFERING,BSPLITHORIZON}},
                 {NOIPAddr6, new OpType[]{IPAddr6}},
                 {NOBREDISTRIBUTE, new OpType[]{BREDISTRIBUTE}},
                 {NOBSPLITHORIZON, new OpType[]{BSPLITHORIZON}},
@@ -143,6 +143,9 @@ public class UnsetRedexDef extends BaseRedexDef{
 //                case NoAreaRangeSub -> {seeds.add(new Object[]{item[0], item[1], 2});}
                 case NOAreaRangeCost,NOAreaRangeNoAd,NOAreaRange -> {
                     seeds.add(new Object[]{item[0], item[1], 2});
+                }
+                case NOBWIRE -> {
+                    seeds.add(new Object[]{item[0], item[1], 0});
                 }
                 default -> {
                     seeds.add(new Object[]{item[0], item[1], LexDef.getLexDef(opType).get(0).Args.size()});
