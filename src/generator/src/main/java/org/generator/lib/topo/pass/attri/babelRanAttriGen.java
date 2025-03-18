@@ -34,8 +34,8 @@ public class babelRanAttriGen implements genAttri{
 
         babel_intf.setSplitHorizon(ranHelper.randomInt(0, 5) > 0);
         if (generate.fastConvergence){
-            babel_intf.setHelloInterval(20);
-            babel_intf.setUpdateInterval(20);
+            babel_intf.setHelloInterval(2000);
+            babel_intf.setUpdateInterval(2000);
 
         }else{
             babel_intf.setHelloInterval(ranHelper.randomInt(20, 655340));
