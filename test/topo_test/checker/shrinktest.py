@@ -21,4 +21,4 @@ def shrink_test(rd, file_path):
     
 if __name__ == "__main__":
     #rd from 0
-    shrink_test(1, "/home/frr/topo-fuzz/test/topo_test/data/testConf/test1740472530.json")
+    shrink_test(0, "/home/frr/topo-fuzz/test/topo_test/data/testConf/test1742282936.json")

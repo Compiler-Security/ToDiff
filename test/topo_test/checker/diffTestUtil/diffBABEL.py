@@ -46,6 +46,9 @@ class diffBABEL:
     def babelNeighbor(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "babel-neighbor")
     
+    def routingTable(self, rd, step, router):
+        return self.watchOfConf(rd, step, router, "routing-table")
+    
     def shrink_babelRoute(self, str):
         return str.split("\r\n")
 
@@ -58,14 +61,32 @@ class diffBABEL:
                 res[val] = []
                 key = val
             else:
-                res[key].append(val)
+                res[key].append(re.sub("ifindex [0-9]+", "", val))
         return res
     
     def shrink_babelNeighbor(self, str):
-        return str.split("\r\n")
+        res = []
+        for val in str.split("\r\n"):
+            if len(val) == 0: continue
+            l = val.split(" ")
+            res.append( {
+                "neighbour": l[1],
+                "dev": l[3],
+                "rxcost": l[7],
+                "txcost": l[9]
+            })
+        return res
 
-
-
+    def check_routingTable(self, rt, rd):
+        return util.dict_diff(self.shrink_routingTable(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
+    
+    def shrink_routingTable(self, n_dict:dict):
+        new_dict = copy.deepcopy(n_dict)
+        for val in new_dict.values():
+            for nexthop in val[0]["nexthops"]:
+                nexthop.pop("advertisedRouter", None)
+        return new_dict
+    
     def check_babel_route(self, rt, rd):
         res = util.compare_lists(self.shrink_babelRoute(self.babelRoute(0, self.step_nums[0] - 1, rt)), self.shrink_babelRoute(self.babelRoute(rd, self.step_nums[rd] -1, rt)))
         if len(res["unique_to_first"])== 0 and len(res["unique_to_second"]) == 0:
@@ -122,11 +143,13 @@ def checkTest(test_name, diffAll):
 
         #res = checkFunc(rd, diff_RIP, diff_RIP.check_convergence, "check_convergence", buf)
         #if (not res and not diffAll): continue
-        
-        res = checkFunc(rd, diff_BABEL, diff_BABEL.check_babel_route, "check_babel_route", buf)
         res = checkFunc(rd, diff_BABEL, diff_BABEL.check_babel_interface, "check_babel_interface", buf)
+        if (not res and not diffAll): continue
         res = checkFunc(rd, diff_BABEL, diff_BABEL.check_babel_neighbor, "check_babel_neighbor", buf)
-        #res = checkFunc(rd, diff_BABEL, diff_BABEL.check_routingTable, "check_routingTable", buf)
+        if (not res and not diffAll): continue
+        res = checkFunc(rd, diff_BABEL, diff_BABEL.check_babel_route, "check_babel_route", buf)
+        if (not res and not diffAll): continue
+        res = checkFunc(rd, diff_BABEL, diff_BABEL.check_routingTable, "check_routingTable", buf)
        
     
     return buf.getvalue()

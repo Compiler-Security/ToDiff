@@ -402,7 +402,7 @@ class FrrNode(Node):
             self._collect_info_ospf(j, "babel-interface", "show babel interface", False)
             self._collect_info_ospf(j, "babel-neighbor", "show babel neighbor", False)
             self._collect_info_ospf(j, "babel-parameters", "show babel parameters", False)
-            #self._collect_info_ospf(j, "routing-table", "show ip route json", True)
+            self._collect_info_ospf(j, "routing-table", "show ip route json", True)
         if "zebra" in self.daemon_dict:
             self._collect_info_ospf(j, "running-config", "show running-config", False)
             #self._collect_info_ospf(j, "intfs", "show interface json", True)
