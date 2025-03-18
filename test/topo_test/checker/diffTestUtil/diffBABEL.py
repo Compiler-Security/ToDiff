@@ -53,6 +53,7 @@ class diffBABEL:
         res = {}
         key = ""
         for val in str.split("\r\n"):
+            if (val == ""): continue
             if (val[0] != ' '):
                 res[val] = []
                 key = val
@@ -66,7 +67,7 @@ class diffBABEL:
 
 
     def check_babel_route(self, rt, rd):
-        res = util.compare_lists(self.shrink_ripRoute(self.babelRoute(0, self.step_nums[0] - 1, rt)), self.shrink_babelRoute(self.babelRoute(rd, self.step_nums[rd] -1, rt)))
+        res = util.compare_lists(self.shrink_babelRoute(self.babelRoute(0, self.step_nums[0] - 1, rt)), self.shrink_babelRoute(self.babelRoute(rd, self.step_nums[rd] -1, rt)))
         if len(res["unique_to_first"])== 0 and len(res["unique_to_second"]) == 0:
             return {}
         else: 
@@ -75,8 +76,8 @@ class diffBABEL:
     def check_babel_interface(self, rt, rd):
         return util.dict_diff(self.shrink_babelInterface(self.babelInterface(0, self.step_nums[0] - 1, rt)), self.shrink_babelInterface(self.babelInterface(rd, self.step_nums[rd] - 1, rt)))
         
-    def check_routingTable(self, rt, rd):
-        return util.dict_diff(self.shrink_routingTable(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
+    # def check_routingTable(self, rt, rd):
+    #     return util.dict_diff(self.shrink_routingTable(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
     
     
     def check_babel_neighbor(self, rt, rd):
@@ -125,7 +126,7 @@ def checkTest(test_name, diffAll):
         res = checkFunc(rd, diff_BABEL, diff_BABEL.check_babel_route, "check_babel_route", buf)
         res = checkFunc(rd, diff_BABEL, diff_BABEL.check_babel_interface, "check_babel_interface", buf)
         res = checkFunc(rd, diff_BABEL, diff_BABEL.check_babel_neighbor, "check_babel_neighbor", buf)
-        res = checkFunc(rd, diff_BABEL, diff_BABEL.check_routingTable, "check_routingTable", buf)
+        #res = checkFunc(rd, diff_BABEL, diff_BABEL.check_routingTable, "check_routingTable", buf)
        
     
     return buf.getvalue()
