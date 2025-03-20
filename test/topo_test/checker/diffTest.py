@@ -16,7 +16,7 @@ def checkTests(protocol):
     diff_dir = path.join(util.checkDir, "diff")
     os.makedirs(diff_dir, exist_ok=True)
     for test_name in util.get_all_test_name():
-        #if test_name != "test1742267600.json":
+        #if test_name != "test1742298068.json":
         #    continue
         if protocol == "ospf":
             res = diffTestUtil.diffOSPF.checkTest(test_name, False)

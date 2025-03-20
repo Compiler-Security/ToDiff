@@ -220,8 +220,10 @@ class MininetInst(BaseInst):
         if _cmds_equal_prefix(op_args, ["up"]):
             if intf is None:
                 return self.EXEC_MISS
-            return self._run_cmd(intf.ifconfig, "up")
-
+            self._run_cmd(intf.ifconfig, "up")
+            _node.cmd(f"ip -6 addr flush dev {intf_name}")
+            return self.EXEC_DONE
+        
         if _cmds_equal_prefix(op_args, ["down"]):
             if intf is None:
                 assert False, "intf is None"

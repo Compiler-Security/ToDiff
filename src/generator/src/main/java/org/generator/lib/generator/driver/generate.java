@@ -83,7 +83,7 @@ public class generate {
                     continue;
                 }
                 //System.out.println(opa);
-                controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
+                if (opa != null && !controller.hasConfigOfOpa(opa)) controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                 break;
             }
         }
@@ -101,7 +101,7 @@ public class generate {
                     continue;
                 }
                 var mutate_opa = actionRulePass.mutate(ori_opa);
-                if (mutate_opa != null){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
+                if (mutate_opa != null && !controller.hasConfigOfOpa(mutate_opa)){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                     break;
                 }
             }

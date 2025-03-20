@@ -69,6 +69,7 @@ class diffBABEL:
         for val in str.split("\r\n"):
             if len(val) == 0: continue
             l = val.split(" ")
+            if (l[5][0] != 'f'): continue
             res.append( {
                 "neighbour": l[1],
                 "dev": l[3],
