@@ -11,7 +11,9 @@ h.run_phys("""
            link r1-eth0 s7-eth0 add
            intf r1-eth0 down
            intf r1-eth0 up
+           node r1 set BABEL up
            """)
+h.net.net.getNodeByName("r1").cmd("ip -6 addr flush dev r1-eth0")
 
 h.net.net.start()
 
