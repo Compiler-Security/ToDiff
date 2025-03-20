@@ -18,7 +18,7 @@ import static org.generator.util.diff.differ.compareJson;
 
 public class shrinkCorePass {
 
-    ObjectNode getJson(ConfGraph confG){
+    public static ObjectNode getJson(ConfGraph confG){
         ObjectNode jsonObject = new ObjectMapper().createObjectNode();
         for(var node: confG.getNodes()){
             jsonObject.set(node.getName(), node.getJsonNode());

@@ -3,6 +3,7 @@
  */
 package org.generator.lib.generator.ospf.pass;
 
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpAnalysis;
@@ -105,6 +106,11 @@ public class genEqualPass {
                 } else{
                     break;
                 }
+            }
+        }
+        for(var slot:slots.getOpas()){
+            if (slot.getOp().Type() == OpType.BWIRE && slot.getOp().getNAME().equals("wired") && slot.getState() != OpAnalysis.STATE.ACTIVE){
+                System.out.println(slot);
             }
         }
         return cur_opag;
