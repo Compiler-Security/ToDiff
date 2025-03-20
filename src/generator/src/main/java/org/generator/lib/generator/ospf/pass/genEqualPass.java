@@ -108,11 +108,6 @@ public class genEqualPass {
                 }
             }
         }
-        for(var slot:slots.getOpas()){
-            if (slot.getOp().Type() == OpType.BWIRE && slot.getOp().getNAME().equals("wired") && slot.getState() != OpAnalysis.STATE.ACTIVE){
-                System.out.println(slot);
-            }
-        }
         return cur_opag;
     }
 }
