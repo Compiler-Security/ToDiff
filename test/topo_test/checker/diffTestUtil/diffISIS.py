@@ -86,16 +86,21 @@ class diffISIS:
             for circuit in area.get("circuits", []):
                 # 删除 expires-in 字段
                 circuit.pop("expires-in", None)
+                circuit.pop("circuit", None)
                 
                 interface = circuit.get("interface", {})
                 if isinstance(interface, dict):
 
                     #interface.pop("adj-flaps", None)
                     interface.pop("last-ago", None)
-                    #interface.pop("snpa", None)
+                    interface.pop("snpa", None)
                     #interface.pop("lan-id", None)
                     #interface.pop("lan-prio", None)
                     #interface.pop("dis-flaps", None)
+                    disflaps = interface.get("dis-flaps", [])
+                    if disflaps:
+                        disflaps.pop("ago", None)
+                        disflaps.pop("last", None)
         return new_data
     def shrink_ospfDaemon(self, n_dict:dict):
         key_set = ["routerId", "tosRoutesOnly", "rfc2328Conform", "holdtimeMinMsecs", "holdtimeMaxMsecs", "spfScheduleDelayMsecs", "maximumPaths", "writeMultiplier", "abrType", "attachedAreaCounter"]
@@ -157,14 +162,32 @@ class diffISIS:
 
         for area in new_data.get("areas", []):
 
-            for circuit in area.get("circuits", []):
-                interface = circuit.get("interface", {})
-                interface.pop("snpa", None)
-                interface.pop("ipv6-link-locals", None)
-                for level in interface.get("levels", []):
-                    level.pop("metric", None)
-                    lan = level.get("lan", {})
-                    lan.pop("is-dis", None)
+            # 提取并规范化所有电路信息
+            if "circuits" in area:
+                circuits = area["circuits"]
+                # 创建一个可排序的列表
+                sorted_circuits = []
+                
+                for circuit in circuits:
+                    circuit.pop("circuit", None)
+                    interface = circuit.get("interface", {})
+                    interface.pop("snpa", None)
+                    interface.pop("ipv6-link-locals", None)
+                    interface.pop("circuit-id", None)
+                    for level in interface.get("levels", []):
+                        level.pop("metric", None)
+                        lan = level.get("lan", {})
+                        if lan:
+                            lan.pop("is-dis", None)
+                    
+                    # 添加到待排序列表
+                    sorted_circuits.append(circuit)
+                
+                # 按接口名称排序
+                sorted_circuits.sort(key=lambda x: x.get("interface", {}).get("name", ""))
+                
+                # 替换原始电路列表
+                area["circuits"] = sorted_circuits
                     
         return new_data
     

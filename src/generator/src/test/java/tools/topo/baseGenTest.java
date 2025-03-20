@@ -91,7 +91,7 @@ public class baseGenTest {
             System.out.printf("testCase %d\n", x);
             
             var ran = new isisRanBaseGen();
-            var routers = ran.generate(3, 2, 2, 3);
+            var routers = ran.generate(5, 3, 3, 3);
             Graph graph = new MultiGraph("BaseGraph");
             for(int i = 0; i < routers.size(); i++){
                 var node = graph.addNode("r%d".formatted(i));
