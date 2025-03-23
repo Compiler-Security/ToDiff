@@ -179,7 +179,6 @@ public class diffTopo {
 
         //generate router graph
         var confg = topo.genGraph(router_count, topo.areaCount, topo.mxDegree, topo.abrRatio, false, dumpInfo);
-
         //generate ospf core commands, all the round is same
         //For isis, noting that ismissinglevel is false, we don't generate commands that missing level
         List<OpCtxG> ospf_cores = new ArrayList<>();

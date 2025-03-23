@@ -193,6 +193,27 @@ public class openfabricRanBaseGen implements genBase_ISIS {
                 t0Count--;
                 excess--;
             }
+        } else if (adjustedTotal < totalRouter) {
+            // 如果不足，优先增加T0，然后是T1，最后是T2
+            int deficit = totalRouter - adjustedTotal;
+            while (deficit > 0) {
+                t0Count++;
+                deficit--;
+                if (deficit <= 0) break;
+                
+                t1Count++;
+                deficit--;
+                if (deficit <= 0) break;
+                
+                t2Count++;
+                deficit--;
+            }
+        }
+         // 再次检查总数是否符合要求
+        adjustedTotal = t0Count + t1Count + t2Count;
+        if (adjustedTotal != totalRouter) {
+            System.out.println("警告: 调整后的设备总数(" + adjustedTotal + 
+                            ")与要求的总数(" + totalRouter + ")不匹配。");
         }
         
         return generate_network(t0Count, t1Count, t2Count, mxDegree);

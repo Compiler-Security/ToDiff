@@ -162,9 +162,9 @@ class diffOpenFabric:
                 interface.pop("snpa", None)
                 interface.pop("ipv6-link-locals", None)
                 for level in interface.get("levels", []):
-                    level.pop("metric", None)
+                    #level.pop("metric", None)
                     lan = level.get("lan", {})
-                    lan.pop("is-dis", None)
+                    #lan.pop("is-dis", None)
                     
         return new_data
     

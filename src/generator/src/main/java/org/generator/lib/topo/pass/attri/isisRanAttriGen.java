@@ -83,15 +83,17 @@ public class isisRanAttriGen implements genAttri_ISIS {
         //FIXME for testing we must choose some important value such as 1, 65535 etc.
         daemon.setAdvertisehighmetrics(ranHelper.randomInt(0, 1) == 0);
         daemon.setLspmtu(ranHelper.randomInt(128, 4352));
-        daemon.setOverloadbitonstartup(ranHelper.randomInt(0, 86400));
+        
         daemon.setSetoverloadbit(ranHelper.randomInt(0, 1) == 0);
         if(generate.fastConvergence){
             daemon.setLspgenintervalLevel1(30);
             daemon.setLspgenintervalLevel2(30);
+            daemon.setOverloadbitonstartup(1);
         }
         else{
             daemon.setLspgenintervalLevel1(ranHelper.randomInt(1, 120));
             daemon.setLspgenintervalLevel2(ranHelper.randomInt(1, 120));
+            daemon.setOverloadbitonstartup(ranHelper.randomInt(0, 86400));
         }
 
         if(generate.fastConvergence){

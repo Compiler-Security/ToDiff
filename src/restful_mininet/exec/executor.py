@@ -680,5 +680,5 @@ class executor:
 
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1742375975.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 600, 1200, "isis")
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1742456439.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 100, 800, "isis")
     t.test()

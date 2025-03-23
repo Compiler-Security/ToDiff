@@ -27,6 +27,9 @@ import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.file.FileSinkDOT;
 import org.junit.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -188,7 +191,22 @@ public class baseGenTest {
         }
         
     }
-
+    @Test
+    public void test_diffTopo(){
+        ObjectNode dumpInfo = new ObjectMapper().createObjectNode();
+        generate.protocol = generate.Protocol.OpenFabric;
+        var router_count = 6;
+        var confg = topo.genGraph(router_count, 3, 3, 3,false, dumpInfo);
+        System.out.println(confg.toDot(false));
+        List<String> routers_name = new ArrayList<>();
+        for(int i = 0; i < router_count; i++){
+            routers_name.add(NodeGen.getRouterName(i));
+        }
+        List<OpCtxG> ospf_cores = new ArrayList<>();
+        for(int i = 0; i < router_count; i++) {
+            ospf_cores.add(getConfOfRouter(routers_name.get(i), confg, false, false));
+        }
+    }
 
     @Test
     public void testRandomBaseGen_Openfabric(){
@@ -200,7 +218,7 @@ public class baseGenTest {
             System.out.printf("testCase %d\n", x);
             
             var ran = new openfabricRanBaseGen();
-            var routers = ran.generate(3, 4, 1, 3);
+            var routers = ran.generate(6, 3, 3, 3);
             Graph graph = new MultiGraph("BaseGraph");
             for(int i = 0; i < routers.size(); i++){
                 var node = graph.addNode("r%d".formatted(i));

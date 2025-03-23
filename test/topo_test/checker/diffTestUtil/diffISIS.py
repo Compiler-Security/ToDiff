@@ -94,7 +94,7 @@ class diffISIS:
                     #interface.pop("adj-flaps", None)
                     interface.pop("last-ago", None)
                     interface.pop("snpa", None)
-                    #interface.pop("lan-id", None)
+                    interface.pop("lan-id", None)
                     #interface.pop("lan-prio", None)
                     #interface.pop("dis-flaps", None)
                     disflaps = interface.get("dis-flaps", [])
