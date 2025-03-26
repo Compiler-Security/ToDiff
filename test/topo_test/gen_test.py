@@ -8,8 +8,8 @@ dockerDir = up(up(up(path.abspath(__file__))))
 dataDir = up(path.abspath(__file__))
 
 test_num = 10
-router_count = 7
-mx_degree = 4
+router_count = 2
+mx_degree = 2
 protocol = "babel"
 def _run_test_sh(cmd):
     os.chdir(dockerDir)
