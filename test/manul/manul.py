@@ -43,7 +43,7 @@ class manulTest():
     def _run_ospf(self, net:TestNet, router_name, ospf_commands):
         res = []
         for op in ospf_commands:
-            if op in ["clear ip ospf process", "write terminal", "show ip ospf neighbor json", "show ip ospf", "show ip ospf interface json", "show ip ospf database"]:
+            if op in ["clear ip ospf process", "write terminal", "show ip ospf neighbor json", "show ip ospf", "show ip ospf interface json", "show ip ospf database", "show babel route"]:
                 res.append(net.run_frr_cmds(router_name, [op]))
             else:
                 resStr = ""

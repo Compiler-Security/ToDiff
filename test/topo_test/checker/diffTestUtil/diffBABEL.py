@@ -50,8 +50,10 @@ class diffBABEL:
         return self.watchOfConf(rd, step, router, "routing-table")
     
     def shrink_babelRoute(self, str):
-        return str.split("\r\n")
-
+        l = [re.sub("seqno [0-9]+", "", re.sub("age [0-9]+", "", st))for st in str.split("\r\n")]
+        l1 = [re.sub("id [0-9a-f:]+","", st) for st in l]
+        return l1
+    
     def shrink_babelInterface(self, str):
         res = {}
         key = ""
