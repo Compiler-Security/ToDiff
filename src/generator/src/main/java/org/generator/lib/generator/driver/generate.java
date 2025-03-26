@@ -132,6 +132,13 @@ public class generate {
         if (opType == OpType.BNETWORKINTF){
             return true;
         }
+
+        //We don't change babel wired/ babel wireless because the special case
+        //babel wireless;no babel wireless; babel wired; babel wired will not reset other arguments
+        //See https://github.com/FRRouting/frr/pull/18413
+        if (opType == OpType.BWIRE){
+            return true;
+        }
         return false;
     }
 
