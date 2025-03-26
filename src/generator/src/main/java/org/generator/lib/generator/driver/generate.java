@@ -128,6 +128,10 @@ public class generate {
                         -> {return true;}
             }
         }
+
+        if (opType == OpType.BNETWORKINTF){
+            return true;
+        }
         return false;
     }
 
