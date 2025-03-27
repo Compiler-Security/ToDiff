@@ -1,6 +1,7 @@
 package generator;
 
 import org.generator.lib.frontend.driver.IO;
+import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.phy.Intf;
@@ -191,14 +192,23 @@ public class generateTest {
 
     @Test
     public void BWRIETest(){
+        generate.protocol = generate.Protocol.BABEL;
         var confg = topo.genGraph(1, topo.areaCount, topo.mxDegree, topo.abrRatio, false, null);
         confg = confg.viewConfGraphOfRouter("r0");
         confg.setR_name("r0");
         var core = generate.generateCore(confg,false);
+        int i = 0;
         while(true) {
+            System.out.printf("testCase %d\n", i++);
             var equal = generate.generateEqualOfCore(core, true);
-            var g = confg.copyPhyGraph();
-            reducer.reduceToConfG(equal, g);
+            for(var op: equal){
+                if (op.getOpOspf().Type() == OpType.BWIRE || op.getOpOspf().Type() == OpType.NOBWIRE){
+                    System.out.println(op.getOpOspf());
+                }
+            }
+            break;
+            //var g = confg.copyPhyGraph();
+            //reducer.reduceToConfG(equal, g);
             //assert getJson(confg).equals(getJson(g));
         }
     }

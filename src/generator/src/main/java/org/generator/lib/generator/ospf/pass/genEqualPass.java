@@ -74,6 +74,15 @@ public class genEqualPass {
                         //check precondition
                         if (!checkPreCondition(new_opas, new_opag)) continue;
 
+                        boolean canMove = true;
+                        //if new_opa has slot, and it can't be moved from REMOVED to active, we should not trigger the new_opa
+                        for (var opa: new_opag.getOps()){
+                            if (slots.hasConfigOfOpa(opa) && !slots.canMoveOfOpa(opa)){
+                                canMove = false;
+                            }
+                        }
+                        if (!canMove) continue;
+
                         //if ok, handle after effects
                         handleAfterEffects(actionSlot, new_opas, new_opag,  slots);
                         //then randomly insert opas to gen_opag
