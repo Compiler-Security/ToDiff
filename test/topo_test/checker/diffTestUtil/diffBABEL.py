@@ -53,7 +53,8 @@ class diffBABEL:
         l = [re.sub("seqno [0-9]+", "", re.sub("age [0-9]+", "", st))for st in str.split("\r\n")]
         l1 = [re.sub("id [0-9a-f:]+","", st) for st in l]
         l2 = [re.sub("via r[0-9]+-eth[0-9]+", "", st) for st in l1]
-        return l2
+        l3 = [re.sub("(installed)|(feasible)", "", st) for st in l2]
+        return l3
     
     def shrink_babelInterface(self, str):
         res = {}
@@ -89,6 +90,9 @@ class diffBABEL:
         for val in new_dict.values():
             val[0].pop("nexthopGroupId", None)
             val[0].pop("uptime", None)
+            val[0].pop("installedNexthopGroupId", None)
+            val[0].pop("internalNextHopNum", None)
+            val[0].pop("internalNextHopActiveNum", None)
             for nexthop in val[0]["nexthops"]:
                 nexthop.pop("interfaceName", None)
                 nexthop.pop("advertisedRouter", None)
