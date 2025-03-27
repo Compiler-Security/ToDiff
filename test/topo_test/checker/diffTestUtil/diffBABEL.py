@@ -52,7 +52,8 @@ class diffBABEL:
     def shrink_babelRoute(self, str):
         l = [re.sub("seqno [0-9]+", "", re.sub("age [0-9]+", "", st))for st in str.split("\r\n")]
         l1 = [re.sub("id [0-9a-f:]+","", st) for st in l]
-        return l1
+        l2 = [re.sub("via r[0-9]+-eth[0-9]+", "", st) for st in l1]
+        return l2
     
     def shrink_babelInterface(self, str):
         res = {}
@@ -86,12 +87,12 @@ class diffBABEL:
     def shrink_routingTable(self, n_dict:dict):
         new_dict = copy.deepcopy(n_dict)
         for val in new_dict.values():
-            if "nexthopGroupId" in val[0]:
-                val[0].pop("nexthopGroupId", None)
-            if "uptime" in val[0]:
-                val[0].pop("uptime", None)
+            val[0].pop("nexthopGroupId", None)
+            val[0].pop("uptime", None)
             for nexthop in val[0]["nexthops"]:
+                nexthop.pop("interfaceName", None)
                 nexthop.pop("advertisedRouter", None)
+                nexthop.pop("interfaceIndex", None)
         return new_dict
     
     def check_babel_route(self, rt, rd):

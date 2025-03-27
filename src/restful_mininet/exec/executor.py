@@ -550,7 +550,7 @@ class executor:
             #CLI(net.net)
             if sleep_time == -1:
                 #We wait 30s for RIP to convergence
-                CLI(net.net)
+                #CLI(net.net)
                 erroraln("+ check convergence", "")
                 time.sleep(30)
                 warnaln("   + convergence!", "")
