@@ -431,7 +431,7 @@ public enum OpType {
     }
 
     public boolean isISISIntfOp(){
-        return (this.ordinal() >= IPROUTERISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal()) || (this.ordinal() >= NOCIRCUITTYPE.ordinal())|| this == IPAddr || this == NOIPAddr || this == IPROUTERISIS || this == NOIPROUTERISIS;
+        return (this.ordinal() >= IPROUTERISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal()) || (this.ordinal() >= NOCIRCUITTYPE.ordinal() && this.ordinal() <= NOPSNPINTERVAL.ordinal())|| this == IPAddr || this == NOIPAddr || this == IPROUTERISIS || this == NOIPROUTERISIS;
     }
 
     public boolean isBABELIntfOp(){
@@ -442,7 +442,7 @@ public enum OpType {
      * @return
      */
     public boolean isIntfOp(){
-        return isZEBRAIntfOp() || isOSPFIntfOp() || isRIPIntfOp() || isISISIntfOp();
+        return isZEBRAIntfOp() || isOSPFIntfOp() || isRIPIntfOp() || isISISIntfOp() || isBABELIntfOp();
     }
 
     public static Set<OpType> OSPFOps, RIPOps, ISISOps, BABELOps;
