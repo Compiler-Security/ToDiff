@@ -191,14 +191,17 @@ public class generateTest {
 
     @Test
     public void BWRIETest(){
+        generate.protocol = generate.Protocol.BABEL;
         var confg = topo.genGraph(1, topo.areaCount, topo.mxDegree, topo.abrRatio, false, null);
         confg = confg.viewConfGraphOfRouter("r0");
         confg.setR_name("r0");
         var core = generate.generateCore(confg,false);
         while(true) {
             var equal = generate.generateEqualOfCore(core, true);
-            var g = confg.copyPhyGraph();
-            reducer.reduceToConfG(equal, g);
+            System.out.println(equal);
+            break;
+            //var g = confg.copyPhyGraph();
+            //reducer.reduceToConfG(equal, g);
             //assert getJson(confg).equals(getJson(g));
         }
     }

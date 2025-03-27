@@ -120,7 +120,7 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NORBABEL, new OpType[]{RBABEL}},
                 //{NOBABELDI, new OpType[]{BABELDI}},
                 {NOBNETWORKINTF, new OpType[]{BNETWORKINTF}},
-                {NOBWIRE, new OpType[]{BWIRE, BRXCOST,BCHANELNOINTEFERING,BSPLITHORIZON}},
+                {NOBWIRE, new OpType[]{BWIRE}},
                 {NOIPAddr6, new OpType[]{IPAddr6}},
                 {NOBREDISTRIBUTE, new OpType[]{BREDISTRIBUTE}},
                 {NOBSPLITHORIZON, new OpType[]{BSPLITHORIZON}},
