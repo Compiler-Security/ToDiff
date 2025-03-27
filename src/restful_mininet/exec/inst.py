@@ -176,7 +176,7 @@ class MininetInst(BaseInst):
             up_node: FrrNode = self._get_node(node_name)
             if up_node is None:
                 return self.EXEC_MISS
-            return self._run_cmd(up_node.stop_frr_isis)
+            return self._run_cmd(up_node.stop_frr)
         
         if _cmds_equal_prefix(op_args, ["router", "set", "RIP", "up"]):
             up_node: FrrNode = self._get_node(node_name)
@@ -199,7 +199,7 @@ class MininetInst(BaseInst):
             res = self._run_cmd(up_node.load_babel, ["zebra", "babeld", "mgmtd"], conf_dir=self.workdir, universe=True)
             #self._run_cmd(up_node.log_load_frr)
             return res
-        
+
         if _cmds_equal_prefix(op_args, ["router", "set", "BABEL", "down"]):
             up_node: FrrNode = self._get_node(node_name)
             if up_node is None:
@@ -208,6 +208,29 @@ class MininetInst(BaseInst):
 
         raise InstErrorException("[mininet] node inst not right")
 
+
+
+        # openfabric
+        if _cmds_equal_prefix(op_args, ["router", "set", "FABRIC", "up"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
+            res = self._run_cmd(up_node.load_fabric, ["zebra", "fabricd", "mgmtd"], conf_dir=self.workdir, universe=True)
+            #self._run_cmd(up_node.log_load_frr)
+            return res
+
+        if _cmds_equal_prefix(op_args, ["router", "set", "FABRIC", "down"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
+            return self._run_cmd(up_node.stop_fabricd, conf_dir=self.workdir)
+
+        if _cmds_equal_prefix(op_args, ["router", "set", "FABRIC", "restart"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
+            return self._run_cmd(up_node.stop_frr)
+        raise InstErrorException("[mininet] node inst not right")
     def _run_intf_cmd(self, args):
         if len(args) < 2:
             raise InstErrorException("[mininet] intf inst not right")
@@ -223,7 +246,7 @@ class MininetInst(BaseInst):
             self._run_cmd(intf.ifconfig, "up")
             _node.cmd(f"ip -6 addr flush dev {intf_name}")
             return self.EXEC_DONE
-        
+
         if _cmds_equal_prefix(op_args, ["down"]):
             if intf is None:
                 assert False, "intf is None"

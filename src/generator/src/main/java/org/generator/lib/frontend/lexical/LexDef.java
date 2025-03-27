@@ -43,6 +43,9 @@ public class LexDef {
                 {NODESETBABELUP, "node {NAME} set BABEL up"},
                 {NODESETBABELSHUTDOWN, "node {NAME} set BABEL down"},
                 {NODESETBABELRE, "node {NAME} set BABEL restart"},
+                {NODESETFABRICUP, "node {NAME} set FABRIC up"},
+                {NODESETFABRICSHUTDOWN, "node {NAME} set FABRIC down"},
+                {NODESETFABRICRE, "node {NAME} set FABRIC restart"},
                 //{OSPFCONF, "ROSPFCONF"},
 
                 {ROSPF, "router ospf"},
@@ -276,6 +279,35 @@ public class LexDef {
                 {NOBENABLETIMESTAMP, "no babel enable-timestamps"},
                 {NOBRESENDDELAY, "no babel resend-delay {NUM(20-655340)}"},
                 {NOBSOMMOTHING, "no babel smoothing-half-life {NUM(0-65534)}"},
+                //OpenFabric
+                {RFABRIC, "router openfabric 1"},
+                {FABRICSETOVERLOADBIT, "set-overload-bit"},
+                {FABRICTIER, "fabric-tier {NUM(0-14)}"},
+                // ----daemon----
+                {FABRICLSPGENINTERVAL, "lsp-gen-interval {NUM(1-120)}"},
+                {FABRICSPFINTERVAL, "spf-interval {NUM(1-120)}"},
+
+                // ----interface----
+                {IPROUTERFABRIC, "ip router openfabric 1"},
+                {FABRICCSNPINTERVAL, "openfabric csnp-interval {NUM(1-600)}"},
+                {FABRICHELLOINTERVAL, "openfabric hello-interval {NUM(1-600)}"},
+                {FABRICHELLOMULTIPLIER, "openfabric hello-multiplier {NUM(2-100)}"},
+                {FABRICPSNPINTERVAL, "openfabric psnp-interval {NUM(1-120)}"},
+                {FABRICPASSIVE, "openfabric passive"},
+
+                // ----no openfabric----
+                {NORFABRIC, "no router openfabric 1"},
+                {NOFABRICSETOVERLOADBIT, "no set-overload-bit"},
+                {NOFABRICTIER, "no fabric-tier {NUM(0-14)}"},
+                {NOFABRICLSPGENINTERVAL, "no lsp-gen-interval {NUM(1-120)}"},
+                {NOFABRICSPFINTERVAL, "no spf-interval {NUM(1-120)}"},
+                {NOIPROUTERFABRIC, "no ip router openfabric 1"},
+                {NOFABRICCSNPINTERVAL, "no openfabric csnp-interval {NUM(1-600)}"},
+                {NOFABRICHELLOINTERVAL, "no openfabric hello-interval {NUM(1-600)}"},
+                {NOFABRICHELLOMULTIPLIER, "no openfabric hello-multiplier {NUM(2-100)}"},
+                {NOFABRICPSNPINTERVAL, "no openfabric psnp-interval {NUM(1-120)}"},
+                {NOFABRICPASSIVE, "no openfabric passive"},
+
                 //MULTI:
                 //INVALID will not to match, it can read/write invalid str to bypass [NAME]
                 {INVALID, "{NAME}"},

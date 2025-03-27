@@ -122,6 +122,10 @@ public class genOpPass {
             RouterOps.remove(OpType.NET);
             RouterOps.remove(OpType.ISTYPE);
         }
+        if (generate.protocol == generate.Protocol.OpenFabric){
+            intfOps.remove(OpType.IPROUTERFABRIC);
+            RouterOps.remove(OpType.NET);
+        }
         if (inIntf){
             op_type = intfOps.get(ranHelper.randomInt(0, intfOps.size() - 1));
         }else  {

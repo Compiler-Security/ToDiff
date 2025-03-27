@@ -61,7 +61,51 @@ class manulTest():
                     res.append(resStr)
         warnaln("   OSPF commands result:", res)
         return res
-    
+    def _run_openfabric(self, net:TestNet, router_name, openfabric_commands):
+        res = []
+        for op in openfabric_commands:
+            if op in ["write terminal", "show running-config","show openfabric neighbor detail json", "show openfabric interface detail json", "show openfabric route json", "show openfabric summary json"]:
+                res.append(net.run_frr_cmds(router_name, [op]))
+            else:
+                resStr = ""
+                sub_ops = op.split(";")
+                ctx_op = sub_ops[0]
+                #single ctx_op eg. router openfabric
+                if (len(sub_ops) == 1):
+                    res.append(net.run_frr_cmds( router_name, ['configure terminal', ctx_op]))
+                else:
+                    sub_ops = sub_ops[1:]
+                    for sub_op in sub_ops:
+                        r = net.run_frr_cmds(router_name, ['configure terminal', ctx_op, sub_op])
+                        if r != "":
+                            resStr += sub_op + "<-" + r + ";"
+                    res.append(resStr)
+        warnaln("   openfabric commands result:", res)
+        print(res[0])
+        return res
+
+    def _run_isis(self, net:TestNet, router_name, isis_commands):
+        res = []
+        for op in isis_commands:
+            if op in ["write terminal", "show running-config","show isis neighbor detail", "show isis interface detail", "show isis route json", "show isis summary"]:
+                res.append(net.run_frr_cmds(router_name, [op]))
+            else:
+                resStr = ""
+                sub_ops = op.split(";")
+                ctx_op = sub_ops[0]
+                #single ctx_op eg. router isis
+                if (len(sub_ops) == 1):
+                    res.append(net.run_frr_cmds( router_name, ['configure terminal', ctx_op]))
+                else:
+                    sub_ops = sub_ops[1:]
+                    for sub_op in sub_ops:
+                        r = net.run_frr_cmds(router_name, ['configure terminal', ctx_op, sub_op])
+                        if r != "":
+                            resStr += sub_op + "<-" + r + ";"
+                    res.append(resStr)
+        warnaln("   isis commands result:", res)
+        print(res[0])
+        return res
     def run_phy(self, phy_command):
         self._run_phy(self.net, self.ctx, [phy_command])
 
@@ -74,7 +118,10 @@ class manulTest():
 
     def run_ospfs(self, router_name, ospf_commands):
         self._run_ospf(self.net, router_name, ospf_commands)
-
+    def run_isis(self, router_name, isis_command):
+        self._run_isis(self.net, router_name, [isis_command])
+    def run_openfabric(self, router_name, openfabric_command):
+        self._run_openfabric(self.net, router_name, [openfabric_command])
     def stop(self):
         self.net.stop_net()
 

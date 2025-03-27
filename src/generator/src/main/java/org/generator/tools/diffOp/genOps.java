@@ -32,6 +32,9 @@ public class genOps {
             routerOp.remove(OpType.NET);
             //routerOp.remove(OpType.ISTYPE);
         }
+        if (generate.protocol == generate.Protocol.OpenFabric){
+            routerOp.remove(OpType.NET);
+        }
         intfOp.remove(OpType.IPAddr);
         
         allOp = new ArrayList<>();
@@ -228,7 +231,7 @@ public class genOps {
         //fixme we should only generate one ip address XXX at once
         var opg1 = OpCtxG.Of();
         opg1.addOp(genOp(CtxOpDef.getCtxRouterOp()));
-        if(generate.protocol == generate.Protocol.ISIS){
+        if(generate.protocol == generate.Protocol.ISIS || generate.protocol == generate.Protocol.OpenFabric){
             opg1.addOp(genOp(OpType.NET));
         }
         opgs.push(opg1);
@@ -286,6 +289,9 @@ public class genOps {
             }
             if (generate.protocol == generate.Protocol.ISIS){
                 var isis = addOp(res, OpType.IPROUTERISIS);
+            }
+            if (generate.protocol == generate.Protocol.OpenFabric){
+                var openfabric = addOp(res, OpType.IPROUTERFABRIC);
             }
         }
         return res;

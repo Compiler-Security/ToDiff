@@ -12,6 +12,7 @@ from os import path
 import signal
 import shutil
 import functools
+import re
 
 BIN_DIR = "/usr/lib/frr"
 DEBUG = False
@@ -176,6 +177,9 @@ class FrrNode(Node):
     def load_rip(self, daemons, conf_dir, universe=False):
         self._load_frr(daemons, "ripd", conf_dir, self._log_load_isis, universe)
 
+    def load_fabric(self, daemons, conf_dir, universe=False):
+        self._load_frr(daemons, "fabricd", conf_dir, self._log_load_fabric, universe)
+
     def load_babel(self, daemons, conf_dir, universe=False):
         self._load_frr(daemons, "babeld", conf_dir, self._log_load_isis, universe)
     #------------------ STOP TEST DAEMON--------------------------
@@ -207,10 +211,17 @@ class FrrNode(Node):
             os.remove(self.daemon_dict["babeld"]["pid_path"])
             del self.daemon_dict["babeld"]
 
+    def stop_fabricd(self, conf_dir):
+        if "fabricd" in self.daemon_dict:
+            self._save_frr_conf()
+            kill_pid(self.daemon_dict["fabricd"]["daemon_pid"])
+            os.remove(self.daemon_dict["fabricd"]["pid_path"])
+            del self.daemon_dict["fabricd"]
+
     def stop_frr(self):
         #MULTI:
         #FXIME we should add all the test_daemon to stop_daemons
-        stop_daemons = [self.stop_ospfd, self.stop_isisd, self.stop_ripd, self.stop_babeld]
+        stop_daemons = [self.stop_ospfd, self.stop_isisd, self.stop_ripd, self.stop_babeld, self.stop_fabricd]
         for stop_daemon in stop_daemons:
             stop_daemon(self.conf_dir)
 
@@ -255,6 +266,14 @@ class FrrNode(Node):
         infoaln("ls log/route", self.cmds(["ls", self.log_path]))
         infoaln("cat /etc/frr/vtysh.conf", self.cmds(["cat", "/etc/frr/vtysh.conf"]))
         infoaln("ls run", self.cmds(["ls", "/run/frr"]))
+
+    def _log_load_fabric(self):
+        infoaln("daemon_dict", self.daemon_dict)
+        infoaln("zebra_log", self.cmds(["cat", self.daemon_dict["zebra"]["log_path"]]))
+        infoaln("openfabric_log", self.cmds(["cat", self.daemon_dict["fabricd"]["log_path"]]))
+        infoaln("ls log/route", self.cmds(["ls", self.log_path]))
+        infoaln("cat /etc/frr/vtysh.conf", self.cmds(["cat", "/etc/frr/vtysh.conf"]))
+        infoaln("ls run", self.cmds(["ls", "/run/frr"]))
     ################################### DUMP #################################
     #---------------------------------helper----------------------------------
     def _collect_info_ospf(self, j, item, cmds, isjson):
@@ -283,6 +302,19 @@ class FrrNode(Node):
         else:
             j[item] = self.daemon_cmds([cmds])
         warnaln(f"  - collect {item}", "") 
+
+    def _collect_info_openfabric(self, j, item, cmds, isjson):
+        warnaln(f"  + collect {item}", "")
+        if isjson == True:
+            info = self.daemon_cmds([cmds])
+            if (item == "openfabric-daemon" and info == ""):
+                #we should handle special case of "openfabric-daemon"
+                j[item] = json.loads("{}")
+            else:
+                j[item] = json.loads(self.daemon_cmds([cmds]))
+        else:
+            j[item] = self.daemon_cmds([cmds])
+        warnaln(f"  - collect {item}", "")
 
     #------------------------OSPF-------------------------------------
     def dump_info_ospf(self):
@@ -373,6 +405,9 @@ class FrrNode(Node):
         except Exception as e:
             traceback.print_exception(e)
             return None
+    def dump_isis_running_config(self):
+        info = self.daemon_cmds(["show running-config"])
+        return info
     #---------------------------------RIP---------------------------------
     def dump_info_rip(self):
         j = {}
@@ -410,7 +445,62 @@ class FrrNode(Node):
         #warnaln("end dump ospf json", "")
         return j
     #MULTI:
+    #-----------------------------FABRIC--------------------------------
+    def dump_info_openfabric(self):
+        j = {}
+        warnaln(f"+ collect {self.name}", "")
+        if "fabricd" not in self.daemon_dict:
+            j["openfabric-up"] = False
+        else:
+            j["openfabric-up"] = True
+            self._collect_info_openfabric(j, "openfabric-daemon", "show openfabric summary json", True)
+            self._collect_info_openfabric(j, "openfabric-intfs", "show openfabric interface detail json", True)
+            self._collect_info_openfabric(j, "neighbors", "show openfabric neighbor detail json", True)
+            self._collect_info_openfabric(j, "routing-table", "show openfabric route json", True)
+        if "zebra" in self.daemon_dict:
+            self._collect_info_openfabric(j, "running-config", "show running-config", False)
+            self._collect_info_openfabric(j, "intfs", "show interface json", True)
+        warnaln(f"- collect {self.name}", "")
+        #warnaln("end dump ospf json", "")
+        return j
 
+    def dump_openfabric_database(self):
+        info = self.daemon_cmds(["show openfabric database detail"])
+        return info
+
+    def dump_openfabric_intfs_info(self):
+        info = self.daemon_cmds(["show openfabric interface detail json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
+
+    def dump_openfabric_daemon_info(self):
+        info = self.daemon_cmds(["show openfabric summary json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
+
+    def dump_route_info(self):
+        info = self.daemon_cmds(["show ip route"])
+        return info
+
+    def dump_openfabric_route_info(self):
+        info = self.daemon_cmds(["show openfabric route "])
+        return info
+    def dump_openfabric_neighbor_info(self):
+        info = self.daemon_cmds(["show openfabric neighbor detail json"])
+        try:
+            return json.loads(info)
+        except Exception as e:
+            traceback.print_exception(e)
+            return None
+    def dump_openfabric_running_config(self):
+        info = self.daemon_cmds(["show running-config"])
+        return info
 if __name__ == "__main__":
     setLogLevel('info')
     WORK_DIR = path.join(path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__))))), "test",

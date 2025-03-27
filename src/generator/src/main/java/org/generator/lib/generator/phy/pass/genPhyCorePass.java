@@ -61,6 +61,11 @@ public class genPhyCorePass {
                         op = new OpPhy(OpType.NODESETBABELUP);
                     }
                 }
+                case OpenFabric -> {
+                    if (g.containsNode(NodeGen.getOpenFabricName(r.getName()))){
+                        op = new OpPhy(OpType.NODESETFABRICUP);
+                    }
+                }
             }
             if (op != null) {
                 op.setNAME(r.getName());

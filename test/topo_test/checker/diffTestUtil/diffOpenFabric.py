@@ -8,7 +8,7 @@ if path_to_add not in sys.path:
 import copy
 import util
 
-class diffISIS:
+class diffOpenFabric:
     def __init__(self, file_path):
         self.file_path = file_path
         with open(file_path) as fp:
@@ -31,7 +31,7 @@ class diffISIS:
     def neighbors(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "neighbors")["neighbors"]
 
-    def neighbors_isis(self, rd, step, router):
+    def neighbors_openfabric(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "neighbors")
 
     def runningConfig(self, rd, step, router):
@@ -40,14 +40,14 @@ class diffISIS:
     def ospfIntfs(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "ospf-intfs")["interfaces"]
 
-    def isisIntfs(self, rd, step, router):
-        return self.watchOfConf(rd, step, router, "isis-intfs")
+    def openfabricIntfs(self, rd, step, router):
+        return self.watchOfConf(rd, step, router, "openfabric-intfs")
     
     def ospfDaemon(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "ospf-daemon")
 
-    def isisDaemon(self, rd, step, router):
-        return self.watchOfConf(rd, step, router, "isis-daemon")
+    def openfabricDaemon(self, rd, step, router):
+        return self.watchOfConf(rd, step, router, "openfabric-daemon")
       
     def routingTable(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "routing-table")
@@ -60,7 +60,7 @@ class diffISIS:
                 nexthop.pop("advertisedRouter", None)
         return new_dict
 
-    def shrink_routingTable_isis(self, routing_table):
+    def shrink_routingTable_openfabric(self, routing_table):
         if routing_table and isinstance(routing_table, list):
             return routing_table[0]
         return None
@@ -80,27 +80,22 @@ class diffISIS:
                 del item["converged"]
                 del item["role"]
         return new_dict
-    def shrink_neighbors_isis(self, data: dict) -> dict:
+    def shrink_neighbors_openfabric(self, data: dict) -> dict:
         new_data = copy.deepcopy(data)
         for area in new_data.get("areas", []):
             for circuit in area.get("circuits", []):
                 # 删除 expires-in 字段
                 circuit.pop("expires-in", None)
-                circuit.pop("circuit", None)
                 
                 interface = circuit.get("interface", {})
                 if isinstance(interface, dict):
 
                     #interface.pop("adj-flaps", None)
                     interface.pop("last-ago", None)
-                    interface.pop("snpa", None)
-                    interface.pop("lan-id", None)
+                    #interface.pop("snpa", None)
+                    #interface.pop("lan-id", None)
                     #interface.pop("lan-prio", None)
                     #interface.pop("dis-flaps", None)
-                    disflaps = interface.get("dis-flaps", [])
-                    if disflaps:
-                        disflaps.pop("ago", None)
-                        disflaps.pop("last", None)
         return new_data
     def shrink_ospfDaemon(self, n_dict:dict):
         key_set = ["routerId", "tosRoutesOnly", "rfc2328Conform", "holdtimeMinMsecs", "holdtimeMaxMsecs", "spfScheduleDelayMsecs", "maximumPaths", "writeMultiplier", "abrType", "attachedAreaCounter"]
@@ -115,7 +110,7 @@ class diffISIS:
             new_dict["areas"][area] = {x:val[x] for x in key_set if x in val}
         return new_dict
     
-    def shrink_isisDaemon(self, data: dict) -> dict:
+    def shrink_openfabricDaemon(self, data: dict) -> dict:
         new_data = copy.deepcopy(data)
         
         for vrf in new_data.get("vrfs", []):
@@ -157,68 +152,50 @@ class diffISIS:
                 
         return new_dict1
 
-    def shrink_isisIntfs(self, data:dict):
+    def shrink_openfabricIntfs(self, data:dict):
         new_data = copy.deepcopy(data)
 
         for area in new_data.get("areas", []):
 
-            # 提取并规范化所有电路信息
-            if "circuits" in area:
-                circuits = area["circuits"]
-                # 创建一个可排序的列表
-                sorted_circuits = []
-                
-                for circuit in circuits:
-                    circuit.pop("circuit", None)
-                    interface = circuit.get("interface", {})
-                    interface.pop("snpa", None)
-                    interface.pop("ipv6-link-locals", None)
-                    interface.pop("circuit-id", None)
-                    for level in interface.get("levels", []):
-                        level.pop("metric", None)
-                        lan = level.get("lan", {})
-                        if lan:
-                            lan.pop("is-dis", None)
-                    
-                    # 添加到待排序列表
-                    sorted_circuits.append(circuit)
-                
-                # 按接口名称排序
-                sorted_circuits.sort(key=lambda x: x.get("interface", {}).get("name", ""))
-                
-                # 替换原始电路列表
-                area["circuits"] = sorted_circuits
+            for circuit in area.get("circuits", []):
+                interface = circuit.get("interface", {})
+                interface.pop("snpa", None)
+                interface.pop("ipv6-link-locals", None)
+                for level in interface.get("levels", []):
+                    #level.pop("metric", None)
+                    lan = level.get("lan", {})
+                    #lan.pop("is-dis", None)
                     
         return new_data
     
     def check_neighbors(self, rt, rd):
         return util.dict_diff(self.shrink_neighbors(self.neighbors(0, self.step_nums[0] - 1, rt)), self.shrink_neighbors(self.neighbors(rd, self.step_nums[rd] - 1, rt)))
 
-    def check_neighbors_isis(self, rt, rd):
-        return util.dict_diff(self.shrink_neighbors_isis(self.neighbors_isis(0, self.step_nums[0] - 1, rt)), self.shrink_neighbors_isis(self.neighbors_isis(rd, self.step_nums[rd] - 1, rt)))
+    def check_neighbors_openfabric(self, rt, rd):
+        return util.dict_diff(self.shrink_neighbors_openfabric(self.neighbors_openfabric(0, self.step_nums[0] - 1, rt)), self.shrink_neighbors_openfabric(self.neighbors_openfabric(rd, self.step_nums[rd] - 1, rt)))
 
     def check_routingTable(self, rt, rd):
         return util.dict_diff(self.shrink_routingTable(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
     
-    def check_routingTable_isis(self, rt, rd):
-        rt0 = self.shrink_routingTable_isis(self.routingTable(0, self.step_nums[0] - 1, rt))
-        rtd = self.shrink_routingTable_isis(self.routingTable(rd, self.step_nums[rd] - 1, rt))
+    def check_routingTable_openfabric(self, rt, rd):
+        rt0 = self.shrink_routingTable_openfabric(self.routingTable(0, self.step_nums[0] - 1, rt))
+        rtd = self.shrink_routingTable_openfabric(self.routingTable(rd, self.step_nums[rd] - 1, rt))
         if rt0 is None or rtd is None:
             return {}
         return util.dict_diff(rt0, rtd)
-        # return util.dict_diff(self.shrink_routingTable_isis(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable_isis(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
+        # return util.dict_diff(self.shrink_routingTable_openfabric(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable_openfabric(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
 
     def check_ospfDaemon(self, rt, rd):
         return util.dict_diff(self.shrink_ospfDaemon(self.ospfDaemon(0, self.step_nums[0] - 1, rt)), self.shrink_ospfDaemon(self.ospfDaemon(rd, self.step_nums[rd] - 1, rt)))
 
-    def check_isisDaemon(self, rt, rd):
-        return util.dict_diff(self.shrink_isisDaemon(self.isisDaemon(0, self.step_nums[0] - 1, rt)), self.shrink_isisDaemon(self.isisDaemon(rd, self.step_nums[rd] - 1, rt)))
+    def check_openfabricDaemon(self, rt, rd):
+        return util.dict_diff(self.shrink_openfabricDaemon(self.openfabricDaemon(0, self.step_nums[0] - 1, rt)), self.shrink_openfabricDaemon(self.openfabricDaemon(rd, self.step_nums[rd] - 1, rt)))
     
     def check_ospfIntfs(self, rt, rd):
         return util.dict_diff(self.shrink_ospfIntfs(self.ospfIntfs(0, self.step_nums[0] - 1, rt)), self.shrink_ospfIntfs(self.ospfIntfs(rd, self.step_nums[rd] - 1, rt)))
     
-    def check_isisIntfs(self, rt, rd):
-        return util.dict_diff(self.shrink_isisIntfs(self.isisIntfs(0, self.step_nums[0] - 1, rt)), self.shrink_isisIntfs(self.isisIntfs(rd, self.step_nums[rd] - 1, rt)))
+    def check_openfabricIntfs(self, rt, rd):
+        return util.dict_diff(self.shrink_openfabricIntfs(self.openfabricIntfs(0, self.step_nums[0] - 1, rt)), self.shrink_openfabricIntfs(self.openfabricIntfs(rd, self.step_nums[rd] - 1, rt)))
 
     def check_runningConfig(self, rt, rd):
         return util.str_diff(self.runningConfig(0, self.step_nums[0] - 1, rt), self.runningConfig(rd, self.step_nums[rd] - 1, rt))
@@ -246,7 +223,7 @@ def checkFunc(rd, diff, func, name, buf):
     
 def checkTest(test_name, diffAll):
     result_path = path.join(util.get_result_dir(test_name), util.get_result_name(test_name))
-    diff = diffISIS(result_path)
+    diff = diffOpenFabric(result_path)
  
     buf = io.StringIO()
     for rd in range(1, diff.round_num):
@@ -258,11 +235,11 @@ def checkTest(test_name, diffAll):
         if (not res and not diffAll): continue
     
         # res = checkFunc(rd, diff, diff.check_ospfIntfs, "check_ospfIntfs", buf)
-        res = checkFunc(rd, diff, diff.check_isisIntfs, "check_isisIntfs", buf)
+        res = checkFunc(rd, diff, diff.check_openfabricIntfs, "check_openfabricIntfs", buf)
 
-        res = checkFunc(rd, diff, diff.check_neighbors_isis, "check_neighbors", buf)
+        res = checkFunc(rd, diff, diff.check_neighbors_openfabric, "check_neighbors", buf)
         # res = checkFunc(rd, diff, diff.check_ospfDaemon, "check_ospfDaemon", buf)
-        res = checkFunc(rd, diff, diff.check_isisDaemon, "check_isisDaemon", buf)
-        res = checkFunc(rd, diff, diff.check_routingTable_isis, "check_routingTable", buf)
+        res = checkFunc(rd, diff, diff.check_openfabricDaemon, "check_openfabricDaemon", buf)
+        res = checkFunc(rd, diff, diff.check_routingTable_openfabric, "check_routingTable", buf)
     
     return buf.getvalue()

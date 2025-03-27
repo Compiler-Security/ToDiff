@@ -10,6 +10,7 @@ public class CtxOpDef {
                 || type == OpType.RRIP || type == OpType.NORRIP
                 || type == OpType.RISIS || type == OpType.NORISIS
                 || type == OpType.RBABEL || type == OpType.NORBABEL
+                || type == OpType.RFABRIC || type == OpType.NORFABRIC
                 ;
 
     }
@@ -20,6 +21,7 @@ public class CtxOpDef {
                 || type == OpType.RRIP
                 || type == OpType.RISIS
                 || type == OpType.RBABEL
+                || type == OpType.RFABRIC
                 ;
     }
 
@@ -39,7 +41,8 @@ public class CtxOpDef {
         return  type == OpType.ROSPF ||
                 type == OpType.RRIP ||
                 type == OpType.RISIS ||
-                type == OpType.RBABEL;
+                type == OpType.RBABEL ||
+                type == OpType.RFABRIC;
     }
 
     public static boolean isCtxIntfOp(OpType type){return type == OpType.IntfName;}
@@ -50,6 +53,7 @@ public class CtxOpDef {
             case RIP: return OpType.RRIP;
             case ISIS: return OpType.RISIS;
             case BABEL: return OpType.RBABEL;
+            case OpenFabric: return OpType.RFABRIC;
         }
         assert false;
         return null;

@@ -34,6 +34,8 @@ public class OpArgG extends BaseOpG<Op>{
         RIPIntf,
         ISIS,
         ISISIntf,
+        FABRIC,
+        FABRICIntf,
         BABEL,
         BABELIntf,
         //MULTI:
