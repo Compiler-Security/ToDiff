@@ -86,6 +86,10 @@ class diffBABEL:
     def shrink_routingTable(self, n_dict:dict):
         new_dict = copy.deepcopy(n_dict)
         for val in new_dict.values():
+            if "nexthopGroupId" in val[0]:
+                val[0].pop("nexthopGroupId", None)
+            if "uptime" in val[0]:
+                val[0].pop("uptime", None)
             for nexthop in val[0]["nexthops"]:
                 nexthop.pop("advertisedRouter", None)
         return new_dict
