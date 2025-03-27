@@ -15,7 +15,7 @@ public class ripRanBaseGen implements genBase{
         // current we just use OSPF base generate, set abrRatio=0, areaCount=1
         List<Router> routers = new ArrayList<Router>();
         var connected = new UnionFind(totalRouter);
-        var totalNetwork = ranHelper.randomInt(totalRouter / 3, mxDegree * totalRouter - 1);
+        var totalNetwork = ranHelper.randomInt(Integer.max(1, totalRouter / 3), mxDegree * totalRouter - 1);
         Map<Integer, Set<Integer>> networkToRouters = new HashMap<>();
         for(int i = 0; i < totalNetwork; i++){
             networkToRouters.put(i, new HashSet<Integer>());
