@@ -30,7 +30,7 @@ h.run_ospf("r2", "router babel;redistribute ipv4 connected")
 #h.run_ospf("r2", "router babel;no redistribute ipv4 connected")
 # h.run_ospf("r2", "interface r2-eth0;no ip address 9.9.9.9/10")
 # h.run_ospf("r2", "router babel;redistribute ipv4 connected")
-CLI(h.net.net)
+#CLI(h.net.net)
 #time.sleep(5)
 # while True:
 #     print(h.net.net.getNodeByName("r1").daemon_cmds(["show babel route"]))
