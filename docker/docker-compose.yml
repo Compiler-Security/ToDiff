@@ -78,3 +78,31 @@ services:
         - type: bind
           source: ../
           target: /home/frr/topo-fuzz
+
+  topo-fuzz-coverage:
+      build:
+        context: ../
+        dockerfile: ./docker/Dockerfile.coverage
+        args:
+        - build_mode=interested
+        - frr_check=false
+        - nproc=16
+        - proxy=http://114.212.189.33:7897
+      ulimits:
+        nofile:
+          soft: 2048  # Soft limit
+          hard: 4096  # Hard limit
+      init: true
+      privileged: true
+      user: root
+      working_dir: /home/frr/
+      volumes: 
+        - type: bind
+          source: /lib/modules
+          target: /lib/modules
+        - type: bind
+          source: ../
+          target: /home/frr/topo-fuzz
+        - type: bind
+          source: ../../frr
+          target: /home/frr/de/frr
