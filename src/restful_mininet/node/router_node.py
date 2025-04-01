@@ -373,6 +373,10 @@ class FrrNode(Node):
         except Exception as e:
             traceback.print_exception(e)
             return None
+    
+    def dump_isis_running_config(self):
+        info = self.daemon_cmds(["show running-config"])
+        return info
     #---------------------------------RIP---------------------------------
     def dump_info_rip(self):
         j = {}

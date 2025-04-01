@@ -1,1 +1,1 @@
-cd src/generator && gradle run --args="-testFileDir ../../test/topo_test/data/testConf -maxStep 5 -roundNum 3 -routerCount $2 -protocol $1 -maxDegree $3"
+cd src/generator && gradle run --args="-testFileDir ../../test/topo_test/data/testConf -maxStep 5 -roundNum 8 -routerCount $2 -protocol $1 -maxDegree $3"

@@ -1,5 +1,6 @@
 import sys
 import traceback
+import re
 from os import path
 path_to_add = path.dirname(path.dirname(path.dirname(path.dirname(path.abspath(__file__)))))
 if path_to_add not in sys.path:
@@ -217,7 +218,7 @@ class executor:
             match = re.search(r'hostname\s+(\S+)', running_config)
             hostname = match.group(1)
 
-            res = net.net.nameToNode[r_name].dump_neighbor_info_isis()
+            res = net.net.nameToNode[r_name].dump_isis_neighbor_info()
             for area in res.get("areas", []):
                 for circuit in area.get("circuits", []): 
                     if circuit.get("adj") == None:
@@ -608,5 +609,5 @@ class executor:
 
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1742971398_r1.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "babel")
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1743506416.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "isis")
     t.test()

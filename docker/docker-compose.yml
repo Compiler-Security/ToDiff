@@ -57,7 +57,7 @@ services:
   topo-fuzz-test:
       build:
         context: ../
-        dockerfile: ./docker/Dockerfile.dev
+        dockerfile: ./docker/Dockerfile.coverage
         args:
         - build_mode=interested
         - frr_check=false
