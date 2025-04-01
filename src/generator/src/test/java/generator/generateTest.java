@@ -172,13 +172,14 @@ public class generateTest {
     }
     @Test
     public void mainTest(){
-        generate.protocol = generate.Protocol.BABEL;
+        generate.protocol = generate.Protocol.OSPF;
         for(int i = 0; i < 100; i++){
             System.out.printf("testCase %d\n", i);
             int routerCount = 3,maxStep = 3,maxStepTime = 10, roundNum = 2;
             var diff = new diffTopo();
             var res = diff.gen(routerCount, maxStep, maxStepTime, roundNum);
-
+            System.out.println(res);
+            break;
         }
     }
     @Test

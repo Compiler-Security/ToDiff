@@ -56,7 +56,7 @@ public class diffTopo {
         var ori_phyg = generate.generatePhyCore(g);
         OpCtxG equal_phyg = null;
         if (generate.genPhyEqualCommand) {
-            generate.generateEqualOfPhyCore(ori_phyg, 0.4, 1);
+            equal_phyg = generate.generateEqualOfPhyCore(ori_phyg, 0.4, 1);
         }else{
             equal_phyg = OpCtxG.Of();
         }

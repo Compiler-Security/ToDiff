@@ -239,5 +239,5 @@ public class generate {
     public static Protocol protocol = Protocol.OSPF;
 
     //default not generate phy equal commands, same with the paper
-    public static boolean genPhyEqualCommand = false;
+    public static boolean genPhyEqualCommand = true;
 }
