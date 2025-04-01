@@ -127,7 +127,7 @@ class FrrNode(Node):
             else:
                 #we set asan_logs to /var/run/frr/{daemon_name}.asan
                 ress = self.cmds(
-                [f"export GCOV_PREFIX=/run/frr/coverage  GCOV_PREFIX_STRIP=3 && ", f"{BIN_DIR}/{daemon_name}", "--limit-fds", "64", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
+                [f"export GCOV_PREFIX=/home/frr/topo-fuzz/test/topo_test/data/coverage  GCOV_PREFIX_STRIP=3 && ", f"{BIN_DIR}/{daemon_name}", "--limit-fds", "64", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
                 "--log", f"file:{log_path}"])
                 # ress = self.cmds(
                 # [f"{BIN_DIR}/{daemon_name}", "--limit-fds", "64", "-u", "root", "-d", "-i", pid_path, "--log-level", "debug",
