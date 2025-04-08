@@ -101,11 +101,11 @@ USER frr:frr
 RUN cd && pwd && ls -al && \
     git clone https://github.com/CESNET/libyang.git 
 
-RUN cd && pwd && ls -al && git clone https://github.com/FRRouting/frr.git
+RUN cd && pwd && ls -al && git clone https://github.com/Shbinging/frr.git
 
 RUN cd /home/frr/frr && \
     git fetch --all && \
-    git checkout -b fuzz origin/fuzz
+    git checkout -b fuzz_isis origin/fuzz_isis
 
  RUN cd /home/frr/libyang && \
     git checkout v2.0.0 && \
@@ -124,13 +124,7 @@ RUN cd /home/frr/frr && \
 
 #build and install frr to /usr/lib/frr
 RUN cd /home/frr/frr && \
-    export ASAN_OPTIONS=detect_leaks=0 && \
-    export CFLAGS="${CFLAGS} -DFUZZING_OVERRIDE_LLVMFuzzerTestOneInput -fprofile-instr-generate -fcoverage-mapping " && \
-    export CC=clang && \
-    ./bootstrap.sh && \
-    ./configure --enable-libfuzzer --enable-address-sanitizer --enable-static --enable-static-bin && \
-    make -j$(nproc) && \
-    sudo make install
+    sh build_fuzzing.sh
 
 
 
@@ -148,7 +142,7 @@ CMD ["/usr/sbin/docker-start"]
 #for dev
 USER root
 
-RUN apt-get install -y lcov
+RUN apt-get install -y lcov llvm
 #COPY docker/requirements.txt /home/frr/py/requirements.txt
 
 #RUN pip3 install -r /home/frr/py/requirements.txt

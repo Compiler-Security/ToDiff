@@ -128,3 +128,6 @@ services:
         - type: bind
           source: /lib/modules
           target: /lib/modules
+        - type: bind
+          source: ../../fuzzing/
+          target: /home/frr/de/
