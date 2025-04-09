@@ -69,10 +69,10 @@ def test_container_cmd(cmd):
     return result 
 
 def launch_one_topo_test(test_name):
-    return test_container_cmd("sudo -E python3 -m pytest /home/frr/frr/tests/topotests/{test_name} --cov-topotest")
+    return test_container_cmd(f"sudo -E python3 -m pytest /home/frr/frr/tests/topotests/{test_name} --cov-topotest")
 
 def test_topotests(testcases):
-    buildTestContainers()
+    #buildTestContainers()
     launchTestContainers(1)
     for testcase in testcases:
         print(launch_one_topo_test(testcase))
