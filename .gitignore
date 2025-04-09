@@ -173,3 +173,4 @@ test/topo_test/backup
 test/manul/frr_conf/*/conf
 test/manul/frr_conf/*/log
 test/manul/log/
+**/out*

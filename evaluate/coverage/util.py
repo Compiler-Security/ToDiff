@@ -72,7 +72,7 @@ def launch_one_topo_test(test_name):
     return test_container_cmd(f"sudo -E python3 -m pytest /home/frr/frr/tests/topotests/{test_name} --cov-topotest")
 
 def test_topotests(testcases):
-    #buildTestContainers()
+    buildTestContainers()
     launchTestContainers(1)
     for testcase in testcases:
         print(launch_one_topo_test(testcase))
@@ -81,8 +81,10 @@ def launch_fuzzing(protocol, time):
     daemon = ""
     if protocol == "OSPF":
         daemon = "ospfd"
+        return fuzz_container_cmd(f"sh -c 'cd /home/frr/frr/{daemon} && ASAN_OPTIONS=detect_leaks=0 ./{daemon} -max_total_time={time}'")
     else:
         daemon = "isisd"
+        return fuzz_container_cmd(f"sh -c 'cd /home/frr/frr/{daemon} && ASAN_OPTIONS=detect_leaks=0 ./{daemon} -max_total_time={time}'")
     return fuzz_container_cmd(f"sh -c 'cd /home/frr/frr/{daemon} && ASAN_OPTIONS=detect_leaks=0 ./{daemon} -max_total_time={time}'")
 
 def fuzz_container_cmd(cmd):

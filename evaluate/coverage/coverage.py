@@ -44,11 +44,9 @@ lcov --extract {src_info} \
 
 extract_isis = """
     lcov --extract {src_info} \
-    '*/isisd/isis_adjacency.c' \
     '*/isisd/isis_circuit.c' \
     '*/isisd/isis_csm.c' \
     '*/isisd/isis_dr.c' \
-    '*/isisd/isis_dynhn.c' \
     '*/isisd/isis_errors.c' \
     '*/isisd/isis_events.c' \
     '*/isisd/isis_flags.c' \
@@ -60,7 +58,6 @@ extract_isis = """
     '*/isisd/isis_pdu.c' \
     '*/isisd/isis_pfpacket.c' \
     '*/isisd/isis_route.c' \
-    '*/isisd/isis_spf.c' \
     '*/isisd/isis_tx_queue.c' \
     '*/isisd/iso_checksum.c' \
     --rc lcov_branch_coverage=1
@@ -73,10 +70,8 @@ def run_cmd(command):
 def calc_coverage(protocol, data_dir):
     extract_cmd = ""
     if  protocol == "OSPF":
-        data_dir = f"{coverage_dir}/todiff/ospf"
         extract_cmd = extract_ospf
     else:
-        data_dir = f"{coverage_dir}/todiff/isis"
         extract_cmd = extract_isis
     lines_ave = []
 
@@ -179,7 +174,7 @@ class fuzzingTest():
     def __init__(self, id, protocol):
         self.id = id    
         self.protocol = protocol
-    test_time = 30
+    test_time = 60
     def prepare(self):
         pass
     def test(self):
@@ -202,9 +197,22 @@ class fuzzingTest():
 #init()
 # t = toDiffTest(0, "OSPF")
 # t.collect()
-t = topoTestsTest(0, "OSPF")
-t.prepare()
-t.test()
-t.collect()
-t.calc()
+#t = toDiffTest(0, "ISIS")
+#t = toDiffTest(0, "OSPF")
+# t = fuzzingTest(0, "ISIS")
+# #t.prepare()
+# t.test()
+# t.collect()
+# print(t.calc())
+
+for i in range(1, 10):
+    for j in ["OSPF", "ISIS"]:
+        for k in [toDiffTest, topoTestsTest, fuzzingTest]:
+            print(i, j, k)
+            t = k(i, j)
+            t.prepare()
+            t.test()
+            t.collect()
+#     t = toDiffTest(i, "OSPF")
+
 #print(util.test_fuzzing("OSPF", 2))
