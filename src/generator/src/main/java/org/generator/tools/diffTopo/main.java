@@ -3,6 +3,8 @@ package org.generator.tools.diffTopo;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.cli.*;
+import org.generator.lib.generator.driver.generate;
+import org.generator.lib.topo.driver.topo;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -51,6 +53,8 @@ public class main {
         options.addOption("maxStep", true, "max test step");
         options.addOption("maxStepTime", true, "max wait time of one step");
         options.addOption("roundNum", true, "round num");
+        options.addOption("protocol", true, "protocol to generate [ospf,rip]");
+        options.addOption("maxDegree", true, "max interface per router");
         return options;
     }
     public static void main(String[] args) {
@@ -74,6 +78,30 @@ public class main {
             }
             if (cmd.hasOption("roundNum")){
                 roundNum = Integer.parseInt(cmd.getOptionValue("roundNum"));
+            }
+            if (cmd.hasOption("mxDegree")){
+                topo.mxDegree = Integer.parseInt(cmd.getOptionValue("maxDegree"));
+            }
+            //MULTI:
+            if (cmd.hasOption("protocol")){
+                switch (cmd.getOptionValue("protocol")){
+                    case "ospf" -> {
+                        generate.protocol = generate.Protocol.OSPF;
+                    }
+                    case "rip" -> {
+                        generate.protocol = generate.Protocol.RIP;
+                    }
+                    case "isis" -> {
+                        generate.protocol = generate.Protocol.ISIS;
+                    }
+                    default -> {
+                        System.out.println("Unknown protocol: " + cmd.getOptionValue("protocol"));
+                        System.exit(-1);
+                    }
+                }
+            }else{
+                System.out.println("Need to set protocol");
+                System.exit(-1);
             }
         } catch (ParseException e) {
             System.out.println("Parsing failed. Reason: " + e.getMessage());

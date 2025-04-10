@@ -1,14 +1,14 @@
 package org.generator.lib.item.conf.node.isis;
 
-import org.generator.lib.item.conf.node.NodeType_ISIS;
-import org.generator.lib.item.conf.node.AbstractNode_ISIS;
+import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.AbstractNode;
 
 
-public class ISISAreaSum extends AbstractNode_ISIS {
+public class ISISAreaSum extends AbstractNode {
 
     public ISISAreaSum(String name){
         setName(name);
-        setNodeType(NodeType_ISIS.ISISAreaSum);
+        setNodeType(NodeType.ISISAreaSum);
         initFiled();
     }
 

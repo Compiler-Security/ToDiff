@@ -18,13 +18,24 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
     public enum EdgeType {
         INTF,
         PhyNODE,
+        LINK,
+        //========OSPF===========
         OSPF,
         OSPFINTF,
         OSPFAREA,
         OSPFNetwork,
-        LINK,
         OSPFDAEMON,
         OSPFAREASUM,
+        //==========RIP============
+        RIP,
+        RIPINTF,
+
+        //MULTI:
+        //=========ISIS============
+        ISIS,
+        ISISINTF,
+        ISISDAEMON,
+        ISISAREASUM,
     }
 
     protected void generateType(){
@@ -39,6 +50,11 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
             case OSPFIntf  -> setType(EdgeType.OSPFINTF);
             case OSPFArea -> setType(EdgeType.OSPFAREA);
             case OSPFNet -> setType(EdgeType.OSPFNetwork);
+            case RIP -> setType(EdgeType.RIP);
+            case RIPIntf -> setType(EdgeType.RIPINTF);
+            //MULTI:
+            case ISIS -> setType(EdgeType.ISIS);
+            case ISISIntf -> setType(EdgeType.ISISINTF);
             default -> throw new IllegalStateException("Unexpected value: " + dst);
         }
     }

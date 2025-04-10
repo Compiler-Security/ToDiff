@@ -1,6 +1,6 @@
 package org.generator.lib.item.opg;
 
-import org.generator.lib.generator.ospf.pass.genCorePass;
+import org.generator.lib.generator.ospf.pass.genCorePassOspf;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpOspf;
 import org.generator.lib.reducer.driver.reducer;
@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Normal OpAG
@@ -141,7 +140,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
             }
             merge.get(ctxOp).addOp(opa.getOp().getOpCtx());
         }
-        return genCorePass.mergeOpCtxgToOne(merge.values().stream().toList());
+        return OpCtxG.mergeOpCtxgToOne(merge.values().stream().toList());
     }
 
     /**

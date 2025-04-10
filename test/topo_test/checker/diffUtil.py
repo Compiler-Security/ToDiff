@@ -26,39 +26,81 @@ class diff:
     def neighbors(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "neighbors")["neighbors"]
 
-    def neighbors_isis(self, rd, step, router):
-        return self.watchOfConf(rd, step, router, "neighbors")
 
     def runningConfig(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "running-config")
     
     def ospfIntfs(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "ospf-intfs")["interfaces"]
-
-    def isisIntfs(self, rd, step, router):
-        return self.watchOfConf(rd, step, router, "isis-intfs")
     
     def ospfDaemon(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "ospf-daemon")
-
-    def isisDaemon(self, rd, step, router):
-        return self.watchOfConf(rd, step, router, "isis-daemon")
-      
+    
     def routingTable(self, rd, step, router):
         return self.watchOfConf(rd, step, router, "routing-table")
     
+    def ospfDatabase(self, rd, step, router):
+        return self.watchOfConf(rd, step, router, "database")
+    
+    def shrink_ospfDatabase(self, n_dict:dict):
+        new_dict = copy.deepcopy(n_dict)
+        """
+        routerId:
+        routerLinkStates:{
+            areas:{
+                "0.0.0.1":[
+                    {
+                        lsaAge:
+                        checksum:
+                        ...
+                    },
+                    {
+
+                    }
+                    ...
+                ]
+            }
+        },
+        networkLinkStates:{}
+        ...
+        """
+        routerId =  new_dict["routerId"]
+        del new_dict["routerId"]
+        del new_dict["networkLinkStates"]
+        for lsa_type in new_dict:
+            if isinstance(new_dict[lsa_type], dict):
+                areas = new_dict[lsa_type]["areas"]
+                for area, lsa_heads in areas.items():
+                        for lsa_head in lsa_heads:
+                            del lsa_head["lsaAge"]
+                            del lsa_head["lsaSeqNumber"]
+                            del lsa_head["checksum"]
+                            del lsa_head["lsaFlags"]
+                            if lsa_type == "routerLinkStates":
+                                router_links =[]
+                                for link_name in lsa_head["routerLinks"]:
+                                    link = lsa_head["routerLinks"][link_name]
+                                    if "designatedRouterAddress" in link:
+                                        del link["designatedRouterAddress"]
+                                    router_links.append(link)
+                                lsa_head["routerLinks"] = router_links
+                        
+            else:
+                """                
+                FIXME 
+                Currently we don't check asExternalLinkStates, asExternalOpaqueLsa
+                """
+                pass
+                            #should checksum be del?
+        new_dict["routerId"] = routerId
+        return new_dict
+
     def shrink_routingTable(self, n_dict:dict):
-        print(n_dict)
         new_dict = copy.deepcopy(n_dict)
         for val in new_dict.values():
             for nexthop in val["nexthops"]:
                 nexthop.pop("advertisedRouter", None)
         return new_dict
-
-    def shrink_routingTable_isis(self, routing_table):
-        if routing_table and isinstance(routing_table, list):
-            return routing_table[0]
-        return None
 
     def shrink_neighbors(self, n_dict:dict):
         new_dict = copy.deepcopy(n_dict)
@@ -75,22 +117,7 @@ class diff:
                 del item["converged"]
                 del item["role"]
         return new_dict
-    def shrink_neighbors_isis(self, data: dict) -> dict:
-        new_data = copy.deepcopy(data)
-        for area in new_data.get("areas", []):
-            for circuit in area.get("circuits", []):
-                # 删除 expires-in 字段
-                circuit.pop("expires-in", None)
-                
-                interface = circuit.get("interface", {})
-                if isinstance(interface, dict):
-                    interface.pop("adj-flaps", None)
-                    interface.pop("last-ago", None)
-                    interface.pop("snpa", None)
-                    interface.pop("lan-id", None)
-                    interface.pop("lan-prio", None)
-                    interface.pop("dis-flaps", None)
-        return new_data
+
     def shrink_ospfDaemon(self, n_dict:dict):
         key_set = ["routerId", "tosRoutesOnly", "rfc2328Conform", "holdtimeMinMsecs", "holdtimeMaxMsecs", "spfScheduleDelayMsecs", "maximumPaths", "writeMultiplier", "abrType", "attachedAreaCounter"]
         new_dict = {x:n_dict[x] for x in key_set if x in n_dict}
@@ -104,24 +131,6 @@ class diff:
             new_dict["areas"][area] = {x:val[x] for x in key_set if x in val}
         return new_dict
     
-    def shrink_isisDaemon(self, data: dict) -> dict:
-        new_data = copy.deepcopy(data)
-        
-        for vrf in new_data.get("vrfs", []):
-            vrf.pop("process-id", None)
-            vrf.pop("up-time", None)
-            
-            for area in vrf.get("areas", []):
-                area.pop("tx-pdu-type", None)
-                area.pop("rx-pdu-type", None)
-                
-                for level in area.get("levels", []):
-                    level.pop("lsp0-regenerated", None)
-                    level.pop("last-run-elapsed", None)
-                    level.pop("last-run-duration-usec", None)
-                    level.pop("last-run-count", None)
-        
-        return new_data
     def shrink_ospfIntfs(self, n_dict:dict):
         new_dict1 = copy.deepcopy(n_dict)
         for ospf_intf in new_dict1.values():
@@ -132,6 +141,10 @@ class diff:
                 for val in ospf_intf["interfaceIp"].values():
                     if "timerHelloInMsecs" in val:
                         del val["timerHelloInMsecs"]
+            if "networkLsaSequence" in ospf_intf:
+                del ospf_intf["networkLsaSequence"]
+            if "mcastMemberOspfDesignatedRouters" in ospf_intf:
+                del ospf_intf["mcastMemberOspfDesignatedRouters"]
             del ospf_intf["lsaRetransmissions"]
 
             #we don't comapre state, dr, bdr
@@ -145,48 +158,24 @@ class diff:
                 
         return new_dict1
 
-    def shrink_isisIntfs(self, data:dict):
-        new_data = copy.deepcopy(data)
-
-        for area in new_data.get("areas", []):
-
-            for circuit in area.get("circuits", []):
-                interface = circuit.get("interface", {})
-                interface.pop("snpa", None)
-                interface.pop("ipv6-link-locals", None)
-                for level in interface.get("levels", []):
-                    level.pop("metric", None)
-        return new_data
-    
     def check_neighbors(self, rt, rd):
         return util.dict_diff(self.shrink_neighbors(self.neighbors(0, self.step_nums[0] - 1, rt)), self.shrink_neighbors(self.neighbors(rd, self.step_nums[rd] - 1, rt)))
-
-    def check_neighbors_isis(self, rt, rd):
-        return util.dict_diff(self.shrink_neighbors_isis(self.neighbors_isis(0, self.step_nums[0] - 1, rt)), self.shrink_neighbors_isis(self.neighbors_isis(rd, self.step_nums[rd] - 1, rt)))
 
     def check_routingTable(self, rt, rd):
         return util.dict_diff(self.shrink_routingTable(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
     
-    def check_routingTable_isis(self, rt, rd):
-        rt0 = self.shrink_routingTable_isis(self.routingTable(0, self.step_nums[0] - 1, rt))
-        rtd = self.shrink_routingTable_isis(self.routingTable(rd, self.step_nums[rd] - 1, rt))
-        if rt0 is None or rtd is None:
-            return {}
-        return util.dict_diff(rt0, rtd)
-        # return util.dict_diff(self.shrink_routingTable_isis(self.routingTable(0, self.step_nums[0] - 1, rt)), self.shrink_routingTable_isis(self.routingTable(rd, self.step_nums[rd] - 1, rt)))
-
     def check_ospfDaemon(self, rt, rd):
         return util.dict_diff(self.shrink_ospfDaemon(self.ospfDaemon(0, self.step_nums[0] - 1, rt)), self.shrink_ospfDaemon(self.ospfDaemon(rd, self.step_nums[rd] - 1, rt)))
 
-    def check_isisDaemon(self, rt, rd):
-        return util.dict_diff(self.shrink_isisDaemon(self.isisDaemon(0, self.step_nums[0] - 1, rt)), self.shrink_isisDaemon(self.isisDaemon(rd, self.step_nums[rd] - 1, rt)))
-    
+    def check_ospfIntfs(self, rt, rd):
+        return util.dict_diff(self.shrink_ospfIntfs(self.ospfIntfs(0, self.step_nums[0] - 1, rt)), self.shrink_ospfIntfs(self.ospfIntfs(rd, self.step_nums[rd] - 1, rt)))
+
     def check_ospfIntfs(self, rt, rd):
         return util.dict_diff(self.shrink_ospfIntfs(self.ospfIntfs(0, self.step_nums[0] - 1, rt)), self.shrink_ospfIntfs(self.ospfIntfs(rd, self.step_nums[rd] - 1, rt)))
     
-    def check_isisIntfs(self, rt, rd):
-        return util.dict_diff(self.shrink_isisIntfs(self.isisIntfs(0, self.step_nums[0] - 1, rt)), self.shrink_isisIntfs(self.isisIntfs(rd, self.step_nums[rd] - 1, rt)))
-
+    def check_ospfDatabase(self, rt, rd):
+        return util.dict_diff(self.shrink_ospfDatabase(self.ospfDatabase(0, self.step_nums[0] - 1, rt)), self.shrink_ospfDatabase(self.ospfDatabase(rd, self.step_nums[rd] - 1, rt)))
+    
     def check_runningConfig(self, rt, rd):
         return util.str_diff(self.runningConfig(0, self.step_nums[0] - 1, rt), self.runningConfig(rd, self.step_nums[rd] - 1, rt))
             

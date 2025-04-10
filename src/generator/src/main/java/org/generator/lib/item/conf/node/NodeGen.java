@@ -1,9 +1,15 @@
 package org.generator.lib.item.conf.node;
 
+import org.generator.lib.item.conf.node.isis.ISIS;
+import org.generator.lib.item.conf.node.isis.ISISAreaSum;
+import org.generator.lib.item.conf.node.isis.ISISDaemon;
+import org.generator.lib.item.conf.node.isis.ISISIntf;
 import org.generator.lib.item.conf.node.ospf.*;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.lib.item.conf.node.phy.Switch;
+import org.generator.lib.item.conf.node.rip.RIP;
+import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.net.ID;
 import org.generator.util.net.IPBase;
@@ -20,11 +26,6 @@ public class NodeGen {
             default -> {assert false: "phy node name error";}
         }
         return NodeType.Host;
-    }
-
-    static public String getOSPFName(String r_name){
-        assert getPhyNodeTypeByName(r_name) == NodeType.Router: "only router can has ospf";
-        return String.format("%s-OSPF", r_name);
     }
 
     static public String getSwitchName(int id){
@@ -44,14 +45,19 @@ public class NodeGen {
 
     static public String getRouterName(int id){ return "r%d".formatted(id);}
 
-    static public String getOSPFDaemonName(String ospf_name){
-        return String.format("%s-daemon", ospf_name);
-    }
     static public String getIntfName(String r_name, int port){
         getPhyNodeTypeByName(r_name);
         return String.format("%s-eth%d", r_name, port);
     }
 
+    //========OSPF===============
+    static public String getOSPFName(String r_name){
+        assert getPhyNodeTypeByName(r_name) == NodeType.Router: "only router can has ospf";
+        return String.format("%s-OSPF", r_name);
+    }
+    static public String getOSPFDaemonName(String ospf_name){
+        return String.format("%s-daemon", ospf_name);
+    }
     static  public String getOSPFAreaName(String ospf_name, ID area){
         return String.format("%s-area-%s", ospf_name, area.toString());
     }
@@ -66,6 +72,37 @@ public class NodeGen {
         return String.format("%s-ospf",intf_name);
     }
 
+    //==========RIP=====================
+    static public String getRIPName(String r_name){
+        assert getPhyNodeTypeByName(r_name) == NodeType.Router: "only router can has ospf";
+        return String.format("%s-RIP", r_name);
+    }
+
+    static public String getRIPIntfName(String intf_name){
+        return String.format("%s-rip", intf_name);
+    }
+
+    //MULTI:
+    //=========ISIS=====================
+    static public String getISISDaemonName(String isis_name){
+        return String.format("%s-daemon", isis_name);
+    }
+
+    static public String getISISAreaSumName(String isis_name, String area_name){
+        return String.format("%s-%s", isis_name, area_name);
+    }
+
+    static public String getISISIntfName(String intf_name){
+        return String.format("%s-isis",intf_name);
+    }
+
+    static public String getISISName(String r_name){
+        assert getPhyNodeTypeByName(r_name) == NodeType.Router: "only router can has isis";
+        return String.format("%s-ISIS", r_name);
+    }
+
+
+    
     public static Router new_Router(String name){
         return new Router(name);
     }
@@ -81,6 +118,17 @@ public class NodeGen {
     public static Intf new_Intf(String name) {return new Intf(name);}
 
     public static OSPFIntf new_OSPF_Intf(String name) {return new OSPFIntf(name);}
+
+    public static RIP new_RIP(String name){ return new RIP(name);}
+
+    public static RIPIntf new_RIP_Intf(String name){ return new RIPIntf(name);}
+    
+    //MULTI:
+    public static ISIS new_ISIS(String name){
+        return new ISIS(name);
+    }
+
+    public static ISISIntf new_ISIS_Intf(String name) {return new ISISIntf(name);}
 
     public static <T extends  AbstractNode> T newNode(String name, NodeType type){;
         return (T)new_node(name, type);
@@ -111,6 +159,26 @@ public class NodeGen {
             case OSPFAreaSum -> {
                 return new OSPFAreaSum(name);
             }
+            case RIP -> {
+                return new_RIP(name);
+            }
+            case RIPIntf -> {
+                return new_RIP_Intf(name);
+            }
+            //MULTI:
+            case ISIS -> {
+                return new_ISIS(name);
+            }
+            case ISISIntf -> {
+                return new_ISIS_Intf(name);
+            }
+            case ISISDaemon -> {
+                return new ISISDaemon(name);
+            }
+            case ISISAreaSum -> {
+                return new ISISAreaSum(name);
+            }
+            
             case null, default -> {
                 new Unimplemented();
             }

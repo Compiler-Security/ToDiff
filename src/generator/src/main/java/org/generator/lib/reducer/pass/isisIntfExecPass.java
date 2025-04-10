@@ -1,14 +1,14 @@
 package org.generator.lib.reducer.pass;
 
-import org.generator.lib.item.IR.Op_ISIS;
-import org.generator.lib.item.conf.graph.ConfGraph_ISIS;
+import org.generator.lib.item.IR.Op;
+import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.isis.ISISIntf;
 import org.generator.util.exec.ExecStat;
 import org.jetbrains.annotations.NotNull;
 
-public class isisIntfExecPass extends baseExecPass_ISIS {
+public class isisIntfExecPass extends baseExecPass {
 
-    private ExecStat execISISIntfCmds(@NotNull Op_ISIS op, @NotNull ConfGraph_ISIS topo){
+    private ExecStat execISISIntfCmds(@NotNull Op op, @NotNull ConfGraph topo){
         if (cur_isis_intf == null){
             return ExecStat.MISS;
         }
@@ -130,7 +130,7 @@ public class isisIntfExecPass extends baseExecPass_ISIS {
         return ExecStat.SUCC;
     }
     @Override
-    ExecStat execOp(Op_ISIS op, ConfGraph_ISIS topo) {
+    ExecStat execOp(Op op, ConfGraph topo) {
         return execISISIntfCmds(op, topo);
     }
 

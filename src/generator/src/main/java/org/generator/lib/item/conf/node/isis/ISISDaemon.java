@@ -1,15 +1,15 @@
 package org.generator.lib.item.conf.node.isis;
-import org.generator.lib.item.conf.node.NodeType_ISIS;
+import org.generator.lib.item.conf.node.NodeType;
 
 import java.util.Optional;
 
-import org.generator.lib.item.conf.node.AbstractNode_ISIS;
+import org.generator.lib.item.conf.node.AbstractNode;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
 
 import java.util.Arrays;
 
-public class ISISDaemon extends AbstractNode_ISIS {
+public class ISISDaemon extends AbstractNode {
     /*
      * 1. overloadbitonstartup
      * 2. lspmtu
@@ -19,7 +19,7 @@ public class ISISDaemon extends AbstractNode_ISIS {
      */
     public ISISDaemon(String name){
         setName(name);
-        setNodeType(NodeType_ISIS.ISISDaemon);
+        setNodeType(NodeType.ISISDaemon);
         initFiled();
     }
 
@@ -71,6 +71,26 @@ public class ISISDaemon extends AbstractNode_ISIS {
     public void setLspgenintervalLevel2(int lspgenintervalLevel2) {
         LspgenintervalLevel2 = lspgenintervalLevel2;
     }
+
+    int spfintervalLevel1;
+    int spfintervalLevel2;
+
+    public int getSpfintervalLevel1() {
+        return spfintervalLevel1;
+    }
+
+    public void setSpfintervalLevel1(int spfintervalLevel1) {
+        this.spfintervalLevel1 = spfintervalLevel1;
+    }
+
+    public int getSpfintervalLevel2() {
+        return spfintervalLevel2;
+    }
+
+    public void setSpfintervalLevel2(int spfintervalLevel2) {
+        this.spfintervalLevel2 = spfintervalLevel2;
+    }
+
 
 
     // public enum metricstyle implements StringEnum{
@@ -129,6 +149,8 @@ public class ISISDaemon extends AbstractNode_ISIS {
         advertisehighmetrics = false;
         LspgenintervalLevel1 = 30;
         LspgenintervalLevel2 = 30;
+        spfintervalLevel1 = 1;
+        spfintervalLevel2 = 1;
     }
 
     //    @Override

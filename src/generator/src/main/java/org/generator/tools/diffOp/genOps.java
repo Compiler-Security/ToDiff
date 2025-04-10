@@ -1,14 +1,16 @@
 package org.generator.tools.diffOp;
 
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.lib.frontend.lexical.OpType_isis;
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.generator.ospf.pass.actionRulePass;
 import org.generator.lib.generator.ospf.pass.genOpPass;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpOspf;
+import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.node.NodeGen;
+import org.generator.lib.reducer.semantic.CtxOpDef;
 import org.generator.util.collections.Pair;
 import org.generator.util.net.ID;
 import org.generator.util.ran.ranHelper;
@@ -17,23 +19,24 @@ import java.util.*;
 
 public class genOps {
     private Stack<OpCtxG> opgs;
-    private static final List<OpType> intfOp, OspfOp, allOp;
+    private static final List<OpType> intfOp, routerOp, allOp;
     static {
-        intfOp = new ArrayList<>();
-        OspfOp = new ArrayList<>();
-        allOp = new ArrayList<>();
-        for (var op_type: OpType.values()){
-            //FIXME areaVLINK
-            //if (op_type == OpType.AreaVLink) continue;
-            if (op_type == OpType.NETAREAID) continue;
-            if (op_type == OpType.IpOspfArea) continue;
-            if (op_type == OpType.IPAddr) continue;
-            if (op_type.inOSPFINTF()){intfOp.add(op_type); allOp.add(op_type);}
-            else if (op_type.inOSPFAREA() || op_type.inOSPFDAEMON() || op_type.inOSPFRouterWithTopo()){
-                OspfOp.add(op_type);
-                allOp.add(op_type);
-            }
+        intfOp = OpType.getIntfSetOps();
+        routerOp = OpType.getRouterSetOps();
+        if (generate.protocol == generate.Protocol.OSPF) {
+            routerOp.remove(OpType.NETAREAID);
+            routerOp.remove(OpType.IpOspfArea);
         }
+        if (generate.protocol == generate.Protocol.ISIS){
+            //intfOp.remove(OpType.IPROUTERISIS);
+            routerOp.remove(OpType.NET);
+            //routerOp.remove(OpType.ISTYPE);
+        }
+        intfOp.remove(OpType.IPAddr);
+        
+        allOp = new ArrayList<>();
+        allOp.addAll(intfOp);
+        allOp.addAll(routerOp);
     }
 
     private static  int getRanIntNum(Map<String, Object> argRange, String field){
@@ -146,7 +149,7 @@ public class genOps {
         if (onlyIntf){
             op_type = intfOp.get(ran.nextInt(intfOp.size()));
         }else if (onlyOSPF){
-            op_type = OspfOp.get(ran.nextInt(OspfOp.size()));
+            op_type = routerOp.get(ran.nextInt(routerOp.size()));
         }else {
             op_type = allOp.get(ran.nextInt(allOp.size()));
         }
@@ -167,7 +170,7 @@ public class genOps {
         }
         if (opg.getOps().get(0).getOperation().Type() == OpType.IntfName){
             opg.addOp(genRanOpByControl(true, false));
-        }else if (opg.getOps().get(0).getOperation().Type() == OpType.ROSPF){
+        }else if (opg.getOps().get(0).getOperation().Type() == CtxOpDef.getCtxRouterOp()){
             opg.addOp(genRanOpByControl(false, true));
         }else {
             opg.addOp(genRanOpByControl(false, false));
@@ -208,15 +211,6 @@ public class genOps {
         return opCtx.getOpOspf();
     }
     boolean all;
-    /*
-        inst_num：要生成的操作实例总数。
-        router_ospf_ratio：路由器 OSPF 操作的比例。
-        intf_ratio：接口操作的比例。
-        interface_num：接口的数量。
-        no_ratio：未使用的比例（在当前代码中未使用）。
-        merge_ratio：合并操作的比例。
-        r_name：路由器的名称。
-        */
     public OpCtxG genRandom(int inst_num, double router_ospf_ratio, double intf_ratio, int interface_num, float no_ratio, double merge_ratio, String r_name){
         ran = new Random();
         this.no_ratio = no_ratio;
@@ -233,7 +227,10 @@ public class genOps {
         all = false;
         //fixme we should only generate one ip address XXX at once
         var opg1 = OpCtxG.Of();
-        opg1.addOp(genOp(OpType.ROSPF));
+        opg1.addOp(genOp(CtxOpDef.getCtxRouterOp()));
+        if(generate.protocol == generate.Protocol.ISIS){
+            opg1.addOp(genOp(OpType.NET));
+        }
         opgs.push(opg1);
         while(total_num < inst_num){
             if (rest_num > 0){
@@ -243,9 +240,9 @@ public class genOps {
             }else{
                 switch (selectCtx()) {
                     case 0 -> {
-                        if (opgs.empty() || (getCtxOpType(opgs.peek()) != OpType.ROSPF || ran.nextDouble(1) > merge_ratio)) {
+                        if (opgs.empty() || (getCtxOpType(opgs.peek()) != CtxOpDef.getCtxRouterOp() || ran.nextDouble(1) > merge_ratio)) {
                             var opg = OpCtxG.Of();
-                            opg.addOp(genOp(OpType.ROSPF));
+                            opg.addOp(genOp(CtxOpDef.getCtxRouterOp()));
                             opgs.push(opg);
                         }
                         all = false;
@@ -276,8 +273,20 @@ public class genOps {
             var intf = addOp(res, OpType.IntfName);
             intf.setNAME(NodeGen.getIntfName(r_name, i));
             var ip = addOp(res, OpType.IPAddr);
-            var area = addOp(res, OpType.IpOspfArea);
-            area.setID(ID.of(ranHelper.randomInt(0, 3)));
+
+            if (generate.protocol == generate.Protocol.OSPF) {
+                var area = addOp(res, OpType.IpOspfArea);
+                area.setID(ID.of(ranHelper.randomInt(0, 3)));
+            }
+
+            if (generate.protocol == generate.Protocol.RIP){
+                addOp(res, OpType.RRIP);
+                var network = addOp(res, OpType.NETWORKN);
+                network.setNAME(intf.getNAME());
+            }
+            if (generate.protocol == generate.Protocol.ISIS){
+                var isis = addOp(res, OpType.IPROUTERISIS);
+            }
         }
         return res;
     }

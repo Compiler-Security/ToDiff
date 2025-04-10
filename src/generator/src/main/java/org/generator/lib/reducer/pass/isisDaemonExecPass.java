@@ -1,10 +1,10 @@
 package org.generator.lib.reducer.pass;
 
-import org.generator.lib.frontend.lexical.OpType_isis;
-import org.generator.lib.item.IR.Op_ISIS;
-import org.generator.lib.item.conf.graph.ConfGraph_ISIS;
-import org.generator.lib.item.conf.node.NodeGen_ISIS;
-import org.generator.lib.item.conf.node.NodeType_ISIS;
+import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.item.IR.Op;
+import org.generator.lib.item.conf.graph.ConfGraph;
+import org.generator.lib.item.conf.node.NodeGen;
+import org.generator.lib.item.conf.node.NodeType;
 import org.generator.lib.item.conf.node.isis.ISIS;
 import org.generator.lib.item.conf.node.isis.ISISAreaSum;
 import org.generator.lib.item.conf.node.isis.ISISDaemon;
@@ -16,9 +16,9 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-public class isisDaemonExecPass extends baseExecPass_ISIS {
-    public ExecStat execOSPFAttriCmds(@NotNull Op_ISIS op, @NotNull ConfGraph_ISIS topo) {
-        if (op.Type() != OpType_isis.RISIS && (cur_router ==null || cur_isis == null)){
+public class isisDaemonExecPass extends baseExecPass{
+    public ExecStat execOSPFAttriCmds(@NotNull Op op, @NotNull ConfGraph topo) {
+        if (op.Type() != OpType.RISIS && (cur_router ==null || cur_isis == null)){
             return ExecStat.FAIL;
         }
         var cur_rname = cur_router.getName();
@@ -41,7 +41,7 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
         //return ExecStat.FAIL;
     }
 
-    public ExecStat execOspfDaemonAttriCmds(@NotNull Op_ISIS op, @NotNull ConfGraph_ISIS topo) {
+    public ExecStat execOspfDaemonAttriCmds(@NotNull Op op, @NotNull ConfGraph topo) {
         if (cur_isis_daemon == null){
             return ExecStat.MISS;
         }
@@ -89,12 +89,24 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
                 }
                 return ExecStat.SUCC;
             }
+
+            case SPFINTERVAL -> {
+                if (op.getNAME().equals("level-1")){
+                    isis_daemon.setSpfintervalLevel1(op.getNUM());
+                }else if (op.getNAME().equals("level-2")){
+                    isis_daemon.setSpfintervalLevel2(op.getNUM());
+                }else if (op.getNAME().equals("")){
+                    isis_daemon.setSpfintervalLevel1(op.getNUM());
+                    isis_daemon.setSpfintervalLevel2(op.getNUM());
+                }
+                return ExecStat.SUCC;  
+            }
         }
         assert false:String.format("should not go to here %s", op.toString());
         return ExecStat.FAIL;
     }
 
-    // private ISISAreaSum getAreaSum(@NotNull ID area, @NotNull ConfGraph_ISIS topo){
+    // private ISISAreaSum getAreaSum(@NotNull ID area, @NotNull ConfGraph topo){
     //     var res = topo.<ISISAreaSum>getOrCreateNode(NodeGen_ISIS.getISISAreaSumName(cur_isis.getName(), NodeGen_ISIS.getAreaName(area)), NodeType_ISIS.ISISAreaSum);
     //     if (!res.second()){
     //         res.first().setArea(area);
@@ -113,7 +125,7 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
     //             });
     // }
 
-//     public ExecStat execOSPFAreaCmds(@NotNull Op_ISIS op, @NotNull ConfGraph_ISIS topo) {
+//     public ExecStat execOSPFAreaCmds(@NotNull Op op, @NotNull ConfGraph topo) {
 //         if (cur_router == null || cur_isis == null) return ExecStat.MISS;
 //         //FIXME num range should be deal before this
 //         var cur_rname = cur_router.getName();
@@ -182,7 +194,7 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
 //         }
 //     }
 
-    private ExecStat execOSPFOp(@NotNull Op_ISIS op, ConfGraph_ISIS topo) {
+    private ExecStat execOSPFOp(@NotNull Op op, ConfGraph topo) {
         if (op.Type().inISISRouterWithTopo()) {
             return execOSPFAttriCmds(op, topo);
         }else if (op.Type().inISISDAEMON()){
@@ -194,7 +206,7 @@ public class isisDaemonExecPass extends baseExecPass_ISIS {
         return ExecStat.MISS;
     }
     @Override
-    ExecStat execOp(Op_ISIS op, ConfGraph_ISIS topo) {
+    ExecStat execOp(Op op, ConfGraph topo) {
         return execOSPFOp(op, topo);
     }
 }

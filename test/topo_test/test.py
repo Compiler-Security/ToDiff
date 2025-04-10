@@ -10,6 +10,7 @@ dataDir = up(path.abspath(__file__))
 gridNum = 10
 mxWaitTime = 600
 minWaitTime = 30
+protocol = "rip"
 
 def getContainerName(num):
     return f"docker_topo-fuzz-test_{num}"
@@ -37,7 +38,7 @@ def choseConf(confName):
 import subprocess
 def launch_test(testName, idx):
     #FIXME the PATH should be relative
-    command = f"docker exec -it docker_topo-fuzz-test_{idx} python3 topo-fuzz/src/restful_mininet/main.py -t /home/frr/topo-fuzz/test/topo_test/data/testConf/{testName} -o /home/frr/topo-fuzz/test/topo_test/data/result -w {mxWaitTime} -m {minWaitTime}"
+    command = f"docker exec -it docker_topo-fuzz-test_{idx} python3 topo-fuzz/src/restful_mininet/main.py -t /home/frr/topo-fuzz/test/topo_test/data/testConf/{testName} -o /home/frr/topo-fuzz/test/topo_test/data/result -w {mxWaitTime} -m {minWaitTime} -p {protocol}"
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     return result
 

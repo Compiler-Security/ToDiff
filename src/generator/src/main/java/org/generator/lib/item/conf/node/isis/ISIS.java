@@ -1,8 +1,8 @@
 package org.generator.lib.item.conf.node.isis;
 
 
-import org.generator.lib.item.conf.node.AbstractNode_ISIS;
-import org.generator.lib.item.conf.node.NodeType_ISIS;
+import org.generator.lib.item.conf.node.AbstractNode;
+import org.generator.lib.item.conf.node.NodeType;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
 import org.generator.util.net.ID;
@@ -10,10 +10,10 @@ import org.generator.util.net.NET;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class ISIS extends AbstractNode_ISIS {
+public class ISIS extends AbstractNode {
     public ISIS(String name){
         setName(name);
-        setNodeType(NodeType_ISIS.ISIS);
+        setNodeType(NodeType.ISIS);
         initFiled();
     }
     public enum ISIS_STATUS{

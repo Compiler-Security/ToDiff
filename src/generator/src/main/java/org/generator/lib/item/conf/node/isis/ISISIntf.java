@@ -1,14 +1,14 @@
 package org.generator.lib.item.conf.node.isis;
 
-import org.generator.lib.item.conf.node.NodeType_ISIS;
-import org.generator.lib.item.conf.node.AbstractNode_ISIS;
+import org.generator.lib.item.conf.node.NodeType;
+import org.generator.lib.item.conf.node.AbstractNode;
 import org.generator.util.collections.AbstractStringEnum;
 import org.generator.util.collections.StringEnum;
 
 import java.util.Arrays;
 import java.util.Optional;
 
-public class ISISIntf extends AbstractNode_ISIS {
+public class ISISIntf extends AbstractNode{
     /*
      * element
      * 1. vrf
@@ -32,7 +32,7 @@ public class ISISIntf extends AbstractNode_ISIS {
      */
     public ISISIntf(String name){
         setName(name);
-        setNodeType(NodeType_ISIS.ISISIntf);
+        setNodeType(NodeType.ISISIntf);
         initFiled();
     }
 

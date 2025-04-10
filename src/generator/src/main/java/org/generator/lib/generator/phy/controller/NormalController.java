@@ -15,7 +15,10 @@ public class NormalController {
         NODE,
         INTF,
         LINK,
-        OSPF
+        //MULTI:
+        OSPF,
+        RIP,
+        ISIS
     }
 
     public CType getcType() {
@@ -134,10 +137,18 @@ public class NormalController {
         return  new NormalController(List.of(add, down, remove), List.of(OpType.LINKADD, OpType.LINKDOWN, OpType.LINKREMOVE), name, name2, type, cType);
     }
 
+    //MULTI:
     static public NormalController getOSPFCatg(int up, int re, int shutDown, String name, OpType type, CType cType){
         return new NormalController(List.of(up, re, shutDown), List.of(OpType.NODESETOSPFUP, OpType.NODESETOSPFRE, OpType.NODESETOSPFSHUTDOWN), name, null, type, cType);
     }
 
+    static public NormalController getRIPCatg(int up, int re, int shutDown, String name, OpType type, CType cType){
+        return new NormalController(List.of(up, re, shutDown), List.of(OpType.NODESETRIPUP, OpType.NODESETRIPRE, OpType.NODESETRIPSHUTDOWN), name, null, type, cType);
+    }
+
+    static public NormalController getISISCatg(int up, int re, int shutDown, String name, OpType type, CType cType){
+        return new NormalController(List.of(up, re, shutDown), List.of(OpType.NODESETISISUP, OpType.NODESETISISRE, OpType.NODESETISISSHUTDOWN), name, null, type, cType);
+    }
 
     @Override
     public String toString() {

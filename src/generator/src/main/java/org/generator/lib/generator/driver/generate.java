@@ -1,7 +1,6 @@
 package org.generator.lib.generator.driver;
 
 import org.generator.lib.frontend.lexical.OpType;
-import org.generator.lib.generator.ospf.controller.CapacityController;
 import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.ospf.pass.*;
 import org.generator.lib.generator.phy.pass.genPhyCorePass;
@@ -29,15 +28,30 @@ public class generate {
      *  confg = confg.viewConfGraphOfRouter("r0");
      *  confg.setR_name("r0");
      * @param confGraph
+     * @param ismissinglevel
      * @return
      */
-    public static OpCtxG generateCore(ConfGraph confGraph){
-        var p = new genCorePass();
-        var res1 = p.solve(confGraph);
+    // ismissinglevel means if true, there is an instruction missing "level", and if false, there is no instruction missing "level".
+    public static OpCtxG generateCore(ConfGraph confGraph,boolean ismissinglevel){
+        List<OpCtxG> res1 = null;
+        //MULTI:
+        switch (generate.protocol){
+            case OSPF -> {
+                var p = new genCorePassOspf();
+                res1 = p.solve(confGraph, true);}
+            case RIP -> {
+                var p = new genCorePassRip();
+                res1 = p.solve(confGraph, true);
+            }
+            case ISIS ->{
+                var p = new genCorePassIsis();
+                res1 = p.solve(confGraph, ismissinglevel);
+            }
+        }
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass();
         q.solve(res1, confGraph);
-        return reducer.reduceToCore(genCorePass.mergeOpCtxgToOne(res1));
+        return reducer.reduceToCore(OpCtxG.mergeOpCtxgToOne(res1));
     }
 
     public static void addRemovedOpToController(OpAG opas, NormalController controller){
@@ -56,6 +70,9 @@ public class generate {
             while(true) {
                 var ctxOpa = ranHelper.randomElemOfList(ctxOps);
                 var op = genOpPass.genRanOpByControl(ctxOpa.getOp().Type() == OpType.IntfName);
+                if(op.getOperation().Type()== OpType.PSNPINTERVAL||op.getOperation().Type() == OpType.CSNPINTERVAL||op.getOperation().Type() == OpType.HELLOINTERVAL||op.getOperation().Type() == OpType.HELLOMULTIPLIER||op.getOperation().Type() == OpType.ISISPRIORITY||op.getOperation().Type() == OpType.LSPGENINTERVAL||op.getOperation().Type() == OpType.SPFINTERVAL){
+                    op.getOperation().setNAME(ranHelper.randomElemOfList(List.of("level-1","level-2")));
+                }
                 var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
                 if (activeOpAs.contains(opa)) continue;
                 if (skipCommands(op.getOpOspf().Type())){
@@ -76,6 +93,9 @@ public class generate {
                 if (skipCommands(ori_opa.getOp().Type())){
                     continue;
                 }
+                if(ori_opa.getOp().Type() == OpType.IPROUTERISIS){
+                    continue;
+                }
                 var mutate_opa = actionRulePass.mutate(ori_opa);
                 if (mutate_opa != null){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                     break;
@@ -88,6 +108,19 @@ public class generate {
         if (generate.fastConvergence){
             switch (opType){
                 case TIMERSTHROTTLESPF, IpOspfHelloInter, IpOspfDeadInter, IpOspfDeadInterMulti, RefreshTimer, TimersLsaThrottle, IpOspfRetransInter
+                        -> {return true;}
+            }
+        }
+        //We don't change RID for lsa maxage timeout reason
+        //See https://github.com/FRRouting/frr/issues/17135
+        if (opType == OpType.RID){
+            return true;
+        }
+
+        //----------ISIS--------------
+        if (generate.fastConvergence){
+            switch (opType){
+                case IPROUTERISIS,NET,HELLOINTERVAL,HELLOMULTIPLIER,LSPGENINTERVAL,SPFINTERVAL
                         -> {return true;}
             }
         }
@@ -170,4 +203,12 @@ public class generate {
         //ip ospf dead-interval multiplier 10
     //this is worked by set topo Attribute
     public static final boolean fastConvergence = true;
+
+    public static enum Protocol{
+        OSPF,
+        ISIS,
+        RIP
+    }
+
+    public static Protocol protocol = Protocol.OSPF;
 }

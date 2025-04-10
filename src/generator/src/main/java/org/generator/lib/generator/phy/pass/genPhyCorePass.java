@@ -1,11 +1,13 @@
 package org.generator.lib.generator.phy.pass;
 
 import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpPhy;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.AbstractNode;
+import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.NodeType;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.opg.OpCtxG;
@@ -19,7 +21,6 @@ public class genPhyCorePass {
             var op = new OpPhy(OpType.NODEADD);
             op.setNAME(r.getName());
             opctxg.addOp(OpCtx.of(op));
-            var op1 = new OpPhy(OpType.NODESETOSPFUP);
         }
         var intfs = g.<Intf> getNodesByType(NodeType.Intf);
         for(var intf: intfs){
@@ -36,9 +37,29 @@ public class genPhyCorePass {
         }
         for(var r: nodes){
             if (r.getNodeType() != NodeType.Router) continue;
-            var op = new OpPhy(OpType.NODESETOSPFUP);
-            op.setNAME(r.getName());
-            opctxg.addOp(OpCtx.of(op));
+            OpPhy op = null;
+            //MULTI:
+            switch (generate.protocol){
+                case OSPF -> {
+                    if (g.containsNode(NodeGen.getOSPFName(r.getName()))){
+                        op = new OpPhy(OpType.NODESETOSPFUP);
+                    }
+                }
+                case RIP -> {
+                    if (g.containsNode(NodeGen.getRIPName(r.getName()))){
+                        op = new OpPhy(OpType.NODESETRIPUP);
+                    }
+                }
+                case ISIS -> {
+                    if (g.containsNode(NodeGen.getISISName(r.getName()))){
+                        op = new OpPhy(OpType.NODESETISISUP);
+                    }
+                }
+            }
+            if (op != null) {
+                op.setNAME(r.getName());
+                opctxg.addOp(OpCtx.of(op));
+            }
         }
         return opctxg;
     }

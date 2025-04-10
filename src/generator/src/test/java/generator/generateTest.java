@@ -8,11 +8,16 @@ import org.generator.lib.item.conf.node.phy.Router;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.reducer.driver.reducer;
 import org.generator.lib.topo.driver.topo;
+import org.generator.lib.topo.pass.base.ripRanBaseGen;
 import org.generator.tools.diffOp.genOps;
+import org.generator.tools.diffTopo.diffTopo;
 import org.generator.tools.frontend.ConfReader;
+import org.generator.tools.frontend.OspfConfWriter;
 import org.junit.Test;
-import org.generator.lib.topo.pass.base.ranBaseGen;
+import org.generator.lib.topo.pass.base.ospfRanBaseGen;
 
+import static org.generator.lib.topo.driver.topo.dumpGraphOspf;
+import static org.generator.lib.topo.driver.topo.dumpGraphRip;
 import static org.generator.util.diff.differ.compareJson;
 
 public class generateTest {
@@ -96,7 +101,7 @@ public class generateTest {
         var confg = topo.genGraph(1, topo.areaCount, topo.mxDegree, topo.abrRatio, false, null);
         confg = confg.viewConfGraphOfRouter("r0");
         confg.setR_name("r0");
-        var core = generate.generateCore(confg);
+        var core = generate.generateCore(confg,false);
         while(true){
             var equal = generate.generateEqualOfCore(core, true);
             for(var op: equal){
@@ -124,11 +129,58 @@ public class generateTest {
 
     @Test
     public void baseGraphDumpTest(){
-        var ran = new ranBaseGen();
+        var ran = new ospfRanBaseGen();
         var rs = ran.generate(5, 3, 2, 4);
-        var str = topo.dumpGraph(rs, ran);
+        var str = dumpGraphOspf(rs, ran);
         System.out.println(str);
         var t = topo.genGraph(5, 3, 2, 2,false, null);
         System.out.println(t);
+    }
+
+    @Test
+    public void baseGraphDumpTestRip(){
+        var ran = new ripRanBaseGen();
+        var rs = ran.generate(8, 3, 4, 4);
+        var str = dumpGraphRip(rs, ran);
+        System.out.println(str);
+    }
+
+    @Test
+    public void multiProtocolTest() {
+        String test_st = """
+                router rip
+                    passive-interface r2-eth0
+                    passive-interface default
+                    passive-interface r1-eth0
+                """;
+        generate.protocol = generate.Protocol.RIP;
+        for(int i = 0; i < 1; i++) {
+            System.out.printf("testCase %d\n", i);
+            var genOp = new genOps();
+
+            //var ori = genOp.genRandom(100, 0.2, 0.6, 4, 0, 1, "r1");
+            //var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
+
+            var ori_use = new ConfReader().read(test_st);
+            //System.out.println(ori_use);
+            System.out.println(reducer.reduceToCore(ori_use));
+            //System.out.println(getSetConfG(ori_use));
+        }
+    }
+    @Test
+    public void mainTest(){
+        for(int i = 0; i < 100; i++){
+            System.out.printf("testCase %d\n", i);
+            int routerCount = 3,maxStep = 3,maxStepTime = 10, roundNum = 2;
+            var diff = new diffTopo();
+            var res = diff.gen(routerCount, maxStep, maxStepTime, roundNum);
+        }
+    }
+    @Test
+    public void baseGenTest(){
+        var ran = new ospfRanBaseGen();
+        var routers = ran.generate(5, 1, 3, 0);
+        var baseGraphStr = dumpGraphOspf(routers, ran);
+        System.out.println(baseGraphStr);
     }
 }

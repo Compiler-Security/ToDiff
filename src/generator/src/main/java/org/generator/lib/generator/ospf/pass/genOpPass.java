@@ -9,26 +9,24 @@ import org.generator.lib.item.IR.OpOspf;
 import org.generator.util.collections.Pair;
 import org.generator.util.ran.ranHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 
 public class genOpPass {
-    private static final List<OpType> intfOps, OspfOps;
-    static {
-        intfOps = new ArrayList<>();
-        OspfOps = new ArrayList<>();
-        for (var op_type: OpType.values()){
-            //FIXME areaVLINK
-            //if (op_type == OpType.AreaVLink) continue;
-            if (op_type.inOSPFINTF()){
-                intfOps.add(op_type); }
-            else if (op_type.inOSPFAREA() || op_type.inOSPFDAEMON() || op_type.inOSPFRouterWithTopo()){
-                OspfOps.add(op_type);
-            }
-        }
-    }
+//    private static final List<OpType> intfOps, OspfOps;
+//    static {
+//        intfOps = new ArrayList<>();
+//        OspfOps = new ArrayList<>();
+//        for (var op_type: OpType.values()){
+//            //FIXME areaVLINK
+//            //if (op_type == OpType.AreaVLink) continue;
+//            if (op_type.inOSPFINTF()){
+//                intfOps.add(op_type); }
+//            else if (op_type.inOSPFAREA() || op_type.inOSPFDAEMON() || op_type.inOSPFRouterWithTopo()){
+//                OspfOps.add(op_type);
+//            }
+//        }
+//    }
     private static  int getRanIntNum(Map<String, Object> argRange, String field){
         if (argRange.containsKey(field) && argRange.get(field) instanceof Pair<?,?> p){
             return ranHelper.randomInt((int)((Long) p.first() + 0), (int) ((Long) p.second() + 0));
@@ -96,11 +94,15 @@ public class genOpPass {
                 case "LONGNUM" -> {
                     new_op.setLONGNUM(getRanLongNum(argsRange, "LONGNUM"));
                 }
+                //FIXME random NAME we should generate some meaningful name
                 case "NAME" -> {
                     new_op.setNAME(getRanName(argsRange, "NAME"));
                 }
                 case "NAME2" -> {
                     new_op.setNAME(getRanName(argsRange, "NAME2"));
+                }
+                case "NET" -> {
+                    new_op.setNET(ranHelper.randomNet());
                 }
                 //case "NUM" -> {new_op.setNUM(argsRange.get("NUM"));}
                 default -> {
@@ -112,10 +114,18 @@ public class genOpPass {
     }
     public static OpCtx genRanOpByControl(boolean inIntf){
         OpType op_type;
+        List<OpType> intfOps, RouterOps;
+        intfOps = OpType.getIntfSetOps();
+        RouterOps = OpType.getRouterSetOps();
+        if (generate.protocol == generate.Protocol.ISIS){
+            intfOps.remove(OpType.IPROUTERISIS);
+            RouterOps.remove(OpType.NET);
+            RouterOps.remove(OpType.ISTYPE);
+        }
         if (inIntf){
             op_type = intfOps.get(ranHelper.randomInt(0, intfOps.size() - 1));
         }else  {
-            op_type = OspfOps.get(ranHelper.randomInt(0, OspfOps.size() - 1));
+            op_type = RouterOps.get(ranHelper.randomInt(0, RouterOps.size() - 1));
         }
         return genRanOpOfType(op_type);
     }
@@ -131,6 +141,9 @@ public class genOpPass {
                 }
                 case "IP" -> {
                     dst_op.setIP(src_op.getIP());
+                }
+                case "NET" -> {
+                    dst_op.setNET(src_op.getNET());
                 }
                 case "NUM" -> {
                     dst_op.setNUM(src_op.getNUM());

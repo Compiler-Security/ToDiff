@@ -1,1 +1,8 @@
-sudo docker-compose  -f docker/docker-compose.yml build --build-arg commit=0cb334299c85d6a64bba55bcf00e136e0bbc6786 topo-fuzz-test 
+#!/bin/bash
+
+if [ "$1" = "rebuild" ]; then
+    # if first arg is rebuild
+    sudo docker-compose  -f docker/docker-compose.yml build --no-cache --parallel  topo-fuzz-test 
+else
+    sudo docker-compose  -f docker/docker-compose.yml build  topo-fuzz-test 
+fi

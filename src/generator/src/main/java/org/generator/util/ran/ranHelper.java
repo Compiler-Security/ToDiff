@@ -42,13 +42,13 @@ public class ranHelper {
     }
 
     public static NET randomNet() {
-        // 随机生成 area 部分，例如 "49.0001"
+        // generate random area part, for example "12.3456"
         String area = String.format("%02d.%04d", randomInt(10, 99), randomInt(0, 9999));
-        // 随机生成 systemId 部分，例如 "1234.5678.9abc"
+        // generate random system ID part, for example "1234.5678.9012"
         String systemId = String.format("%04x.%04x.%04x", randomInt(0, 0xFFFF), randomInt(0, 0xFFFF), randomInt(0, 0xFFFF));
-        // 选择器部分，通常为 "00"
+        // generate selector part
         String selector = "00";
-        // 构建 NET 地址字符串
+        // combine all parts to form a random NET
         String netStr = area + "." + systemId + "." + selector;
         return NET.of(netStr);
     }

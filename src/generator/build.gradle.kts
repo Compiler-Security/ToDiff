@@ -11,7 +11,7 @@ repositories {
 }
 
 application {
-    mainClass = "org.generator.tools.diffTopo_ISIS.main"
+    mainClass = "org.generator.tools.diffTopo.main"
 }
 
 dependencies {
