@@ -17,9 +17,11 @@ import org.generator.lib.item.conf.node.phy.Switch;
 import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.lib.item.conf.node.rip.RIPIntf;
 import org.generator.lib.item.conf.node.isis.ISIS;
-import org.generator.lib.item.conf.node.isis.ISISAreaSum;
 import org.generator.lib.item.conf.node.isis.ISISDaemon;
 import org.generator.lib.item.conf.node.isis.ISISIntf;
+import org.generator.lib.item.conf.node.openfabric.FABRIC;
+import org.generator.lib.item.conf.node.openfabric.FABRICDaemon;
+import org.generator.lib.item.conf.node.openfabric.FABRICIntf;
 import org.generator.util.collections.Pair;
 import org.generator.util.exec.ExecStat;
 import org.graphstream.graph.Graph;
@@ -144,10 +146,6 @@ public class ConfGraph extends AbstractRelationGraph {
         if (containsNode(isis_name)) {
             g.addNode(getNodeNotNull(isis_name));
             g.addISISRelation(isis_name, r_name);
-            for (var areaSum : getISISAreaSumOfISIS(isis_name)) {
-                g.addNode(areaSum);
-                g.addISISAreaSumRelation(areaSum.getName(), isis_name);
-            }
         }
         if (containsNode(isis_daemon_name)) {
             g.addNode(getNodeNotNull(isis_daemon_name));
@@ -165,6 +163,33 @@ public class ConfGraph extends AbstractRelationGraph {
         return g;
     }
 
+
+    private ConfGraph viewConfGraphOfRouterOpenFabric(String r_name) {
+        var g = new ConfGraph(r_name);
+        g.addNode(getNodeNotNull(r_name));
+        var openfabric_name = NodeGen.getOpenFabricName(r_name);
+        var openfabric_daemon_name = NodeGen.getOpenFabricDaemonName(openfabric_name);
+        if (containsNode(openfabric_name)) {
+            g.addNode(getNodeNotNull(openfabric_name));
+            g.addOpenFabricRelation(openfabric_name, r_name);
+        }
+        if (containsNode(openfabric_daemon_name)) {
+            g.addNode(getNodeNotNull(openfabric_daemon_name));
+            g.addOpenFabricDaemonRelation(openfabric_daemon_name, r_name);
+        }
+        for (var intf : getIntfsOfRouter(r_name)) {
+            g.addNode(intf);
+            g.addIntfRelation(intf.getName(), r_name);
+            var openfabric_intf_name = NodeGen.getOpenFabricIntfName(intf.getName());
+            if (containsNode(openfabric_intf_name)) {
+                g.addNode(getNodeNotNull(openfabric_intf_name));
+                g.addOpenFabricIntfRelation(openfabric_intf_name, intf.getName());
+            }
+        }
+        return g;
+    }
+
+
     public ConfGraph viewConfGraphOfRouter(String r_name) {
         switch (generate.protocol) {
             case OSPF -> {
@@ -175,6 +200,9 @@ public class ConfGraph extends AbstractRelationGraph {
             }
             case ISIS -> {
                 return viewConfGraphOfRouterISIS(r_name);
+            }
+            case OpenFabric -> {
+                return viewConfGraphOfRouterOpenFabric(r_name);
             }
         }
         assert false;
@@ -299,9 +327,6 @@ public class ConfGraph extends AbstractRelationGraph {
                 .flatMap(Collection::stream).collect(Collectors.toSet());
     }
 
-    public Set<ISISAreaSum> getISISAreaSumOfISIS(String isis_name) {
-        return this.<ISISAreaSum>getDstsByType(isis_name, RelationEdge.EdgeType.ISISAREASUM);
-    }
 
     public ISISIntf getISISIntf(String nodeName) {
         return (ISISIntf) getNode(nodeName).get();
@@ -309,6 +334,27 @@ public class ConfGraph extends AbstractRelationGraph {
 
     public ISISDaemon getISISDaemonOfISIS(String isis_name) {
         return this.<ISISDaemon>getDstsByType(isis_name, RelationEdge.EdgeType.ISISDAEMON).stream().findFirst()
+                .get();
+    }
+
+    // ------------------OpenFabric----------------------------
+    
+    public FABRIC getOpenFabricOfRouter(String r_name) {
+        return this.<FABRIC>getDstsByType(r_name, RelationEdge.EdgeType.FABRIC).stream().findFirst().get();
+    }
+
+    public Set<FABRICIntf> getOpenFabricIntfOfRouter(String r_name) {
+        return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF).stream()
+                .map(x -> this.<FABRICIntf>getDstsByType(x.getName(), RelationEdge.EdgeType.FABRICINTF))
+                .flatMap(Collection::stream).collect(Collectors.toSet());
+    }
+
+    public FABRICIntf getOpenFabricIntf(String nodeName) {
+        return (FABRICIntf) getNode(nodeName).get();
+    }
+
+    public FABRICDaemon getOpenFabricDaemonOfOpenFabric(String openfabric_name) {
+        return this.<FABRICDaemon>getDstsByType(openfabric_name, RelationEdge.EdgeType.FABRICDAEMON).stream().findFirst()
                 .get();
     }
 
@@ -389,13 +435,6 @@ public class ConfGraph extends AbstractRelationGraph {
         return ExecStat.SUCC;
     }
 
-    public ExecStat addISISAreaSumRelation(String areaSum_name, String isis_name){
-        var res1 = addEdge(areaSum_name, isis_name, RelationEdge.EdgeType.ISIS);
-        var res2 = addEdge(isis_name, areaSum_name, RelationEdge.EdgeType.ISISAREASUM);
-        assert res1.join(res2) == ExecStat.SUCC;
-        return ExecStat.SUCC;
-    }
-
     public ExecStat addISISDaemonRelation(String isis_name, String isis_daemon_name){
         var res1 = addEdge(isis_name, isis_daemon_name, RelationEdge.EdgeType.ISISDAEMON);
         var res2 = addEdge(isis_daemon_name, isis_name, RelationEdge.EdgeType.ISIS);
@@ -403,6 +442,31 @@ public class ConfGraph extends AbstractRelationGraph {
         return ExecStat.SUCC;
     }
 
+    // ----------------OpenFabric-------------------
+
+
+    public ExecStat addOpenFabricRelation(String openfabric_name, String phynode_name){
+        var res1 = addEdge(phynode_name, openfabric_name, RelationEdge.EdgeType.FABRIC);
+        var res2 =  addEdge(openfabric_name, phynode_name, RelationEdge.EdgeType.PhyNODE);
+        assert res1.join(res2) == ExecStat.SUCC;
+        return ExecStat.SUCC;
+    }
+
+    public ExecStat addOpenFabricIntfRelation(String openfabric_intf_name, String intf_name){
+        var res1 = addEdge(openfabric_intf_name, intf_name, RelationEdge.EdgeType.INTF);
+        var res2 = addEdge(intf_name, openfabric_intf_name, RelationEdge.EdgeType.FABRICINTF);
+        return ExecStat.SUCC;
+    }
+
+    public ExecStat addOpenFabricDaemonRelation(String openfabric_name, String openfabric_daemon_name){
+        var res1 = addEdge(openfabric_name, openfabric_daemon_name, RelationEdge.EdgeType.FABRICDAEMON);
+        var res2 = addEdge(openfabric_daemon_name, openfabric_name, RelationEdge.EdgeType.FABRIC);
+        assert res1.join(res2) == ExecStat.SUCC;
+        return ExecStat.SUCC;
+    }
+
+
+    //Multi:
     public boolean containsOSPFOfRouter(String r_name) {
         return this.containsNode(NodeGen.getOSPFName(r_name));
     }
@@ -413,6 +477,10 @@ public class ConfGraph extends AbstractRelationGraph {
 
     public boolean containsISISOfRouter(String r_name){
         return this.containsNode(NodeGen.getISISName(r_name));
+    }
+
+    public boolean containsOpenFabricOfRouter(String r_name){
+        return this.containsNode(NodeGen.getOpenFabricName(r_name));
     }
 
     @Override

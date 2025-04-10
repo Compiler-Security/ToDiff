@@ -47,6 +47,10 @@ public class generate {
                 var p = new genCorePassIsis();
                 res1 = p.solve(confGraph, ismissinglevel);
             }
+            case OpenFabric -> {
+                var p = new genCorePassOpenfabric();
+                res1 = p.solve(confGraph, true);
+            }
         }
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass();
@@ -93,7 +97,7 @@ public class generate {
                 if (skipCommands(ori_opa.getOp().Type())){
                     continue;
                 }
-                if(ori_opa.getOp().Type() == OpType.IPROUTERISIS){
+                if(ori_opa.getOp().Type() == OpType.IPROUTERISIS || ori_opa.getOp().Type() == OpType.IPROUTERFABRIC){
                     continue;
                 }
                 var mutate_opa = actionRulePass.mutate(ori_opa);
@@ -120,7 +124,16 @@ public class generate {
         //----------ISIS--------------
         if (generate.fastConvergence){
             switch (opType){
-                case IPROUTERISIS,NET,HELLOINTERVAL,HELLOMULTIPLIER,LSPGENINTERVAL,SPFINTERVAL
+                case IPROUTERISIS,NET,ISTYPE,CIRCUITTYPE,HELLOINTERVAL,HELLOMULTIPLIER,PSNPINTERVAL,CSNPINTERVAL,LSPGENINTERVAL,SPFINTERVAL, SETOVERLOADBITONSTARTUP,SETOVERLOADBIT,LSPMTU, ADVERTISEHIGHMETRIC
+                        -> {return true;}
+            }
+        }
+
+        //----------OpenFabric--------------
+
+        if (generate.fastConvergence){
+            switch (opType){
+                case IPROUTERFABRIC,NET,FABRICHELLOINTERVAL,FABRICHELLOMULTIPLIER,FABRICLSPGENINTERVAL,FABRICSPFINTERVAL
                         -> {return true;}
             }
         }
@@ -207,7 +220,8 @@ public class generate {
     public static enum Protocol{
         OSPF,
         ISIS,
-        RIP
+        RIP,
+        OpenFabric
     }
 
     public static Protocol protocol = Protocol.OSPF;

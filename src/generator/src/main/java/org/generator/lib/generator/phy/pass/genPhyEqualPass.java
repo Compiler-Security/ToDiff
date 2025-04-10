@@ -70,6 +70,17 @@ public class genPhyEqualPass {
                 case NODESETISISRE -> {
                     slots.add(NormalController.getISISCatg(0, 0, 0, op.getNAME(), OpType.NODESETISISRE, NormalController.CType.ISIS));
                 }
+
+                //----------OpenFabric------------
+                case NODESETFABRICUP -> {
+                    slots.add(NormalController.getOpenFabricCatg(0, 0, 0, op.getNAME(), OpType.NODESETFABRICUP, NormalController.CType.OpenFabric));
+                }
+                case NODESETFABRICSHUTDOWN -> {
+                    slots.add(NormalController.getOpenFabricCatg(0, 0, 0, op.getNAME(), OpType.NODESETFABRICSHUTDOWN, NormalController.CType.OpenFabric));
+                }
+                case NODESETFABRICRE -> {
+                    slots.add(NormalController.getOpenFabricCatg(0, 0, 0, op.getNAME(), OpType.NODESETFABRICRE, NormalController.CType.OpenFabric));
+                }
                 default -> {
                     assert false: "error op %s".formatted(op.toString());
                 }
@@ -115,6 +126,10 @@ public class genPhyEqualPass {
             case NODESETISISUP,NODESETISISRE, NODESETISISSHUTDOWN ->{
                 return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
             }
+            //----------OpenFabric-----------
+            case NODESETFABRICUP,NODESETFABRICRE, NODESETFABRICSHUTDOWN ->{
+                return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
+            }
         }
         return false;
     }
@@ -158,6 +173,14 @@ public class genPhyEqualPass {
                     if (slot.getCurType() == OpType.NODESETISISUP) {
                         slot.deltaTypeNum(OpType.NODESETISISUP, 1);
                         slot.setCurType(OpType.NODESETISISSHUTDOWN);
+                    }
+                }
+                if (generate.protocol == generate.Protocol.OpenFabric){
+                    //every router NODE should have OpenFabric
+                    var slot = getSlot(NormalController.CType.OpenFabric, targetOp.getNAME(), null);
+                    if (slot.getCurType() == OpType.NODESETFABRICUP) {
+                        slot.deltaTypeNum(OpType.NODESETFABRICUP, 1);
+                        slot.setCurType(OpType.NODESETFABRICSHUTDOWN);
                     }
                 }
 
@@ -207,6 +230,9 @@ public class genPhyEqualPass {
                 }
                 if (slot.getcType() == NormalController.CType.ISIS){
                     slot.deltaTypeNum(OpType.NODESETISISRE, -slot.getCounterOfType(OpType.NODESETISISRE));
+                }
+                if (slot.getcType() == NormalController.CType.OpenFabric){
+                    slot.deltaTypeNum(OpType.NODESETFABRICRE, -slot.getCounterOfType(OpType.NODESETFABRICRE));
                 }
             }
         }

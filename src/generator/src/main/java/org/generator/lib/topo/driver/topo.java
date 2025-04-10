@@ -9,9 +9,11 @@ import org.generator.lib.topo.item.base.Router_ISIS;
 import org.generator.lib.topo.pass.attri.isisRanAttriGen;
 import org.generator.lib.topo.pass.attri.ospfRanAttriGen;
 import org.generator.lib.topo.pass.attri.ripRanAttriGen;
+import org.generator.lib.topo.pass.attri.openfabricRanAttriGen;
 import org.generator.lib.topo.pass.base.ospfRanBaseGen;
 import org.generator.lib.topo.pass.base.ripRanBaseGen;
 import org.generator.lib.topo.pass.base.isisRanBaseGen;
+import org.generator.lib.topo.pass.base.openfabricRanBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
 import org.generator.lib.topo.pass.build.topoBuild_ISIS;
 import org.graphstream.graph.Graph;
@@ -131,6 +133,52 @@ public class topo {
     }
 
 
+    public static String dumpGraphOpenfabric(List<Router_ISIS> routers, openfabricRanBaseGen ran){
+        Graph graph = new MultiGraph("BaseGraph");
+        for(int i = 0; i < routers.size(); i++){
+            var node = graph.addNode("r%d".formatted(i));
+            var router = routers.get(i);
+            node.setAttribute("label", "area=%d,level=%d".formatted(
+                router.area, 
+                router.level));
+
+        }
+        for(int i = 0; i < ran.networkId; i++){
+            var n = graph.addNode("n%d".formatted(i));
+            n.setAttribute("shape", "square");
+        }
+        for(int i = 0; i < routers.size(); i++){
+            var r = routers.get(i);
+            int j = 0;
+            for(var intf: r.intfs){
+                var gedge = graph.addEdge("r%d->n%d(%d)".formatted(i, intf.networkId, j), "r%d".formatted(i), "n%d".formatted(intf.networkId));
+                assert intf.cost > 0: "intf cost should > 0";
+                //FIXME:here has changed
+                gedge.setAttribute("label", "%d:%d".formatted(j, intf.cost));
+                j++;
+            }
+        }
+        for(int i = 0; i < ran.networkId; i++){
+            var nodeName = "n%d".formatted(i);
+            var node = graph.getNode(nodeName);
+            if (node.edges().toList().size() != 2) continue;
+            var src1 = node.getEdge(0).getSourceNode();
+            var src2 = node.getEdge(1).getSourceNode();
+            var gedge = graph.addEdge("%s->%s(%d)".formatted(src1, src2, i), src1, src2);
+            gedge.setAttribute("label", node.getEdge(0).getAttribute("label"));
+            graph.removeNode(node);
+        }
+        FileSinkDOT fileSinkDOT = new FileSinkDOT(false);
+        StringWriter stringWriter = new StringWriter();
+        try {
+            fileSinkDOT.writeAll(graph, stringWriter);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return stringWriter.toString();
+    }
+
     public static ConfGraph genGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, ObjectNode dumpInfo){
         List<Router> routers = null;
         List<Router_ISIS> routersIsis = null;
@@ -152,6 +200,12 @@ public class topo {
                 routersIsis = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
                 baseGraphStr = dumpGraphIsis(routersIsis, ran);
             }
+            case OpenFabric -> {
+                var ran = new openfabricRanBaseGen();
+                routersIsis = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
+                baseGraphStr = dumpGraphOpenfabric(routersIsis, ran);
+            }
+            
         }
         if (dumpInfo != null) dumpInfo.put("routerGraph", TextNode.valueOf(baseGraphStr));
         if (verbose){
@@ -159,7 +213,7 @@ public class topo {
         }
         
         ConfGraph confg = null;
-        if(generate.protocol == generate.Protocol.ISIS){
+        if(generate.protocol == generate.Protocol.ISIS || generate.protocol == generate.Protocol.OpenFabric){
             var b = new topoBuild_ISIS();
             confg = b.solve(routersIsis);
         }
@@ -179,6 +233,10 @@ public class topo {
             }
             case ISIS -> {
                 var c = new isisRanAttriGen();
+                c.generate(confg, routersIsis);
+            }
+            case OpenFabric -> {
+                var c = new openfabricRanAttriGen();
                 c.generate(confg, routersIsis);
             }
         }

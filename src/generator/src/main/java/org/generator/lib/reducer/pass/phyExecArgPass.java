@@ -10,6 +10,7 @@ import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.edge.RelationEdge;
 import org.generator.lib.item.conf.node.NodeType;
 import org.generator.lib.item.conf.node.isis.ISIS;
+import org.generator.lib.item.conf.node.openfabric.FABRIC;
 import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.util.exception.Unimplemented;
 import org.generator.util.exec.ExecStat;
@@ -245,6 +246,49 @@ public class phyExecArgPass extends  baseExecPass{
 
                 return ExecStat.SUCC;
             }
+
+            //------------OpenFabric----------------
+            case NODESETFABRICUP -> {
+                var r_name = op.getNAME();
+                var opennfabric_name = NodeGen.getOpenFabricName(r_name);
+
+                //check miss condition
+                if (!topo.containsNode(r_name) || topo.containsNode(opennfabric_name)) return ExecStat.MISS;
+
+                //new opennfabric
+                FABRIC opennfabric = NodeGen.new_OpenFabric(opennfabric_name);
+                opennfabric.setStatus(FABRIC.FABRIC_STATUS.UP);
+                topo.addNode(opennfabric);
+
+                // new relation edge
+                return topo.addOpenFabricRelation(opennfabric_name, r_name);
+            }
+            case NODESETFABRICRE -> {
+                var r_name = op.getNAME();
+                var opennfabric_name = NodeGen.getOpenFabricName(r_name);
+                //check condition
+                if (!topo.containsNode(opennfabric_name)) return ExecStat.MISS;
+
+                //change opennfabric status
+                var opennfabric = (FABRIC) topo.getNode(opennfabric_name).get();
+                opennfabric.setStatus(FABRIC.FABRIC_STATUS.UP);
+
+                return ExecStat.SUCC;
+            }
+            case NODESETFABRICSHUTDOWN -> {
+                var r_name = op.getNAME();
+                var opennfabric_name = NodeGen.getOpenFabricName(r_name);
+                //check condition
+                if (!topo.containsNode(opennfabric_name)) return ExecStat.MISS;
+
+
+                //delete opennfabric
+                var opennfabric = (FABRIC) topo.getNode(opennfabric_name).get();
+                topo.delNode(opennfabric);
+
+                return ExecStat.SUCC;
+            }
+
             default -> {
                 assert false : "type error";
             }

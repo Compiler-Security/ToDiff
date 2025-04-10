@@ -18,6 +18,9 @@ public enum OpType {
     NODESETISISUP,
     NODESETISISRE,
     NODESETISISSHUTDOWN,
+    NODESETFABRICUP,
+    NODESETFABRICRE,
+    NODESETFABRICSHUTDOWN,
 
     INTFUP,
     INTFDOWN,
@@ -241,6 +244,39 @@ public enum OpType {
     THREEWAYHANDSHAKE,
     NOPSNPINTERVAL,
 
+    //====================OpenFabric=========================
+    RFABRIC,
+    //--------------ROUTER------------------
+    //NET
+
+
+    //--------------DAEMON----------------
+    FABRICSETOVERLOADBIT,   
+    FABRICTIER,
+    FABRICLSPGENINTERVAL,
+    FABRICSPFINTERVAL,
+    //--------------INTERFACE----------------
+    IPROUTERFABRIC,
+    FABRICCSNPINTERVAL,
+    FABRICPSNPINTERVAL,
+    FABRICHELLOINTERVAL,
+    FABRICHELLOMULTIPLIER,
+    FABRICPASSIVE,
+
+    //--------------UNSET------------------
+    NORFABRIC,
+    NOFABRICSETOVERLOADBIT,
+    NOFABRICTIER,
+
+    NOFABRICLSPGENINTERVAL,
+    NOFABRICSPFINTERVAL,
+
+    NOIPROUTERFABRIC,
+    NOFABRICCSNPINTERVAL,
+    NOFABRICPSNPINTERVAL,
+    NOFABRICHELLOINTERVAL,
+    NOFABRICHELLOMULTIPLIER,
+    NOFABRICPASSIVE,
     //============================INVALID=========================
     INVALID;
 
@@ -287,6 +323,21 @@ public enum OpType {
         return this.ordinal() >= IPROUTERISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal();
     }
     
+    //=======OpenFabric Function============
+
+    public  boolean inOpenFabricRouterWithTopo() {
+        return this == NET;
+    }
+
+    public boolean inOpenFabricDAEMON(){
+        return this.ordinal() >= FABRICSETOVERLOADBIT.ordinal() && this.ordinal() <= FABRICSPFINTERVAL.ordinal();
+    }
+
+    public  boolean inOpenFabricINTF(){
+        return this.ordinal() >= IPROUTERFABRIC.ordinal() && this.ordinal() <= FABRICPASSIVE.ordinal();
+    }
+
+
     //==========COMMON Function======================
     public boolean isZEBRAUnsetOp(){
         return this == NOIPAddr;
@@ -303,12 +354,16 @@ public enum OpType {
     public boolean isISISUnsetOp(){
         return (this.ordinal() >= NORISIS.ordinal() && this.ordinal() <= NOPSNPINTERVAL.ordinal()) || this==NOIPAddr;
     }
+
+    public boolean isFABRICUnsetOp(){
+        return this.ordinal() >= NORFABRIC.ordinal() && this.ordinal() <= NOFABRICPASSIVE.ordinal() || this == NOIPAddr || this == NOTNET;
+    }
     /**
      * All unset Op
      * @return
      */
     public boolean isUnsetOp(){
-        return  isZEBRAUnsetOp() || isOSPFUnsetOp() || isRIPUnsetOp() || isISISUnsetOp();
+        return  isZEBRAUnsetOp() || isOSPFUnsetOp() || isRIPUnsetOp() || isISISUnsetOp() || isFABRICUnsetOp();
     }
 
     //-------------------------------------------------
@@ -328,12 +383,16 @@ public enum OpType {
         return (this.ordinal() >= RISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal())|| this== IntfName || this == IPAddr;
     }
 
+
+    public boolean isFABRICSetOp(){
+        return this.ordinal() >= RFABRIC.ordinal() && this.ordinal() <= FABRICPASSIVE.ordinal() || this == IntfName || this == IPAddr || this == NET;
+    }
     /**
      * All set op, include router XXX, interface name
      * @return
      */
     public boolean isSetOp(){
-        return isZEBRASetOp() || isOSPFSetOp() || isRIPSetOp() || isISISSetOp();
+        return isZEBRASetOp() || isOSPFSetOp() || isRIPSetOp() || isISISSetOp() || isFABRICSetOp();
     }
 
     //-----------------------------------------------------
@@ -352,12 +411,16 @@ public enum OpType {
     public boolean isISISRouterOp(){
         return (this.ordinal() >= NET.ordinal() && this.ordinal() <= SPFINTERVAL.ordinal()) || (this.ordinal() >= NOTNET.ordinal() && this.ordinal() <= NOISTYPE.ordinal());
     }
+
+    public boolean isFABRICRouterOp(){
+        return (this.ordinal() >= FABRICSETOVERLOADBIT.ordinal() && this.ordinal() <= FABRICSPFINTERVAL.ordinal()) || (this.ordinal() >= NOFABRICSETOVERLOADBIT.ordinal() && this.ordinal() <= NOFABRICSPFINTERVAL.ordinal()) || this == NET || this == NOTNET;
+    }
     /**
      * all ops(set/unset) in router XXX, don't include router XXX, no router XXX, intf name
      * @return
      */
     public boolean isRouterOp(){
-        return isZEBRARouterOp() || isOSPFRouterOp() || isRIPRouterOp() || isISISRouterOp();
+        return isZEBRARouterOp() || isOSPFRouterOp() || isRIPRouterOp() || isISISRouterOp() || isFABRICRouterOp();
     }
 
     //------------------------------------------------------
@@ -374,39 +437,49 @@ public enum OpType {
     }
 
     public boolean isISISIntfOp(){
-        return (this.ordinal() >= IPROUTERISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal()) || (this.ordinal() >= NOCIRCUITTYPE.ordinal())|| this == IPAddr || this == NOIPAddr || this == IPROUTERISIS || this == NOIPROUTERISIS;
+        return (this.ordinal() >= IPROUTERISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal()) || (this.ordinal() >= NOCIRCUITTYPE.ordinal() && this.ordinal()<= NOPSNPINTERVAL.ordinal())|| this == IPAddr || this == NOIPAddr || this == IPROUTERISIS || this == NOIPROUTERISIS;
+    }
+
+    public boolean isFABRICIntfOp(){
+        return (this.ordinal() >= IPROUTERFABRIC.ordinal() && this.ordinal() <= FABRICPASSIVE.ordinal()) || (this.ordinal() >= NOIPROUTERFABRIC.ordinal() && this.ordinal() <= NOFABRICPASSIVE.ordinal()) || this == IPAddr || this == NOIPAddr || this == IPROUTERFABRIC || this == NOIPROUTERFABRIC;
     }
     /**
      * all ops(set/unset) in interface {name}, don't include router ospf, no router ospf, intfname, include ip address
      * @return
      */
     public boolean isIntfOp(){
-        return isZEBRAIntfOp() || isOSPFIntfOp() || isRIPIntfOp() || isISISIntfOp();
+        return isZEBRAIntfOp() || isOSPFIntfOp() || isRIPIntfOp() || isISISIntfOp() || isFABRICIntfOp();
     }
 
-    public static Set<OpType> OSPFOps, RIPOps, ISISOps;
-    public static List<OpType> OSPFIntfSetOps, OSPFRouterSetOps, RIPRouterSetOps, RIPIntfSetOps, ISISRouterSetOps, ISISIntfSetOps;
+    public static Set<OpType> OSPFOps, RIPOps, ISISOps, FABRICOps;
+    public static List<OpType> OSPFIntfSetOps, OSPFRouterSetOps, RIPRouterSetOps, RIPIntfSetOps, ISISRouterSetOps, ISISIntfSetOps , FABRICRouterSetOps, FABRICIntfSetOps;
     //MULTI:
     static{
         OSPFOps = new HashSet<OpType>(Arrays.asList(ROSPF, NOROSPF));
         RIPOps = new HashSet<OpType>(Arrays.asList(RRIP, NORRIP));
         ISISOps = new HashSet<OpType>(Arrays.asList(RISIS, NORISIS));
+        FABRICOps = new HashSet<OpType>(Arrays.asList(RFABRIC, NORFABRIC));
         OSPFIntfSetOps = new ArrayList<>();
         OSPFRouterSetOps = new ArrayList<>();
         RIPIntfSetOps = new ArrayList<>();
         RIPRouterSetOps = new ArrayList<>();
         ISISRouterSetOps = new ArrayList<>();
         ISISIntfSetOps = new ArrayList<>();
+        FABRICRouterSetOps = new ArrayList<>();
+        FABRICIntfSetOps = new ArrayList<>();
         for (var op: OpType.values()){
             if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isOSPFSetOp() || op.isOSPFUnsetOp()) OSPFOps.add(op);
             if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isRIPSetOp() || op.isRIPUnsetOp()) RIPOps.add(op);
             if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isISISSetOp() || op.isISISUnsetOp()) ISISOps.add(op);
+            if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isFABRICSetOp() || op.isFABRICUnsetOp()) FABRICOps.add(op);
             if (op.isOSPFIntfOp() && op.isSetOp()) OSPFIntfSetOps.add(op);
             if (op.isOSPFRouterOp()  && op.isSetOp()) OSPFRouterSetOps.add(op);
             if (op.isRIPIntfOp()  && op.isSetOp()) RIPIntfSetOps.add(op);
             if (op.isRIPRouterOp()  && op.isSetOp()) RIPRouterSetOps.add(op);
             if (op.isISISIntfOp() && op.isSetOp()) ISISIntfSetOps.add(op);
             if (op.isISISRouterOp() && op.isSetOp()) ISISRouterSetOps.add(op);
+            if (op.isFABRICIntfOp() && op.isSetOp()) FABRICIntfSetOps.add(op);
+            if (op.isFABRICRouterOp() && op.isSetOp()) FABRICRouterSetOps.add(op);
         }
     }
 
@@ -416,6 +489,7 @@ public enum OpType {
             case RIP : return RIPIntfSetOps;
             case OSPF : return OSPFIntfSetOps;
             case ISIS : return ISISIntfSetOps;
+            case OpenFabric: return FABRICIntfSetOps;
         }
         assert false;
         return null;
@@ -427,6 +501,7 @@ public enum OpType {
             case RIP: return RIPRouterSetOps;
             case OSPF: return OSPFRouterSetOps;
             case ISIS: return ISISRouterSetOps;
+            case OpenFabric: return FABRICRouterSetOps;
         }
         assert false;
         return null;
@@ -437,6 +512,7 @@ public enum OpType {
             case OSPF: return OSPFOps;
             case RIP: return RIPOps;
             case ISIS: return ISISOps;
+            case OpenFabric: return FABRICOps;
         }
         assert false;
         return null;
