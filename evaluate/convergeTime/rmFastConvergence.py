@@ -26,10 +26,10 @@ class rm:
                 return True
         return False
     def should_delete(self, command):
-        return self.listin(command, ["isis hello-multiplier"])
+        return self.listin(command, ["lsp-gen-interval"])
     
     def should_modify(self, command):
-        return self.listin(command, ["isis hello-interval","isis hello-multiplier","isis psnp-interval", "isis csnp-interval"])
+        return self.listin(command, ["isis hello-interval","isis hello-multiplier"])
 
 
     def modify_intervals(self, command):
@@ -97,4 +97,5 @@ for file_name in os.listdir("/home/zyf/Desktop/topo-fuzz-evaluate_isis/test/topo
     file_path = os.path.join("/home/zyf/Desktop/topo-fuzz-evaluate_isis/test/topo_test/data/testConf", file_name)
     r = rm(file_path)
     r.modify_all_commands()
+    r.delete()
     r.dump_file(os.path.join("/home/zyf/Desktop/topo-fuzz-evaluate_isis/test/topo_test/data/testConf", file_name.split(".")[0]) + "0000.json")
