@@ -405,8 +405,18 @@ class FrrNode(Node):
         except Exception as e:
             traceback.print_exception(e)
             return None
+    def dump_isis_neighbor_vtysh(self):
+        info = self.daemon_cmds(["show isis neighbor detail"])
+        return info
+    def dump_isis_intfs_vtysh(self):
+        info = self.daemon_cmds(["show isis interface detail"])
+        return info
     def dump_isis_running_config(self):
         info = self.daemon_cmds(["show running-config"])
+        return info
+    def dump_isis_log_adjacency_changes(self):
+        
+        info = self.daemon_cmds(["debug isis spf-events"])
         return info
     #---------------------------------RIP---------------------------------
     def dump_info_rip(self):

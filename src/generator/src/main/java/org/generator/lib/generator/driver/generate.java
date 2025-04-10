@@ -128,7 +128,7 @@ public class generate {
         //----------ISIS--------------
         if (generate.fastConvergence){
             switch (opType){
-                case IPROUTERISIS,NET,HELLOINTERVAL,HELLOMULTIPLIER,LSPGENINTERVAL,SPFINTERVAL, SETOVERLOADBITONSTARTUP
+                case IPROUTERISIS,NET,ISTYPE,CIRCUITTYPE,HELLOINTERVAL,HELLOMULTIPLIER,PSNPINTERVAL,CSNPINTERVAL,LSPGENINTERVAL,SPFINTERVAL, SETOVERLOADBITONSTARTUP,SETOVERLOADBIT,LSPMTU, ADVERTISEHIGHMETRIC
                         -> {return true;}
             }
         }
