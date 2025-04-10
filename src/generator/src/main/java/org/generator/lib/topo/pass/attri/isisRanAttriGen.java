@@ -23,7 +23,6 @@ public class isisRanAttriGen implements genAttri_ISIS {
     Map<IPRange, List<ISISIntf>> networkToISISIntfs;
 
     Map<Integer, String> areaToAreaId; // 存储区域到区域ID的映射
-    Map<Integer, Integer> areaSystemIdCounter; // 存储每个区域的系统ID计数器
 
     // class AreaAttri {
     //     public AreaAttri(ID area_id){
@@ -81,19 +80,22 @@ public class isisRanAttriGen implements genAttri_ISIS {
     private void generate_ISIS_Daemon(ISISDaemon daemon){
         //all attribute is random
         //FIXME for testing we must choose some important value such as 1, 65535 etc.
-        daemon.setAdvertisehighmetrics(ranHelper.randomInt(0, 1) == 0);
-        daemon.setLspmtu(ranHelper.randomInt(128, 4352));
         
-        daemon.setSetoverloadbit(ranHelper.randomInt(0, 1) == 0);
         if(generate.fastConvergence){
             daemon.setLspgenintervalLevel1(30);
             daemon.setLspgenintervalLevel2(30);
             daemon.setOverloadbitonstartup(1);
+            daemon.setSetoverloadbit(false);
+            daemon.setLspmtu(1492);
+            daemon.setAdvertisehighmetrics(false);
         }
         else{
             daemon.setLspgenintervalLevel1(ranHelper.randomInt(1, 120));
             daemon.setLspgenintervalLevel2(ranHelper.randomInt(1, 120));
             daemon.setOverloadbitonstartup(ranHelper.randomInt(0, 86400));
+            daemon.setSetoverloadbit(ranHelper.randomInt(0, 1) == 0);
+            daemon.setLspmtu(ranHelper.randomInt(128, 4352));
+            daemon.setAdvertisehighmetrics(ranHelper.randomInt(0, 1) == 0);
         }
 
         if(generate.fastConvergence){
@@ -114,24 +116,26 @@ public class isisRanAttriGen implements genAttri_ISIS {
         var helloInterval = ranHelper.randomInt(1, 600);
         var csnpInterval = ranHelper.randomInt(1, 600);
         var helloMultiplier = ranHelper.randomInt(2, 100);
+        var ifthreeway = ranHelper.randomInt(0, 1) == 0;
+        var ifhellopadding = ranHelper.randomInt(0, 1) == 0;
         if (generate.fastConvergence){
             helloInterval = 1;
             helloMultiplier = 2;
-            // psnpInterval = 1;
-            // csnpInterval = 1;
+            psnpInterval = 1;
+            csnpInterval = 1;
         }
         var netType = ISISIntf.ISISNetType.BROADCAST;
         if (isisIntfs.size() == 2){
             //IF the network only have two interface, it can be a single line
-            netType = ranHelper.randomInt(0, 1) == 0 ? ISISIntf.ISISNetType.BROADCAST : ISISIntf.ISISNetType.POINTTOPOINT;
+            netType = ranHelper.randomInt(0, 1) == 0 ? ISISIntf.ISISNetType.POINTTOPOINT : ISISIntf.ISISNetType.BROADCAST;
         }
         //set all intfs
         for(var isisIntf: isisIntfs){
             //self
             //FIXME for testing this ratio should be considered
-            isisIntf.setPassive(ranHelper.randomInt(0, 10) == 0);
-            isisIntf.setHelloPadding(ranHelper.randomInt(0, 1) == 0);
-            isisIntf.setThreeWayHandshake(ranHelper.randomInt(0, 1) == 0);
+            isisIntf.setPassive(false);
+            isisIntf.setHelloPadding(ifhellopadding);
+            isisIntf.setThreeWayHandshake(ifthreeway);
             //isisIntf.setCost(ranHelper.randomInt(1, 65535));
             isisIntf.setPriorityLevel1(ranHelper.randomInt(0, 127));
             isisIntf.setPriorityLevel2(ranHelper.randomInt(0, 127));
@@ -160,6 +164,9 @@ public class isisRanAttriGen implements genAttri_ISIS {
             isisIntf.setCsnpIntervalLevel1(csnpInterval);
             isisIntf.setCsnpIntervalLevel2(csnpInterval);
             isisIntf.setNetType(netType);
+            if(netType == ISISIntf.ISISNetType.BROADCAST){
+                isisIntf.setThreeWayHandshake(true);
+            }
             //isisIntf.setLevel(ranHelper.randomElemOfList(Arrays.asList(ISISIntf.ISISLEVEL.values())));
             //FIXME we need consider the metric
         }
@@ -176,15 +183,13 @@ public class isisRanAttriGen implements genAttri_ISIS {
         networkToISISIntfs = new HashMap<>();
         isiss = new ArrayList<>();
         areaToAreaId = new HashMap<>();
-        areaSystemIdCounter = new HashMap<>();
+
         // generate the unique area ID for each area
         for (Router_ISIS r : routers) {
             if (!areaToAreaId.containsKey(r.area)) {
                 // generate areaId
                 String areaId = String.format("49.%04d", r.area);
                 areaToAreaId.put(r.area, areaId);
-                // initialize the systemId counter
-                areaSystemIdCounter.put(r.area, 1); 
             }
         }
         //build each router and fill area, router_id
@@ -197,12 +202,12 @@ public class isisRanAttriGen implements genAttri_ISIS {
 
             // generate areaId and systemId
             String areaId = areaToAreaId.get(r.area);
-            int systemIdCount = areaSystemIdCounter.get(r.area);
+            
             String systemId = String.format("%04d.%04d.%04d", 
-                systemIdCount / 10000,
-                (systemIdCount % 10000) / 100,
-                systemIdCount % 100);
-            areaSystemIdCounter.put(r.area, systemIdCount + 1);
+                i / 10000,
+                (i % 10000) / 100,
+                i % 100);
+
 
             // generate NET
             NET net = NET.of(areaId + "." + systemId + ".00");
@@ -242,7 +247,7 @@ public class isisRanAttriGen implements genAttri_ISIS {
                 }
                 //if the router is level-1-2, the cuicuit type can be random
                 else if(r.level == 2){
-                    isis_intf.setLevel(ranHelper.randomElemOfList(Arrays.asList(ISISIntf.ISISLEVEL.values())));
+                    isis_intf.setLevel(ISISIntf.ISISLEVEL.LEVEL1_2);
                 }
                 else{
                     throw new RuntimeException("level should be 0, 1, 2");

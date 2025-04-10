@@ -19,14 +19,14 @@ h.run_phys("""
            link r3-eth1 s9-eth1 add
            link r2-eth1 s8-eth0 add
            link r3-eth0 s8-eth1 add
-           node r1 set FABRIC up
-           node r2 set FABRIC up
-           node r3 set FABRIC up
+           node r1 set ISIS up
+           node r2 set ISIS up
+           node r3 set ISIS up
            """)
 
 h.net.net.start()
-time.sleep(10)
-h.run_openfabric("r1", "interface r1-eth0;openfabric hello-interval 5")
-h.run_openfabric("r1", "show openfabric summary json")
+time.sleep(60)
+#h.run_isis("r1", "interface r1-eth0;isis hello-interval 5")
+h.run_isis("r1", "show isis interface detail")
 CLI(h.net.net)
 

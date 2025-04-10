@@ -8,8 +8,8 @@ dockerDir = up(up(up(path.abspath(__file__))))
 dataDir = up(path.abspath(__file__))
 
 gridNum = 10
-mxWaitTime = 800 #600
-minWaitTime = 100 #30
+mxWaitTime = 600 #600
+minWaitTime = 120 #30
 protocol = "isis"
 
 def getContainerName(num):

@@ -7,7 +7,7 @@ up = path.dirname
 checkDir = path.join(up(up(path.abspath(__file__))), "data", "check")
 import io
 
-protocol = "openfabric"
+protocol = "isis"
 class humandReader():
     def __init__(self, file_path):
         self._loadConf(file_path)

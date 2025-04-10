@@ -91,7 +91,7 @@ class diffISIS:
                 interface = circuit.get("interface", {})
                 if isinstance(interface, dict):
 
-                    #interface.pop("adj-flaps", None)
+                    interface.pop("adj-flaps", None)
                     interface.pop("last-ago", None)
                     interface.pop("snpa", None)
                     interface.pop("lan-id", None)
@@ -127,7 +127,7 @@ class diffISIS:
                 area.pop("rx-pdu-type", None)
                 
                 for level in area.get("levels", []):
-                    #level.pop("lsp-purged", None)
+                    level.pop("lsp-purged", None)
                     level.pop("lsp0-regenerated", None)
                     level.pop("last-run-elapsed", None)
                     level.pop("last-run-duration-usec", None)

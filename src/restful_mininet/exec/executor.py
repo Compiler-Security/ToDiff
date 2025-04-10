@@ -453,7 +453,14 @@ class executor:
                     if r_name not in net.net.nameToNode:
                         continue
                     res[i]['database'][r_name] = net.net.nameToNode[r_name].dump_isis_database()
-                    print(net.net.nameToNode[r_name].dump_route_info())
+                    print("======="+r_name+"============")
+                    print("==========database=========")
+                    print(net.net.nameToNode[r_name].dump_isis_database())
+                    print("==========neighbor=========")
+                    print(net.net.nameToNode[r_name].dump_isis_neighbor_vtysh())
+                    print("==========intfs=========")
+                    print(net.net.nameToNode[r_name].dump_isis_intfs_vtysh())
+                    
             else:
                 time.sleep(sleep_time)
             erroraln("+ collect result", "")
@@ -680,5 +687,5 @@ class executor:
 
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1742456439.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 100, 800, "isis")
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1743436667.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 120, 600, "isis")
     t.test()
