@@ -205,14 +205,20 @@ class fuzzingTest():
 # t.collect()
 # print(t.calc())
 
-for i in range(1, 10):
-    for j in ["OSPF", "ISIS"]:
-        for k in [toDiffTest, topoTestsTest, fuzzingTest]:
-            print(i, j, k)
-            t = k(i, j)
-            t.prepare()
-            t.test()
-            t.collect()
+# for i in range(1, 10):
+#     for j in ["OSPF", "ISIS"]:
+#         for k in [toDiffTest, topoTestsTest, fuzzingTest]:
+#             if k is toDiffTest and j == "ISIS": continue
+#             with open(f"{coverage_dir}/track.txt", "a") as fp:
+#                 fp.write(f"{i} {j} {k}\n")
+#             t = k(i, j)
+#             t.prepare()
+#             t.test()
+#             t.collect()
 #     t = toDiffTest(i, "OSPF")
 
-#print(util.test_fuzzing("OSPF", 2))
+
+for j in ["OSPF", "ISIS"]:
+    for k in [toDiffTest, topoTestsTest, fuzzingTest]:
+            t = k(0, j)
+            print(j, k, t.calc())
