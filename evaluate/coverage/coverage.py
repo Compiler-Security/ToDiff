@@ -195,7 +195,10 @@ class fuzzingTest():
             data_dir = f"{coverage_dir}/ossfuzz/isis"
         return calc_coverage(self.protocol, data_dir)
 #init()
-# t = toDiffTest(0, "OSPF")
+t = toDiffTest(0, "ISIS")
+t.prepare()
+t.test()
+t.collect()
 # t.collect()
 #t = toDiffTest(0, "ISIS")
 #t = toDiffTest(0, "OSPF")
@@ -218,7 +221,7 @@ class fuzzingTest():
 #     t = toDiffTest(i, "OSPF")
 
 
-for j in ["OSPF", "ISIS"]:
-    for k in [toDiffTest, topoTestsTest, fuzzingTest]:
-            t = k(0, j)
-            print(j, k, t.calc())
+# for j in ["OSPF", "ISIS"]:
+#     for k in [toDiffTest, topoTestsTest, fuzzingTest]:
+#             t = k(0, j)
+#             print(j, k, t.calc())
