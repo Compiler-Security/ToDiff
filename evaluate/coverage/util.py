@@ -131,3 +131,64 @@ def test():
         thread.join()
 
  #docker exec -it docker_topo-fuzz-test_1 python3 topo-fuzz/src/restful_mininet/main.py -t /home/frr/topo-fuzz/test/excutor_test/frr_conf/all8.conf -o /home/frr/topo-fuzz/test/excutor_test/frr_conf/tmp -w 3
+
+def extract_live_functions_for_file(info_path, target_file):
+    covered_funcs = set()
+    in_target = False
+
+    with open(info_path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if line.startswith("SF:"):
+                in_target = (line[3:] == target_file)
+            elif in_target and line.startswith("FNDA:"):
+                count, func_name = line[5:].split(",", 1)
+                if int(float(count)) > 0:
+                    covered_funcs.add(func_name)
+
+    return covered_funcs
+
+def get_mixed_line_counts(info_path, target_source):
+    with open(info_path, 'r') as f:
+        content = f.read()
+
+    file_blocks = content.split("end_of_record")
+    result = {}
+    total_hit_lines = 0
+
+    for block in file_blocks:
+        if f"SF:{target_source}" not in block:
+            continue
+
+        lines = block.strip().splitlines()
+        functions = []
+        line_hits = {}
+
+        for line in lines:
+            if line.startswith("FN:"):
+                parts = line[3:].split(",")
+                functions.append({"line": int(parts[0]), "name": parts[1]})
+            elif line.startswith("DA:"):
+                lnum, hits = map(int, line[3:].split(","))
+                line_hits[lnum] = hits
+
+        total_hit_lines += sum(1 for h in line_hits.values() if h > 0)
+
+        # 按起始行排序函数
+        functions.sort(key=lambda f: f["line"])
+        line_numbers = sorted(line_hits.keys())
+
+        for i, func in enumerate(functions):
+            name = func["name"]
+            start = func["line"]
+            end = functions[i + 1]["line"] if i + 1 < len(functions) else max(line_numbers, default=start)
+
+            total_lines = [ln for ln in line_numbers if start <= ln < end]
+            hit_lines = [ln for ln in total_lines if line_hits[ln] > 0]
+
+            if hit_lines:
+                result[name] = len(hit_lines)  # 命中函数：只算 hit 行
+            else:
+                result[name] = len(total_lines)  # 未命中函数：算全部行
+
+    return result, total_hit_lines
