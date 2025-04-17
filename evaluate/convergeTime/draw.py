@@ -12,9 +12,9 @@ def draw(proto):
     new_min = [100000] * 15
     new_ave = [0] * 15
     s = 0
-    for file_name in os.listdir("/home/binshui/topo-fuzz/evaluate/convergeTime"):
+    for file_name in os.listdir("/home/zyf/topo-fuzz/evaluate/convergeTime"):
         if proto in file_name and "data" in file_name and "txt" in file_name:
-            with open(path.join("/home/binshui/topo-fuzz/evaluate/convergeTime", file_name)) as fp:
+            with open(path.join("/home/zyf/topo-fuzz/evaluate/convergeTime", file_name)) as fp:
                 s += 1
                 for i in range(0, 15):
                     st = fp.readline()
@@ -26,14 +26,14 @@ def draw(proto):
                     new_min[i] = min(new, new_min[i])
                     old_ave[i] += old
                     new_ave[i] += new
-
+    print(s)
     old_ave = [ x / s for x in old_ave]
     
     new_ave = [ x / s for x in new_ave]
 
-    speedup = [174/x for x in new_ave]
+    speedup = [330/x for x in new_ave]
     print(max(speedup), min(speedup))
-    line = [174] * 15
+    line = [330] * 15
 
     # 示例数据
     # y_max = [57.80657339, 69.56292534, 76.92910123, 95.46807003, 92.07082725, 105.7555771, 101.4376967, 171.3718381, 107.0808733, 123.7524199, 174.1986735, 127.0516717, 167.4439015, 138.6839726, 127.9131517]  # x轴数据
@@ -50,9 +50,10 @@ def draw(proto):
     
     scale = 1
     plt.figure(figsize=(12 /scale, 6.5/scale))
-
+    plt.rcParams['font.sans-serif'] = ['WenQuanYi Micro Hei']  # 文泉驿微米黑
+    plt.rcParams['axes.unicode_minus'] = False
     plt.rcParams.update({
-    'font.family': 'Times New Roman',
+    'font.family': "WenQuanYi Micro Hei",
     'font.size': fontsize,
     'font.weight': 'bold',
     'text.color': 'black',  # 设置全局字体颜色为黑色
@@ -63,21 +64,21 @@ def draw(proto):
 
     
     
-    plt.plot(x, old_max, label='average w/o acceleration', color='b', linestyle=':', linewidth=4)
+    plt.plot(x, old_max, label='无加速时的平均值', color='b', linestyle=':', linewidth=4)
     #plt.fill_between(x, old_min, old_max, color='b', alpha=0.2, label='min-max w/o acceleration')  # 填充最大值和最小值之间的区域
 
-    plt.plot(x, new_ave, label='average with acceleration', color='g', linestyle='--', linewidth=4)
+    plt.plot(x, new_ave, label='加速后的平均值', color='g', linestyle='--', linewidth=4)
 
-    plt.fill_between(x, new_min, new_max, color='g', alpha=0.2, label='min-max with acceleration')  # 填充最大值和最小值之间的区域
+    plt.fill_between(x, new_min, new_max, color='g', alpha=0.2, label='加速后的最小-最大范围')  # 填充最大值和最小值之间的区域
 
 
-    plt.plot(x, line, label='convergence oracle', color='r', linewidth=3)
+    plt.plot(x, line, label='理论收敛时间', color='r', linewidth=3)
 
     #plt.legend(loc='upper left')
 
     # 添加标题和标签
-    plt.xlabel('# Routers', fontweight='bold', labelpad=15)
-    plt.ylabel('Execution Time (s)', fontweight='bold', labelpad= 10)
+    plt.xlabel('路由器数量', fontweight='bold', labelpad=15)
+    plt.ylabel('执行时间(s)', fontweight='bold', labelpad= 10)
 
     # 显示图例
     plt.legend(loc='upper left', bbox_to_anchor=(-0.005, 0.95), fontsize=fontsize - 3, frameon=False)
@@ -89,6 +90,6 @@ def draw(proto):
    
 
 
-    plt.savefig(f"/home/binshui/topo-fuzz/evaluate/convergeTime/c{proto}.png", format='png')
-    plt.savefig(f"/home/binshui/topo-fuzz/evaluate/convergeTime/c{proto}.pdf", format='pdf')
-draw("OSPF")
+    plt.savefig(f"/home/zyf/topo-fuzz/evaluate/convergeTime/c{proto}.png", format='png')
+    plt.savefig(f"/home/zyf/topo-fuzz/evaluate/convergeTime/c{proto}.pdf", format='pdf')
+draw("ISIS")

@@ -21,6 +21,8 @@ import org.generator.tools.frontend.OspfConfWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.generator.util.collections.Pair;
 import org.generator.util.ran.ranHelper;
+import org.generator.util.timer.timer;
+
 import java.time.Instant;
 import java.util.*;
 
@@ -160,6 +162,10 @@ public class diffTopo {
 
      */
     public JsonNode gen(int router_count, int max_step, int max_step_time, int round_num){
+        
+        var toTalTimer = new timer();
+        toTalTimer.start();
+        
         Map<String, Object> conf = new HashMap<>();
         ObjectNode dumpInfo = new ObjectMapper().createObjectNode();
         //FIXME
@@ -177,8 +183,18 @@ public class diffTopo {
         }
         conf.put("routers", routers_name);
 
+        //start gen graph timer
+        var genGraphTimer = new timer();
+        genGraphTimer.start();
+
         //generate router graph
         var confg = topo.genGraph(router_count, topo.areaCount, topo.mxDegree, topo.abrRatio, false, dumpInfo);
+        
+        //finish genGraphTimer
+        genGraphTimer.finish();
+        var evaluateInfo = dumpInfo.putObject("evaluate");
+        evaluateInfo.put("genGraphTime", genGraphTimer.getTime());
+        
         //generate ospf core commands, all the round is same
         //For isis, noting that ismissinglevel is false, we don't generate commands that missing level
         List<OpCtxG> ospf_cores = new ArrayList<>();
@@ -200,6 +216,13 @@ public class diffTopo {
                 core_commands.put(routers_name.get(i), writer.write(getConfOfRouter(routers_name.get(i), confg, false, true)));
             }
         }
+
+        //start gen Equal command timer
+        var genEqualTimer = new timer();
+        genEqualTimer.start();
+
+        int totalInstruction = 0;
+
 
         //generate each round's commands
         List<List<Map<String, Object>>> commands = new ArrayList<>();
@@ -224,6 +247,8 @@ public class diffTopo {
                 //FIXME why router 0 not mutate ?
                 var opCtxG = generate.generateEqualOfCore(ospf_cores.get(j), false);
                 opCtxGS.add(opCtxG);
+                //count instruction for evaluation
+                totalInstruction += opCtxG.getOps().size();
             }
             if (generate.protocol == generate.Protocol.ISIS) {
                 for(int r = 0; r < router_count; r++){
@@ -364,6 +389,15 @@ public class diffTopo {
                 one_step.put("waitTime", waitTime);
             }
         }
+
+        //finish genEqualTimer
+        genEqualTimer.finish();
+        toTalTimer.finish();
+        evaluateInfo.put("genEqualTime", genEqualTimer.getTime());
+        evaluateInfo.put("totalTime", toTalTimer.getTime());
+        evaluateInfo.put("totalInstruction", totalInstruction);
+
+        
         var mapper = new ObjectMapper();
         conf.put("genInfo", dumpInfo);
         try {

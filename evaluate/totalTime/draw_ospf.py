@@ -7,12 +7,14 @@ from matplotlib.ticker import ScalarFormatter, LogLocator, FixedLocator, FuncFor
 fontsize = 24
 lp = 20
 def write(protocol):
+    plt.rcParams['font.sans-serif'] = ['WenQuanYi Micro Hei']  # 文泉驿微米黑
+    plt.rcParams['axes.unicode_minus'] = False
 # 读取 JSON 数据
-    with open(f"/home/binshui/topo-fuzz/evaluate/totalTime/data{protocol}.json") as fp:
+    with open(f"/home/zyf/topo-fuzz/evaluate/totalTime/data{protocol}.json") as fp:
         res = json.load(fp)
 
     plt.rcParams.update({
-    'font.family': 'Times New Roman',
+    'font.family': "WenQuanYi Micro Hei",
     'font.size': fontsize,
     'font.weight': 'bold',
     'text.color': 'black',  # 设置全局字体颜色为黑色
@@ -47,15 +49,15 @@ def write(protocol):
     
     # 绘制堆叠柱状图
     #ax1.bar(x_pos, part4_time, label='Differentiating Results Time', color='orange')
-    ax1.bar(x_pos, part3_time, label='1: Network Generation', color='#FFD966')
-    ax1.bar(x_pos, part2_time, bottom=part3_time, label='2: Topology Synthesis', color='lightcoral')
-    ax1.bar(x_pos, part1_time, bottom=part2_time + part3_time, label='3: Network Execution', color='#9DC3E6')
+    ax1.bar(x_pos, part3_time, label='1: 网络生成', color='#FFD966')
+    ax1.bar(x_pos, part2_time, bottom=part3_time, label='2: 拓扑合成', color='lightcoral')
+    ax1.bar(x_pos, part1_time, bottom=part2_time + part3_time, label='3: 网络执行', color='#9DC3E6')
 
 
 
     # 设置左轴标签
-    ax1.set_xlabel('# Routers', labelpad=15, fontweight='bold')
-    ax1.set_ylabel('Execution Time (s)', color='black', fontweight='bold')
+    ax1.set_xlabel('路由器数量', labelpad=15, fontweight='bold')
+    ax1.set_ylabel('执行时间(s)', color='black', fontweight='bold')
     #ax1.set_title('Four Stages Time and Command Count for Different Router Counts')
 
     # 设置横轴刻度
@@ -96,10 +98,10 @@ def write(protocol):
     ax1.yaxis.set_major_formatter(formatter)
     #ax1.set_yticks([1, 2, 5, 10, 20, 50, 110])
     # 显示图形
-    plt.savefig(f"/home/binshui/topo-fuzz/evaluate/totalTime/diagram{protocol}.pdf", format='pdf')
-    plt.savefig(f"/home/binshui/topo-fuzz/evaluate/totalTime/diagram{protocol}.png", format='png')
+    plt.savefig(f"/home/zyf/topo-fuzz/evaluate/totalTime/diagram{protocol}.pdf", format='pdf')
+    plt.savefig(f"/home/zyf/topo-fuzz/evaluate/totalTime/diagram{protocol}.png", format='png')
     # 显示图形
     plt.show()
 
-write("OSPF")
+#write("OSPF")
 write("ISIS")

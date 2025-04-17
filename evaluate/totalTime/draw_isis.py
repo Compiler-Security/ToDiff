@@ -3,7 +3,7 @@ import numpy as np
 import json
 
 # 读取 JSON 数据
-with open("/home/binshui/topo-fuzz/evaluate/totalTime/dataOSPF.json") as fp:
+with open("/home/binshui/topo-fuzz/evaluate/totalTime/dataISIS.json") as fp:
     res = json.load(fp)
 
 # 获取路由器数量和时间数据

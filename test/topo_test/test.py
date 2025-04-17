@@ -9,7 +9,7 @@ dataDir = up(path.abspath(__file__))
 
 gridNum = 10
 mxWaitTime = 600 #600
-minWaitTime = 120 #30
+minWaitTime = 30 #30
 protocol = "isis"
 
 def getContainerName(num):
