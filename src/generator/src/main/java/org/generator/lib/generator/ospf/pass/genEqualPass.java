@@ -73,7 +73,7 @@ public class genEqualPass {
 
                         //check precondition
                         if (!checkPreCondition(new_opas, new_opag)) continue;
-
+                      
                         //if ok, handle after effects
                         handleAfterEffects(actionSlot, new_opas, new_opag,  slots);
                         //then randomly insert opas to gen_opag
