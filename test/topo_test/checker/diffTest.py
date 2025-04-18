@@ -8,6 +8,7 @@ import diffTestUtil.diffBABEL
 import diffTestUtil.diffOSPF
 import diffTestUtil.diffISIS
 import diffTestUtil.diffRIP
+import diffTestUtil.diffOpenFabric
 import util
 import json
 import os
@@ -16,8 +17,8 @@ def checkTests(protocol):
     diff_dir = path.join(util.checkDir, "diff")
     os.makedirs(diff_dir, exist_ok=True)
     for test_name in util.get_all_test_name():
-        #if test_name != "test1742298068.json":
-        #    continue
+        # if test_name != "test1740472521.json":
+        #     continue
         if protocol == "ospf":
             res = diffTestUtil.diffOSPF.checkTest(test_name, False)
         if protocol == "isis":
@@ -26,6 +27,8 @@ def checkTests(protocol):
             res = diffTestUtil.diffRIP.checkTest(test_name, False)
         if protocol == "babel":
             res = diffTestUtil.diffBABEL.checkTest(test_name, False)
+        if protocol == "openfabric":
+            res = diffTestUtil.diffOpenFabric.checkTest(test_name, False)
         with open(path.join(diff_dir, f"{test_name}.txt"), "w") as fp:
             fp.write(res)
 

@@ -135,6 +135,20 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOBENABLETIMESTAMP, new OpType[]{BENABLETIMESTAMP}},
                 {NOBRESENDDELAY, new OpType[]{BRESENDDELAY}},
                 {NOBSOMMOTHING, new OpType[]{BSOMMOTHING}},
+
+                //==================FABRIC=============================
+                {NORFABRIC, new OpType[]{RFABRIC}},
+                {NOFABRICSETOVERLOADBIT, new OpType[]{FABRICSETOVERLOADBIT}},
+                {NOFABRICTIER, new OpType[]{FABRICTIER}},
+                {NOFABRICLSPGENINTERVAL, new OpType[]{FABRICLSPGENINTERVAL}},
+                {NOFABRICSPFINTERVAL, new OpType[]{FABRICSPFINTERVAL}},
+                {NOIPROUTERFABRIC, new OpType[]{IPROUTERFABRIC}},
+                {NOFABRICCSNPINTERVAL, new OpType[]{FABRICCSNPINTERVAL}},
+                {NOFABRICPSNPINTERVAL, new OpType[]{FABRICPSNPINTERVAL}},
+                {NOFABRICHELLOINTERVAL, new OpType[]{FABRICHELLOINTERVAL}},
+                {NOFABRICHELLOMULTIPLIER, new OpType[]{FABRICHELLOMULTIPLIER}},
+                {NOFABRICPASSIVE, new OpType[]{FABRICPASSIVE}},
+
             };
         var seeds = new ArrayList<Object[]>();
         for (var item : reduce_seed) {

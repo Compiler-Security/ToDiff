@@ -80,6 +80,17 @@ public class genPhyEqualPass {
                 case NODESETBABELRE -> {
                     slots.add(NormalController.getBABELCatg(0, 0, 0, op.getNAME(), OpType.NODESETBABELRE, NormalController.CType.BABEL));
                 }
+
+                //----------OpenFabric------------
+                case NODESETFABRICUP -> {
+                    slots.add(NormalController.getOpenFabricCatg(0, 0, 0, op.getNAME(), OpType.NODESETFABRICUP, NormalController.CType.OpenFabric));
+                }
+                case NODESETFABRICSHUTDOWN -> {
+                    slots.add(NormalController.getOpenFabricCatg(0, 0, 0, op.getNAME(), OpType.NODESETFABRICSHUTDOWN, NormalController.CType.OpenFabric));
+                }
+                case NODESETFABRICRE -> {
+                    slots.add(NormalController.getOpenFabricCatg(0, 0, 0, op.getNAME(), OpType.NODESETFABRICRE, NormalController.CType.OpenFabric));
+                }
                 default -> {
                     assert false: "error op %s".formatted(op.toString());
                 }
@@ -127,6 +138,10 @@ public class genPhyEqualPass {
             }
 
             case NODESETBABELUP , NODESETBABELSHUTDOWN, NODESETBABELRE ->{
+                return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
+            }
+            //----------OpenFabric-----------
+            case NODESETFABRICUP,NODESETFABRICRE, NODESETFABRICSHUTDOWN ->{
                 return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
             }
         }
@@ -182,6 +197,15 @@ public class genPhyEqualPass {
                         slot.setCurType(OpType.NODESETBABELSHUTDOWN);
                     }
                 }
+                if (generate.protocol == generate.Protocol.OpenFabric){
+                    //every router NODE should have OpenFabric
+                    var slot = getSlot(NormalController.CType.OpenFabric, targetOp.getNAME(), null);
+                    if (slot.getCurType() == OpType.NODESETFABRICUP) {
+                        slot.deltaTypeNum(OpType.NODESETFABRICUP, 1);
+                        slot.setCurType(OpType.NODESETFABRICSHUTDOWN);
+                    }
+                }
+
             }
             case LINKREMOVE -> {
                 var slot = getSlot(NormalController.CType.INTF, targetOp.getNAME(), null);
@@ -231,6 +255,9 @@ public class genPhyEqualPass {
                 }
                 if (slot.getcType() == NormalController.CType.BABEL){
                     slot.deltaTypeNum(OpType.NODESETBABELRE, -slot.getCounterOfType(OpType.NODESETBABELRE));
+                }
+                if (slot.getcType() == NormalController.CType.OpenFabric){
+                    slot.deltaTypeNum(OpType.NODESETFABRICRE, -slot.getCounterOfType(OpType.NODESETFABRICRE));
                 }
             }
         }

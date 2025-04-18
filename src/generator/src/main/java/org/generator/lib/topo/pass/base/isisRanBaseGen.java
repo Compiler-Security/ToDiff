@@ -128,7 +128,14 @@ public class isisRanBaseGen implements genBase_ISIS {
         var backboneRouters = new ArrayList<Router_ISIS>();
         // first stage: generate routers
         for (int i = 0; i < totalRouter; i++) {
-            int level = ranHelper.randomInt(0, 1); // 0: L1, 1: L2, 2: L1-2
+            int ratio = ranHelper.randomInt(0, 99);
+            int level; // 0: L1, 1: L2, 2: L1-2
+            if(ratio < 70){
+                level = 0;
+            }
+            else{
+                level = 1;
+            }
             int area;
             int tmp_area = ranHelper.randomInt(1, areaCount);
             if (level == 0) { // L1 router is in non-backbone area
@@ -139,7 +146,7 @@ public class isisRanBaseGen implements genBase_ISIS {
             var intfNum = ranHelper.randomInt(1, mxDegree);
             var isL12 = (ranHelper.randomInt(1, 10) <= abrRatio) && intfNum > 1;
             var L12_num = getRoutersOfArea(tmp_area).stream().filter(r -> r.level == 2).count();
-            if (isL12 && L12_num == 0) {
+            if (isL12 && L12_num == 0 && area != 0) {
                 level = 2;
                 area = tmp_area;
             }
@@ -186,9 +193,7 @@ public class isisRanBaseGen implements genBase_ISIS {
         }
 
         // third stage: connect L1-2 with L1 and add L1-2 in the backbone area
-        l2Routers = backboneRouters.stream()
-            .filter(r -> r.level == 1)
-            .collect(Collectors.toList());
+
         for(int i = 1; i <= areaCount; i++) {
             var areaRouters = getRoutersOfArea(i);
             if(areaRouters.isEmpty()) continue;
@@ -236,26 +241,70 @@ public class isisRanBaseGen implements genBase_ISIS {
 
 
 
-        // fourth stage: connect L1-2 routers
-        // var alll12Routers = backboneRouters.stream()
-        //     .filter(r -> r.level == 2)
-        //     .collect(Collectors.toList());
 
-        // if(alll12Routers.isEmpty() == false) {
-        //     var c = new ranConnect_ISIS();
-        //     c.generate(alll12Routers, 0, networkId);  
-        //     networkId = c.networkId;
-        // }
-
-
-        // fifth stage: connect routers in the backbone area 
-        var allbackbonerouters = backboneRouters.stream()
-            .filter(r -> r.level == 1||r.level == 2)
-            .collect(Collectors.toList());
-
-        var c = new ranConnect_ISIS();
-        c.generate(allbackbonerouters, 0, networkId); 
-        networkId = c.networkId;
+        // fourth stage: Building backbone regional links with ring links and randomized redundancy
+        if (backboneRouters.size() > 1) {
+            // build ring links for L1-2 routers in the backbone area
+            var l12Routers = backboneRouters.stream().filter(r -> r.level == 2).collect(Collectors.toList());
+            for (int i = 0; i < l12Routers.size()-1; i++) {
+                Router_ISIS r1 = l12Routers.get(i);
+                Router_ISIS r2 = l12Routers.get(i + 1);
+                Intf_ISIS intf1 = new Intf_ISIS();
+                Intf_ISIS intf2 = new Intf_ISIS();
+                intf1.cost = ranHelper.randomInt(5, 65535);
+                intf2.cost = ranHelper.randomInt(5, 65535);
+                r1.intfs.add(intf1);
+                r2.intfs.add(intf2);
+                intf1.networkId = networkId;
+                intf2.networkId = networkId;
+                networkId++;
+            }
+            // add random redundancy links
+            int extraLinks = ranHelper.randomInt(1, backboneRouters.size() / 2);
+            for (int i = 0; i < extraLinks; i++) {
+                Router_ISIS r1 = ranHelper.randomElemsOfList(backboneRouters, 1).get(0);
+                Router_ISIS r2 = ranHelper.randomElemsOfList(backboneRouters, 1).get(0);
+                if (r1 == r2)
+                    continue;
+                 // 检查 r1 和 r2 是否已经通过某个 networkId 相连
+                boolean alreadyConnected = false;
+                for (Intf_ISIS intf1 : r1.intfs) {
+                    for (Intf_ISIS intf2 : r2.intfs) {
+                        if (intf1.networkId == intf2.networkId) {
+                            alreadyConnected = true;
+                            break;
+                        }
+                    }
+                    if (alreadyConnected) break;
+                }
+                
+                if (alreadyConnected)
+                    continue;
+                
+                if (r1.level == 2 && r2.level == 2)
+                    continue;
+                // 如果没有连接，则新增链路
+                Intf_ISIS intf1 = new Intf_ISIS();
+                Intf_ISIS intf2 = new Intf_ISIS();
+                intf1.cost = ranHelper.randomInt(5, 15);
+                intf2.cost = ranHelper.randomInt(5, 15);
+                r1.intfs.add(intf1);
+                r2.intfs.add(intf2);
+                intf1.networkId = networkId;
+                intf2.networkId = networkId;
+                networkId++;
+            }
+        }
+        for (Router_ISIS router : routers) {
+            var unconnectedintfs = router.getUnconnectedIntfs();
+            if (unconnectedintfs.isEmpty()) {
+                continue;
+            }
+            for (Intf_ISIS intf : unconnectedintfs) {
+                intf.networkId = networkId;
+                networkId++;
+            }
+        }
         
         return routers;
     }

@@ -10,6 +10,9 @@ import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.isis.ISIS;
 import org.generator.lib.item.conf.node.isis.ISISDaemon;
 import org.generator.lib.item.conf.node.isis.ISISIntf;
+import org.generator.lib.item.conf.node.openfabric.FABRIC;
+import org.generator.lib.item.conf.node.openfabric.FABRICDaemon;
+import org.generator.lib.item.conf.node.openfabric.FABRICIntf;
 import org.generator.lib.item.conf.node.ospf.OSPF;
 import org.generator.lib.item.conf.node.ospf.OSPFDaemon;
 import org.generator.lib.item.conf.node.ospf.OSPFIntf;
@@ -33,7 +36,12 @@ public abstract class baseExecPass {
         cur_isis = null;
         cur_isis_daemon = null;
         cur_isis_intf = null;
-        
+        cur_babel = null;
+        cur_babel_intf = null;
+        cur_openfabric = null;
+        cur_openfabric_daemon = null;
+        cur_openfabric_intf = null;
+
     }
     abstract ExecStat execOp(Op op, ConfGraph topo);
     public List<Pair<Op, ExecStat>> execOps(OpArgG opg, ConfGraph topo){
@@ -137,6 +145,32 @@ public abstract class baseExecPass {
         this.cur_babel_intf = cur_babel_intf;
     }
 
+
+    //==============OpenFabric========================
+    public FABRIC getCur_openfabric() {
+        return cur_openfabric;
+    }
+
+    public void setCur_openfabric(FABRIC cur_openfabric) {
+        this.cur_openfabric = cur_openfabric;
+    }
+
+    public FABRICDaemon getCur_openfabric_daemon() {
+        return cur_openfabric_daemon;
+    }
+
+    public void setCur_openfabric_daemon(FABRICDaemon cur_openfabric_daemon) {
+        this.cur_openfabric_daemon = cur_openfabric_daemon;
+    }
+
+    public FABRICIntf getCur_openfabric_intf() {
+        return cur_openfabric_intf;
+    }
+
+    public void setCur_openfabric_intf(FABRICIntf cur_openfabric_intf) {
+        this.cur_openfabric_intf = cur_openfabric_intf;
+    }
+
     Router cur_router;
     Intf cur_intf;
     //==========OSPF============
@@ -153,4 +187,8 @@ public abstract class baseExecPass {
     //===========BABEL==========
     BABEL cur_babel;
     BABELIntf cur_babel_intf;
+    //==========OpenFabric======
+    FABRIC cur_openfabric;
+    FABRICDaemon cur_openfabric_daemon;
+    FABRICIntf cur_openfabric_intf;
 }

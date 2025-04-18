@@ -40,6 +40,11 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
         //===========BABEL==========
         BABEL,
         BABELINTF,
+
+        //==========OpenFabric============
+        FABRIC,
+        FABRICINTF,
+        FABRICDAEMON
     }
 
     protected void generateType(){
@@ -61,6 +66,8 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
             case ISISIntf -> setType(EdgeType.ISISINTF);
             case BABEL -> setType(EdgeType.BABEL);
             case BABELIntf -> setType(EdgeType.BABELINTF);
+            case FABRIC -> setType(EdgeType.FABRIC);
+            case FABRICIntf -> setType(EdgeType.FABRICINTF);
             default -> throw new IllegalStateException("Unexpected value: " + dst);
         }
     }

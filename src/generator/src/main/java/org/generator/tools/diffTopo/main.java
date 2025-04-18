@@ -97,6 +97,9 @@ public class main {
                     case "babel" -> {
                         generate.protocol = generate.Protocol.BABEL;
                     }
+                    case "openfabric" -> {
+                        generate.protocol = generate.Protocol.OpenFabric;
+                    }
                     default -> {
                         System.out.println("Unknown protocol: " + cmd.getOptionValue("protocol"));
                         System.exit(-1);
