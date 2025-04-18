@@ -25,7 +25,7 @@ public enum NodeType {
     //=========OpenFabric======
     FABRIC,
     FABRICIntf,
-    FABRICDaemon
+    FABRICDaemon,
 
 
     //=========BABEL===========
