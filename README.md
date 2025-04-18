@@ -5,15 +5,14 @@ Todiff is a prototype implementation of the technique know as ToDiff. It aims to
 ## Install
 ```bash
 cd ~
-
+#java
 curl -s "https://get.sdkman.io" | bash
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 sdk install gradle
 
+#docker
 apt install docker
-
 apt install docker-compose
-
 sudo chmod 666 /var/run/docker.sock
 ```
 
