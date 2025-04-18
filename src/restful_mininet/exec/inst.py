@@ -206,10 +206,6 @@ class MininetInst(BaseInst):
                 return self.EXEC_MISS
             return self._run_cmd(up_node.stop_babeld, conf_dir=self.workdir)
 
-        raise InstErrorException("[mininet] node inst not right")
-
-
-
         # openfabric
         if _cmds_equal_prefix(op_args, ["router", "set", "FABRIC", "up"]):
             up_node: FrrNode = self._get_node(node_name)

@@ -10,7 +10,7 @@ dataDir = up(path.abspath(__file__))
 gridNum = 10
 mxWaitTime = 600
 minWaitTime = 30
-protocol = "babel"
+protocol = "ospf"
 
 def getContainerName(num):
     return f"docker_topo-fuzz-test_{num}"

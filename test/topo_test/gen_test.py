@@ -10,7 +10,7 @@ dataDir = up(path.abspath(__file__))
 test_num = 10
 router_count = 7
 mx_degree = 5
-protocol = "babel"
+protocol = "ospf"
 def _run_test_sh(cmd):
     os.chdir(dockerDir)
     return os.system(f"sh {cmd}")

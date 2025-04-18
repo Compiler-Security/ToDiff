@@ -106,7 +106,8 @@ class diffRIP:
         for val in new_dict.values():
             val[0].pop("uptime")
             val[0].pop("nexthopGroupId")
-            val[0].pop("installedNexthopGroupId")
+            if "installedNexthopGroupId" in val[0]:
+                val[0].pop("installedNexthopGroupId")
             for nextHop in val[0]["nexthops"]:
                 nextHop.pop("interfaceIndex")
         return new_dict

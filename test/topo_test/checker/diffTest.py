@@ -35,4 +35,4 @@ def checkTests(protocol):
         
 if __name__ == "__main__":
     #checkTest(util.get_test_name_5("44999"), False)
-    checkTests("babel")
+    checkTests("ospf")
