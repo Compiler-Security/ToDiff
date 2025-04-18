@@ -18,6 +18,9 @@ public enum OpType {
     NODESETISISUP,
     NODESETISISRE,
     NODESETISISSHUTDOWN,
+    NODESETBABELUP,
+    NODESETBABELSHUTDOWN,
+    NODESETBABELRE,
 
     INTFUP,
     INTFDOWN,
@@ -241,6 +244,48 @@ public enum OpType {
     THREEWAYHANDSHAKE,
     NOPSNPINTERVAL,
 
+    //====================BABEL=========================
+    RBABEL,
+    //BABELDI,
+    BNETWORKINTF,
+    BREDISTRIBUTE,
+    BRESENDDELAY,
+    BSOMMOTHING,
+
+    BWIRE,
+    //currently we set this command in babel for safety, it should be in zebra
+    IPAddr6,
+    BSPLITHORIZON,
+    BHELLOINTERVAL,
+    BUPDATEINTERVAL,
+    BCHANELNOINTEFERING,
+    BRXCOST,
+    BRTTDECAY,
+    BRTTMIN,
+    BRTTMAX,
+    BPENALTY,
+    BENABLETIMESTAMP,
+
+
+    NORBABEL,
+    //NOBABELDI,
+    NOBNETWORKINTF,
+    NOBREDISTRIBUTE,
+    NOBRESENDDELAY,
+    NOBSOMMOTHING,
+
+    NOBWIRE,
+    NOIPAddr6,
+    NOBSPLITHORIZON,
+    NOBHELLOINTERVAL,
+    NOBUPDATEINTERVAL,
+    NOBCHANELNOINTEFERING,
+    NOBRXCOST,
+    NOBRTTDECAY,
+    NOBRTTMIN,
+    NOBRTTMAX,
+    NOBPENALTY,
+    NOBENABLETIMESTAMP,
     //============================INVALID=========================
     INVALID;
 
@@ -293,7 +338,7 @@ public enum OpType {
     }
 
     public boolean isOSPFUnsetOp(){
-        return this.ordinal() >= NOROSPF.ordinal() && this.ordinal() <= NOIpOspfPassive.ordinal();
+        return this.ordinal() >= NOROSPF.ordinal() && this.ordinal() <= NOIpOspfPassive.ordinal() || this == NOIPAddr;
     }
 
     public boolean isRIPUnsetOp(){
@@ -303,12 +348,16 @@ public enum OpType {
     public boolean isISISUnsetOp(){
         return (this.ordinal() >= NORISIS.ordinal() && this.ordinal() <= NOPSNPINTERVAL.ordinal()) || this==NOIPAddr;
     }
+
+    public boolean isBABELUnsetOp(){
+        return (this.ordinal() >= NORBABEL.ordinal() && this.ordinal() <= NOBENABLETIMESTAMP.ordinal()) || this==NOIPAddr;
+    }
     /**
      * All unset Op
      * @return
      */
     public boolean isUnsetOp(){
-        return  isZEBRAUnsetOp() || isOSPFUnsetOp() || isRIPUnsetOp() || isISISUnsetOp();
+        return  isZEBRAUnsetOp() || isOSPFUnsetOp() || isRIPUnsetOp() || isISISUnsetOp() || isBABELUnsetOp();
     }
 
     //-------------------------------------------------
@@ -317,7 +366,7 @@ public enum OpType {
     }
 
     public boolean isOSPFSetOp(){
-        return this.ordinal() >= ROSPF.ordinal() && this.ordinal() <= IpOspfPassive.ordinal();
+        return this.ordinal() >= ROSPF.ordinal() && this.ordinal() <= IpOspfPassive.ordinal() || this== IntfName || this == IPAddr;
     }
 
     public boolean isRIPSetOp(){
@@ -328,12 +377,16 @@ public enum OpType {
         return (this.ordinal() >= RISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal())|| this== IntfName || this == IPAddr;
     }
 
+    public boolean isBABELSetOp(){
+        return (this.ordinal() >= RBABEL.ordinal() && this.ordinal() <= BENABLETIMESTAMP.ordinal()) || this==IntfName || this == IPAddr;
+    }
+
     /**
      * All set op, include router XXX, interface name
      * @return
      */
     public boolean isSetOp(){
-        return isZEBRASetOp() || isOSPFSetOp() || isRIPSetOp() || isISISSetOp();
+        return isZEBRASetOp() || isOSPFSetOp() || isRIPSetOp() || isISISSetOp() || isBABELSetOp();
     }
 
     //-----------------------------------------------------
@@ -352,12 +405,16 @@ public enum OpType {
     public boolean isISISRouterOp(){
         return (this.ordinal() >= NET.ordinal() && this.ordinal() <= SPFINTERVAL.ordinal()) || (this.ordinal() >= NOTNET.ordinal() && this.ordinal() <= NOISTYPE.ordinal());
     }
+
+    public boolean isBABELRouterOp(){
+        return (this.ordinal() >= BNETWORKINTF.ordinal() && this.ordinal() <= BSOMMOTHING.ordinal()) || (this.ordinal() >= NOBNETWORKINTF.ordinal() && this.ordinal() <= NOBSOMMOTHING.ordinal());
+    }
     /**
      * all ops(set/unset) in router XXX, don't include router XXX, no router XXX, intf name
      * @return
      */
     public boolean isRouterOp(){
-        return isZEBRARouterOp() || isOSPFRouterOp() || isRIPRouterOp() || isISISRouterOp();
+        return isZEBRARouterOp() || isOSPFRouterOp() || isRIPRouterOp() || isISISRouterOp() || isBABELRouterOp();
     }
 
     //------------------------------------------------------
@@ -374,39 +431,49 @@ public enum OpType {
     }
 
     public boolean isISISIntfOp(){
-        return (this.ordinal() >= IPROUTERISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal()) || (this.ordinal() >= NOCIRCUITTYPE.ordinal())|| this == IPAddr || this == NOIPAddr || this == IPROUTERISIS || this == NOIPROUTERISIS;
+        return (this.ordinal() >= IPROUTERISIS.ordinal() && this.ordinal() <= PSNPINTERVAL.ordinal()) || (this.ordinal() >= NOCIRCUITTYPE.ordinal() && this.ordinal() <= NOPSNPINTERVAL.ordinal())|| this == IPAddr || this == NOIPAddr || this == IPROUTERISIS || this == NOIPROUTERISIS;
+    }
+
+    public boolean isBABELIntfOp(){
+        return (this.ordinal() >= BWIRE.ordinal() && this.ordinal() <= BENABLETIMESTAMP.ordinal()) || (this.ordinal() >= NOBWIRE.ordinal() && this.ordinal() <= NOBENABLETIMESTAMP.ordinal());
     }
     /**
      * all ops(set/unset) in interface {name}, don't include router ospf, no router ospf, intfname, include ip address
      * @return
      */
     public boolean isIntfOp(){
-        return isZEBRAIntfOp() || isOSPFIntfOp() || isRIPIntfOp() || isISISIntfOp();
+        return isZEBRAIntfOp() || isOSPFIntfOp() || isRIPIntfOp() || isISISIntfOp() || isBABELIntfOp();
     }
 
-    public static Set<OpType> OSPFOps, RIPOps, ISISOps;
-    public static List<OpType> OSPFIntfSetOps, OSPFRouterSetOps, RIPRouterSetOps, RIPIntfSetOps, ISISRouterSetOps, ISISIntfSetOps;
+    public static Set<OpType> OSPFOps, RIPOps, ISISOps, BABELOps;
+    public static List<OpType> OSPFIntfSetOps, OSPFRouterSetOps, RIPRouterSetOps, RIPIntfSetOps, ISISRouterSetOps, ISISIntfSetOps, BABELRouterSetOps, BABELIntfSetOps;
     //MULTI:
     static{
         OSPFOps = new HashSet<OpType>(Arrays.asList(ROSPF, NOROSPF));
         RIPOps = new HashSet<OpType>(Arrays.asList(RRIP, NORRIP));
         ISISOps = new HashSet<OpType>(Arrays.asList(RISIS, NORISIS));
+        BABELOps = new HashSet<OpType>(Arrays.asList(RBABEL, NORBABEL));
         OSPFIntfSetOps = new ArrayList<>();
         OSPFRouterSetOps = new ArrayList<>();
         RIPIntfSetOps = new ArrayList<>();
         RIPRouterSetOps = new ArrayList<>();
         ISISRouterSetOps = new ArrayList<>();
         ISISIntfSetOps = new ArrayList<>();
+        BABELRouterSetOps = new ArrayList<>();
+        BABELIntfSetOps = new ArrayList<>();
         for (var op: OpType.values()){
             if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isOSPFSetOp() || op.isOSPFUnsetOp()) OSPFOps.add(op);
             if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isRIPSetOp() || op.isRIPUnsetOp()) RIPOps.add(op);
             if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isISISSetOp() || op.isISISUnsetOp()) ISISOps.add(op);
+            if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isBABELSetOp() || op.isBABELUnsetOp())  BABELOps.add(op);
             if (op.isOSPFIntfOp() && op.isSetOp()) OSPFIntfSetOps.add(op);
             if (op.isOSPFRouterOp()  && op.isSetOp()) OSPFRouterSetOps.add(op);
             if (op.isRIPIntfOp()  && op.isSetOp()) RIPIntfSetOps.add(op);
             if (op.isRIPRouterOp()  && op.isSetOp()) RIPRouterSetOps.add(op);
             if (op.isISISIntfOp() && op.isSetOp()) ISISIntfSetOps.add(op);
             if (op.isISISRouterOp() && op.isSetOp()) ISISRouterSetOps.add(op);
+            if (op.isBABELIntfOp() && op.isSetOp()) BABELIntfSetOps.add(op);
+            if (op.isBABELRouterOp() && op.isSetOp()) BABELRouterSetOps.add(op);
         }
     }
 
@@ -416,6 +483,7 @@ public enum OpType {
             case RIP : return RIPIntfSetOps;
             case OSPF : return OSPFIntfSetOps;
             case ISIS : return ISISIntfSetOps;
+            case BABEL: return BABELIntfSetOps;
         }
         assert false;
         return null;
@@ -427,6 +495,7 @@ public enum OpType {
             case RIP: return RIPRouterSetOps;
             case OSPF: return OSPFRouterSetOps;
             case ISIS: return ISISRouterSetOps;
+            case BABEL: return BABELRouterSetOps;
         }
         assert false;
         return null;
@@ -437,6 +506,7 @@ public enum OpType {
             case OSPF: return OSPFOps;
             case RIP: return RIPOps;
             case ISIS: return ISISOps;
+            case BABEL: return BABELOps;
         }
         assert false;
         return null;

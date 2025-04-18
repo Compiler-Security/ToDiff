@@ -5,6 +5,7 @@ import org.generator.lib.item.IR.Op;
 import org.generator.lib.item.IR.OpPhy;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
+import org.generator.lib.item.conf.node.babel.BABEL;
 import org.generator.lib.item.conf.node.ospf.OSPF;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.item.conf.edge.RelationEdge;
@@ -242,6 +243,44 @@ public class phyExecArgPass extends  baseExecPass{
                 //delete isis
                 var isis = (ISIS) topo.getNode(isis_name).get();
                 topo.delNode(isis);
+
+                return ExecStat.SUCC;
+            }
+            case NODESETBABELUP -> {
+                var r_name = op.getNAME();
+                var babel_name = NodeGen.getBABELName(r_name);
+
+                //check miss condition
+                if (!topo.containsNode(r_name) || topo.containsNode(babel_name)) return ExecStat.MISS;
+
+                //new ospf
+                BABEL babel = NodeGen.new_BABEL(babel_name);
+                topo.addNode(babel);
+
+                // new relation edge
+                return topo.addBABELRelation(babel_name, r_name);
+            }
+            case NODESETBABELRE -> {
+                var r_name = op.getNAME();
+                var babel_name = NodeGen.getBABELName(r_name);
+                //check condition
+                if (!topo.containsNode(babel_name)) return ExecStat.MISS;
+
+                //change ospf status
+                var babel = (BABEL) topo.getNode(babel_name).get();
+
+                return ExecStat.SUCC;
+            }
+            case NODESETBABELSHUTDOWN -> {
+                var r_name = op.getNAME();
+                var babel_name = NodeGen.getBABELName(r_name);
+                //check condition
+                if (!topo.containsNode(babel_name)) return ExecStat.MISS;
+
+
+                //delete ospf
+                var babel = (BABEL) topo.getNode(babel_name).get();
+                topo.delNode(babel);
 
                 return ExecStat.SUCC;
             }

@@ -192,6 +192,20 @@ class MininetInst(BaseInst):
                 return self.EXEC_MISS
             return self._run_cmd(up_node.stop_ripd, conf_dir=self.workdir)
 
+        if _cmds_equal_prefix(op_args, ["router", "set", "BABEL", "up"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
+            res = self._run_cmd(up_node.load_babel, ["zebra", "babeld", "mgmtd"], conf_dir=self.workdir, universe=True)
+            #self._run_cmd(up_node.log_load_frr)
+            return res
+        
+        if _cmds_equal_prefix(op_args, ["router", "set", "BABEL", "down"]):
+            up_node: FrrNode = self._get_node(node_name)
+            if up_node is None:
+                return self.EXEC_MISS
+            return self._run_cmd(up_node.stop_babeld, conf_dir=self.workdir)
+
         raise InstErrorException("[mininet] node inst not right")
 
     def _run_intf_cmd(self, args):
@@ -206,8 +220,10 @@ class MininetInst(BaseInst):
         if _cmds_equal_prefix(op_args, ["up"]):
             if intf is None:
                 return self.EXEC_MISS
-            return self._run_cmd(intf.ifconfig, "up")
-
+            self._run_cmd(intf.ifconfig, "up")
+            _node.cmd(f"ip -6 addr flush dev {intf_name}")
+            return self.EXEC_DONE
+        
         if _cmds_equal_prefix(op_args, ["down"]):
             if intf is None:
                 assert False, "intf is None"
@@ -267,6 +283,8 @@ class MininetInst(BaseInst):
             if (intf1 is not None) and (intf2 is not None) and self._get_pair_intf(intf1, "L") == intf2:
                 intf1.config(bw = 1000, loss=0)
                 intf2.config(bw = 1000, loss=0)
+                node1.cmd(f"ip -6 addr flush dev {intfname1}")
+                node2.cmd(f"ip -6 addr flush dev {intfname2}")
                 return self.EXEC_DONE
             else:
                 if intf1 is not None:
@@ -282,6 +300,8 @@ class MininetInst(BaseInst):
                 self._load_intf_to_ctx(l.intf2)
                 self._save_intf_to_ctx(l.intf1)
                 self._save_intf_to_ctx(l.intf2)
+                node1.cmd(f"ip -6 addr flush dev {intfname1}")
+                node2.cmd(f"ip -6 addr flush dev {intfname2}")
                 return self.EXEC_DONE
 
 

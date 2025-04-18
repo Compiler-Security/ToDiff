@@ -33,7 +33,10 @@ public class OpArgG extends BaseOpG<Op>{
         RIP,
         RIPIntf,
         ISIS,
-        ISISIntf
+        ISISIntf,
+        BABEL,
+        BABELIntf,
+        //MULTI:
     }
 
     public OpGType getTyp() {

@@ -54,7 +54,12 @@ public class diffTopo {
 
     Pair<OpCtxG, OpCtxG> getConfOfPhy(ConfGraph g){
         var ori_phyg = generate.generatePhyCore(g);
-        var equal_phyg = generate.generateEqualOfPhyCore(ori_phyg, 0.4, 1);
+        OpCtxG equal_phyg = null;
+        if (generate.genPhyEqualCommand) {
+            generate.generateEqualOfPhyCore(ori_phyg, 0.4, 1);
+        }else{
+            equal_phyg = OpCtxG.Of();
+        }
         //System.out.println(equal_phyg);
         return new Pair<>(ori_phyg, equal_phyg);
     }
@@ -240,11 +245,11 @@ public class diffTopo {
                     //MULTI:
                     //FIXME: if we want to generate multiple protocols' cmd, we should track multiple alive
                     switch (op.getOpPhy().Type()){
-                        case NODESETOSPFUP, NODESETRIPUP, NODESETISISUP -> {
+                        case NODESETOSPFUP, NODESETRIPUP, NODESETISISUP, NODESETBABELUP -> {
                             var router_name = op.getOpPhy().getNAME();
                             ospfAlive.set(routerNametoIdx.get(router_name), true);
                         }
-                        case NODEDEL, NODESETOSPFSHUTDOWN, NODESETRIPSHUTDOWN, NODESETISISSHUTDOWN -> {
+                        case NODEDEL, NODESETOSPFSHUTDOWN, NODESETRIPSHUTDOWN, NODESETISISSHUTDOWN, NODESETBABELSHUTDOWN -> {
                             var router_name = op.getOpPhy().getNAME();
                             ospfAlive.set(routerNametoIdx.get(router_name), false);
                         }
@@ -309,6 +314,7 @@ public class diffTopo {
                     case OSPF -> one_step.put("ospf", ops);
                     case RIP -> one_step.put("rip", ops);
                     case ISIS -> one_step.put("isis", ops);
+                    case BABEL -> one_step.put("babel", ops);
                 }
 
                 //add waitTime

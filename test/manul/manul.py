@@ -2,6 +2,12 @@ from mininet.topo import Topo
 from mininet.net import Mininet
 from mininet.node import  Node
 from mininet.log import setLogLevel
+import sys
+import traceback
+from os import path
+path_to_add = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
+if path_to_add not in sys.path:
+    sys.path.append(path_to_add)
 from src.restful_mininet.node.router_node import FrrNode
 from src.restful_mininet.net.testnet import TestNet
 from src.restful_mininet.exec.inst import MininetInst
@@ -37,7 +43,7 @@ class manulTest():
     def _run_ospf(self, net:TestNet, router_name, ospf_commands):
         res = []
         for op in ospf_commands:
-            if op in ["clear ip ospf process", "write terminal", "show ip ospf neighbor json", "show ip ospf", "show ip ospf interface json", "show ip ospf database"]:
+            if op in ["clear ip ospf process", "write terminal", "show ip ospf neighbor json", "show ip ospf", "show ip ospf interface json", "show ip ospf database", "show babel route"]:
                 res.append(net.run_frr_cmds(router_name, [op]))
             else:
                 resStr = ""

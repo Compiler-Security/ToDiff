@@ -148,12 +148,13 @@ public class generateTest {
     @Test
     public void multiProtocolTest() {
         String test_st = """
-                router rip
-                    passive-interface r2-eth0
-                    passive-interface default
-                    passive-interface r1-eth0
+                interface r1-eth0
+                     babel wireless
+                     no babel split-horizon
+                     no babel wireless
+                     babel wired
                 """;
-        generate.protocol = generate.Protocol.RIP;
+        generate.protocol = generate.Protocol.BABEL;
         for(int i = 0; i < 1; i++) {
             System.out.printf("testCase %d\n", i);
             var genOp = new genOps();
@@ -162,6 +163,8 @@ public class generateTest {
             //var ori_use = new ConfReader().read(new OspfConfWriter().write(ori));
 
             var ori_use = new ConfReader().read(test_st);
+
+            //System.out.println(generate.generateEqualOfCore(ori_use, true));
             //System.out.println(ori_use);
             System.out.println(reducer.reduceToCore(ori_use));
             //System.out.println(getSetConfG(ori_use));
@@ -169,11 +172,13 @@ public class generateTest {
     }
     @Test
     public void mainTest(){
+        generate.protocol = generate.Protocol.BABEL;
         for(int i = 0; i < 100; i++){
             System.out.printf("testCase %d\n", i);
             int routerCount = 3,maxStep = 3,maxStepTime = 10, roundNum = 2;
             var diff = new diffTopo();
             var res = diff.gen(routerCount, maxStep, maxStepTime, roundNum);
+
         }
     }
     @Test
@@ -182,5 +187,22 @@ public class generateTest {
         var routers = ran.generate(5, 1, 3, 0);
         var baseGraphStr = dumpGraphOspf(routers, ran);
         System.out.println(baseGraphStr);
+    }
+
+    @Test
+    public void BWRIETest(){
+        generate.protocol = generate.Protocol.BABEL;
+        var confg = topo.genGraph(1, topo.areaCount, topo.mxDegree, topo.abrRatio, false, null);
+        confg = confg.viewConfGraphOfRouter("r0");
+        confg.setR_name("r0");
+        var core = generate.generateCore(confg,false);
+        while(true) {
+            var equal = generate.generateEqualOfCore(core, true);
+            System.out.println(equal);
+            break;
+            //var g = confg.copyPhyGraph();
+            //reducer.reduceToConfG(equal, g);
+            //assert getJson(confg).equals(getJson(g));
+        }
     }
 }

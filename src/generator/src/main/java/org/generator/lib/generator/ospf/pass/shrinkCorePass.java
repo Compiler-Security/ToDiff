@@ -5,6 +5,9 @@ package org.generator.lib.generator.ospf.pass;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.generator.lib.frontend.lexical.OpType;
+import org.generator.lib.generator.driver.generate;
+import org.generator.lib.item.conf.node.babel.BABEL;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.reducer.driver.reducer;
@@ -15,7 +18,7 @@ import static org.generator.util.diff.differ.compareJson;
 
 public class shrinkCorePass {
 
-    ObjectNode getJson(ConfGraph confG){
+    static ObjectNode getJson(ConfGraph confG){
         ObjectNode jsonObject = new ObjectMapper().createObjectNode();
         for(var node: confG.getNodes()){
             jsonObject.set(node.getName(), node.getJsonNode());
@@ -52,6 +55,12 @@ public class shrinkCorePass {
             for(int i = 0; i < ops.size(); i++){
                 if (i == 0) continue;
                 var op = ops.remove(i);
+                if (generate.protocol == generate.Protocol.BABEL){
+                    if(op.getOpOspf().Type() == OpType.IPAddr6 || op.getOpOspf().Type() == OpType.BREDISTRIBUTE){
+                        ops.add(i, op);
+                        continue;
+                    }
+                }
                 if (check(opCtxGs, confG, r_name)){
                     i--;
                 }else{

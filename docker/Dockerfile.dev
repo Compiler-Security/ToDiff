@@ -121,7 +121,7 @@ RUN cd && pwd && ls -al && git clone https://github.com/Shbinging/frr.git
 #checkout frr to interested commit
 RUN cd /home/frr/frr && \
     git fetch --all && \
-    git checkout -b fix_no_ip_split-horizon_poisoned-reverse origin/fix_no_ip_split-horizon_poisoned-reverse
+    git checkout -b fix_zebra_redistribute_delete origin/fix_zebra_redistribute_delete
      
 #build and install frr to /usr/lib/frr
 RUN if [ "$build_mode" = "full" ]; then \

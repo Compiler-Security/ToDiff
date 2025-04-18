@@ -36,6 +36,10 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
         ISISINTF,
         ISISDAEMON,
         ISISAREASUM,
+
+        //===========BABEL==========
+        BABEL,
+        BABELINTF,
     }
 
     protected void generateType(){
@@ -55,6 +59,8 @@ public class RelationEdge extends AbstractEdge<AbstractNode> {
             //MULTI:
             case ISIS -> setType(EdgeType.ISIS);
             case ISISIntf -> setType(EdgeType.ISISINTF);
+            case BABEL -> setType(EdgeType.BABEL);
+            case BABELIntf -> setType(EdgeType.BABELINTF);
             default -> throw new IllegalStateException("Unexpected value: " + dst);
         }
     }

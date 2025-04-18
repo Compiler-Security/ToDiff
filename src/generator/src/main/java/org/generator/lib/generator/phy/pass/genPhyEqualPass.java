@@ -70,6 +70,16 @@ public class genPhyEqualPass {
                 case NODESETISISRE -> {
                     slots.add(NormalController.getISISCatg(0, 0, 0, op.getNAME(), OpType.NODESETISISRE, NormalController.CType.ISIS));
                 }
+
+                case NODESETBABELUP -> {
+                    slots.add(NormalController.getBABELCatg(0, 0, 0, op.getNAME(), OpType.NODESETBABELUP, NormalController.CType.BABEL));
+                }
+                case NODESETBABELSHUTDOWN -> {
+                    slots.add(NormalController.getBABELCatg(0, 0, 0, op.getNAME(), OpType.NODESETBABELSHUTDOWN, NormalController.CType.BABEL));
+                }
+                case NODESETBABELRE -> {
+                    slots.add(NormalController.getBABELCatg(0, 0, 0, op.getNAME(), OpType.NODESETBABELRE, NormalController.CType.BABEL));
+                }
                 default -> {
                     assert false: "error op %s".formatted(op.toString());
                 }
@@ -113,6 +123,10 @@ public class genPhyEqualPass {
             }
             //----------ISIS-----------
             case NODESETISISUP,NODESETISISRE, NODESETISISSHUTDOWN ->{
+                return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
+            }
+
+            case NODESETBABELUP , NODESETBABELSHUTDOWN, NODESETBABELRE ->{
                 return getSlot(NormalController.CType.NODE, targetOp.getNAME(), null).getCurType() == OpType.NODEADD;
             }
         }
@@ -160,7 +174,14 @@ public class genPhyEqualPass {
                         slot.setCurType(OpType.NODESETISISSHUTDOWN);
                     }
                 }
-
+                if (generate.protocol == generate.Protocol.BABEL){
+                    //every router NODE should have RIP
+                    var slot = getSlot(NormalController.CType.BABEL, targetOp.getNAME(), null);
+                    if (slot.getCurType() == OpType.NODESETBABELUP) {
+                        slot.deltaTypeNum(OpType.NODESETBABELUP, 1);
+                        slot.setCurType(OpType.NODESETBABELSHUTDOWN);
+                    }
+                }
             }
             case LINKREMOVE -> {
                 var slot = getSlot(NormalController.CType.INTF, targetOp.getNAME(), null);
@@ -207,6 +228,9 @@ public class genPhyEqualPass {
                 }
                 if (slot.getcType() == NormalController.CType.ISIS){
                     slot.deltaTypeNum(OpType.NODESETISISRE, -slot.getCounterOfType(OpType.NODESETISISRE));
+                }
+                if (slot.getcType() == NormalController.CType.BABEL){
+                    slot.deltaTypeNum(OpType.NODESETBABELRE, -slot.getCounterOfType(OpType.NODESETBABELRE));
                 }
             }
         }

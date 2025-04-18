@@ -23,6 +23,9 @@ public enum NodeType {
     ISISDaemon,
     ISISAreaSum,
 
+    //=========BABEL===========
+    BABEL,
+    BABELIntf,
     ;
 
     public boolean isPhyNode(){

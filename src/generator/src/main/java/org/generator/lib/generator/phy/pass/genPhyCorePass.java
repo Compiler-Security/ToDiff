@@ -2,6 +2,7 @@ package org.generator.lib.generator.phy.pass;
 
 import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.driver.generate;
+import org.generator.lib.item.IR.Op;
 import org.generator.lib.item.IR.OpCtx;
 import org.generator.lib.item.IR.OpPhy;
 import org.generator.lib.item.conf.edge.RelationEdge;
@@ -53,6 +54,11 @@ public class genPhyCorePass {
                 case ISIS -> {
                     if (g.containsNode(NodeGen.getISISName(r.getName()))){
                         op = new OpPhy(OpType.NODESETISISUP);
+                    }
+                }
+                case BABEL -> {
+                    if (g.containsNode(NodeGen.getBABELName(r.getName()))){
+                        op = new OpPhy(OpType.NODESETBABELUP);
                     }
                 }
             }

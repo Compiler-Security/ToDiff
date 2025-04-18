@@ -169,5 +169,6 @@ test/conf_test/data/*.json
 
 test/excutor_test/tmp
 test/topo_test/data
-test/manul/frr_conf/
+test/manul/frr_conf/*/conf
+test/manul/frr_conf/*/log
 test/manul/log/

@@ -47,6 +47,10 @@ public class generate {
                 var p = new genCorePassIsis();
                 res1 = p.solve(confGraph, ismissinglevel);
             }
+            case BABEL -> {
+                var p = new genCorePassBabel();
+                res1 = p.solve(confGraph, true);
+            }
         }
         //FIXME shrinkPass is very slow in huge case
         var q = new shrinkCorePass();
@@ -79,7 +83,7 @@ public class generate {
                     continue;
                 }
                 //System.out.println(opa);
-                controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
+                if (opa != null && !controller.hasConfigOfOpa(opa)) controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                 break;
             }
         }
@@ -97,7 +101,7 @@ public class generate {
                     continue;
                 }
                 var mutate_opa = actionRulePass.mutate(ori_opa);
-                if (mutate_opa != null){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
+                if (mutate_opa != null && !controller.hasConfigOfOpa(mutate_opa)){controller.addConfig(mutate_opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
                     break;
                 }
             }
@@ -124,6 +128,27 @@ public class generate {
                         -> {return true;}
             }
         }
+
+        if (generate.protocol == Protocol.BABEL){
+            //This will trigger one BABEL bug
+            //See https://github.com/FRRouting/frr/issues/18492
+            if (opType == OpType.BNETWORKINTF){
+                return true;
+            }
+
+            //We don't change babel wired/ babel wireless because the special case
+            //babel wireless;no babel wireless; babel wired; babel wired will not reset other arguments
+            //See https://github.com/FRRouting/frr/pull/18413
+            if (opType == OpType.BWIRE){
+                return true;
+            }
+            //This will trigger one BABEL bug
+            //See https://github.com/FRRouting/frr/issues/18501
+            if (opType == OpType.IPAddr){
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -207,8 +232,12 @@ public class generate {
     public static enum Protocol{
         OSPF,
         ISIS,
-        RIP
+        RIP,
+        BABEL
     }
 
     public static Protocol protocol = Protocol.OSPF;
+
+    //default not generate phy equal commands, same with the paper
+    public static boolean genPhyEqualCommand = false;
 }

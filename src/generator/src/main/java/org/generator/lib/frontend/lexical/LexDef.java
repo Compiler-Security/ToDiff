@@ -21,6 +21,7 @@ public class LexDef {
     private static final Map<OpType, List<LexDef>> preprocess;
     static {
         var lexical_seed = new Object[][]{
+                //MULTI:
                 {NODEADD, "node {NAME} add"},
                 {NODEDEL, "node {NAME} del"},
                 {NODESETOSPFUP, "node {NAME} set ospf up"},
@@ -39,6 +40,9 @@ public class LexDef {
                 {NODESETISISUP, "node {NAME} set ISIS up"},
                 {NODESETISISSHUTDOWN, "node {NAME} set ISIS down"},
                 {NODESETISISRE, "node {NAME} set ISIS restart"},
+                {NODESETBABELUP, "node {NAME} set BABEL up"},
+                {NODESETBABELSHUTDOWN, "node {NAME} set BABEL down"},
+                {NODESETBABELRE, "node {NAME} set BABEL restart"},
                 //{OSPFCONF, "ROSPFCONF"},
 
                 {ROSPF, "router ospf"},
@@ -233,7 +237,45 @@ public class LexDef {
                 {NOPSNPINTERVAL, "no isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2,_)}"},
                 {NOTHREEWAYHANDSHAKE, "no isis three-way-handshake"},
 
+                {RBABEL, "router babel"},
+                //FIXME is there babel id?
+                //{BABELDI, "babel diversity"},
+                {BNETWORKINTF, "network {NAME}"},
+                {BREDISTRIBUTE, "redistribute ipv4 connected"},
+                {BWIRE, "babel {NAME(wired,wireless)}"},
+                {IPAddr6, "ipv6 address {NAME}"},
+                {BSPLITHORIZON, "no babel split-horizon"},
+                {BHELLOINTERVAL, "babel hello-interval {NUM(20-655340)}"},
+                {BUPDATEINTERVAL, "babel update-interval {NUM(20-655340)}"},
+                {BCHANELNOINTEFERING, "babel channel {NAME(interfering,noninterfering)}"},
+                {BRXCOST, "babel rxcost {NUM(1-65534)}"},
+                {BRTTDECAY, "babel rtt-decay {NUM(1-256)}"},
+                {BRTTMIN, "babel rtt-min {NUM(1-65535)}"},
+                {BRTTMAX, "babel rtt-max {NUM(1-65536)}"},
+                {BPENALTY, "babel max-rtt-penalty {NUM(0-65535)}"},
+                {BENABLETIMESTAMP, "babel enable-timestamps"},
+                {BRESENDDELAY, "babel resend-delay {NUM(20-655340)}"},
+                {BSOMMOTHING, "babel smoothing-half-life {NUM(0-65534)}"},
 
+                {NORBABEL, "no router babel"},
+                //{NOBABELDI, "no babel diversity"},
+                {NOBNETWORKINTF, "no network {NAME}"},
+                {NOBREDISTRIBUTE, "no redistribute ipv4 connected"},
+                {NOBWIRE, "no babel {NAME(wired,wireless)}"},
+                {NOIPAddr6, "no ipv6 address {NAME}"},
+                {NOBSPLITHORIZON, "babel split-horizon"},
+                //FIXME Current implementation is wrong as we should ignore the arguments
+                {NOBHELLOINTERVAL, "no babel hello-interval {NUM(20-655340)}"},
+                {NOBUPDATEINTERVAL, "no babel update-interval {NUM(20-655340)}"},
+                {NOBCHANELNOINTEFERING, "no babel channel {NAME(interfering,noninterfering)}"},
+                {NOBRXCOST, "no babel rxcost {NUM(1-65534)}"},
+                {NOBRTTDECAY, "no babel rtt-decay {NUM(1-256)}"},
+                {NOBRTTMIN, "no babel rtt-min {NUM(1-65535)}"},
+                {NOBRTTMAX, "no babel rtt-max {NUM(1-65536)}"},
+                {NOBPENALTY, "no babel max-rtt-penalty {NUM(0-65535)}"},
+                {NOBENABLETIMESTAMP, "no babel enable-timestamps"},
+                {NOBRESENDDELAY, "no babel resend-delay {NUM(20-655340)}"},
+                {NOBSOMMOTHING, "no babel smoothing-half-life {NUM(0-65534)}"},
                 //MULTI:
                 //INVALID will not to match, it can read/write invalid str to bypass [NAME]
                 {INVALID, "{NAME}"},
