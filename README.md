@@ -2,6 +2,13 @@
 
 Todiff is a prototype implementation of the technique know as ToDiff. It aims to validate IGP protocols via equivalent topology synthesis.
 
+## Install
+```bash
+curl -s "https://get.sdkman.io" | bash
+source "$HOME/.sdkman/bin/sdkman-init.sh"
+sdk install gradle
+```
+
 ## Build
 ```bash
     sh build_test.sh
