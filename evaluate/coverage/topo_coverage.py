@@ -32,16 +32,23 @@ def coverage_calc(coverage_dir, source_file, func_list_path, item):
     print(item, ave / s)
 
 ######OSPF TODiff##############
-coverage_file = f"{coverage_dir}/todiff/ospf/"
-source_file = "/home/frr/frr/ospfd/ospf_vty.c"
-func_list_path = f"{coverage_dir}/topo_related_function_ospf.txt"
-coverage_calc(coverage_file, source_file, func_list_path, "ToDiff OSPF")
+# coverage_file = f"{coverage_dir}/todiff/ospf/"
+# source_file = "/home/frr/frr/ospfd/ospf_vty.c"
+# func_list_path = f"{coverage_dir}/topo_related_function_ospf.txt"
+# coverage_calc(coverage_file, source_file, func_list_path, "ToDiff OSPF")
+
+
+#ISIS TODiff
+coverage_file = f"{coverage_dir}/todiff/isis/"
+source_file = "/home/frr/frr/isisd/isis_vty.c"
+func_list_path = f"{coverage_dir}/topo_related_function_isis.txt"
+coverage_calc(coverage_file, source_file, func_list_path, "ToDiff ISIS")
 
 #######OSPF TopoTests#########
-coverage_file = f"{coverage_dir}/topotests/ospf/"
-source_file = "/home/frr/frr/ospfd/ospf_vty.c"
-func_list_path = f"{coverage_dir}/topo_related_function_ospf.txt"
-coverage_calc(coverage_file, source_file, func_list_path, "TopoTests OSPF")
+# coverage_file = f"{coverage_dir}/topotests/ospf/"
+# source_file = "/home/frr/frr/ospfd/ospf_vty.c"
+# func_list_path = f"{coverage_dir}/topo_related_function_ospf.txt"
+# coverage_calc(coverage_file, source_file, func_list_path, "TopoTests OSPF")
 # #######OSPF Fuzzing###########
 # coverage_file = f"{coverage_dir}/ossfuzz/ospf/"
 # source_file = "/home/frr/frr/ospfd/ospf_vty.c"

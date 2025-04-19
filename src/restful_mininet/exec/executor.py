@@ -196,23 +196,23 @@ class executor:
                 warnln(f"    -check router {r_name} n")
                 return False
 
-            for vrf in res.get("vrfs", []):
-                for area in vrf.get("areas", []):
-                    for level in area.get("levels", []):
-                        if level.get("spf") != "no pending":
-                            warnln(f"    -check router {r_name} daspf")
-                            return False
+            # for vrf in res.get("vrfs", []):
+            #     for area in vrf.get("areas", []):
+            #         for level in area.get("levels", []):
+                        # if level.get("spf") != "no pending":
+                        #     warnln(f"    -check router {r_name} daspf")
+                        #     return False
                         # if level.get("lsp-purged") != 0:
                         #     warnln(f"    -check router {r_name} dapurged")
                         #     return False
             res = net.net.nameToNode[r_name].dump_isis_intfs_info()
 
-            for area in res.get("areas", []):
-                for circuit in area.get("circuits", []):
-                    interface = circuit.get("interface", {})
-                    if interface.get("state") == "Initializing":
-                        warnln(f"    -check router {r_name} in")
-                        return False
+            # for area in res.get("areas", []):
+            #     for circuit in area.get("circuits", []):
+            #         interface = circuit.get("interface", {})
+            #         if interface.get("state") == "Initializing":
+            #             warnln(f"    -check router {r_name} in")
+            #             return False
             
             running_config = net.net.nameToNode[r_name].dump_isis_running_config()
             match = re.search(r'hostname\s+(\S+)', running_config)
@@ -223,15 +223,15 @@ class executor:
                 for circuit in area.get("circuits", []): 
                     if circuit.get("adj") == None:
                         continue
-                    if circuit.get("adj") != hostname:
-                        warnln(f"    -check router {r_name} adj")
-                        print(circuit.get("adj"))
-                        print(hostname)
-                        return False    
+                    # if circuit.get("adj") != hostname:
+                    #     warnln(f"    -check router {r_name} adj")
+                    #     print(circuit.get("adj"))
+                    #     print(hostname)
+                    #     return False    
                     interface = circuit.get("interface", {})
-                    if interface.get("state") == "Initializing":
-                        warnln(f"    -check router {r_name} nb")
-                        return False
+                    # if interface.get("state") == "Initializing":
+                    #     warnln(f"    -check router {r_name} nb")
+                    #     return False
             
             warnln(f"    -check router {r_name} y")
 

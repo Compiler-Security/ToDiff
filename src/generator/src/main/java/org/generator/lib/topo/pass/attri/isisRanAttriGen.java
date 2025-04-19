@@ -81,17 +81,22 @@ public class isisRanAttriGen implements genAttri_ISIS {
     private void generate_ISIS_Daemon(ISISDaemon daemon){
         //all attribute is random
         //FIXME for testing we must choose some important value such as 1, 65535 etc.
-        daemon.setAdvertisehighmetrics(ranHelper.randomInt(0, 1) == 0);
-        daemon.setLspmtu(ranHelper.randomInt(128, 4352));
-        daemon.setOverloadbitonstartup(ranHelper.randomInt(0, 86400));
-        daemon.setSetoverloadbit(ranHelper.randomInt(0, 1) == 0);
+        
         if(generate.fastConvergence){
             daemon.setLspgenintervalLevel1(30);
             daemon.setLspgenintervalLevel2(30);
+            daemon.setAdvertisehighmetrics(false);
+            daemon.setLspmtu(1942);
+            daemon.setOverloadbitonstartup(1);
+            daemon.setSetoverloadbit(false);
         }
         else{
             daemon.setLspgenintervalLevel1(ranHelper.randomInt(1, 120));
             daemon.setLspgenintervalLevel2(ranHelper.randomInt(1, 120));
+            daemon.setAdvertisehighmetrics(ranHelper.randomInt(0, 1) == 0);
+            daemon.setLspmtu(ranHelper.randomInt(128, 4352));
+            daemon.setOverloadbitonstartup(ranHelper.randomInt(0, 86400));
+            daemon.setSetoverloadbit(ranHelper.randomInt(0, 1) == 0);
         }
 
         if(generate.fastConvergence){
@@ -112,6 +117,8 @@ public class isisRanAttriGen implements genAttri_ISIS {
         var helloInterval = ranHelper.randomInt(1, 600);
         var csnpInterval = ranHelper.randomInt(1, 600);
         var helloMultiplier = ranHelper.randomInt(2, 100);
+        var isthreeWayHandshake = ranHelper.randomInt(0, 1) == 0;
+        var ishelloPadding = ranHelper.randomInt(0, 1) == 0;
         if (generate.fastConvergence){
             helloInterval = 1;
             helloMultiplier = 2;
@@ -127,9 +134,9 @@ public class isisRanAttriGen implements genAttri_ISIS {
         for(var isisIntf: isisIntfs){
             //self
             //FIXME for testing this ratio should be considered
-            isisIntf.setPassive(ranHelper.randomInt(0, 10) == 0);
-            isisIntf.setHelloPadding(ranHelper.randomInt(0, 1) == 0);
-            isisIntf.setThreeWayHandshake(ranHelper.randomInt(0, 1) == 0);
+            isisIntf.setPassive(false);
+            isisIntf.setHelloPadding(ishelloPadding);
+            isisIntf.setThreeWayHandshake(isthreeWayHandshake);
             //isisIntf.setCost(ranHelper.randomInt(1, 65535));
             isisIntf.setPriorityLevel1(ranHelper.randomInt(0, 127));
             isisIntf.setPriorityLevel2(ranHelper.randomInt(0, 127));

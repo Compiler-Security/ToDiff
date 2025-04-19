@@ -9,8 +9,8 @@ dataDir = path.join(dockerDir,"test", "topo_test")
 
 
 gridNum = 10
-mxWaitTime = 600
-minWaitTime = 30
+mxWaitTime = 60
+minWaitTime = 10
 protocol = "isis"
 
 def getContainerName(num):

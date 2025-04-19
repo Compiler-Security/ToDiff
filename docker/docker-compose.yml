@@ -9,7 +9,7 @@ services:
       - build_mode=interested
       - frr_check=false
       - nproc=16
-      - proxy=http://114.212.83.50:7890
+      - proxy=http://172.25.199.240:7890
     init: true
     privileged: true
     user: frr
@@ -32,7 +32,7 @@ services:
         - build_mode=interested
         - frr_check=false
         - nproc=16
-        - proxy=http://114.212.189.33:7897
+        - proxy=http://172.25.199.240:7890
       ulimits:
         nofile:
           soft: 2048  # Soft limit
@@ -62,7 +62,7 @@ services:
         - build_mode=interested
         - frr_check=false
         - nproc=16
-        - proxy=http://114.212.189.33:7897
+        - proxy=http://172.25.199.240:7890
       ulimits:
         nofile:
           soft: 2048  # Soft limit
@@ -87,7 +87,7 @@ services:
         - build_mode=interested
         - frr_check=false
         - nproc=16
-        - proxy=http://114.212.189.33:7897
+        - proxy=http://172.25.199.240:7890
       ulimits:
         nofile:
           soft: 2048  # Soft limit
@@ -115,7 +115,7 @@ services:
         - build_mode=interested
         - frr_check=false
         - nproc=16
-        - proxy=http://114.212.189.33:7897
+        - proxy=http://172.25.199.240:7890
       ulimits:
         nofile:
           soft: 2048  # Soft limit

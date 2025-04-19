@@ -192,12 +192,31 @@ public enum OpType {
     SETOVERLOADBITONSTARTUP,
     LSPMTU,
     LSPGENINTERVAL,
+
+
+    ADVERTISEPASSIVEONLY,
+    LSPREFRESHINTERVAL,
+    MAXLSPLIFETIME,
+    SPFPREFIXPRIORITY,
+    FRPRIORITYLIMIT,    
+    FRLFATIEBREAKER,
+    FRLOADSHARINGDISABLE,
+    //fast-reroute remote-lfa prefix-list [WORD] [level-1 | level-2]
+    FRREMOTELFAPREFIXLIST,
+    //redistribute <ipv4 | ipv6> table (1-65535) <level-1 | level-2> [metric (0-16777215)|route-map WORD]
+    REDISTRIBUTETABLE,
+    ATTACHEDBIT,
+    METRICSTYLE,
+
+
     SPFINTERVAL,
     //ISISDAEMONGROUPEND,
     //--------------REGION------------------
     //ISISREGIONBEGIN,
-    
     //ISISREGIONEND,
+
+
+
 
     //--------------INTERFACE----------------
     //ISISINTFBEGIN,
@@ -213,6 +232,17 @@ public enum OpType {
     ISISPASSIVE,
     ISISPRIORITY,
     NOTHREEWAYHANDSHAKE,
+
+
+    ISISPASSWORD,
+    ISISFRLFA,
+    //isis fast-reroute remote-lfa tunnel mpls-ldp [level-1 | level-2]
+    ISISFRREMOTELFATUNNEL,
+    //isis fast-reroute remote-lfa maximum-metric (1-16777215) [level-1 | level-2]
+    ISISFRREMOTELFAMAXMETRIC,
+    //isis fast-reroute ti-lfa [level-1|level-2] [node-protection [link-fallback]]
+    ISISFRTILFA,
+
     PSNPINTERVAL,
 
     //ISISEND,
@@ -242,7 +272,30 @@ public enum OpType {
     NOISISPASSIVE,
     NOISISPRIORITY,
     THREEWAYHANDSHAKE,
+
+    NOADVERTISEPASSIVEONLY,
+    NOLSPREFRESHINTERVAL,
+    NOMAXLSPLIFETIME,
+    NOSPFPREFIXPRIORITY,
+    NOFRPRIORITYLIMIT,    
+    NOFRLFATIEBREAKER,
+    NOFRLOADSHARINGDISABLE,
+    NOFRREMOTELFAPREFIXLIST,
+    NOREDISTRIBUTETABLE,
+    NOATTACHEDBIT,
+    NOMETRICSTYLE,
+    NOISISPASSWORD,
+    NOISISFRLFA,
+    NOISISFRREMOTELFATUNNEL,
+    NOISISFRREMOTELFAMAXMETRIC,
+    NOISISFRTILFA,
+
     NOPSNPINTERVAL,
+    
+    //new
+
+
+
 
     //====================BABEL=========================
     RBABEL,
@@ -445,8 +498,18 @@ public enum OpType {
         return isZEBRAIntfOp() || isOSPFIntfOp() || isRIPIntfOp() || isISISIntfOp() || isBABELIntfOp();
     }
 
+    public boolean isNewISISOp(){
+        return this.ordinal() >= ADVERTISEPASSIVEONLY.ordinal() && this.ordinal() <= ISISFRTILFA.ordinal();
+    }
+    public boolean isNewISISrouterOp(){
+        return this.ordinal() >= ADVERTISEPASSIVEONLY.ordinal() && this.ordinal() <= METRICSTYLE.ordinal();
+    }
+    public boolean isNewISISintfOp(){
+        return this.ordinal() >= ISISPASSWORD.ordinal() && this.ordinal() <= ISISFRTILFA.ordinal();
+    }
     public static Set<OpType> OSPFOps, RIPOps, ISISOps, BABELOps;
     public static List<OpType> OSPFIntfSetOps, OSPFRouterSetOps, RIPRouterSetOps, RIPIntfSetOps, ISISRouterSetOps, ISISIntfSetOps, BABELRouterSetOps, BABELIntfSetOps;
+    public static List<OpType> NewISISOps, NewISISintfOps, NewISISrouterOps;
     //MULTI:
     static{
         OSPFOps = new HashSet<OpType>(Arrays.asList(ROSPF, NOROSPF));
@@ -461,6 +524,11 @@ public enum OpType {
         ISISIntfSetOps = new ArrayList<>();
         BABELRouterSetOps = new ArrayList<>();
         BABELIntfSetOps = new ArrayList<>();
+
+        // NewISISOps = new ArrayList<>();
+        // NewISISintfOps = new ArrayList<>();
+        // NewISISrouterOps = new ArrayList<>();
+
         for (var op: OpType.values()){
             if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isOSPFSetOp() || op.isOSPFUnsetOp()) OSPFOps.add(op);
             if (op.isZEBRASetOp() || op.isZEBRAUnsetOp() || op.isRIPSetOp() || op.isRIPUnsetOp()) RIPOps.add(op);
@@ -474,6 +542,16 @@ public enum OpType {
             if (op.isISISRouterOp() && op.isSetOp()) ISISRouterSetOps.add(op);
             if (op.isBABELIntfOp() && op.isSetOp()) BABELIntfSetOps.add(op);
             if (op.isBABELRouterOp() && op.isSetOp()) BABELRouterSetOps.add(op);
+
+            // if (op.isNewISISOp()) NewISISOps.add(op);
+            // if (op.isNewISISintfOp()) {
+            //     NewISISintfOps.add(op);
+            //     ISISIntfSetOps.add(op);
+            // }
+            // if (op.isNewISISrouterOp()) {
+            //     NewISISrouterOps.add(op);
+            //     ISISRouterSetOps.add(op);
+            // }
         }
     }
 

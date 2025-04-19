@@ -106,6 +106,38 @@ public class generate {
                 }
             }
         }
+
+        // //add all newISISop, include set and unset
+        // OpAnalysis intfctxopa = null;
+        // for(var opa : ctxOps){
+        //     if (opa.getOp().Type() == OpType.IntfName){
+        //         intfctxopa = opa;
+        //         break;
+        //     }
+        // }
+        // OpAnalysis routerctxopa = null;
+        // for(var opa : ctxOps){
+        //     if (opa.getOp().Type() == OpType.RISIS){
+        //         routerctxopa = opa;
+        //         break;
+        //     }
+        // }
+
+        // for(var newISISopType : OpType.NewISISOps){
+        //     OpAnalysis ctxOpa ;
+        //     if (OpType.NewISISintfOps.contains(newISISopType)){
+        //         ctxOpa = intfctxopa;
+        //     }
+        //     else if (OpType.NewISISrouterOps.contains(newISISopType)){
+        //         ctxOpa = routerctxopa;
+        //     }
+        //     else{
+        //         continue;
+        //     }
+        //     var op = genOpPass.genRanOpOfType(newISISopType);
+        //     var opa = OpAnalysis.of(op.getOpOspf(), ctxOpa);
+        //     if (opa != null && !controller.hasConfigOfOpa(opa)) controller.addConfig(opa, expandRatio - 1, expandRatio, expandRatio, expandRatio - 1, OpAnalysis.STATE.REMOVED, OpAnalysis.STATE.REMOVED);
+        // }
     }
 
     public static boolean skipCommands(OpType opType){
@@ -124,7 +156,7 @@ public class generate {
         //----------ISIS--------------
         if (generate.fastConvergence){
             switch (opType){
-                case IPROUTERISIS,NET,HELLOINTERVAL,HELLOMULTIPLIER,LSPGENINTERVAL,SPFINTERVAL
+                case IPROUTERISIS,NET,HELLOINTERVAL,HELLOMULTIPLIER,LSPGENINTERVAL,SPFINTERVAL,LSPMTU,SETOVERLOADBITONSTARTUP,SETOVERLOADBIT,ADVERTISEHIGHMETRIC
                         -> {return true;}
             }
         }

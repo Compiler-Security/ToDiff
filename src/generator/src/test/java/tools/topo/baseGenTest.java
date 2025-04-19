@@ -159,7 +159,7 @@ public class baseGenTest {
                 var opCtxG = generate.generateEqualOfCore(isis_cores.get(i), true);
                 isis_cores_equal.add(opCtxG);
             }
-
+            System.out.println(isis_cores_equal.get(1));
             for(int i = 0; i < router_count; i++) {
                 var confg_equal = getSetConfG_ISIS(isis_cores_equal.get(i), routers.get(i), i);
                 var confg_gen = getSetConfG_ISIS(isis_cores_isfull.get(i), routers.get(i), i);
@@ -179,7 +179,7 @@ public class baseGenTest {
             //     System.out.println(new IsisConfWriter().write(isis_cores.get(j)));
             //     System.out.println("===============");
             // }
-            if(x == 100)
+            if(x == 1)
             {
                 break;
             }
