@@ -115,6 +115,23 @@ public class UnsetRedexDef extends BaseRedexDef{
                 {NOISISPRIORITY, new OpType[]{ISISPRIORITY}},
                 {NOPSNPINTERVAL, new OpType[]{PSNPINTERVAL}},
                 {THREEWAYHANDSHAKE, new OpType[]{NOTHREEWAYHANDSHAKE}},
+                
+                {NOADVERTISEPASSIVEONLY, new OpType[]{ADVERTISEPASSIVEONLY}},
+                {NOLSPREFRESHINTERVAL, new OpType[]{LSPREFRESHINTERVAL}},
+                {NOMAXLSPLIFETIME, new OpType[]{MAXLSPLIFETIME}},
+                {NOSPFPREFIXPRIORITY, new OpType[]{SPFPREFIXPRIORITY}},
+                {NOFRPRIORITYLIMIT, new OpType[]{FRPRIORITYLIMIT}},
+                {NOFRLFATIEBREAKER, new OpType[]{FRLFATIEBREAKER}},
+                {NOFRLOADSHARINGDISABLE, new OpType[]{FRLOADSHARINGDISABLE}},
+                {NOFRREMOTELFAPREFIXLIST, new OpType[]{FRREMOTELFAPREFIXLIST}},
+                {NOREDISTRIBUTETABLE, new OpType[]{REDISTRIBUTETABLE}},
+                {NOATTACHEDBIT, new OpType[]{ATTACHEDBIT}},
+                {NOMETRICSTYLE, new OpType[]{METRICSTYLE}},
+                {NOISISPASSWORD, new OpType[]{ISISPASSWORD}},
+                {NOISISFRLFA, new OpType[]{ISISFRLFA}},
+                {NOISISFRREMOTELFATUNNEL, new OpType[]{ISISFRREMOTELFATUNNEL}},
+                {NOISISFRREMOTELFAMAXMETRIC, new OpType[]{ISISFRREMOTELFAMAXMETRIC}},
+                {NOISISFRTILFA, new OpType[]{ISISFRTILFA}},
 
                 //=======================BABEL=============================
                 {NORBABEL, new OpType[]{RBABEL}},

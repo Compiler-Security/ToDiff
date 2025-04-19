@@ -195,6 +195,7 @@ public class LexDef {
                 // ---region----
                 {ISTYPE, "is-type {NAME(level-1,level-1-2,level-2-only)}"},
 
+
                 // -----interface----
                 {IPROUTERISIS, "ip router isis 1"},
                 {CIRCUITTYPE, "isis circuit-type {NAME(level-1,level-1-2,level-2)}"},
@@ -209,6 +210,24 @@ public class LexDef {
                 {ISISPRIORITY, "isis priority {NUM(0-127)} {NAME(level-1,level-2,_)}"},
                 {PSNPINTERVAL, "isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2,_)}"},
                 {THREEWAYHANDSHAKE, "isis three-way-handshake"},
+                
+                //new
+                {ADVERTISEPASSIVEONLY,"advertise-passive-only"},
+                {LSPREFRESHINTERVAL,"lsp-refresh-interval {NAME(level-1,level-2)} {NUM(1-65235)}"},
+                {MAXLSPLIFETIME,"max-lsp-lifetime {NAME(level-1,level-2)} {NUM(350-65535)}"},    
+                {SPFPREFIXPRIORITY,"spf prefix-priority {NAME(critical,high,medium)} 1"},
+                {FRPRIORITYLIMIT, "fast-reroute priority-limit {NAME(critical,high,medium)} {NAME2(level-1,level-2)}"},
+                {FRLFATIEBREAKER,"fast-reroute lfa tiebreaker {NAME(downstream,lowest-backup-metric,node-protecting)} index {NUM(1-255)} {NAME2(level-1,level-2)}"},
+                {FRLOADSHARINGDISABLE,"fast-reroute load-sharing disable {NAME(level-1,level-2)}"},
+                {FRREMOTELFAPREFIXLIST,"fast-reroute remote-lfa prefix-list {NAME(level-1,level-2)}"},
+                {REDISTRIBUTETABLE,"redistribute {NAME(ipv4,ipv6)} table {NUM(1-65535)} {NAME2(level-1,level-2)} metric {NUM2(0-16777215)}"},
+                {ATTACHEDBIT, "attached-bit send"},
+                {METRICSTYLE, "metric-style {NAME(narrow,transition,wide)}"},
+                {ISISPASSWORD,"isis password {NAME(clear,md5)} 123"},
+                {ISISFRLFA, "isis fast-reroute lfa {NAME(level-1,level-2)}"},
+                {ISISFRREMOTELFATUNNEL, "isis fast-reroute remote-lfa tunnel mpls-ldp {NAME(level-1,level-2)}"},
+                {ISISFRREMOTELFAMAXMETRIC, "isis fast-reroute remote-lfa maximum-metric {NUM(1-16777215)} {NAME(level-1,level-2)}"},
+                {ISISFRTILFA, "isis fast-reroute ti-lfa {NAME(level-1,level-2)} node-protection"},
 
                 // no isis
                 {NORISIS, "no router isis 1"},
@@ -236,6 +255,25 @@ public class LexDef {
                 {NOISISPRIORITY, "no isis priority {NUM(0-127)} {NAME(level-1,level-2,_)}"},
                 {NOPSNPINTERVAL, "no isis psnp-interval {NUM(1-120)} {NAME(level-1,level-2,_)}"},
                 {NOTHREEWAYHANDSHAKE, "no isis three-way-handshake"},
+
+                //new
+                {NOADVERTISEPASSIVEONLY,"no advertise-passive-only"},
+                {NOLSPREFRESHINTERVAL,"no lsp-refresh-interval {NAME(level-1,level-2)} {NUM(1-65235)}"},
+                {NOMAXLSPLIFETIME,"no max-lsp-lifetime {NAME(level-1,level-2)} {NUM(350-65535)}"},    
+                {NOSPFPREFIXPRIORITY,"no spf prefix-priority {NAME(critical,high,medium)} 1"},
+                {NOFRPRIORITYLIMIT, "no fast-reroute priority-limit {NAME(critical,high,medium)} {NAME2(level-1,level-2)}"},
+                {NOFRLFATIEBREAKER,"no fast-reroute lfa tiebreaker {NAME(downstream,lowest-backup-metric,node-protecting)} index {NUM(1-255)} {NAME2(level-1,level-2)}"},
+                {NOFRLOADSHARINGDISABLE,"no fast-reroute load-sharing disable {NAME(level-1,level-2)}"},
+                {NOFRREMOTELFAPREFIXLIST,"no fast-reroute remote-lfa prefix-list {NAME(level-1,level-2)}"},
+                {NOREDISTRIBUTETABLE,"no redistribute {NAME(ipv4,ipv6)} table {NUM(1-65535)} {NAME2(level-1,level-2)} metric {NUM2(0-16777215)}"},
+                {NOATTACHEDBIT, "no attached-bit send"},
+                {NOMETRICSTYLE, "no metric-style {NAME(narrow,transition,wide)}"},
+                {NOISISPASSWORD,"no isis password {NAME(clear,md5)} 123"},
+                {NOISISFRLFA, "no isis fast-reroute lfa {NAME(level-1,level-2)}"},
+                {NOISISFRREMOTELFATUNNEL, "no isis fast-reroute remote-lfa tunnel mpls-ldp {NAME(level-1,level-2)}"},
+                {NOISISFRREMOTELFAMAXMETRIC, "no isis fast-reroute remote-lfa maximum-metric {NUM(1-16777215)} {NAME(level-1,level-2)}"},
+                {NOISISFRTILFA, "no isis fast-reroute ti-lfa {NAME(level-1,level-2)} node-protection"},
+
 
                 {RBABEL, "router babel"},
                 //FIXME is there babel id?
