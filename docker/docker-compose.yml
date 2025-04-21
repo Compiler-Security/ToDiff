@@ -62,7 +62,6 @@ services:
         - build_mode=interested
         - frr_check=false
         - nproc=16
-        - proxy=http://172.25.199.240:7890
       ulimits:
         nofile:
           soft: 2048  # Soft limit
@@ -87,7 +86,6 @@ services:
         - build_mode=interested
         - frr_check=false
         - nproc=16
-        - proxy=http://172.25.199.240:7890
       ulimits:
         nofile:
           soft: 2048  # Soft limit

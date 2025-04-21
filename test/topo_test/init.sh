@@ -1,4 +1,4 @@
-backdir=backup/$(date +"%Y-%m-%d_%H-%M-%S")
+backdir=data/backup/$(date +"%Y-%m-%d_%H-%M-%S")
 mkdir -p $backdir
 sudo cp -r data/result $backdir/result
 sudo cp -r data/running $backdir/running

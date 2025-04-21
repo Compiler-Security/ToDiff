@@ -157,8 +157,11 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 .idea/
 
+
 *.txt
-^docker/requirements.txt
+!docker/requirements.txt
+!evaluate/coverage/topo_related_function_isis.txt
+!evaluate/coverage/topo_related_function_ospf.txt
 
 .vscode/
 

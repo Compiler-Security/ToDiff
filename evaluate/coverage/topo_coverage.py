@@ -40,10 +40,14 @@ def coverage_calc(coverage_dir, source_file, func_list_path, item):
 
 #ISIS TODiff
 coverage_file = f"{coverage_dir}/todiff/isis/"
-source_file = "/home/frr/frr/isisd/isis_vty.c"
+source_file = "/home/frr/frr/isisd/isis_nb_config.c"
 func_list_path = f"{coverage_dir}/topo_related_function_isis.txt"
 coverage_calc(coverage_file, source_file, func_list_path, "ToDiff ISIS")
 
+coverage_file = f"{coverage_dir}/topotests/isis/"
+source_file = "/home/frr/frr/isisd/isis_nb_config.c"
+func_list_path = f"{coverage_dir}/topo_related_function_isis.txt"
+coverage_calc(coverage_file, source_file, func_list_path, "TopoTests ISIS")
 #######OSPF TopoTests#########
 # coverage_file = f"{coverage_dir}/topotests/ospf/"
 # source_file = "/home/frr/frr/ospfd/ospf_vty.c"

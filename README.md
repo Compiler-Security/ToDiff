@@ -2,6 +2,11 @@
 
 Todiff is a prototype implementation of the technique know as ToDiff. It aims to validate IGP protocols via equivalent topology synthesis.
 
+
+## Install
+```bash
+$ apt install lcov
+```
 ## Build
 ```bash
     sh build_test.sh

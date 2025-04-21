@@ -121,7 +121,7 @@ RUN cd && pwd && ls -al && git clone https://github.com/Shbinging/frr.git
 #checkout frr to interested commit
 RUN cd /home/frr/frr && \
     git fetch --all && \
-    git checkout -b fix_zebra_redistribute_delete origin/fix_zebra_redistribute_delete
+    git checkout -b coverage origin/coverage
 
 #build and install frr to /usr/lib/frr
 RUN cd /home/frr/frr && \

@@ -118,11 +118,13 @@ class toDiffTest():
     
     def collect(self):
         if self.protocol == "OSPF":
+            util.test_container_cmd(f"sh -c 'cd /home/frr/topo-fuzz && sh link_gcno.bash /home/frr/topo-fuzz/test/topo_test/data/coverage/ospfd /home/frr/frr/ospfd'")
             util.test_container_cmd("sh -c 'cd /home/frr/topo-fuzz/test/topo_test/data/coverage/ospfd && lcov --capture --directory . --output-file coverage.info'")
             util.test_container_cmd("sh -c 'cd /home/frr/topo-fuzz/test/topo_test/data/coverage/ospfd && genhtml coverage.info --output-directory out'")
             os.system(f"sudo docker cp docker_topo-fuzz-test_1:/home/frr/topo-fuzz/test/topo_test/data/coverage/ospfd/coverage.info {coverage_dir}/todiff/ospf/coverage_{self.id}.info")
             os.system(f"sudo docker cp docker_topo-fuzz-test_1:/home/frr/topo-fuzz/test/topo_test/data/coverage/ospfd/out {coverage_dir}/todiff/ospf/out_{self.id}")
         else:
+            util.test_container_cmd(f"sh -c 'cd /home/frr/topo-fuzz && sh link_gcno.bash /home/frr/topo-fuzz/test/topo_test/data/coverage/isisd /home/frr/frr/isisd'")
             util.test_container_cmd("sh -c 'cd /home/frr/topo-fuzz/test/topo_test/data/coverage/isisd && lcov --capture --directory . --output-file coverage.info'")
             util.test_container_cmd("sh -c 'cd /home/frr/topo-fuzz/test/topo_test/data/coverage/isisd && genhtml coverage.info --output-directory out'")
             os.system(f"sudo docker cp docker_topo-fuzz-test_1:/home/frr/topo-fuzz/test/topo_test/data/coverage/isisd/coverage.info {coverage_dir}/todiff/isis/coverage_{self.id}.info")
@@ -143,8 +145,8 @@ class topoTestsTest():
         self.protocol = protocol
     def prepare(self):
         pass
-    ospf_test_cases = ["ospf_topo1", "ospf_topo2"]
-    isis_test_cases = ["isis_topo1"]
+    ospf_test_cases = ["ospf_test_suite_1", "ospf_test_suite_2"]
+    isis_test_cases = ["isis_test_suite"]
     
     def test(self):
         if self.protocol == "OSPF":
@@ -195,10 +197,14 @@ class fuzzingTest():
             data_dir = f"{coverage_dir}/ossfuzz/isis"
         return calc_coverage(self.protocol, data_dir)
 #init()
-t = toDiffTest(0, "ISIS")
-t.prepare()
-t.test()
-t.collect()
+for i in range(1, 10):
+    t = toDiffTest(i, "ISIS")
+    #print(t.calc())
+    t.prepare()
+    t.test()
+    t.collect()
+# for f in util.extract_live_functions_for_file("/home/bingshui/topo-fuzz/evaluate/coverage/todiff/isis/coverage_0.info", "/home/frr/frr/isisd/isis_nb_config.c"):
+#     print(f)
 # t.collect()
 #t = toDiffTest(0, "ISIS")
 #t = toDiffTest(0, "OSPF")
