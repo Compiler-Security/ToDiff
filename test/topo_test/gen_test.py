@@ -20,4 +20,5 @@ def genTestCases(test_num):
         _run_test_sh(f"run_generator.sh {protocol} {router_count} {mx_degree}")
 
 if __name__ == "__main__":
+    
     genTestCases(test_num)

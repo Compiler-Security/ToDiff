@@ -52,7 +52,8 @@ def launch_test(testName, idx):
 
 def worker_test(testNames, idx):
     for testName in testNames:
-        print(f"+test {testName} start")
+        #launchTestContainers(idx)
+        print(f"+test {testName} start {idx}")
         result = launch_test(testName, idx)
         with open(path.join(dataDir, "data", "running", testName.replace("json", "txt")), "w") as fp:
             fp.write(result.stdout)
@@ -110,12 +111,16 @@ def test():
     print(test_confs)
     #   3.split all confs by grid
     worker_length = len(test_confs) // gridNum
-    worker_test_confs = []
-    for i in range(0, gridNum):
-        if i == gridNum - 1:
-            worker_test_confs.append(test_confs[i * worker_length:])
-        else:
-            worker_test_confs.append(test_confs[i * worker_length:(i + 1) * worker_length])
+    worker_test_confs = [[] for i in range(0, gridNum)]
+    print(worker_test_confs)
+    for i in range(0, len(test_confs)):
+        worker_test_confs[i % gridNum].append(test_confs[i])
+    print(worker_test_confs)
+    # for i in range(0, gridNum):
+    #     if i == gridNum - 1:
+    #         worker_test_confs.append(test_confs[i * worker_length:])
+    #     else:
+    #         worker_test_confs.append(test_confs[i * worker_length:(i + 1) * worker_length])
     
     #test
     #   1.prepare threads

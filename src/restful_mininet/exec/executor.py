@@ -586,6 +586,7 @@ class executor:
             "babel": self._run_for_babel
         }
         try:
+            os.system("mn -c")
             res = {}
             start = time.time()
             res['result'] = []

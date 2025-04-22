@@ -197,7 +197,7 @@ class fuzzingTest():
             data_dir = f"{coverage_dir}/ossfuzz/isis"
         return calc_coverage(self.protocol, data_dir)
 #init()
-for i in range(1, 10):
+for i in range(8, 10):
     t = toDiffTest(i, "ISIS")
     #print(t.calc())
     t.prepare()
