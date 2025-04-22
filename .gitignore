@@ -172,3 +172,5 @@ test/topo_test/data
 test/manul/frr_conf/*/conf
 test/manul/frr_conf/*/log
 test/manul/log/
+
+evaluate/
