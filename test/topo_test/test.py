@@ -14,7 +14,7 @@ def safe_print(*args, **kwargs):
 up = path.dirname
 
 # Determine directories
-dockerDir = up(up(up(path.abspath(__file__))))  # topo-fuzz/
+dockerDir = path.join(up(up(up(path.abspath(__file__)))), "script")  # topo-fuzz/
 dataDir = up(path.abspath(__file__))            # topo-fuzz/test/topo_test/
 
 def getContainerName(num):

@@ -1,1 +1,0 @@
-sudo docker-compose -f docker/docker-compose.yml up --scale topo-fuzz-test=$1 -d topo-fuzz-test 

@@ -1,1 +1,0 @@
-sudo docker-compose -f docker/docker-compose.yml rm topo-fuzz-test

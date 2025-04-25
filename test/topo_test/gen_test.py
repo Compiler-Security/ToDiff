@@ -6,7 +6,7 @@ import argparse
 up = path.dirname
 
 # Define paths
-dockerDir = up(up(up(path.abspath(__file__))))  # Path to topo-fuzz/
+dockerDir = path.join(up(up(up(path.abspath(__file__)))), "script")  # Path to topo-fuzz/
 dataDir = up(path.abspath(__file__))            # Path to topo-fuzz/test/topo_test/
 
 def _run_test_sh(cmd):
