@@ -37,80 +37,139 @@ $ cd topo-fuzz
 ```
 
 
+
 ## Run
+
 ### Overview
-ToDiff has three testing steps:
 
-**Step 1**: Generate valid yet radom topology and correspoding equivalent topological programs.
+ToDiff performs differential testing in three steps:
 
-**Step 2**: Simulate the network, input topological programs to routing protocol implementation, and collect running output.
+**Step 1**: Generate valid yet random topologies along with their corresponding equivalent topological programs.
 
-**Step 3**: Differentiaing the output and anlysis the root cause of discrepancies.
+**Step 2**: Simulate the network, inject the topological programs into routing protocol implementations, and collect the execution output.
 
-These three steps are implemented to three tools separetely: generator, executor and checker.
+**Step 3**: Compare the outputs and analyze the root causes of any discrepancies.
 
-Next, we use testing OSPF protocol as an example, to show how to use these three tools to validate IGPs.
+These steps are handled by three separate components: `generator`, `executor`, and `checker`.
+
+We demonstrate the full workflow using the OSPF protocol as an example.
+
+---
 
 ## Initialization
-Before testing, one should first create directories for testing.
+
+Before running tests, create the necessary testing directories:
+
 ```bash
 $ cd topo-fuzz/test/topo_test
 $ sh init.sh
 ```
-This script will create testing directories located in `test/topo_test/data` with the following stuctre.
+
+This script creates a directory structure under `test/topo_test/data` as follows:
+
 ```
 data/
-   |-- testConf/ # output of generator
-   |-- running/ # running information of executor
-   |-- result/ # output of executor
-   |-- check/ # output of checker
+├── testConf/   # output from the generator
+├── running/    # intermediate data from the executor
+├── result/     # execution output from the executor
+└── check/      # discrepancy reports from the checker
 ```
 
-Then, one should build the test environment, which are docker container.
+Next, build the Docker-based testing environment:
+
 ```bash
 $ cd topo-fuzz
 $ sh build_test.sh
 ```
 
-## Step 1: Run generator
-The first step is to generate radom yet valid topology and corresponding equivalent topological programs using generator.
+---
 
-The generator is implemented using JAVA language and the source code is located in src/generator directory.
+## Step 1: Run Generator
 
-### How to run
+This step uses the `generator` (written in Java) to generate random yet valid topologies and corresponding equivalent topological programs. The source code is located in `src/generator`.
+
+### How to Run
+
 ```bash
 $ cd topo-fuzz/test/topo_test
 $ python3 gen_test.py --protocol ospf
 ```
-One can use `--help` arg to show all the arguments that can be passed to `gen_test.py`
 
-### Output 
-The output of generator are test cases located in `testConf` directory. Each test case(`testXXX.json`) contains one topology and multiple equivalent topological programs. These test cases are then input to executor for testing.
+Use `--help` to view all available options for `gen_test.py`.
 
-The test cases are encoded in sepecific json format and one can get the detailed information of the format in the developer document. We provide tool to read these test cases easily, see Step 3. 
+### Output
 
+The generator outputs test cases in the `testConf/` directory. Each file (e.g., `testXXX.json`) contains a single topology and multiple equivalent programs. These will be passed to the executor in the next step.
 
-## Step 2: Run 
+Each test case follows a specific JSON format. Detailed documentation is available in the developer guide. For easier inspection, you can use `humanread.py` (see Step 3).
+
+---
+
+## Step 2: Run Executor
+
+This step simulates the network defined by each test case, runs the topological programs on the routing protocol implementation, and records the output after convergence.
+
+The executor is based on the Mininet framework and is implemented in Python (`src/restful_minient`). It runs in parallel using Docker containers.
+
+### How to Run
+
 ```bash
-    sh build_test.sh
-```
-One should update proxy in `docker/docker-compose.yml`
-## Test
-
-### Step1: generate equivalent topological program
-```bash 
-    sh test/topo-test/init.sh
-    python3 test/topo_test/gen_test.py
-``` 
-
-## Step2: simulate network
-```bash
-    python3 test/topo-test/test.py
+$ cd topo-fuzz/test/topo_test
+$ python3 test.py --protocol=ospf --grid_num=10
 ```
 
-## Step3: differentiating results
+- `--grid_num` specifies the number of test cases to run in parallel.
+- Use `--help` to list all supported arguments.
+
+### Output
+
+Execution results are saved in the `data/result/` directory. Each result file is a JSON document representing the protocol's output for a specific test case.
+
+---
+
+## Step 3: Run Checker
+
+This step compares the outputs of equivalent programs and identifies discrepancies. The checker is implemented in Python at `test/topo_test/checker/diffTest.py`.
+
+### How to Run
+
 ```bash
-    python3 test/topo-test/checker/diffTest.py
+$ cd topo-fuzz/test/topo_test/checker
+$ python3 diffTest.py --protocol=ospf
 ```
 
-The results are in the test/topo-test/checker/data/check/diff
+Results are saved in `test/topo_test/data/check/diff/`, with each result file named like `testXXX.json.txt`.
+
+Each file compares the outputs of all equivalent programs against the first one, router by router. Example output:
+
+```
+====== round 1 ======
+>>>>> +check check_ospfDaemon <<<<<
+----- router r0 -----
+{
+    "areas": {
+        "0.0.0.2": {
+            "lsaSummaryNumber": {
+                "from": 23,
+                "to": 26
+            }
+        }
+    }
+}
+```
+
+In this example, the `lsaSummaryNumber` field under `ospfDaemon` differs between the first and second topological programs.
+
+For root cause analysis, you may use a program slicer to trace the relevant variable and execution path. Debug the two executions step-by-step to locate where internal states start to diverge.
+
+---
+
+### Auxiliary Scripts
+
+Several helper scripts are available for analysis:
+
+- `humanread.py`: Converts test cases from JSON to human-readable `.txt` format.  
+  Path: `test/topo_test/checker/humanread.py`
+
+- `shrinktest.py`: Extracts specific topological programs from a test case for focused analysis.  
+  Path: `test/topo_test/checker/shrinktest.py`

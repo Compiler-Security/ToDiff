@@ -1,87 +1,103 @@
 import os
+import subprocess
+import threading
+import argparse
 from os import path
+import threading
+
+print_lock = threading.Lock()
+
+def safe_print(*args, **kwargs):
+    with print_lock:
+        print(*args, **kwargs)
+# Directory helper
 up = path.dirname
 
-#topo-fuzz/
-dockerDir = up(up(up(path.abspath(__file__))))
-#topo-fuzz/test/topo_test/
-dataDir = up(path.abspath(__file__))
-
-gridNum = 10
-mxWaitTime = 600
-minWaitTime = 30
-protocol = "ospf"
+# Determine directories
+dockerDir = up(up(up(path.abspath(__file__))))  # topo-fuzz/
+dataDir = up(path.abspath(__file__))            # topo-fuzz/test/topo_test/
 
 def getContainerName(num):
     return f"docker_topo-fuzz-test_{num}"
-
 
 def _run_test_sh(cmd):
     os.chdir(dockerDir)
     return os.system(f"sh {cmd}")
 
 def buildTestContainers():
-    assert  _run_test_sh(f"build_test.sh")== 0, "buildContainers fail"
+    assert _run_test_sh("build_test.sh") == 0, "Building containers failed."
 
 def launchTestContainers(grid):
-    assert _run_test_sh(f"stop_test.sh")== 0, "runContainers fail"
-    assert _run_test_sh(f"run_test.sh {grid}")== 0, "runContainers fail"
+    assert _run_test_sh("stop_test.sh") == 0, "Stopping containers failed."
+    assert _run_test_sh(f"run_test.sh {grid}") == 0, "Launching containers failed."
 
 def getAllConfs():
     confDir = path.join(dataDir, "data", "testConf")
     return os.listdir(confDir)
 
-def choseConf(confName):
-    timeidx = int(confName.split(".")[0][4:])
-    return timeidx > 1726732934
+def choseConf(confName, threshold):
+    try:
+        timeidx = int(confName.split(".")[0][4:])
+        return timeidx > threshold
+    except Exception:
+        return False  # Skip malformed file names
 
-import subprocess
-def launch_test(testName, idx):
-    #FIXME the PATH should be relative
-    command = f"docker exec -it docker_topo-fuzz-test_{idx} python3 topo-fuzz/src/restful_mininet/main.py -t /home/frr/topo-fuzz/test/topo_test/data/testConf/{testName} -o /home/frr/topo-fuzz/test/topo_test/data/result -w {mxWaitTime} -m {minWaitTime} -p {protocol}"
+def launch_test(testName, idx, mxWaitTime, minWaitTime, protocol):
+    command = (
+        f"docker exec -it docker_topo-fuzz-test_{idx} "
+        f"python3 topo-fuzz/src/restful_mininet/main.py "
+        f"-t /home/frr/topo-fuzz/test/topo_test/data/testConf/{testName} "
+        f"-o /home/frr/topo-fuzz/test/topo_test/data/result "
+        f"-w {mxWaitTime} -m {minWaitTime} -p {protocol}"
+    )
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
     return result
 
-def worker_test(testNames, idx):
+def worker_test(testNames, idx, mxWaitTime, minWaitTime, protocol):
     for testName in testNames:
-        print(f"+test {testName} start")
-        result = launch_test(testName, idx)
+        safe_print(f"[Container {idx}] + Test {testName} started".ljust(80))
+        result = launch_test(testName, idx, mxWaitTime, minWaitTime, protocol)
         with open(path.join(dataDir, "data", "running", testName.replace("json", "txt")), "w") as fp:
             fp.write(result.stdout)
             fp.write("\n")
             fp.write(result.stderr)
-        print(f"-test {testName} done")
-        #TODO handle result
+        safe_print(f"[Container {idx}] - Test {testName} completed".ljust(80))
 
-import threading
 if __name__ == "__main__":
-    #prepare for test
-    #   1.run test containers
+    parser = argparse.ArgumentParser(description="Run distributed topology tests in Docker containers.")
+    parser.add_argument('--grid_num', type=int, default=10, help='Number of parallel test containers')
+    parser.add_argument('--mx_wait', type=int, default=600, help='Maximum wait time for each test')
+    parser.add_argument('--min_wait', type=int, default=30, help='Minimum wait time before result checking')
+    parser.add_argument('--protocol', type=str, default='ospf', help='Routing protocol:[ospf, isis, rip, babel, openfabric]')
+    parser.add_argument('--timestamp_threshold', type=int, default=1726732934, help='Only run tests created after this timestamp')
+
+    args = parser.parse_args()
+
+    # Step 1: Prepare test containers
     buildTestContainers()
-    launchTestContainers(gridNum)
-    #   2.get all test confs
-    test_confs = [conf for conf in getAllConfs() if choseConf(conf) == True]
-    print(test_confs)
-    #   3.split all confs by grid
-    worker_length = len(test_confs) // gridNum
-    worker_test_confs = []
-    for i in range(0, gridNum):
-        if i == gridNum - 1:
-            worker_test_confs.append(test_confs[i * worker_length:])
-        else:
-            worker_test_confs.append(test_confs[i * worker_length:(i + 1) * worker_length])
-    
-    #test
-    #   1.prepare threads
+    launchTestContainers(args.grid_num)
+
+    # Step 2: Collect and filter test configs
+    test_confs = [conf for conf in getAllConfs() if choseConf(conf, args.timestamp_threshold)]
+    print(f"Total selected test cases: {len(test_confs)}")
+
+    # Step 3: Divide test configs among containers
+    worker_length = len(test_confs) // args.grid_num
+    worker_test_confs = [[] for _ in range(args.grid_num)]
+    for i, conf in enumerate(test_confs):
+        worker_test_confs[i % args.grid_num].append(conf)
+
+    # Step 4: Launch threads for each container
     threads = []
-    for i in range(0, gridNum):
-        thread = threading.Thread(target=worker_test, args=[worker_test_confs[i], i + 1])
+    for i in range(args.grid_num):
+        thread = threading.Thread(
+            target=worker_test,
+            args=(worker_test_confs[i], i + 1, args.mx_wait, args.min_wait, args.protocol)
+        )
         threads.append(thread)
-    #   2.launch threads
+
     for thread in threads:
         thread.start()
-    #   3. join threads
+
     for thread in threads:
         thread.join()
-
- #docker exec -it docker_topo-fuzz-test_1 python3 topo-fuzz/src/restful_mininet/main.py -t /home/frr/topo-fuzz/test/excutor_test/frr_conf/all8.conf -o /home/frr/topo-fuzz/test/excutor_test/frr_conf/tmp -w 3
