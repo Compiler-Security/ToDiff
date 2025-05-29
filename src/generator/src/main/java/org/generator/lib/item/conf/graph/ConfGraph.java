@@ -287,6 +287,10 @@ public class ConfGraph extends AbstractRelationGraph {
         return getEdgesByType(nodes, typ).stream().map(s -> (T) s.getDst()).collect(Collectors.toSet());
     }
 
+    public <T> T getDstByType(String nodes, RelationEdge.EdgeType typ) {
+        return getEdgesByType(nodes, typ).stream().map(s -> (T) s.getDst()).findFirst().get();
+    }
+
     public List<Switch> getSwitches() {
         return getNodes().stream().filter(node -> node.getNodeType() == NodeType.Switch).map(node -> (Switch) node)
                 .collect(Collectors.toList());
@@ -298,6 +302,25 @@ public class ConfGraph extends AbstractRelationGraph {
 
     public Set<Intf> getIntfsOfRouter(String r_name) {
         return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF);
+    }
+
+    public Intf getDstIntfOfIntf(String intf_name) {
+        return this.<Intf>getDstsByType(intf_name, RelationEdge.EdgeType.LINK).stream().findFirst().get();
+    }
+
+    public Switch getSwitchOfRIntf(String intf_name) {
+        for (var s_intf_link : this.<Intf>getDstsByType(intf_name, RelationEdge.EdgeType.LINK)) {
+            return this.<Switch>getDstsByType(s_intf_link.getName(), RelationEdge.EdgeType.PhyNODE).stream().findFirst().get();
+        }
+        return null;
+    }
+
+    public Set<Intf> getRIntfOfSwitch(String s_name) {
+        return getIntfsOfRouter(s_name).stream().map(s_intf-> getDstIntfOfIntf(s_intf.getName())).collect(Collectors.toSet());
+    }
+
+    public Set<Intf> getDstRIntfsOfRIntf(String intf_name) {
+        return getRIntfOfSwitch(getSwitchOfRIntf(intf_name).getName()).stream().filter(intf -> !intf.getName().equals(intf_name)).collect(Collectors.toSet());
     }
 
     public Intf getIntf(String nodeName) {
