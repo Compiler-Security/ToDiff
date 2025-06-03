@@ -2,6 +2,7 @@ package org.generator.lib.topo.item.base;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,5 +25,18 @@ public class Router {
 
     public List<Intf> getUnconnectedIntfsOfArea(int area){
         return getIntfsOfArea(area).stream().filter(intf-> intf.networkId == -1).collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Router router = (Router) o;
+        return id == router.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
