@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Router {
-    int id;
+    public int id;
     public List<Intf> intfs;
     public boolean abr;
     public Router(int id){

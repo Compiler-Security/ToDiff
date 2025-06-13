@@ -8,4 +8,5 @@ public class Intf{
     public Intf(){
         networkId = -1;
     }
+
 }
