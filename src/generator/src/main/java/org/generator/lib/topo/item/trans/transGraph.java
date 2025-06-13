@@ -29,6 +29,17 @@ public class transGraph {
         }
     }
 
+    public void removeRouter(Router router){
+        routers.remove(router);
+    }
+    public Integer getNewNetworkId(){
+        return ++networkId;
+    }
+
+    public Router getNewRouter(){
+        return new Router(++id);
+    }
+
     public List<Intf> getLinkedIntfs(Intf intf){
         return networkToIntf.get(intf.networkId).stream().filter(i -> intfToRouter.get(i).equals(intfToRouter.get(intf))).toList();
     }
@@ -53,6 +64,9 @@ public class transGraph {
         return networkToIntf.get(networkId).stream().toList();
     }
 
+    public Router getRouterOfIntf(Intf intf){
+        return intfToRouter.get(intf);
+    }
 
     public Router addRouter(){
         var r = new Router(++id);
