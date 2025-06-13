@@ -23,6 +23,13 @@ public class OSPFAreaSum extends AbstractNode {
     public static class OSPFAreaSumEntry{
         public OSPFAreaSumEntry(){
         }
+
+        public OSPFAreaSumEntry(OSPFAreaSumEntry _entry){
+            range = _entry.range;
+            advertise = _entry.advertise;
+            cost = _entry.cost;
+            substitute = _entry.substitute;
+        }
         void initField(){
             //TODO other fields
             setAdvertise(true);
@@ -173,6 +180,19 @@ public class OSPFAreaSum extends AbstractNode {
         virtualLink = null;
         sumEntries = new HashMap<>();
         area = null;
+    }
+
+    public void copyFrom(OSPFAreaSum _ospfAreaSum){
+        shortcut = _ospfAreaSum.shortcut;
+        stub = _ospfAreaSum.stub;
+        nosummary = _ospfAreaSum.nosummary;
+        nssa = _ospfAreaSum.nssa;
+        virtualLink = _ospfAreaSum.virtualLink;
+        area = _ospfAreaSum.area;
+        sumEntries = new HashMap<>();
+        for(var item: _ospfAreaSum.sumEntries.entrySet()){
+            sumEntries.put(item.getKey(), new OSPFAreaSumEntry(item.getValue()));
+        }
     }
 
     /**

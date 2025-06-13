@@ -46,6 +46,12 @@ public class Intf extends AbstractNode {
         persudo = false;
     }
 
+    public void copyFrom(Intf _intf){
+        up = _intf.up;
+        ip = _intf.ip;
+        persudo = _intf.persudo;
+    }
+
 
     //    @Override
 //    public String getNodeAtrriStr() {

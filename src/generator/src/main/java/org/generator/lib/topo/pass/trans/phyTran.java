@@ -12,14 +12,14 @@ import java.util.*;
 public class phyTran {
 
     public static class deltaNodes {
-        List<Intf> newIntf, updateIntf;
-        List<Router> newRouter, updateRouter;
+        Set<Intf> newIntf, updateIntf;
+        Set<Router> newRouter, updateRouter;
 
         public deltaNodes() {
-            newIntf = new ArrayList<>();
-            newRouter = new ArrayList<>();
-            updateIntf = new ArrayList<>();
-            updateRouter = new ArrayList<>();
+            newIntf = new HashSet<>();
+            updateIntf = new HashSet<>();
+            newRouter = new HashSet<>();
+            updateRouter = new HashSet<>();
         }
 
         public boolean isNewIntf(Intf intf) {
@@ -28,6 +28,13 @@ public class phyTran {
 
         public boolean isNewRouter(Router router) {
             return newRouter.contains(router);
+        }
+
+        public void mergeDeltaNodes(deltaNodes _deltaNodes) {
+            newIntf.addAll(_deltaNodes.newIntf);
+            updateIntf.addAll(_deltaNodes.updateIntf);
+            newRouter.addAll(_deltaNodes.newRouter);
+            updateRouter.addAll(_deltaNodes.updateRouter);
         }
     }
 

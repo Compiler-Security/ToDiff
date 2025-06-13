@@ -66,6 +66,13 @@ public class OSPFDaemon extends AbstractNode {
         bufferrecv = 8 * 1024 * 1024;
     }
 
+    public void copyFrom(OSPFDaemon ospfDaemon){
+        maxPaths = ospfDaemon.maxPaths;
+        writemulti = ospfDaemon.writemulti;
+        socketPerInterface = ospfDaemon.socketPerInterface;
+        buffersend = ospfDaemon.buffersend;
+        bufferrecv = ospfDaemon.bufferrecv;
+    }
     //    @Override
 //    public String getNodeAtrriStr() {
 //        return "";

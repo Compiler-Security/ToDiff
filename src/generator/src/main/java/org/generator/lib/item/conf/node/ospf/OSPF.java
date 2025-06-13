@@ -136,4 +136,15 @@ public class OSPF extends AbstractNode {
         lsaRefreshTime = 10;//FIXME this default arg is not right
         lsaIntervalTime = 10;//FIXME this default arg is not right
     }
+
+    public void copyFrom(OSPF _ospf){
+        status = _ospf.status;
+        abrType = _ospf.abrType;
+        routerId = _ospf.routerId;
+        initDelay = _ospf.initDelay;
+        minHoldTime = _ospf.minHoldTime;
+        maxHoldTime = _ospf.maxHoldTime;
+        lsaRefreshTime = _ospf.lsaRefreshTime;
+        lsaIntervalTime = _ospf.lsaIntervalTime;
+    }
 }

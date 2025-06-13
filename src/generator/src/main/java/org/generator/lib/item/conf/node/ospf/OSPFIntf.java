@@ -150,6 +150,21 @@ public class OSPFIntf extends AbstractNode {
 
     }
 
+    public void copyFrom(OSPFIntf _ospfIntf){
+        passive = _ospfIntf.passive;
+        vrf = _ospfIntf.vrf;
+        cost = _ospfIntf.cost;
+        area = _ospfIntf.area;
+        helloInterval = _ospfIntf.helloInterval;
+        deadInterval = _ospfIntf.deadInterval;
+        retansInter = _ospfIntf.retansInter;
+        transDelay = _ospfIntf.transDelay;
+        helloMulti = _ospfIntf.helloMulti;
+        GRHelloDelay = _ospfIntf.GRHelloDelay;
+        netType = _ospfIntf.netType;
+        priority = _ospfIntf.priority;
+    }
+
     public int getPriority() {
         return priority;
     }
