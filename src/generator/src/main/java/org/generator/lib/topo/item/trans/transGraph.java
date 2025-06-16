@@ -17,7 +17,11 @@ public class transGraph {
         networkToIntf = new HashMap<>();
         for(var router: routers){
             if (router.id > id) id = router.id;
+            int i = 0;
             for(var intf: router.intfs){
+                if (intf.id != -1) i = intf.id;
+                else intf.id = i++;
+                intf.routerId = router.id;
                 if (intf.networkId  > networkId) networkId = intf.networkId;
                 intfToRouter.put(intf, router);
                 if (networkToIntf.containsKey(intf.networkId)){
@@ -75,7 +79,7 @@ public class transGraph {
     }
 
     public Intf addIntf(Router router){
-        var intf = new Intf();
+        var intf = new Intf(router.intfs.size(), router.id);
         intfToRouter.put(intf, router);
         router.intfs.add(intf);
         return intf;

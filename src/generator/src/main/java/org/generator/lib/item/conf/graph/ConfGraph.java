@@ -350,6 +350,19 @@ public class ConfGraph extends AbstractRelationGraph {
         return this.<OSPFDaemon>getDstsByType(ospf_name, RelationEdge.EdgeType.OSPFDAEMON).stream().findFirst().get();
     }
 
+    public OSPFIntf getOSPFIntfOfIntf(String intf_name) {
+        //FIXME intf may not have OSPF Intf
+        return this.<OSPFIntf>getDstsByType(intf_name, RelationEdge.EdgeType.OSPFINTF).stream().findFirst().get();
+    }
+
+    public List<Intf> getLinkedIntfsOfSwitch(String s_name) {
+        List<Intf> intfs = new ArrayList<>();
+        for(var intf: this.<Intf>getDstsByType(s_name, RelationEdge.EdgeType.INTF)){
+            intfs.addAll(this.<Intf>getDstsByType(intf.getName(), RelationEdge.EdgeType.LINK));
+        }
+        return intfs;
+    }
+
     // ------------------RIP---------------------------------
     public RIP getRipOfRouter(String r_name) {
         return this.<RIP>getDstsByType(r_name, RelationEdge.EdgeType.RIP).stream().findFirst().get();

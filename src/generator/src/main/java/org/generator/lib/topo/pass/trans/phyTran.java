@@ -1,7 +1,7 @@
 package org.generator.lib.topo.pass.trans;
 
 import org.generator.lib.generator.driver.generate;
-import org.generator.lib.item.conf.graph.ConfGraph;
+import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.topo.item.base.Intf;
 import org.generator.lib.topo.item.base.Router;
 import org.generator.lib.topo.item.trans.transGraph;
@@ -12,32 +12,69 @@ import java.util.*;
 public class phyTran {
 
     public static class deltaNodes {
-        Set<Intf> newIntf, updateIntf;
-        Set<Router> newRouter, updateRouter;
+        Set<String> newIntfName, updateIntfName;
+        Set<String> newRouterName, updateRouterName;
 
         public deltaNodes() {
-            newIntf = new HashSet<>();
-            updateIntf = new HashSet<>();
-            newRouter = new HashSet<>();
-            updateRouter = new HashSet<>();
+            newIntfName = new HashSet<>();
+            updateIntfName = new HashSet<>();
+            newRouterName = new HashSet<>();
+            updateRouterName = new HashSet<>();
         }
 
-        public boolean isNewIntf(Intf intf) {
-            return newIntf.contains(intf);
+        public void addNewIntf(Intf intf){
+            newIntfName.add(NodeGen.getIntfName(NodeGen.getRouterName(intf.routerId), intf.id));
         }
 
-        public boolean isNewRouter(Router router) {
-            return newRouter.contains(router);
+        public void addUpdateIntf(Intf intf){
+            updateIntfName.add(NodeGen.getIntfName(NodeGen.getRouterName(intf.routerId), intf.id));
+        }
+
+        public void addNewRouter(Router router){
+            newRouterName.add(NodeGen.getRouterName(router.id));
+        }
+
+        public void addUpdateRouter(Router router){
+            newRouterName.add(NodeGen.getRouterName(router.id));
+        }
+
+        public boolean isNewIntf(String intf_name) {
+            return newIntfName.contains(intf_name);
+        }
+
+        public boolean isUpdateIntf(String intf_name) {
+            return updateIntfName.contains(intf_name);
+        }
+
+        public boolean isNewRouter(String router_name) {
+            return newRouterName.contains(router_name);
+        }
+
+        public boolean isUpdateRouter(String router_name) {
+            return updateRouterName.contains(router_name);
         }
 
         public void mergeDeltaNodes(deltaNodes _deltaNodes) {
-            newIntf.addAll(_deltaNodes.newIntf);
-            updateIntf.addAll(_deltaNodes.updateIntf);
-            newRouter.addAll(_deltaNodes.newRouter);
-            updateRouter.addAll(_deltaNodes.updateRouter);
+            newIntfName.addAll(_deltaNodes.newIntfName);
+            updateIntfName.addAll(_deltaNodes.updateIntfName);
+            newRouterName.addAll(_deltaNodes.newRouterName);
+            updateRouterName.addAll(_deltaNodes.updateRouterName);
         }
     }
 
+    void checkRouters(List<Router> routers){
+        for(var r: routers){
+            for (var intf: r.intfs){
+                assert intf.routerId != -1 && intf.id != -1;
+            }
+        }
+    }
+
+    //identify trans, but give id and router_id to all the intfs
+    public void typ0Trans(List<Router> routers){
+        var transG = new transGraph(routers);
+        checkRouters(routers);
+    }
 
     //delete one router
     public Pair<Boolean, deltaNodes> typ1Trans(List<Router> routers) {
@@ -89,8 +126,8 @@ public class phyTran {
                 List<Intf> intfsA = null, intfsB = null;
                 intfsA = networkToIntfs.get(networks.get(0));
                 intfsB = networkToIntfs.get(networks.get(1));
-                deltas.updateIntf.addAll(networkToIntfs.get(networks.get(0)));
-                deltas.updateIntf.addAll(networkToIntfs.get(networks.get(1)));
+                intfsA.forEach(deltas::addUpdateIntf);
+                intfsB.forEach(deltas::addUpdateIntf);
 
                 var new_network = transG.getNewNetworkId();
                 for (var dst_intf : networkToIntfs.get(networks.get(0))) {
@@ -109,26 +146,24 @@ public class phyTran {
                     for (int j = (i + 1) % networks.size(); (j < networks.size() && i < networks.size() - 1) || (j == 0 && i == networks.size() - 1); j++) {
                         if (j == (i + 1) % networks.size()) {
                             intfsA = networkToIntfs.get(networks.get(i));
-                            deltas.updateIntf.addAll(intfsA);
+                            intfsA.forEach(deltas::addUpdateIntf);
                         }else{
                             intfsA = new ArrayList<>();
                             for(var copy_intf : networkToIntfs.get(networks.get(i))) {
-                                var add_intf = new Intf();
+                                var add_intf = transG.addIntf(transG.getRouterOfIntf(copy_intf));
                                 add_intf.area = area_num;
-                                transG.getRouterOfIntf(copy_intf).intfs.add(add_intf);
                                 intfsA.add(add_intf);
                             }
-                            deltas.newIntf.addAll(intfsA);
+                            intfsA.forEach(deltas::addNewIntf);
                         }
 
                         intfsB = new ArrayList<>();
                         for (var copy_intf : networkToIntfs.get(networks.get(j))) {
-                            var add_intf = new Intf();
+                            var add_intf = transG.addIntf(transG.getRouterOfIntf(copy_intf));
                             add_intf.area = area_num;
-                            transG.getRouterOfIntf(copy_intf).intfs.add(add_intf);
                             intfsB.add(add_intf);
                         }
-                        deltas.newIntf.addAll(intfsB);
+                        intfsB.forEach(deltas::addNewIntf);
 
                         var new_network = transG.getNewNetworkId();
                         for (var dst_intf : networkToIntfs.get(networks.get(i))) {
@@ -146,6 +181,7 @@ public class phyTran {
             transG.removeRouter(del_router);
             break;
         }
+        checkRouters(routers);
         if (del_router == null) {
             return new Pair<>(false, deltas);
         } else return new Pair<>(true, deltas);
