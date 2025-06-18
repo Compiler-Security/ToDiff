@@ -4,7 +4,7 @@ import org.generator.lib.item.conf.graph.ConfGraph;
 
 import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
 import org.generator.lib.item.conf.node.phy.Intf;
-import org.generator.lib.topo.pass.trans.phyTran.deltaNodes;
+import org.generator.lib.topo.item.trans.transGraph.deltaNodes;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
 

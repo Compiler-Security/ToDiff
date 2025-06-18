@@ -23,80 +23,13 @@ public class phyTran {
         }
     }
 
-    public static class deltaNodes {
-        Set<String> newIntfName, updateIntfName;
-        Set<String> newRouterName, updateRouterName;
-
-        public deltaNodes() {
-            newIntfName = new HashSet<>();
-            updateIntfName = new HashSet<>();
-            newRouterName = new HashSet<>();
-            updateRouterName = new HashSet<>();
-        }
-
-        public void addNewIntf(Intf intf){
-            newIntfName.add(NodeGen.getIntfName(NodeGen.getRouterName(intf.routerId), intf.id));
-        }
-
-        public void addUpdateIntf(Intf intf){
-            updateIntfName.add(NodeGen.getIntfName(NodeGen.getRouterName(intf.routerId), intf.id));
-        }
-
-        public void addNewRouter(Router router){
-            newRouterName.add(NodeGen.getRouterName(router.id));
-        }
-
-        public void addUpdateRouter(Router router){
-            newRouterName.add(NodeGen.getRouterName(router.id));
-        }
-
-        public boolean isNewIntf(String intf_name) {
-            return newIntfName.contains(intf_name);
-        }
-
-        public boolean isUpdateIntf(String intf_name) {
-            return updateIntfName.contains(intf_name);
-        }
-
-        public boolean isNewRouter(String router_name) {
-            return newRouterName.contains(router_name);
-        }
-
-        public boolean isUpdateRouter(String router_name) {
-            return updateRouterName.contains(router_name);
-        }
-
-        public void mergeDeltaNodes(deltaNodes _deltaNodes) {
-            newIntfName.addAll(_deltaNodes.newIntfName);
-            updateIntfName.addAll(_deltaNodes.updateIntfName);
-            newRouterName.addAll(_deltaNodes.newRouterName);
-            updateRouterName.addAll(_deltaNodes.updateRouterName);
-        }
-    }
-
-    void checkRouters(List<Router> routers){
-        for(var r: routers){
-            for (var intf: r.intfs){
-                assert intf.routerId != -1 && intf.id != -1;
-            }
-        }
-    }
-
-    //identify trans, but give id and router_id to all the intfs
-    public void typ0Trans(List<Router> routers){
-        var transG = new transGraph(routers);
-        checkRouters(routers);
-    }
-
     //delete one router
-    public Pair<Boolean, deltaNodes> equalDelNode(List<Router> routers) {
-        var deltas = new deltaNodes();
+    public boolean equalDelNode(transGraph transG) {
 
         //found a router which is not an ABR(OSPF), XXX(ISIS) and has at least two neighbors
         Router del_router = null;
-        var transG = new transGraph(routers);
         //FIXME we should random routers
-        for (var r : routers) {
+        for (var r : transG.getRouters()) {
             //FOR OSPF, we should delete router which is not an ABR
             if (generate.protocol == generate.Protocol.OSPF) {
                 boolean area0 = false, areax = false;
@@ -122,13 +55,11 @@ public class phyTran {
             //First we should count all the cost of networks through del_router
             List<Integer> networks = transG.getNetworkOfRouter(r);
             Map<Integer, Integer> deltaCost = new HashMap<>();
-            //Map<Integer, List<Router>> networkToRouters = new HashMap<>();
             Map<Integer, List<Intf>> networkToIntfs = new HashMap<>();
             for (var networkId : networks) {
                 var intfs = transG.filterIntfOfRouter(del_router, transG.getIntfsOfNetwork(networkId));
                 var micost = intfs.stream().map(i -> i.cost).min(Integer::compareTo).get();
                 deltaCost.put(networkId, micost);
-                //networkToRouters.put(networkId, transG.getLinkedRouters(intfs.getFirst()));
                 networkToIntfs.put(networkId, transG.getLinkedIntfs(intfs.getFirst()));
             }
 
@@ -138,17 +69,17 @@ public class phyTran {
                 List<Intf> intfsA = null, intfsB = null;
                 intfsA = networkToIntfs.get(networks.get(0));
                 intfsB = networkToIntfs.get(networks.get(1));
-                intfsA.forEach(deltas::addUpdateIntf);
-                intfsB.forEach(deltas::addUpdateIntf);
 
                 var new_network = transG.getNewNetworkId();
                 for (var dst_intf : networkToIntfs.get(networks.get(0))) {
                     dst_intf.cost += deltaCost.get(networks.get(1));
+                    transG.updateIntf(dst_intf);
                     transG.addIntfToNetworkId(dst_intf, new_network);
                 }
 
                 for (var dst_intf : networkToIntfs.get(networks.get(0))) {
                     dst_intf.cost += deltaCost.get(networks.get(1));
+                    transG.updateIntf(dst_intf);
                     transG.addIntfToNetworkId(dst_intf, new_network);
                 }
             } else {
@@ -158,7 +89,7 @@ public class phyTran {
                     for (int j = (i + 1) % networks.size(); (j < networks.size() && i < networks.size() - 1) || (j == 0 && i == networks.size() - 1); j++) {
                         if (j == (i + 1) % networks.size()) {
                             intfsA = networkToIntfs.get(networks.get(i));
-                            intfsA.forEach(deltas::addUpdateIntf);
+                            intfsA.forEach(transG::updateIntf);
                         }else{
                             intfsA = new ArrayList<>();
                             for(var copy_intf : networkToIntfs.get(networks.get(i))) {
@@ -166,7 +97,6 @@ public class phyTran {
                                 add_intf.area = area_num;
                                 intfsA.add(add_intf);
                             }
-                            intfsA.forEach(deltas::addNewIntf);
                         }
 
                         intfsB = new ArrayList<>();
@@ -175,7 +105,6 @@ public class phyTran {
                             add_intf.area = area_num;
                             intfsB.add(add_intf);
                         }
-                        intfsB.forEach(deltas::addNewIntf);
 
                         var new_network = transG.getNewNetworkId();
                         for (var dst_intf : networkToIntfs.get(networks.get(i))) {
@@ -193,19 +122,17 @@ public class phyTran {
             transG.removeRouter(del_router);
             break;
         }
-        checkRouters(routers);
-        if (del_router == null) {
-            return new Pair<>(false, deltas);
-        } else return new Pair<>(true, deltas);
+        transG.checkRouters();
+        return del_router != null;
     }
 
-    public deltaNodes solve(List<Router> routers, List<transRule> rules){
-        var res = new deltaNodes();
+    public transGraph solve(List<Router> routers, List<transRule> rules){
+        var transG = new transGraph(routers);
         for(var rule: rules){
             switch (rule){
-                case equalDealNode -> {res.mergeDeltaNodes(equalDelNode(routers).second());}
+                case equalDealNode -> {equalDelNode(transG);}
             }
         }
-        return res;
+        return transG;
     }
 }

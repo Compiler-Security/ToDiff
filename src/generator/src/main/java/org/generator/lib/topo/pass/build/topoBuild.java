@@ -15,7 +15,13 @@ import java.util.Map;
 
 public class topoBuild {
     public ConfGraph solve(List<Router> routers){
-        var transG = new transGraph(routers);
+        for(var router: routers){
+            int i = 0;
+            for(var intf: router.intfs){
+                if (intf.id != -1) i = intf.id;
+                else intf.id = i++;
+            }
+        }
         ConfGraph g = new ConfGraph();
         Map<String, Integer> switchPort = new HashMap<>();
         for(int i = 0; i < routers.size(); i++){
