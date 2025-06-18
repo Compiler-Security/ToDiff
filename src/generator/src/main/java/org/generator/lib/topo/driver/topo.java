@@ -6,6 +6,7 @@ import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.topo.item.base.Router;
 import org.generator.lib.topo.item.base.Router_ISIS;
+import org.generator.lib.topo.item.base.baseItemHelper;
 import org.generator.lib.topo.pass.attri.babelRanAttriGen;
 import org.generator.lib.topo.pass.attri.isisRanAttriGen;
 import org.generator.lib.topo.pass.attri.ospfRanAttriGen;
@@ -17,6 +18,8 @@ import org.generator.lib.topo.pass.base.isisRanBaseGen;
 import org.generator.lib.topo.pass.base.openfabricRanBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
 import org.generator.lib.topo.pass.build.topoBuild_ISIS;
+import org.generator.lib.topo.pass.trans.phyTran.transRule;
+import org.generator.util.collections.Pair;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
 import org.graphstream.stream.file.FileSinkDOT;
@@ -178,6 +181,54 @@ public class topo {
         }
 
         return stringWriter.toString();
+    }
+
+    public static Pair<List<Router>, ConfGraph> transformGraph(List<Router> routers, ConfGraph confG, List<transRule> rules, ObjectNode dumpInfo){
+        var new_routers = baseItemHelper.copyFrom(routers);
+
+    }
+    public static Pair<List<Router>, ConfGraph> genInitGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, ObjectNode dumpInfo){
+        List<Router> routers = null;
+        List<Router_ISIS> routersIsis = null;
+        String baseGraphStr = null;
+        //MULTI:
+        switch (generate.protocol){
+            case OSPF -> {
+                var ran = new ospfRanBaseGen();
+                routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
+                baseGraphStr = dumpGraphOspf(routers, ran);
+            }
+            //FIXME TODO ISIS
+        }
+        if (dumpInfo != null) dumpInfo.put("routerGraph", TextNode.valueOf(baseGraphStr));
+        if (verbose){
+            System.out.println(baseGraphStr);
+        }
+
+        ConfGraph confg = null;
+        if(generate.protocol != generate.Protocol.ISIS && generate.protocol != generate.Protocol.OpenFabric){
+            var b = new topoBuild();
+            confg = b.solve(routers);
+        } //FIXME TODO ISIS
+        //MULTI:
+        switch (generate.protocol){
+            case OSPF -> {
+                var c = new ospfRanAttriGen();
+                c.generate(confg, routers);
+            }
+            //FIXME TODO ISIS
+        }
+
+        var confgAttrStr = confg.toString();
+        if (dumpInfo != null){
+            dumpInfo.put("configGraph", confg.toDot(false));
+            dumpInfo.put("configGraphAttr", confg.toString());
+        }
+        if (verbose){
+            System.out.println("config graph");
+            System.out.println(confgAttrStr);
+        }
+        return new Pair<>(routers, confg);
     }
 
     public static ConfGraph genGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, ObjectNode dumpInfo){

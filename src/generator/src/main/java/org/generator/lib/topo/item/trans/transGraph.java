@@ -72,13 +72,13 @@ public class transGraph {
         return intfToRouter.get(intf);
     }
 
-    public Router addRouter(){
+    public Router newRouter(){
         var r = new Router(++id);
         routers.add(r);
         return r;
     }
 
-    public Intf addIntf(Router router){
+    public Intf newIntf(Router router){
         var intf = new Intf(router.intfs.size(), router.id);
         intfToRouter.put(intf, router);
         router.intfs.add(intf);

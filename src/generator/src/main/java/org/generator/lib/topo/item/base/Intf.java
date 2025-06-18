@@ -26,4 +26,12 @@ public class Intf{
         this.id = id;
         this.routerId = routerId;
     }
+
+    public Intf copy(){
+        var intf  = new Intf(this.id, this.routerId);
+        intf.cost = this.cost;
+        intf.networkId = this.networkId;
+        intf.area = this.area;
+        return intf;
+    }
 }

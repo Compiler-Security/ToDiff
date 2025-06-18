@@ -11,6 +11,18 @@ import java.util.*;
 
 public class phyTran {
 
+    public static enum transRule{
+        equalDealNode;
+        static final List<transRule> l = new ArrayList<transRule>();
+        static {
+            l.addAll(Arrays.asList(transRule.values()));
+        }
+        public transRule getRule(int id){
+            assert id < l.size():"not have transRule %d".formatted(id);
+            return l.get(id);
+        }
+    }
+
     public static class deltaNodes {
         Set<String> newIntfName, updateIntfName;
         Set<String> newRouterName, updateRouterName;
@@ -77,7 +89,7 @@ public class phyTran {
     }
 
     //delete one router
-    public Pair<Boolean, deltaNodes> typ1Trans(List<Router> routers) {
+    public Pair<Boolean, deltaNodes> equalDelNode(List<Router> routers) {
         var deltas = new deltaNodes();
 
         //found a router which is not an ABR(OSPF), XXX(ISIS) and has at least two neighbors
@@ -150,7 +162,7 @@ public class phyTran {
                         }else{
                             intfsA = new ArrayList<>();
                             for(var copy_intf : networkToIntfs.get(networks.get(i))) {
-                                var add_intf = transG.addIntf(transG.getRouterOfIntf(copy_intf));
+                                var add_intf = transG.newIntf(transG.getRouterOfIntf(copy_intf));
                                 add_intf.area = area_num;
                                 intfsA.add(add_intf);
                             }
@@ -159,7 +171,7 @@ public class phyTran {
 
                         intfsB = new ArrayList<>();
                         for (var copy_intf : networkToIntfs.get(networks.get(j))) {
-                            var add_intf = transG.addIntf(transG.getRouterOfIntf(copy_intf));
+                            var add_intf = transG.newIntf(transG.getRouterOfIntf(copy_intf));
                             add_intf.area = area_num;
                             intfsB.add(add_intf);
                         }
@@ -185,5 +197,15 @@ public class phyTran {
         if (del_router == null) {
             return new Pair<>(false, deltas);
         } else return new Pair<>(true, deltas);
+    }
+
+    public deltaNodes solve(List<Router> routers, List<transRule> rules){
+        var res = new deltaNodes();
+        for(var rule: rules){
+            switch (rule){
+                case equalDealNode -> {res.mergeDeltaNodes(equalDelNode(routers).second());}
+            }
+        }
+        return res;
     }
 }

@@ -39,4 +39,11 @@ public class Router {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public Router copy(){
+        Router router = new Router(id);
+        intfs.forEach(intf -> router.intfs.add(intf.copy()));
+        router.abr = abr;
+        return router;
+    }
 }
