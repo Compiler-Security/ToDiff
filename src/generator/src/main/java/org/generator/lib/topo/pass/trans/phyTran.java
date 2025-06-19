@@ -24,7 +24,7 @@ public class phyTran {
     }
 
     //delete one router
-    public boolean equalDelNode(transGraph transG) {
+    public static boolean equalDelNode(transGraph transG) {
 
         //found a router which is not an ABR(OSPF), XXX(ISIS) and has at least two neighbors
         Router del_router = null;
@@ -126,7 +126,7 @@ public class phyTran {
         return del_router != null;
     }
 
-    public transGraph solve(List<Router> routers, List<transRule> rules){
+    public static transGraph solve(List<Router> routers, List<transRule> rules){
         var transG = new transGraph(routers);
         for(var rule: rules){
             switch (rule){

@@ -233,6 +233,16 @@ public class genPhyEqualPass {
         }
         return false;
     }
+
+    /**
+     * This API is to reduce the phy commands to core, and will be called by reducer driver
+     * We only remain the following phy ops
+     *
+     */
+    public OpCtxG reduce(OpCtxG phyOpg){
+            readToSlots(phyOpg);
+
+    }
     public OpCtxG solve(OpCtxG phyOpg, double changeRatio, int mxRound){
         readToSlots(phyOpg);
 
@@ -278,6 +288,7 @@ public class genPhyEqualPass {
             assert canMove: "can't move! %s\n%s\n%s".formatted(slots, active_slots, gen);
             //System.out.println(active_slots);
         }
+
         return gen;
     }
     OpCtxG gen;

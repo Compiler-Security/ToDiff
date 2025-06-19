@@ -7,6 +7,7 @@ import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.topo.item.base.Router;
 import org.generator.lib.topo.item.base.Router_ISIS;
 import org.generator.lib.topo.item.base.baseItemHelper;
+import org.generator.lib.topo.item.trans.transGraph;
 import org.generator.lib.topo.pass.attri.babelRanAttriGen;
 import org.generator.lib.topo.pass.attri.isisRanAttriGen;
 import org.generator.lib.topo.pass.attri.ospfRanAttriGen;
@@ -18,6 +19,8 @@ import org.generator.lib.topo.pass.base.isisRanBaseGen;
 import org.generator.lib.topo.pass.base.openfabricRanBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
 import org.generator.lib.topo.pass.build.topoBuild_ISIS;
+import org.generator.lib.topo.pass.trans.ospfAttriTran;
+import org.generator.lib.topo.pass.trans.phyTran;
 import org.generator.lib.topo.pass.trans.phyTran.transRule;
 import org.generator.util.collections.Pair;
 import org.graphstream.graph.Graph;
@@ -183,11 +186,47 @@ public class topo {
         return stringWriter.toString();
     }
 
-    public static Pair<List<Router>, ConfGraph> transformGraph(List<Router> routers, ConfGraph confG, List<transRule> rules, ObjectNode dumpInfo){
-        var new_routers = baseItemHelper.copyFrom(routers);
+    /*
+    * We will not modify List<routers> and confG
+    * We will create new List<routers> and deltanodes in transGraph and a new ConfGraph
+    * */
+    public static Pair<transGraph, ConfGraph> transformGraph(List<Router> routers, ConfGraph old_confG, List<transRule> rules, ObjectNode dumpInfo){
+        var transG = phyTran.solve(routers, rules);
+        String baseGraphStr = null;
+        switch (generate.protocol){
+            case OSPF -> {
+                var tmp = new ospfRanBaseGen();
+                tmp.networkId = transG.getNetworkId();
+                baseGraphStr = dumpGraphOspf(transG.getRouters(), tmp);
+            }
+        }
+        if (dumpInfo != null) dumpInfo.put("routerGraph", TextNode.valueOf(baseGraphStr));
 
+        ConfGraph new_confg = null;
+        if(generate.protocol != generate.Protocol.ISIS && generate.protocol != generate.Protocol.OpenFabric){
+            var b = new topoBuild();
+            new_confg = b.solve(routers);
+        } //FIXME TODO ISIS
+        //MULTI:
+        switch (generate.protocol){
+            case OSPF -> {
+                var c = new ospfRanAttriGen();
+                c.generate(new_confg, routers);
+            }
+            //FIXME TODO ISIS
+        }
+        switch (generate.protocol){
+            case OSPF -> {ospfAttriTran.solve(old_confG, new_confg, transG.getDeltaNodes());}
+        }
+        var confgAttrStr = new_confg.toString();
+        if (dumpInfo != null){
+            dumpInfo.put("configGraph", new_confg.toDot(false));
+            dumpInfo.put("configGraphAttr", new_confg.toString());
+        }
+        return new Pair<>(transG, new_confg);
     }
-    public static Pair<List<Router>, ConfGraph> genInitGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, ObjectNode dumpInfo){
+
+    public static Pair<List<Router>, ConfGraph> genInitTransGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, ObjectNode dumpInfo){
         List<Router> routers = null;
         List<Router_ISIS> routersIsis = null;
         String baseGraphStr = null;

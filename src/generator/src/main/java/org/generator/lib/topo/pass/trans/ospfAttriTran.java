@@ -9,7 +9,7 @@ import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
 
 public class ospfAttriTran {
-    public void solve(ConfGraph oldG, ConfGraph newG, deltaNodes deltas) {
+    public static void solve(ConfGraph oldG, ConfGraph newG, deltaNodes deltas) {
         //copy attributes from oldG
         for (var r: newG.getRouters()){
             if (deltas.isNewRouter(r.getName())){

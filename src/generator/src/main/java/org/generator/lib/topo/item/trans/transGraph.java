@@ -174,4 +174,8 @@ public class transGraph {
         }
     }
 
+    public int getNetworkId(){
+        return networkId;
+    }
+
 }
