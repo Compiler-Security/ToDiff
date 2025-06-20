@@ -27,12 +27,17 @@ public class genPhyDiffPass {
             //The Link down instruction can be generated after the link remove instruction.
             //We ignore invalid instructions in the test framework to ensure that the link instruction is generated only when the node exists.
             case LINKADD ->{
-                var b1 = getSlot(NormalController.CType.NODE, Arrays.stream(targetOp.getNAME().split("-")).toList().getFirst(), null).getCurType() == OpType.NODEADD;
-                var b2 = getSlot(NormalController.CType.NODE, Arrays.stream(targetOp.getNAME2().split("-")).toList().getFirst(), null).getCurType() == OpType.NODEADD;
-                return b1 && b2;
+                var b1 = getSlot(NormalController.CType.NODE, Arrays.stream(targetOp.getNAME().split("-")).toList().getFirst(), null);
+                var b2 = getSlot(NormalController.CType.NODE, Arrays.stream(targetOp.getNAME2().split("-")).toList().getFirst(), null);
+                return (b1 != null && b1.getCurType() == OpType.NODEADD) && (b2 != null && b2.getCurType() == OpType.NODEADD);
             }
-            case LINKDOWN, LINKREMOVE -> {
-                getSlot(NormalController.CType.LINK, targetOp.getNAME(), targetOp.getNAME2()).getCurType()
+            case LINKDOWN -> {
+                var b1 = getSlot(NormalController.CType.LINK, targetOp.getNAME(), targetOp.getNAME2());
+                return b1 != null && b1.getCurType() == OpType.LINKADD;
+            }
+            case LINKREMOVE -> {
+                var b1 = getSlot(NormalController.CType.LINK, targetOp.getNAME(), targetOp.getNAME2());
+                return b1 != null && (b1.getCurType() == OpType.LINKADD || b1.getCurType() == OpType.LINKDOWN);
             }
             case INTFUP, INTFDOWN -> {
                 var opType =  getSlot(NormalController.CType.LINK, targetOp.getNAME(), null).getCurType();
