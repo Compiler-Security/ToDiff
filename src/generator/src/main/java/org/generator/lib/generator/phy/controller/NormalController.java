@@ -2,10 +2,7 @@ package org.generator.lib.generator.phy.controller;
 
 import org.generator.lib.frontend.lexical.OpType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
