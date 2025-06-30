@@ -202,8 +202,6 @@ public class generate {
         return gen_opag.toOpCtxGLeaner();
     }
 
-    public static OpCtxG generateDiff
-
     public static OpCtxG generateEqualOfPhyCore(OpCtxG opCtxG, double ratio, int maxRound){
         var r = new genPhyEqualPass();
         var addPart =  r.solve(opCtxG, ratio, maxRound);
