@@ -36,4 +36,5 @@ public class OpCtxG extends BaseOpG<OpCtx>{
         var ospfConfWriter = new OspfConfWriter();
         return ospfConfWriter.write(this);
     }
+    
 }

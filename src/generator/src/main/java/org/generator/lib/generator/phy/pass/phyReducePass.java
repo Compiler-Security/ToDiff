@@ -23,7 +23,7 @@ public class phyReducePass {
         return slots.stream().filter(slot -> slot.getcType() == cType && slot.equalName(name) && slot.partialEqualName2(name2)).findFirst().get();
     }
 
-    List<NormalController> getSlots( NormalController.CType cType, String name, String name2) {
+    public List<NormalController> getSlots( NormalController.CType cType, String name, String name2) {
         return slots.stream().filter(slot -> slot.getcType() == cType && slot.equalName(name) && slot.partialEqualName2(name2)).toList();
     }
 
@@ -68,27 +68,36 @@ public class phyReducePass {
     void handleAfterAffects(OpPhy targetOp){
         switch (targetOp.Type()){
             case NODEDEL-> {
-                var slots = getSlots(NormalController.CType.LINK, "%s-eth[0-9]+".formatted(targetOp.getNAME()), null);
-                for(var slot: slots) {
-                    slot.setCurType(OpType.LINKREMOVE);
+                var del_slots = getSlots(NormalController.CType.LINK, "%s-eth[0-9]+".formatted(targetOp.getNAME()), null);
+                for(var slot: del_slots) {
                     var intfslot = getSlot(NormalController.CType.INTF, targetOp.getNAME(), null);
-                    if (intfslot != null) intfslot.setCurType(null);
+                    if (intfslot != null) slots.remove(intfslot);
+                    slots.remove(slot);
                 }
+                slots.remove(getSlot(NormalController.CType.NODE, targetOp.getNAME(), null));
                 //MULTI:
                 if (generate.protocol == generate.Protocol.OSPF){
                     //every router NODE should have OSPF
                     var slot = getSlot(NormalController.CType.OSPF, targetOp.getNAME(), null);
-                    if (slot != null) slot.setCurType(OpType.NODESETOSPFSHUTDOWN);
+                    if (slot != null) slots.remove(slot);
                 }
                 if (generate.protocol == generate.Protocol.ISIS){
                     //every router NODE should have ISIS
                     var slot = getSlot(NormalController.CType.ISIS, targetOp.getNAME(), null);
-                    if (slot != null) slot.setCurType(OpType.NODESETISISSHUTDOWN);
+                    if (slot != null) slots.remove(slot);
                 }
             }
             case LINKREMOVE -> {
                 var slot = getSlot(NormalController.CType.INTF, targetOp.getNAME(), null);
-                if (slot != null)  slot.setCurType(null);
+                if (slot != null)  slots.remove(slot);
+                slot = getSlot(NormalController.CType.LINK, targetOp.getNAME(), targetOp.getNAME2());
+                slots.remove(slot);
+            }
+            case NODESETOSPFSHUTDOWN -> {
+                slots.remove(getSlot(NormalController.CType.OSPF, targetOp.getNAME(), null));
+            }
+            case NODESETISISSHUTDOWN -> {
+                slots.remove(getSlot(NormalController.CType.ISIS, targetOp.getNAME(), null));
             }
         }
     }
@@ -98,6 +107,7 @@ public class phyReducePass {
         slots.add(newSlot);
         return newSlot;
     }
+
     public NormalController getSlot(OpPhy op){
         switch (op.Type()){
             case NODEADD, NODEDEL -> {
@@ -134,7 +144,8 @@ public class phyReducePass {
         }
         return null;
     }
-    OpCtx getOp(NormalController slot){
+
+    public OpCtx getOp(NormalController slot){
         var phy_op = new OpPhy(slot.getCurType());
         phy_op.setNAME(slot.getName());
         phy_op.setNAME2(slot.getName2());
@@ -185,13 +196,17 @@ public class phyReducePass {
         return opCtxG;
     }
 
-    public void reduce(OpCtxG opCtxG){
+    public void reduceOneOp(OpPhy phyOp){
+        if (!checkPreCondition(phyOp)) return;
+        var slot = getSlot(phyOp);
+        slot.setCurType(phyOp.Type());
+        handleAfterAffects(phyOp);
+    }
+
+    void reduce(OpCtxG opCtxG){
         for (var opCtx: opCtxG){
             var phyOp = opCtx.getOpPhy();
-            if (!checkPreCondition(phyOp)) continue;
-            var slot = getSlot(phyOp);
-            slot.setCurType(phyOp.Type());
-            handleAfterAffects(phyOp);
+            reduceOneOp(phyOp);
         }
     }
 
@@ -199,8 +214,15 @@ public class phyReducePass {
         return slots;
     }
 
-    public OpCtxG solve(OpCtxG opCtxG) {
-        reduce(opCtxG);
-        return toOpCtxG();
+    /**
+     * @param opCtxG
+     * @return slots with no unset commands
+     */
+    public static phyReducePass solve(OpCtxG opCtxG) {
+        var olds = new phyReducePass();
+        olds.reduce(opCtxG);
+        var news = new phyReducePass();
+        news.reduce(olds.toOpCtxG());
+        return news;
     }
 }
