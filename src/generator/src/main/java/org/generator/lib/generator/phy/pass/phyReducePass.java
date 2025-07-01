@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class phyReducePass {
     public phyReducePass() {
@@ -20,11 +21,11 @@ public class phyReducePass {
     List<NormalController> slots;
 
     NormalController getSlot(NormalController.CType cType, String name, String name2){
-        return slots.stream().filter(slot -> slot.getcType() == cType && slot.equalName(name) && slot.partialEqualName2(name2)).findFirst().get();
+        return slots.stream().filter(slot -> slot.getcType() == cType && slot.equalName(name) && slot.partialEqualName2(name2)).findFirst().orElse(null);
     }
 
     public List<NormalController> getSlots( NormalController.CType cType, String name, String name2) {
-        return slots.stream().filter(slot -> slot.getcType() == cType && slot.equalName(name) && slot.partialEqualName2(name2)).toList();
+        return slots.stream().filter(slot -> slot.getcType() == cType && slot.equalName(name) && slot.partialEqualName2(name2)).collect(Collectors.toList());
     }
 
     boolean checkPreCondition(OpPhy targetOp){

@@ -31,25 +31,20 @@ public class phyTran {
         //FIXME we should random routers
         for (var r : transG.getRouters()) {
             //FOR OSPF, we should delete router which is not an ABR
+            var area_num = -1;
             if (generate.protocol == generate.Protocol.OSPF) {
-                boolean area0 = false, areax = false;
+                boolean isAbr = false;
                 for (var intf : r.intfs) {
-                    var areaNum = intf.area;
-                    if (areaNum == 0) {
-                        area0 = true;
-                    }
-                    if (areaNum > 0) {
-                        areax = true;
-                    }
+                   if (area_num == -1) area_num = intf.area;
+                   else if (area_num != intf.area) isAbr = true;
                 }
-                if (area0 && areax) continue;
+                if (isAbr) continue;
             }
             //the router should in the at least 2 transit network
             if (transG.getNetworkOfRouter(r).size() < 2) {
                 continue;
             }
             del_router = r;
-            var area_num = r.intfs.getFirst().area;
             //remove del_router and link
 
             //First we should count all the cost of networks through del_router

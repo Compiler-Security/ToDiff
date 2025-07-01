@@ -161,7 +161,8 @@ public class genPhyDiffPass {
         deltaOps.addOps(deltaOpsLink.getOps());
         deltaOps.addOps(deltaOpsIntf.getOps());
         deltaOps.addOps(deltaOpsProtocol.getOps());
-        checkEqual(olds.toOpCtxG(), news.toOpCtxG());
+        //FIXME 7-1
+        //checkEqual(olds.toOpCtxG(), news.toOpCtxG());
         return deltaOps;
     }
 

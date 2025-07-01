@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 public class transGraph {
     public static class deltaNodes {
-        Set<String> newIntfName, updateIntfName;
+        public Set<String> newIntfName, updateIntfName;
         Set<String> newRouterName, updateRouterName;
 
         public deltaNodes() {

@@ -4,6 +4,7 @@ import org.generator.lib.frontend.lexical.OpType;
 import org.generator.lib.generator.ospf.controller.NormalController;
 import org.generator.lib.generator.ospf.pass.*;
 import org.generator.lib.generator.phy.pass.genPhyCorePass;
+import org.generator.lib.generator.phy.pass.genPhyDiffPass;
 import org.generator.lib.generator.phy.pass.genPhyEqualPass;
 import org.generator.lib.item.IR.OpAnalysis;
 import org.generator.lib.item.opg.OpAG;
@@ -57,8 +58,9 @@ public class generate {
             }
         }
         //FIXME shrinkPass is very slow in huge case
-        var q = new shrinkCorePass();
-        q.solve(res1, confGraph);
+        //FIXME 7-3
+        //var q = new shrinkCorePass();
+        //q.solve(res1, confGraph);
         return reducer.reduceToCore(OpCtxG.mergeOpCtxgToOne(res1));
     }
 
@@ -219,6 +221,16 @@ public class generate {
             assert false : "phy conf not equal!";
         }
         return addPart;
+    }
+
+    public static OpCtxG generateDiffPhyOp(OpCtxG oldOps, OpCtxG newOps){
+        var d = new genPhyDiffPass();
+        return d.solve(oldOps, newOps);
+    }
+
+    public static OpCtxG generateDiffProtoOp(OpCtxG oldOps, OpCtxG newOps){
+        var d = new genDiffPass();
+        return d.solve(oldOps, newOps);
     }
 
     //FIXME(should turn to true when running)

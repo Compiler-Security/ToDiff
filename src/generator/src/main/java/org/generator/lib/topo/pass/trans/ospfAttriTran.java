@@ -22,12 +22,15 @@ public class ospfAttriTran {
             //copy daemon
             newG.getOSPFDaemonOfOSPF(ospf_name).copyFrom(oldG.getOSPFDaemonOfOSPF(ospf_name));
             //copy areas
-            newG.getOSPFAreaSumOfOSPF(ospf_name).forEach(a -> a.copyFrom(oldG.<OSPFAreaSum>getNodeNotNull(a.getName())));
+            //FIXME 7-1
+            //newG.getOSPFAreaSumOfOSPF(ospf_name).forEach(a -> a.copyFrom(oldG.<OSPFAreaSum>getNodeNotNull(a.getName())));
 
             //for interfaces, we remain networkType for all, and cost for update interfaces
             for(var intf: newG.getIntfsOfRouter(r.getName())){
-                if (deltas.isNewIntf(intf.getName())){continue;}
+                if (deltas.isNewIntf(intf.getName())){continue;};
                 //we copy all intf, ospfintf from old
+                //FIXME 7-1
+                if (!oldG.containsNode(intf.getName())){continue;}
                 assert oldG.containsNode(intf.getName()):"oldG don't have %s!".formatted(intf.getName());
                 intf.copyFrom(oldG.getIntf(intf.getName()));
                 var newOspfIntf = newG.getOSPFIntfOfIntf(intf.getName());

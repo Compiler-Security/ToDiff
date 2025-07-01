@@ -215,7 +215,9 @@ public class topo {
             }
             //FIXME TODO ISIS
         }
-        System.out.println(new_confg.toDot(true));
+        System.out.println(old_confG.toDot(false));
+        System.out.println("----");
+        System.out.println(new_confg.toDot(false));
         switch (generate.protocol){
             case OSPF -> {ospfAttriTran.solve(old_confG, new_confg, transG.getDeltaNodes());}
         }
