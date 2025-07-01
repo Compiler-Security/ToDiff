@@ -46,4 +46,15 @@ public class Router {
         router.abr = abr;
         return router;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append("r%d[".formatted(id));
+        for(Intf intf : intfs){
+            sb.append("(i:%d a:%d n:%d c:%d),".formatted(intf.id, intf.area,intf.networkId, intf.cost));
+        }
+        sb.append("]");
+        return sb.toString();
+    }
 }

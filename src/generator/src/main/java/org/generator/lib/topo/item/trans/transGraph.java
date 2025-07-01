@@ -177,4 +177,12 @@ public class transGraph {
         return networkId;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for(var r: routers){
+            sb.append(r.toString()).append("\n");
+        }
+        return sb.toString();
+    }
 }

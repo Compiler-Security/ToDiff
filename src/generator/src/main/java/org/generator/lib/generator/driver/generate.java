@@ -58,7 +58,7 @@ public class generate {
             }
         }
         //FIXME shrinkPass is very slow in huge case
-        //FIXME 7-3
+        //FIXME 7-1
         //var q = new shrinkCorePass();
         //q.solve(res1, confGraph);
         return reducer.reduceToCore(OpCtxG.mergeOpCtxgToOne(res1));
