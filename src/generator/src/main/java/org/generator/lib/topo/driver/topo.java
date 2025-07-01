@@ -205,13 +205,13 @@ public class topo {
         ConfGraph new_confg = null;
         if(generate.protocol != generate.Protocol.ISIS && generate.protocol != generate.Protocol.OpenFabric){
             var b = new topoBuild();
-            new_confg = b.solve(routers);
+            new_confg = b.solve(transG.getRouters());
         } //FIXME TODO ISIS
         //MULTI:
         switch (generate.protocol){
             case OSPF -> {
                 var c = new ospfRanAttriGen();
-                c.generate(new_confg, routers);
+                c.generate(new_confg, transG.getRouters());
             }
             //FIXME TODO ISIS
         }

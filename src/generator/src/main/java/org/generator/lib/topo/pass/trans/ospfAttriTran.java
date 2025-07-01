@@ -56,7 +56,7 @@ public class ospfAttriTran {
             //if all is old except cost continue
             if (newIntf == null) continue;
             var oldOspfIntf = newG.getOSPFIntfOfIntf(oldIntf.getName());
-            var ipRange = IPRange.of(oldIntf.getIp().longNum, oldIntf.getIp().getMask());
+            var ipRange = IPRange.of(oldIntf.getIp().getNetAddressOfIp().IDtoLong(), oldIntf.getIp().getMask());
             var baseNum = ipRange.getAddressOfIp().IDtoLong();
             for(var intf: newG.getLinkedIntfsOfSwitch(s.getName())){
                 if (intf == oldIntf) continue;

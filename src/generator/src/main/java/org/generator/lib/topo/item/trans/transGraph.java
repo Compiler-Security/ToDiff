@@ -83,6 +83,7 @@ public class transGraph {
                 networkToIntf.get(intf.networkId).add(intf);
             }
         }
+        networkId += 1;
     }
 
     public deltaNodes getDeltaNodes() {

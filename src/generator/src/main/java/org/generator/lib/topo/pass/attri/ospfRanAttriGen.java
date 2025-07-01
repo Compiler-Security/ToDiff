@@ -218,7 +218,7 @@ public class ospfRanAttriGen implements genAttri {
             ospf_daemons.add(ospf_daemon);
             g.addNode(ospf_daemon);
             g.addOSPFRelation(ospf_name, r_name);
-            g.addOSPFDaemonRelation(ospf_daemon_name, r_name);
+            g.addOSPFDaemonRelation(ospf_name, ospf_daemon_name);
             ospf.setRouterId(ID.of(i + 1)); //router id is not allowed to 0.0.0.0
             isABR.put(ospf, false);
             for(int j = 0; j < r.intfs.size(); j++){
