@@ -36,7 +36,7 @@ public class topo {
     public static String dumpGraphOspf(List<Router> routers, ospfRanBaseGen ran){
         Graph graph = new MultiGraph("BaseGraph");
         for(int i = 0; i < routers.size(); i++){
-            graph.addNode("r%d".formatted(i));
+            graph.addNode("r%d".formatted(routers.get(i).id));
         }
         for(int i = 0; i < ran.networkId; i++){
             var n = graph.addNode("n%d".formatted(i));
@@ -46,7 +46,7 @@ public class topo {
             var r = routers.get(i);
             int j = 0;
             for(var intf: r.intfs){
-                var gedge = graph.addEdge("r%d->n%d(%d)".formatted(i, intf.networkId, j), "r%d".formatted(i), "n%d".formatted(intf.networkId));
+                var gedge = graph.addEdge("r%d->n%d(%d)".formatted(r.id, intf.networkId, j), "r%d".formatted(r.id), "n%d".formatted(intf.networkId));
                 assert intf.cost > 0: "intf cost should > 0";
                 gedge.setAttribute("label", "p%d:a%d".formatted(j, intf.area));
                 j++;
@@ -215,6 +215,7 @@ public class topo {
             }
             //FIXME TODO ISIS
         }
+        System.out.println(new_confg.toDot(true));
         switch (generate.protocol){
             case OSPF -> {ospfAttriTran.solve(old_confG, new_confg, transG.getDeltaNodes());}
         }

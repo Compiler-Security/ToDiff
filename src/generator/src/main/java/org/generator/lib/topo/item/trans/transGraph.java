@@ -79,11 +79,8 @@ public class transGraph {
                 intf.routerId = router.id;
                 if (intf.networkId  > networkId) networkId = intf.networkId;
                 intfToRouter.put(intf, router);
-                if (networkToIntf.containsKey(intf.networkId)){
-                    networkToIntf.get(intf.networkId).add(intf);
-                }else{
-                    networkToIntf.put(intf.networkId, new HashSet<>());
-                }
+                if (!networkToIntf.containsKey(intf.networkId)) networkToIntf.put(intf.networkId, new HashSet<>());
+                networkToIntf.get(intf.networkId).add(intf);
             }
         }
     }
@@ -163,6 +160,7 @@ public class transGraph {
     public void addIntfToNetworkId(Intf intf, Integer networkId){
         if (networkToIntf.containsKey(intf.networkId)) networkToIntf.get(intf.networkId).remove(intf);
         intf.networkId = networkId;
+        if (!networkToIntf.containsKey(intf.networkId)) networkToIntf.put(intf.networkId, new HashSet<>());
         networkToIntf.get(intf.networkId).add(intf);
     }
 

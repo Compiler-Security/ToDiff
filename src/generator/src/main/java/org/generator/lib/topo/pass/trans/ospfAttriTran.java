@@ -15,6 +15,7 @@ public class ospfAttriTran {
             if (deltas.isNewRouter(r.getName())){
                 continue;
             }
+            //oldG.getOspfOfRouter(r.getName());
             //copy OSPF
             newG.getOspfOfRouter(r.getName()).copyFrom(oldG.getOspfOfRouter(r.getName()));
             var ospf_name = newG.getOspfOfRouter(r.getName()).getName();
