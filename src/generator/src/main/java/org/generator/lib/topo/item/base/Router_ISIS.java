@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Router_ISIS {
-    int id;
+    public int id;
     public List<Intf_ISIS> intfs;
     // 0: L1, 1: L2, 2: L1L2
     public int level;

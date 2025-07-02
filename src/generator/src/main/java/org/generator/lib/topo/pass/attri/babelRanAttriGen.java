@@ -54,7 +54,7 @@ public class babelRanAttriGen implements genAttri{
     public void generate(ConfGraph g, List<Router> routers) {
         for (int i = 0; i < routers.size(); i++) {
             var r = routers.get(i);
-            var r_name = NodeGen.getRouterName(i);
+            var r_name = NodeGen.getRouterName(r.id);
             var babel_name = NodeGen.getBABELName(r_name);
             var babel = new BABEL(babel_name);
             g.addNode(babel);

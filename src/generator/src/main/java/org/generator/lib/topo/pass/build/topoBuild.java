@@ -25,8 +25,8 @@ public class topoBuild {
         ConfGraph g = new ConfGraph();
         Map<String, Integer> switchPort = new HashMap<>();
         for(int i = 0; i < routers.size(); i++){
-            var r_name = NodeGen.getRouterName(i);
             var r = routers.get(i);
+            var r_name = NodeGen.getRouterName(r.id);
             g.addNode(new org.generator.lib.item.conf.node.phy.Router(r_name));
             for(int j = 0; j < r.intfs.size(); j++){
                 var intf_name = NodeGen.getIntfName(r_name, r.intfs.get(j).id);

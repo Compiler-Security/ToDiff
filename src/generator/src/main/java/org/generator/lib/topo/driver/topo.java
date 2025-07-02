@@ -216,9 +216,9 @@ public class topo {
             //FIXME TODO ISIS
         }
         var t = new transGraph(routers);
-        System.out.println(t.toString());
-        System.out.println("----");
-        System.out.println(transG.toString());
+//        System.out.println(t.toString());
+//        System.out.println("----");
+//        System.out.println(transG.toString());
         switch (generate.protocol){
             case OSPF -> {ospfAttriTran.solve(old_confG, new_confg, transG.getDeltaNodes());}
         }

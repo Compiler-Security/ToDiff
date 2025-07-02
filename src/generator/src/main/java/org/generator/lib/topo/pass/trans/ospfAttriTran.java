@@ -22,7 +22,6 @@ public class ospfAttriTran {
             //copy daemon
             newG.getOSPFDaemonOfOSPF(ospf_name).copyFrom(oldG.getOSPFDaemonOfOSPF(ospf_name));
             //copy areas
-            //FIXME 7-1
             newG.getOSPFAreaSumOfOSPF(ospf_name).forEach(a -> a.copyFrom(oldG.<OSPFAreaSum>getNodeNotNull(a.getName())));
 
             //for interfaces, we remain networkType for all, and cost for update interfaces

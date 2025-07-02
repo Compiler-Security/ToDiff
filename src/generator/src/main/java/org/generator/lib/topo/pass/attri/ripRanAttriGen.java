@@ -67,7 +67,7 @@ public class ripRanAttriGen implements genAttri{
     public void generate(ConfGraph g, List<Router> routers) {
         for(int i = 0; i < routers.size(); i++){
             var r = routers.get(i);
-            var r_name = NodeGen.getRouterName(i);
+            var r_name = NodeGen.getRouterName(r.id);
             var rip_name = NodeGen.getRIPName(r_name);
             var rip = new RIP(rip_name);
             g.addNode(rip);

@@ -195,7 +195,7 @@ public class isisRanAttriGen implements genAttri_ISIS {
         //build each router and fill area, router_id
         for(int i = 0; i < routers.size(); i++){
             var r = routers.get(i);
-            var r_name = NodeGen.getRouterName(i);
+            var r_name = NodeGen.getRouterName(r.id);
             var isis_name = NodeGen.getISISName(r_name);
             var isis_daemon_name = NodeGen.getISISDaemonName(isis_name);
             var isis = new ISIS(isis_name);
@@ -204,9 +204,9 @@ public class isisRanAttriGen implements genAttri_ISIS {
             String areaId = areaToAreaId.get(r.area);
             
             String systemId = String.format("%04d.%04d.%04d", 
-                i / 10000,
-                (i % 10000) / 100,
-                i % 100);
+                r.id / 10000,
+                (r.id % 10000) / 100,
+                r.id % 100);
 
 
             // generate NET

@@ -120,7 +120,7 @@ public class openfabricRanAttriGen implements genAttri_ISIS {
         //build each router and fill area, router_id
         for(int i = 0; i < routers.size(); i++){
             var r = routers.get(i);
-            var r_name = NodeGen.getRouterName(i);
+            var r_name = NodeGen.getRouterName(r.id);
             var openfabric_name = NodeGen.getOpenFabricName(r_name);
             var openfabric_daemon_name = NodeGen.getOpenFabricDaemonName(openfabric_name);
             var openfabric = new FABRIC(openfabric_name);

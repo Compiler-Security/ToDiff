@@ -208,7 +208,7 @@ public class ospfRanAttriGen implements genAttri {
         //build each router and fill area, router_id
         for(int i = 0; i < routers.size(); i++){
             var r = routers.get(i);
-            var r_name = NodeGen.getRouterName(i);
+            var r_name = NodeGen.getRouterName(r.id);
             var ospf_name = NodeGen.getOSPFName(r_name);
             var ospf_daemon_name = NodeGen.getOSPFDaemonName(ospf_name);
             var ospf = new OSPF(ospf_name);
@@ -219,7 +219,7 @@ public class ospfRanAttriGen implements genAttri {
             g.addNode(ospf_daemon);
             g.addOSPFRelation(ospf_name, r_name);
             g.addOSPFDaemonRelation(ospf_name, ospf_daemon_name);
-            ospf.setRouterId(ID.of(i + 1)); //router id is not allowed to 0.0.0.0
+            ospf.setRouterId(ID.of(r.id + 1)); //router id is not allowed to 0.0.0.0
             isABR.put(ospf, false);
             for(int j = 0; j < r.intfs.size(); j++){
                 var intf_name  = NodeGen.getIntfName(r_name, j);
