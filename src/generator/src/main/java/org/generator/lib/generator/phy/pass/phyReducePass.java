@@ -71,7 +71,7 @@ public class phyReducePass {
             case NODEDEL-> {
                 var del_slots = getSlots(NormalController.CType.LINK, "%s-eth[0-9]+".formatted(targetOp.getNAME()), null);
                 for(var slot: del_slots) {
-                    var intfslot = getSlot(NormalController.CType.INTF, targetOp.getNAME(), null);
+                    var intfslot = getSlot(NormalController.CType.INTF, slot.getName(), null);
                     if (intfslot != null) slots.remove(intfslot);
                     slots.remove(slot);
                 }

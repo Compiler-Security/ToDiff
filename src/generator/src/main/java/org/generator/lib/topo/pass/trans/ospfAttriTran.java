@@ -28,8 +28,6 @@ public class ospfAttriTran {
             for(var intf: newG.getIntfsOfRouter(r.getName())){
                 if (deltas.isNewIntf(intf.getName())){continue;};
                 //we copy all intf, ospfintf from old
-                //FIXME 7-1
-                if (!oldG.containsNode(intf.getName())){continue;}
                 assert oldG.containsNode(intf.getName()):"oldG don't have %s!".formatted(intf.getName());
                 intf.copyFrom(oldG.getIntf(intf.getName()));
                 var newOspfIntf = newG.getOSPFIntfOfIntf(intf.getName());

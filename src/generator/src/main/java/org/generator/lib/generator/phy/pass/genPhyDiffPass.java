@@ -33,12 +33,12 @@ public class genPhyDiffPass {
         var deltaOpsNode = OpCtxG.Of();
         for(var slot: news.getSlots(NormalController.CType.NODE, ".*", null)){
             //MUST BE NODEADD
-            if (olds.getSlot(NormalController.CType.NODE, slot.getName(), null) != null){
+            if (olds.getSlot(NormalController.CType.NODE, slot.getName(), null) == null){
                 deltaOpsNode.addOp(getOp(OpType.NODEADD, slot.getName(), null));
             }
         }
         for(var slot: olds.getSlots(NormalController.CType.NODE, ".*", null)){
-            if (news.getSlot(NormalController.CType.NODE, slot.getName(), null) != null){
+            if (news.getSlot(NormalController.CType.NODE, slot.getName(), null) == null){
                 deltaOpsNode.addOp(getOp(OpType.NODEDEL, slot.getName(), null));
             }
         }
@@ -161,16 +161,17 @@ public class genPhyDiffPass {
         deltaOps.addOps(deltaOpsLink.getOps());
         deltaOps.addOps(deltaOpsIntf.getOps());
         deltaOps.addOps(deltaOpsProtocol.getOps());
-        //FIXME 7-1
-        //checkEqual(olds.toOpCtxG(), news.toOpCtxG());
+        checkEqual(olds.toOpCtxG(), news.toOpCtxG(), deltaOps);
         return deltaOps;
     }
 
-    void checkEqual(OpCtxG olds, OpCtxG news){
+    void checkEqual(OpCtxG olds, OpCtxG news, OpCtxG deltas){
         if (olds.getOps().size() != news.getOps().size()){
             System.out.println(olds);
             System.out.println("--------------");
             System.out.println(news);
+            System.out.println("--------------");
+            System.out.println(deltas);
             assert false;
         }
         for(int i = 0; i < olds.getOps().size(); i++){
@@ -181,6 +182,8 @@ public class genPhyDiffPass {
                 System.out.println(olds);
                 System.out.println("--------------");
                 System.out.println(news);
+                System.out.println("--------------");
+                System.out.println(deltas);
                 assert false;
             }
         }
