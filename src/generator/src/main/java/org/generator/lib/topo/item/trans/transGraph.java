@@ -12,13 +12,21 @@ public class transGraph {
     public static class deltaNodes {
         public Set<String> newIntfName, updateIntfName;
         Set<String> newRouterName, updateRouterName;
-
+        Set<Integer> newNetworkId, updateNetworkId;
         public deltaNodes() {
             newIntfName = new HashSet<>();
             updateIntfName = new HashSet<>();
             newRouterName = new HashSet<>();
             updateRouterName = new HashSet<>();
+            newNetworkId = new HashSet<>();
+            updateNetworkId = new HashSet<>();
         }
+
+        public void addNewNetworkId(int id){newNetworkId.add(id);}
+        public void addUpdateNetworkId(int id){updateNetworkId.add(id);}
+
+        public boolean isNewNetworkId(int id){return newNetworkId.contains(id);}
+        public boolean isUpdateNetworkId(int id){return updateNetworkId.contains(id);}
 
         public void addNewIntf(Intf intf){
             newIntfName.add(NodeGen.getIntfName(NodeGen.getRouterName(intf.routerId), intf.id));
@@ -70,7 +78,7 @@ public class transGraph {
         intfToRouter = new HashMap<>();
         networkToIntf = new HashMap<>();
         delta = new deltaNodes();
-        for(var router: routers){
+        for(var router: this.routers){
             if (router.id > id) id = router.id;
             int i = 0;
             for(var intf: router.intfs){
@@ -102,12 +110,12 @@ public class transGraph {
         }
     }
     public Integer getNewNetworkId(){
-        return ++networkId;
+        return networkId++;
     }
 
 
     public List<Intf> getLinkedIntfs(Intf intf){
-        return networkToIntf.get(intf.networkId).stream().filter(i -> intfToRouter.get(i).equals(intfToRouter.get(intf))).toList();
+        return networkToIntf.get(intf.networkId).stream().filter(i -> !intfToRouter.get(i).equals(intfToRouter.get(intf))).toList();
     }
 
     public List<Router> getLinkedRouters(Intf intf){

@@ -27,8 +27,9 @@ public class phyTran {
     public static boolean equalDelNode(transGraph transG) {
         //found a router which is not an ABR(OSPF), XXX(ISIS) and has at least two neighbors
         Router del_router = null;
-        //FIXME we should random routers
-        //TODO stub networks
+        //TODO 7-3 we should random routers
+        //TODO 7-3 stub networks
+        //TODO 7-3 remain old networks
         for (var r : transG.getRouters()) {
             //FOR OSPF, we should delete router which is not an ABR
             var area_num = -1;
@@ -58,6 +59,9 @@ public class phyTran {
                 networkToIntfs.put(networkId, transG.getLinkedIntfs(intfs.getFirst()));
             }
 
+            //update network, we have changed this network and shall be not compared
+            networks.forEach(transG.getDeltaNodes()::addUpdateNetworkId);
+
             //Next we link del_router's neighbors pair by pair
             //We should fill area, new cost, new networkId
             if (networks.size() == 2) {
@@ -66,6 +70,10 @@ public class phyTran {
                 intfsB = networkToIntfs.get(networks.get(1));
 
                 var new_network = transG.getNewNetworkId();
+
+                //new network, we should not compare them
+                transG.getDeltaNodes().addNewNetworkId(new_network);
+
                 for (var dst_intf : networkToIntfs.get(networks.get(0))) {
                     dst_intf.cost += deltaCost.get(networks.get(1));
                     transG.updateIntf(dst_intf);
@@ -90,6 +98,7 @@ public class phyTran {
                             for(var copy_intf : networkToIntfs.get(networks.get(i))) {
                                 var add_intf = transG.newIntf(transG.getRouterOfIntf(copy_intf));
                                 add_intf.area = area_num;
+                                add_intf.cost = copy_intf.cost;
                                 intfsA.add(add_intf);
                             }
                         }
@@ -98,16 +107,17 @@ public class phyTran {
                         for (var copy_intf : networkToIntfs.get(networks.get(j))) {
                             var add_intf = transG.newIntf(transG.getRouterOfIntf(copy_intf));
                             add_intf.area = area_num;
+                            add_intf.cost = copy_intf.cost;
                             intfsB.add(add_intf);
                         }
 
                         var new_network = transG.getNewNetworkId();
-                        for (var dst_intf : networkToIntfs.get(networks.get(i))) {
+                        for (var dst_intf : intfsA) {
                             dst_intf.cost += deltaCost.get(networks.get(j));
                             transG.addIntfToNetworkId(dst_intf, new_network);
                         }
 
-                        for (var dst_intf : networkToIntfs.get(networks.get(j))) {
+                        for (var dst_intf : intfsB) {
                             dst_intf.cost += deltaCost.get(networks.get(i));
                             transG.addIntfToNetworkId(dst_intf, new_network);
                         }
