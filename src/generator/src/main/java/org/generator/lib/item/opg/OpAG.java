@@ -92,6 +92,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
     public OpAG activeSetView(){
         var opAG = OpAG.of();
         this.getOps().stream().filter(opa -> opa.state == OpAnalysis.STATE.ACTIVE && opa.op.Type().isSetOp()).forEach(opAG::addOp);
+        opAG.updateOpStatus();
         return opAG;
     }
 
@@ -117,7 +118,7 @@ public class OpAG extends BaseOpG<OpAnalysis>{
         updateOpStatus();
     }
 
-    private void updateOpStatus(){
+    public void updateOpStatus(){
         //FIXME !!! IS THIS RIGHT?
         OpStatus = new HashMap<>();
 //        getOps().forEach(opa -> {

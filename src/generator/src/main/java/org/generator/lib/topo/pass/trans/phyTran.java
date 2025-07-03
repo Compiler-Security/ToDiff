@@ -25,10 +25,10 @@ public class phyTran {
 
     //delete one router
     public static boolean equalDelNode(transGraph transG) {
-
         //found a router which is not an ABR(OSPF), XXX(ISIS) and has at least two neighbors
         Router del_router = null;
         //FIXME we should random routers
+        //TODO stub networks
         for (var r : transG.getRouters()) {
             //FOR OSPF, we should delete router which is not an ABR
             var area_num = -1;

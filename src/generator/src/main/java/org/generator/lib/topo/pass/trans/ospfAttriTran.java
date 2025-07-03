@@ -58,6 +58,7 @@ public class ospfAttriTran {
             var oldOspfIntf = newG.getOSPFIntfOfIntf(oldIntf.getName());
             var ipRange = IPRange.of(oldIntf.getIp().getNetAddressOfIp().IDtoLong(), oldIntf.getIp().getMask());
             var baseNum = ipRange.getAddressOfIp().IDtoLong();
+            //TODO remain modified interface's link's switch port name the same with oldConfG
             for(var intf: newG.getLinkedIntfsOfSwitch(s.getName())){
                 if (intf == oldIntf) continue;
                 intf.setIp(IP.of(baseNum++, ipRange.getMask()));

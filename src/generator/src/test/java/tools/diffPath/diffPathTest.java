@@ -22,6 +22,20 @@ public class diffPathTest {
         var old_phyOps = generate.generatePhyCore(old_confg);
         var new_phyOps = generate.generatePhyCore(new_confg);
         System.out.println(generate.generateDiffPhyOp(old_phyOps, new_phyOps));
-
+        var new_routers = tmp1.first().getRouters();
+        for(var old_r:old_confg.getRouters()) {
+            if (new_confg.containsNode(old_r.getName())){
+                var old_rConfg = old_confg.viewConfGraphOfRouter(old_r.getName());
+                old_rConfg.setR_name(old_r.getName());
+                var new_rConfg = new_confg.viewConfGraphOfRouter(old_r.getName());
+                new_rConfg.setR_name(old_r.getName());
+                var old_ospfOps = generate.generateCore(old_rConfg, false);
+                var new_ospfOps = generate.generateCore(new_rConfg, false);
+                System.out.println(old_ospfOps);
+                System.out.println(new_ospfOps);
+                System.out.println(generate.generateDiffProtoOp(old_ospfOps, new_ospfOps));
+                break;
+            }
+        }
     }
 }
