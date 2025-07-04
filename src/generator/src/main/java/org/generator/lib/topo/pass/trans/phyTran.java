@@ -1,18 +1,23 @@
 package org.generator.lib.topo.pass.trans;
 
 import org.generator.lib.generator.driver.generate;
+import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.topo.item.base.Intf;
 import org.generator.lib.topo.item.base.Router;
 import org.generator.lib.topo.item.trans.transGraph;
 import org.generator.util.collections.Pair;
+import org.generator.util.ran.ranHelper;
 
 import java.util.*;
 
 public class phyTran {
 
     public static enum transRule{
-        equalDealNode;
+        equalDealNode,
+        switchToRouter,
+        fakeEdge,
+        ;
         static final List<transRule> l = new ArrayList<transRule>();
         static {
             l.addAll(Arrays.asList(transRule.values()));
@@ -130,6 +135,73 @@ public class phyTran {
         transG.checkRouters();
         return del_router != null;
     }
+
+    /**
+     * We change one switch with at least three routers into one router connect this routers
+     * r1----s1----r2
+     *        |
+     *        |
+     *        r3
+     *
+     * r1(-delta)----(delta)rNew(delta)---(-delta)r2
+     *                       |(delta)
+     *                       |
+     *                       r3
+     * @param transG
+     * @return
+     */
+    public static boolean switchToRouter(transGraph transG) {
+        //TODO: 7-4 random switch ID
+        for(int i = 0; i < transG.getNetworkId(); i++){
+            var intfs = transG.getIntfsOfNetwork(i);
+            Set<Router> rs = new HashSet<>();
+            intfs.forEach(intf-> rs.add(transG.getRouterOfIntf(intf)));
+            if (rs.size() < 3) continue;
+            int miCost = intfs.stream().map(intf -> intf.cost).min(Integer::compareTo).get();
+            if (miCost == 1) continue;
+            //TODO:7-4 select a random cost between [1,miCost)
+            int deltaCost = miCost -1;
+            var newR = transG.newRouter();
+            var area = intfs.getFirst().area;
+            //For each router's all interfaces, we add to an same subnet and connect to the new_router
+            for(var r: rs){
+                var newNetwork = transG.getNewNetworkId();
+                //connect router r's interface of network I to the new network
+                r.getIntfsOfNetwork(i).forEach(intf ->
+                    {intf.networkId = newNetwork; intf.cost -= deltaCost;}
+                );
+                //connect router newR to the new network
+                transG.newIntf(newR, deltaCost, area, newNetwork);
+            }
+            transG.getDeltaNodes().addUpdateNetworkId(i);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Find two router and add one fake edge(cost 65535) in the one area
+     * @param transG
+     * @return
+     */
+    public static boolean fakeEdge(transGraph transG){
+        if (transG.getRouters().size() < 2) return false;
+        Router r1 = null, r2 = null;
+        while(true){
+            r1 = ranHelper.randomElemOfList(transG.getRouters());
+            r2 = ranHelper.randomElemOfList(transG.getRouters());
+            if (r1.getAreas() == null) continue;
+            if (!r1.equals(r2)) break;
+        }
+        var area = ranHelper.randomElemOfList(r1.getAreas().stream().toList());
+        //FIXME 7-4 cost should set to an more reasonable value
+        int cost = 65535;
+        int networkId = transG.getNewNetworkId();
+        transG.newIntf(r1, cost, area, networkId);
+        transG.newIntf(r2, cost, area, networkId);
+        return true;
+    }
+
 
     public static transGraph solve(List<Router> routers, List<transRule> rules){
         var transG = new transGraph(routers);

@@ -110,6 +110,7 @@ public class transGraph {
         }
     }
     public Integer getNewNetworkId(){
+        delta.newNetworkId.add(networkId);
         return networkId++;
     }
 
@@ -160,6 +161,14 @@ public class transGraph {
         router.intfs.add(intf);
         delta.addNewIntf(intf);
         return intf;
+    }
+
+    public Intf newIntf(Router router, int cost, int area, int networkId){
+        var r = newIntf(router);
+        r.cost = cost;
+        r.area = area;
+        r.networkId = networkId;
+        return r;
     }
 
     public void updateIntf(Intf intf){

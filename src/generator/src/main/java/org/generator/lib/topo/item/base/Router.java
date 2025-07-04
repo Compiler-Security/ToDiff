@@ -23,6 +23,10 @@ public class Router {
         return intfs.stream().filter(intf -> intf.area == area).collect(Collectors.toList());
     }
 
+    public List<Intf> getIntfsOfNetwork(int networkId){
+        return intfs.stream().filter(intf -> intf.networkId == networkId).collect(Collectors.toList());
+    }
+
     public List<Intf> getUnconnectedIntfsOfArea(int area){
         return getIntfsOfArea(area).stream().filter(intf-> intf.networkId == -1).collect(Collectors.toList());
     }
