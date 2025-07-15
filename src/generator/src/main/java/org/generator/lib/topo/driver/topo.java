@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.graph.ConfGraph;
+import org.generator.lib.topo.item.base.Intf;
 import org.generator.lib.topo.item.base.Router;
 import org.generator.lib.topo.item.base.Router_ISIS;
 import org.generator.lib.topo.item.base.baseItemHelper;
@@ -29,6 +30,7 @@ import org.graphstream.stream.file.FileSinkDOT;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class topo {
@@ -192,15 +194,13 @@ public class topo {
     * */
     public static Pair<transGraph, ConfGraph> transformGraph(List<Router> routers, ConfGraph old_confG, List<transRule> rules, ObjectNode dumpInfo){
         var transG = phyTran.solve(routers, rules);
-        String baseGraphStr = null;
         switch (generate.protocol){
             case OSPF -> {
                 var tmp = new ospfRanBaseGen();
                 tmp.networkId = transG.getNetworkId();
-                baseGraphStr = dumpGraphOspf(transG.getRouters(), tmp);
+                dumpGraphOspf(transG.getRouters(), tmp);
             }
         }
-        if (dumpInfo != null) dumpInfo.put("routerGraph", TextNode.valueOf(baseGraphStr));
 
         ConfGraph new_confg = null;
         if(generate.protocol != generate.Protocol.ISIS && generate.protocol != generate.Protocol.OpenFabric){
@@ -216,18 +216,18 @@ public class topo {
             //FIXME TODO ISIS
         }
         var t = new transGraph(routers);
-//        System.out.println(t.toString());
-//        System.out.println("----");
-//        System.out.println(transG.toString());
         switch (generate.protocol){
             case OSPF -> {ospfAttriTran.solve(old_confG, new_confg, transG.getDeltaNodes());}
         }
-        var confgAttrStr = new_confg.toString();
-        if (dumpInfo != null){
-            dumpInfo.put("configGraph", new_confg.toDot(false));
-            dumpInfo.put("configGraphAttr", new_confg.toString());
-        }
         return new Pair<>(transG, new_confg);
+    }
+
+    static Intf getIntf(int routerId, int id, int area, int cost, int networkId){
+        var intf = new Intf(id, routerId);
+        intf.networkId = networkId;
+        intf.cost = cost;
+        intf.area = area;
+        return intf;
     }
 
     public static Pair<List<Router>, ConfGraph> genInitTransGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, ObjectNode dumpInfo){
@@ -238,8 +238,18 @@ public class topo {
         switch (generate.protocol){
             case OSPF -> {
                 var ran = new ospfRanBaseGen();
-                routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
-                baseGraphStr = dumpGraphOspf(routers, ran);
+                //routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
+                //FIXME 7-15 we should use random base graph generate
+                routers = new ArrayList<>();
+                for(int i = 0; i < 5; i++) routers.add(new Router(i));
+                for(int i = 0; i < 3; i++) {
+                    routers.get(0).intfs.add(getIntf(0, i, 0, i + 1, i));
+                }
+                routers.get(1).intfs.add(getIntf(1, 0, 0, 4, 0));
+                routers.get(2).intfs.add(getIntf(2, 0, 0, 5, 0));
+                routers.get(3).intfs.add(getIntf(3, 0, 0, 6, 1));
+                routers.get(4).intfs.add(getIntf(4, 0, 0, 7, 2));
+                //baseGraphStr = dumpGraphOspf(routers, ran);
             }
             //FIXME TODO ISIS
         }

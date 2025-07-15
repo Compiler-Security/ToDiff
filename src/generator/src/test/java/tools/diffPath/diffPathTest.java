@@ -15,6 +15,7 @@ import org.generator.lib.topo.pass.attri.ospfRanAttriGen;
 import org.generator.lib.topo.pass.base.ospfRanBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
 import org.generator.lib.topo.pass.trans.phyTran;
+import org.generator.tools.diffPath.diffPath;
 import org.generator.util.collections.Pair;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPBase;
@@ -213,5 +214,16 @@ public class diffPathTest {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void testdiffPath(){
+        var json = diffPath.gen(5, 2, 2, 2);
+        var writer = new ObjectMapper().writer(new DefaultPrettyPrinter());
+        try {
+            System.out.println(writer.writeValueAsString(json));
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
