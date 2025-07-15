@@ -222,7 +222,7 @@ public class ospfRanAttriGen implements genAttri {
             ospf.setRouterId(ID.of(r.id + 1)); //router id is not allowed to 0.0.0.0
             isABR.put(ospf, false);
             for(int j = 0; j < r.intfs.size(); j++){
-                var intf_name  = NodeGen.getIntfName(r_name, j);
+                var intf_name  = NodeGen.getIntfName(r_name, r.intfs.get(j).id);
                 var ospf_intf_name = NodeGen.getOSPFIntfName(intf_name);
                 var ospf_intf = new OSPFIntf(ospf_intf_name);
                 g.addNode(ospf_intf);

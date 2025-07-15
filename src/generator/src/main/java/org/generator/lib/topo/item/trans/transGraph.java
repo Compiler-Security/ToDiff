@@ -109,6 +109,12 @@ public class transGraph {
             networkToIntf.get(intf.networkId).remove(intf);
         }
     }
+
+    public void removeIntf(Intf intf){
+        intfToRouter.get(intf).intfs.remove(intf);
+        intfToRouter.remove(intf);
+        networkToIntf.get(intf.networkId).remove(intf);
+    }
     public Integer getNewNetworkId(){
         delta.newNetworkId.add(networkId);
         return networkId++;

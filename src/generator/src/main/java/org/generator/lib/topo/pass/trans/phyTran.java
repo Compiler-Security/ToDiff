@@ -198,6 +198,10 @@ public class phyTran {
         //merge subTransGraph to the transGraph
         mergeSubGraphToGraph(ra, res.first(), rb, res.second(), transG, transSubG, intfa.area);
 
+        //delete intfa and intfb
+        transG.removeIntf(intfa);
+        transG.removeIntf(intfb);
+
         return true;
     }
 
