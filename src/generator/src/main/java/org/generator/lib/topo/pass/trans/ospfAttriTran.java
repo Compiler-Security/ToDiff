@@ -14,13 +14,7 @@ import java.util.Map;
 
 public class ospfAttriTran {
     public static void solve(ConfGraph oldG, ConfGraph newG, deltaNodes deltas) {
-        Map<Integer, IPRange> networkIps = new HashMap<>();
-        for(var s: oldG.getSwitches()){
-            var intfs = oldG.getLinkedIntfsOfSwitch(s.getName());
-            if (intfs.isEmpty()) continue;
-            var ip = intfs.getFirst().getIp();
-            networkIps.put(NodeGen.getId(s.getName()), IPRange.of(ip.getNetAddressOfIp().IDtoLong(), ip.getMask()));
-        }
+        var networkIps = oldG.getNetworks();
         //copy attributes from oldG
         for (var r: newG.getRouters()){
             if (deltas.isNewRouter(r.getName())){
