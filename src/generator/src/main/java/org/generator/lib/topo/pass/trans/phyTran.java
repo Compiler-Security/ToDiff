@@ -1,11 +1,10 @@
 package org.generator.lib.topo.pass.trans;
 
 import org.generator.lib.generator.driver.generate;
-import org.generator.lib.item.conf.graph.ConfGraph;
-import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.topo.item.base.Intf;
 import org.generator.lib.topo.item.base.Router;
 import org.generator.lib.topo.item.trans.transGraph;
+import org.generator.lib.topo.pass.base.ripRanBaseGen;
 import org.generator.util.collections.Pair;
 import org.generator.util.ran.ranHelper;
 
@@ -14,6 +13,7 @@ import java.util.*;
 public class phyTran {
 
     public static enum transRule{
+        addSubGraph,
         equalDealNode,
         switchToRouter,
         fakeEdge,
@@ -26,6 +26,70 @@ public class phyTran {
             assert id < l.size():"not have transRule %d".formatted(id);
             return l.get(id);
         }
+    }
+
+    static Pair<Router, Router> changeSubGraph(transGraph subG, int dista, int distb){
+        return null;
+    }
+
+    static int getNetworkIdInGraph(int networkId, Map<Integer, Integer> newNetworkId, transGraph transG){
+        if (!newNetworkId.containsKey(networkId)){newNetworkId.put(networkId, transG.getNewNetworkId());}
+        return newNetworkId.get(networkId);
+    }
+
+    static void mergeOneRouter(Router r, Router subr, int area, transGraph transG, Map<Integer, Integer> newNetworkId){
+        for(var intf: subr.intfs){
+            var new_intf = transG.newIntf(r, intf.cost, area, getNetworkIdInGraph(intf.networkId, newNetworkId, transG));
+            transG.addIntfToNetworkId(new_intf, new_intf.networkId);
+        }
+    }
+
+    static void addOneRouter(Router subr, int area, transGraph transG, Map<Integer, Integer> newNetworkId){
+        var r = transG.newRouter();
+        mergeOneRouter(r, subr, area, transG, newNetworkId);
+    }
+
+    static void mergeSubGraphToGraph(Router ra, Router subRa, Router rb, Router subRb, transGraph transG, transGraph subTransG, int area){
+        Map<Integer, Integer> newNetworkId = new HashMap<>();
+        mergeOneRouter(ra, subRa, area, transG, newNetworkId);
+        mergeOneRouter(rb, subRb, area, transG, newNetworkId);
+        for(var router: subTransG.getRouters()){
+            if (router.equals(subRa) || router.equals(subRb)) continue;
+            addOneRouter(router, area, transG, newNetworkId);
+        }
+    }
+
+    public static boolean addSubGraph(transGraph transG){
+        //TODO 7-15 choose random routers
+        var routers = transG.getRouters();
+        Router ra = null, rb = null;
+        Intf intfa = null, intfb = null;
+        //FIXME 7-15 we should random choose two interface's of one routers
+        for(var networkId: transG.getNetworkIds()){
+            var intfs = transG.getIntfsOfNetwork(networkId);
+            if (intfs.size() != 2) continue;
+            intfa = intfs.getFirst();
+            intfb = intfs.getLast();
+            ra = transG.getRouterOfIntf(intfa);
+            rb = transG.getRouterOfIntf(intfb);
+            if (ra.equals(rb)) continue;
+        }
+        if (ra == null || rb == null) return false;
+        var subGraphGen = new ripRanBaseGen();
+        int totalRouter;
+        if (generate.transRan){totalRouter = ranHelper.randomInt(3, 10);}
+        else totalRouter = 5;
+        //FIXME 7-15 mxDegree should be set to a good value
+        var subG = subGraphGen.generate(totalRouter, 0, 3, 0);
+        var transSubG = new transGraph(subG);
+
+        //changeGraph
+        var res = changeSubGraph(transSubG, intfa.cost, intfb.cost);
+
+        //merge subTransGraph to the transGraph
+        mergeSubGraphToGraph(ra, res.first(), rb, res.second(), transSubG, transG, intfa.area);
+
+        return true;
     }
 
     //delete one router

@@ -96,6 +96,13 @@ public class ranHelper {
          return randomElemsOfList(elems, elems.size());
      }
 
+     public static <T> List<T> randomNumElemsOfList(List<T> elems, int num){
+         if (elems.size() < num) return null;
+         var tmp = new ArrayList<>(elems);
+         Collections.shuffle(tmp);
+         return new ArrayList<>(tmp.subList(0, num));
+     }
+
     public static <T> List<T> randomElemsOfList(List<T> elems, int bound){
         assert !elems.isEmpty();
          if (elems.isEmpty()) return null;

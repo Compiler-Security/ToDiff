@@ -239,6 +239,9 @@ public class generate {
 
     public static final boolean insertRan = true;
 
+    //FIXME(should turn to true when testing)
+    public static final boolean transRan = false;
+
     //insert irrOp, the number is irrOpRatio of activeOp
     public static double irrOpRatio = 0.4;
 

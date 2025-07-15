@@ -194,6 +194,10 @@ public class transGraph {
         return networkId;
     }
 
+    public List<Integer> getNetworkIds(){
+        return new ArrayList<>(networkToIntf.keySet());
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
