@@ -72,7 +72,7 @@ class MininetInst(BaseInst):
             raise InstErrorException("[mininet] intf name not right")
         return l[0]
 
-    def _get_node(self, node_name: str) -> [None | Node]:
+    def  _get_node(self, node_name: str) -> [None | Node]:
         if node_name not in self.net.net:
             return None
         return self.net.net[node_name]
@@ -325,6 +325,9 @@ class MininetInst(BaseInst):
 
 
         if _cmds_equal_prefix(op_args, ["remove"]):
+            if (intf2 is None) and (intf1 is not None):
+                self.net.net.delLink(intf1.link)
+                return self.EXEC_DONE
             if node1 is None or node2 is None:
                 return self.EXEC_MISS
             if (intf1 is not None) and (intf2 is not None):

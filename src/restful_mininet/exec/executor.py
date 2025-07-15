@@ -195,6 +195,8 @@ class executor:
     def _check_converge_ospf(self, net:testnet.TestNet):
         for r_name in self.routers:
             warnln(f"    +check router {r_name}")
+            #if r_name not in net.net.nameToNode:
+            #    continue
             res = net.net.nameToNode[r_name].dump_ospf_neighbor_info()
             if res == None:
                 warnln(f"    -check router {r_name} n")
@@ -792,5 +794,5 @@ class executor:
 
 
 if __name__ == "__main__":
-    t = executor("/home/frr/topo-fuzz/test/topo_test/data/check/test1742971398_r1.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "babel")
+    t = executor("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1751992035.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "ospf")
     t.test()
