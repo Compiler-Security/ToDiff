@@ -26,6 +26,7 @@ import org.generator.lib.item.conf.node.openfabric.FABRICDaemon;
 import org.generator.lib.item.conf.node.openfabric.FABRICIntf;
 import org.generator.util.collections.Pair;
 import org.generator.util.exec.ExecStat;
+import org.generator.util.net.IPRange;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.SingleGraph;
 import org.graphstream.stream.file.FileSinkDOT;
@@ -49,6 +50,7 @@ public class ConfGraph extends AbstractRelationGraph {
         ConfGraph that = (ConfGraph) o;
         return that.toJson().equals(this.toJson());
     }
+
 
     @Override
     public int hashCode() {
@@ -634,5 +636,16 @@ public class ConfGraph extends AbstractRelationGraph {
         for (var entry : m.entrySet()) {
             System.out.println(String.format("%s : %s", entry.getKey(), entry.getValue()));
         }
+    }
+
+    public  Map<Integer, IPRange> getNetworks() {
+        Map<Integer, IPRange> networkIps = new HashMap<>();
+        for (var s : getSwitches()) {
+            var intfs = getLinkedIntfsOfSwitch(s.getName());
+            if (intfs.isEmpty()) continue;
+            var ip = intfs.getFirst().getIp();
+            networkIps.put(NodeGen.getId(s.getName()), IPRange.of(ip.getNetAddressOfIp().IDtoLong(), ip.getMask()));
+        }
+        return networkIps;
     }
 }
