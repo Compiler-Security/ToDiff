@@ -47,7 +47,7 @@ public class diffPathTest {
         c.generate(confg, routers);
         return new Pair<>(routers, confg);
     }
-    @Test public void test_() {
+    @Test public void test_delNode() {
         //var tmp = topo.genInitTransGraph(3, 2, 2, 1, false, null);
         var tmp = getDelNodeTestRouters();
         var old_routers = tmp.first();
@@ -73,6 +73,34 @@ public class diffPathTest {
                 break;
             }
         }
+    }
+
+    @Test public void test_addSubGraph() {
+        //var tmp = topo.genInitTransGraph(3, 2, 2, 1, false, null);
+        var tmp = getDelNodeTestRouters();
+        var old_routers = tmp.first();
+        var old_confg = tmp.second();
+        var tmp1 = topo.transformGraph(old_routers, old_confg, new ArrayList<>(List.of(phyTran.transRule.addSubGraph)), null);
+        var new_confg = tmp1.second();
+        var old_phyOps = generate.generatePhyCore(old_confg);
+        var new_phyOps = generate.generatePhyCore(new_confg);
+        System.out.println(generate.generateDiffPhyOp(old_phyOps, new_phyOps));
+//        var new_routers = tmp1.first().getRouters();
+//        for(var old_r:old_confg.getRouters()) {
+//            System.out.println(old_r.getName());
+//            if (new_confg.containsNode(old_r.getName())){
+//                var old_rConfg = old_confg.viewConfGraphOfRouter(old_r.getName());
+//                old_rConfg.setR_name(old_r.getName());
+//                var new_rConfg = new_confg.viewConfGraphOfRouter(old_r.getName());
+//                new_rConfg.setR_name(old_r.getName());
+//                var old_ospfOps = generate.generateCore(old_rConfg, false);
+//                var new_ospfOps = generate.generateCore(new_rConfg, false);
+//                //System.out.println(old_ospfOps);
+//                //System.out.println(new_ospfOps);
+//                System.out.println(generate.generateDiffProtoOp(old_ospfOps, new_ospfOps));
+//                break;
+//            }
+//        }
     }
 
     @Test

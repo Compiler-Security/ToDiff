@@ -9,6 +9,9 @@ import org.generator.util.collections.Pair;
 import org.generator.util.ran.ranHelper;
 
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.lang.Math.min;
 
 public class phyTran {
 
@@ -84,24 +87,27 @@ public class phyTran {
     }
 
     static void changeCostForPath(List<Intf> intfs, int deltaCost, Set<Intf> modifiedIntfs){
-        //FIXME we should use more random deltaways
-        int s = 0;
-        for(var intf: intfs){
-            if (modifiedIntfs.contains(intf)) continue;
-            s += 1;
+        var changedIntfs = new ArrayList<>(intfs.stream().filter(intf -> !modifiedIntfs.contains(intf)).toList());
+        changedIntfs.sort(Comparator.comparing((Intf intf) -> intf.cost));
+        if (deltaCost > 0){
+            //miPath < target dist
+            //FIXME we should use more random delta ways
+            var d = deltaCost;
+            changedIntfs.forEach(intf -> intf.cost += d / changedIntfs.size());
+            changedIntfs.getFirst().cost += deltaCost % changedIntfs.size();
+        }else{
+            //miPath > target dist
+            deltaCost = -deltaCost;
+            //FIXME we should use random delta
+            for(var intf: changedIntfs){
+                int delta = min(deltaCost, intf.cost - 1);
+                deltaCost -= delta;
+                intf.cost -= delta;
+                if (deltaCost == 0) break;
+            }
+            assert deltaCost == 0;
         }
-        assert s != 0;
-        Intf intf1 = null;
-        for(var intf: intfs){
-            if (modifiedIntfs.contains(intf)) continue;
-            intf.cost += deltaCost / s;
-            assert intf.cost > 0;
-            intf1 = intf;
-        }
-        assert intf1 != null;
-        intf1.cost += deltaCost - (deltaCost / s * s);
-        assert intf1.cost > 0;
-        modifiedIntfs.addAll(intfs);
+        modifiedIntfs.addAll(changedIntfs);
     }
 
     static void changeSubGraphForRouter(transGraph subG, Router rStart, Router rEnd, int targetDist){
@@ -162,7 +168,6 @@ public class phyTran {
 
     public static boolean addSubGraph(transGraph transG){
         //TODO 7-15 choose random routers
-        var routers = transG.getRouters();
         Router ra = null, rb = null;
         Intf intfa = null, intfb = null;
         //FIXME 7-15 we should random choose two interface's of one routers
@@ -188,7 +193,7 @@ public class phyTran {
         var res = changeSubGraph(transSubG, intfa.cost, intfb.cost);
 
         //merge subTransGraph to the transGraph
-        mergeSubGraphToGraph(ra, res.first(), rb, res.second(), transSubG, transG, intfa.area);
+        mergeSubGraphToGraph(ra, res.first(), rb, res.second(), transG, transSubG, intfa.area);
 
         return true;
     }
@@ -373,6 +378,7 @@ public class phyTran {
         for(var rule: rules){
             switch (rule){
                 case equalDealNode -> {equalDelNode(transG);}
+                case addSubGraph -> {addSubGraph(transG);}
             }
         }
         return transG;
