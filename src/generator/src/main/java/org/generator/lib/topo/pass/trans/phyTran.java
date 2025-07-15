@@ -28,8 +28,109 @@ public class phyTran {
         }
     }
 
+    static Pair<Integer, List<Intf>> getShortestPath(transGraph subG,
+                                                     Router rStart,
+                                                     Router rEnd) {
+
+        // --------- 初始化 ---------
+        Map<Router, Integer> dist      = new HashMap<>();
+        Map<Router, Intf>    prevIntf  = new HashMap<>();
+        Map<Router, Router>  prevRtr   = new HashMap<>();
+
+        PriorityQueue<Pair<Integer, Router>> pq =
+                new PriorityQueue<>(Comparator.comparingInt(p -> (Integer) p.first()));
+
+        dist.put(rStart, 0);
+        pq.add(new Pair<>(0, rStart));
+
+        // --------- Dijkstra 主循环 ---------
+        while (!pq.isEmpty()) {
+            Pair<Integer, Router> curPair = pq.poll();
+            int    curDist = curPair.first();
+            Router u       = curPair.second();
+
+            if (curDist > dist.get(u)) continue;     // 过期条目
+            if (u.equals(rEnd)) break;               // 已到达目标
+
+            for (Intf intf : u.intfs) {
+                int w = intf.cost > 0 ? intf.cost : 1;     // 默认 cost=1
+                for (Router v : subG.getLinkedRouters(intf)) {
+
+                    int newDist = curDist + w;
+                    if (newDist < dist.getOrDefault(v, Integer.MAX_VALUE)) {
+                        dist.put(v, newDist);
+                        prevIntf.put(v, intf);
+                        prevRtr.put(v, u);
+                        pq.add(new Pair<>(newDist, v));
+                    }
+                }
+            }
+        }
+
+        // --------- 构造结果 ---------
+        if (!dist.containsKey(rEnd)) {
+            return new Pair<>(Integer.MAX_VALUE, Collections.emptyList());
+        }
+
+        List<Intf> path = new ArrayList<>();
+        for (Router v = rEnd; !v.equals(rStart); v = prevRtr.get(v)) {
+            Intf outIntf = prevIntf.get(v);
+            if (outIntf == null) assert false: "outInf should not be null %s".formatted(outIntf);    // 理论上不应发生
+            path.add(outIntf);
+        }
+        Collections.reverse(path);
+
+        return new Pair<>(dist.get(rEnd), path);
+    }
+
+    static void changeCostForPath(List<Intf> intfs, int deltaCost, Set<Intf> modifiedIntfs){
+        //FIXME we should use more random deltaways
+        int s = 0;
+        for(var intf: intfs){
+            if (modifiedIntfs.contains(intf)) continue;
+            s += 1;
+        }
+        assert s != 0;
+        Intf intf1 = null;
+        for(var intf: intfs){
+            if (modifiedIntfs.contains(intf)) continue;
+            intf.cost += deltaCost / s;
+            assert intf.cost > 0;
+            intf1 = intf;
+        }
+        assert intf1 != null;
+        intf1.cost += deltaCost - (deltaCost / s * s);
+        assert intf1.cost > 0;
+        modifiedIntfs.addAll(intfs);
+    }
+
+    static void changeSubGraphForRouter(transGraph subG, Router rStart, Router rEnd, int targetDist){
+        Set<Intf> modifiedIntfs = new HashSet<>();
+        var res = getShortestPath(subG, rStart, rEnd);
+        var miDist = res.first();
+        var path = res.second();
+        if (miDist > targetDist){
+            changeCostForPath(path, targetDist - miDist, modifiedIntfs);
+        }else if (miDist < targetDist){
+            while(miDist < targetDist) {
+                //FIXME 7-15 we can only remain one path to targetDist, and other > targetDist
+                changeCostForPath(path, targetDist - miDist, modifiedIntfs);
+                res = getShortestPath(subG, rStart, rEnd);
+                miDist = res.first();
+                path = res.second();
+            }
+        }
+        assert getShortestPath(subG, rStart, rEnd).first() == targetDist;
+    }
+
     static Pair<Router, Router> changeSubGraph(transGraph subG, int dista, int distb){
-        return null;
+        assert subG.getRouters().size() >= 2: "subG size should >=2";
+        //FIXME 7-15 random pick
+        var ra = subG.getRouters().get(0);
+        var rb = subG.getRouters().get(1);
+        changeSubGraphForRouter(subG, ra, rb, dista);
+        changeSubGraphForRouter(subG, rb, ra, distb);
+        return new Pair<>(ra, rb);
     }
 
     static int getNetworkIdInGraph(int networkId, Map<Integer, Integer> newNetworkId, transGraph transG){
