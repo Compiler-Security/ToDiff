@@ -48,7 +48,7 @@ public class topo {
             for(var intf: r.intfs){
                 var gedge = graph.addEdge("r%d->n%d(%d)".formatted(r.id, intf.networkId, j), "r%d".formatted(r.id), "n%d".formatted(intf.networkId));
                 assert intf.cost > 0: "intf cost should > 0";
-                gedge.setAttribute("label", "p%d:a%d".formatted(j, intf.area));
+                gedge.setAttribute("label", "%d".formatted(intf.cost));
                 j++;
             }
         }

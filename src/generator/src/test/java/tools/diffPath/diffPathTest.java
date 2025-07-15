@@ -10,7 +10,9 @@ import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.topo.driver.topo;
 import org.generator.lib.topo.item.base.Intf;
 import org.generator.lib.topo.item.base.Router;
+import org.generator.lib.topo.item.trans.transGraph;
 import org.generator.lib.topo.pass.attri.ospfRanAttriGen;
+import org.generator.lib.topo.pass.base.ospfRanBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
 import org.generator.lib.topo.pass.trans.phyTran;
 import org.generator.util.collections.Pair;
@@ -21,6 +23,8 @@ import org.junit.Test;
 
 import java.time.Instant;
 import java.util.*;
+
+import static org.generator.lib.topo.driver.topo.dumpGraphOspf;
 
 public class diffPathTest {
 
@@ -75,6 +79,12 @@ public class diffPathTest {
         }
     }
 
+    String dumpTopo(List<Router> old_routers){
+        var r = new ospfRanBaseGen();
+        r.networkId = new transGraph(old_routers).getNetworkId();
+        return dumpGraphOspf(old_routers, r);
+    }
+
     @Test public void test_addSubGraph() {
         //var tmp = topo.genInitTransGraph(3, 2, 2, 1, false, null);
         var tmp = getDelNodeTestRouters();
@@ -84,7 +94,12 @@ public class diffPathTest {
         var new_confg = tmp1.second();
         var old_phyOps = generate.generatePhyCore(old_confg);
         var new_phyOps = generate.generatePhyCore(new_confg);
-        System.out.println(generate.generateDiffPhyOp(old_phyOps, new_phyOps));
+        System.out.println(dumpTopo(old_routers));
+        System.out.println(dumpTopo(tmp1.first().getRouters()));
+
+//        System.out.println(old_confg.toString());
+//        System.out.println(new_confg.toString());
+//        System.out.println(generate.generateDiffPhyOp(old_phyOps, new_phyOps));
 //        var new_routers = tmp1.first().getRouters();
 //        for(var old_r:old_confg.getRouters()) {
 //            System.out.println(old_r.getName());
@@ -98,7 +113,6 @@ public class diffPathTest {
 //                //System.out.println(old_ospfOps);
 //                //System.out.println(new_ospfOps);
 //                System.out.println(generate.generateDiffProtoOp(old_ospfOps, new_ospfOps));
-//                break;
 //            }
 //        }
     }

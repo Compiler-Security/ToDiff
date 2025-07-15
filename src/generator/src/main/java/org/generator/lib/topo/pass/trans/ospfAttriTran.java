@@ -2,14 +2,25 @@ package org.generator.lib.topo.pass.trans;
 
 import org.generator.lib.item.conf.graph.ConfGraph;
 
+import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.ospf.OSPFAreaSum;
 import org.generator.lib.item.conf.node.phy.Intf;
 import org.generator.lib.topo.item.trans.transGraph.deltaNodes;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class ospfAttriTran {
     public static void solve(ConfGraph oldG, ConfGraph newG, deltaNodes deltas) {
+        Map<Integer, IPRange> networkIps = new HashMap<>();
+        for(var s: oldG.getSwitches()){
+            var intfs = oldG.getLinkedIntfsOfSwitch(s.getName());
+            if (intfs.isEmpty()) continue;
+            var ip = intfs.getFirst().getIp();
+            networkIps.put(NodeGen.getId(s.getName()), IPRange.of(ip.getNetAddressOfIp().IDtoLong(), ip.getMask()));
+        }
         //copy attributes from oldG
         for (var r: newG.getRouters()){
             if (deltas.isNewRouter(r.getName())){
@@ -43,6 +54,24 @@ public class ospfAttriTran {
         }
         //update subnets constraints
         for(var s: newG.getSwitches()){
+            var networkId = NodeGen.getId(s.getName());
+            if (networkIps.containsKey(networkId)){
+                var ipRange = networkIps.get(networkId);
+                var baseNum = ipRange.getAddressOfIp().IDtoLong();
+                var oldIntfs = newG.getLinkedIntfsOfSwitch(s.getName()).stream().filter(intf -> !deltas.isNewIntf(intf.getName()));
+                for(var intf: newG.getLinkedIntfsOfSwitch(s.getName())){
+                    if (deltas.isNewIntf(intf.getName())) {
+                        //FIXME base may over max ip
+                        while(true){
+                            intf.setIp(IP.of(baseNum++, ipRange.getMask()));
+                            if (oldIntfs.noneMatch(i -> i.getIp().equals(intf.getIp()))){
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
             Intf oldIntf = null, newIntf = null;
             for(var intf: newG.getLinkedIntfsOfSwitch(s.getName())){
                 if (deltas.isNewIntf(intf.getName())) {
@@ -56,12 +85,9 @@ public class ospfAttriTran {
             //if all is old except cost continue
             if (newIntf == null) continue;
             var oldOspfIntf = newG.getOSPFIntfOfIntf(oldIntf.getName());
-            var ipRange = IPRange.of(oldIntf.getIp().getNetAddressOfIp().IDtoLong(), oldIntf.getIp().getMask());
-            var baseNum = ipRange.getAddressOfIp().IDtoLong();
             //TODO 7-3 remain modified interface's link's switch port name the same with oldConfG
             for(var intf: newG.getLinkedIntfsOfSwitch(s.getName())){
                 if (intf == oldIntf) continue;
-                intf.setIp(IP.of(baseNum++, ipRange.getMask()));
                 var ospfIntf = newG.getOSPFIntfOfIntf(intf.getName());
                 ospfIntf.setDeadInterval(oldOspfIntf.getDeadInterval());
                 ospfIntf.setTransDelay(oldOspfIntf.getTransDelay());

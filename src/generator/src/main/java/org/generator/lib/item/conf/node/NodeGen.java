@@ -36,6 +36,12 @@ public class NodeGen {
         return "s%d".formatted(id);
     }
 
+    static public int getId(String name){
+        String numStr = name.replaceAll("\\D+", ""); // 去掉非数字字符
+        int number = Integer.parseInt(numStr);
+        return number;
+    }
+
     static public String getPhyNodeNameFromIntfName(String intf_name){
         Pattern pattern = Pattern.compile("(\\w+)-\\w+");
         Matcher matcher = pattern.matcher(intf_name);
