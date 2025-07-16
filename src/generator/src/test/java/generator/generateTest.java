@@ -131,7 +131,7 @@ public class generateTest {
     public void baseGraphDumpTest(){
         var ran = new ospfRanBaseGen();
         var rs = ran.generate(5, 3, 2, 4);
-        var str = dumpGraphOspf(rs, ran);
+        var str = dumpGraphOspf(rs, ran.networkId);
         System.out.println(str);
         var t = topo.genGraph(5, 3, 2, 2,false, null);
         System.out.println(t);
@@ -185,7 +185,7 @@ public class generateTest {
     public void baseGenTest(){
         var ran = new ospfRanBaseGen();
         var routers = ran.generate(5, 1, 3, 0);
-        var baseGraphStr = dumpGraphOspf(routers, ran);
+        var baseGraphStr = dumpGraphOspf(routers, ran.networkId);
         System.out.println(baseGraphStr);
     }
 

@@ -32,15 +32,16 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class topo {
 
-    public static String dumpGraphOspf(List<Router> routers, ospfRanBaseGen ran){
+    public static String dumpGraphOspf(List<Router> routers, int networkId){
         Graph graph = new MultiGraph("BaseGraph");
         for(int i = 0; i < routers.size(); i++){
             graph.addNode("r%d".formatted(routers.get(i).id));
         }
-        for(int i = 0; i < ran.networkId; i++){
+        for(int i = 0; i < networkId; i++){
             var n = graph.addNode("n%d".formatted(i));
             n.setAttribute("shape", "square");
         }
@@ -192,13 +193,13 @@ public class topo {
     * We will not modify List<routers> and confG
     * We will create new List<routers> and deltanodes in transGraph and a new ConfGraph
     * */
-    public static Pair<transGraph, ConfGraph> transformGraph(List<Router> routers, ConfGraph old_confG, List<transRule> rules, ObjectNode dumpInfo){
+    public static Pair<transGraph, ConfGraph> transformGraph(List<Router> routers, ConfGraph old_confG, List<transRule> rules, Map<String, String> dumpInfo){
         var transG = phyTran.solve(routers, rules);
-        switch (generate.protocol){
-            case OSPF -> {
-                var tmp = new ospfRanBaseGen();
-                tmp.networkId = transG.getNetworkId();
-                dumpGraphOspf(transG.getRouters(), tmp);
+        if (dumpInfo != null) {
+            switch (generate.protocol) {
+                case OSPF -> {
+                    dumpInfo.put("topoDot", dumpGraphOspf(transG.getRouters(), transG.getNetworkId()));
+                }
             }
         }
 
@@ -230,7 +231,7 @@ public class topo {
         return intf;
     }
 
-    public static Pair<List<Router>, ConfGraph> genInitTransGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, ObjectNode dumpInfo){
+    public static Pair<List<Router>, ConfGraph> genInitTransGraph(int totalRouter, int areaCount, int mxDegree, int abrRatio, boolean verbose, Map<String, String> dumpInfo){
         List<Router> routers = null;
         List<Router_ISIS> routersIsis = null;
         String baseGraphStr = null;
@@ -253,7 +254,13 @@ public class topo {
             }
             //FIXME TODO ISIS
         }
-        if (dumpInfo != null) dumpInfo.put("routerGraph", TextNode.valueOf(baseGraphStr));
+        if (dumpInfo != null){
+            switch (generate.protocol) {
+                case OSPF -> {
+                    dumpInfo.put("topoDot", dumpGraphOspf(routers, 3));
+                }
+            }
+        }
         if (verbose){
             System.out.println(baseGraphStr);
         }
@@ -273,10 +280,10 @@ public class topo {
         }
 
         var confgAttrStr = confg.toString();
-        if (dumpInfo != null){
-            dumpInfo.put("configGraph", confg.toDot(false));
-            dumpInfo.put("configGraphAttr", confg.toString());
-        }
+//        if (dumpInfo != null){
+//            dumpInfo.put("configGraph", confg.toDot(false));
+//            dumpInfo.put("configGraphAttr", confg.toString());
+//        }
         if (verbose){
             System.out.println("config graph");
             System.out.println(confgAttrStr);
@@ -293,7 +300,7 @@ public class topo {
             case OSPF -> {
                 var ran = new ospfRanBaseGen();
                 routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
-                baseGraphStr = dumpGraphOspf(routers, ran);
+                baseGraphStr = dumpGraphOspf(routers, ran.networkId);
             }
             case RIP, BABEL -> {
                 var ran = new ripRanBaseGen();

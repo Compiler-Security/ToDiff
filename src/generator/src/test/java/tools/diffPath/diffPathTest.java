@@ -81,9 +81,8 @@ public class diffPathTest {
     }
 
     String dumpTopo(List<Router> old_routers){
-        var r = new ospfRanBaseGen();
-        r.networkId = new transGraph(old_routers).getNetworkId();
-        return dumpGraphOspf(old_routers, r);
+        var networkId = new transGraph(old_routers).getNetworkId();
+        return dumpGraphOspf(old_routers, networkId);
     }
 
     @Test public void test_addSubGraph() {

@@ -2,6 +2,7 @@ package org.generator.tools.diffPath;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.generator.lib.frontend.driver.IO;
 import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.graph.ConfGraph;
@@ -46,6 +47,7 @@ public class diffPath {
                 var old_rConfg = old_confg.viewConfGraphOfRouter(new_r.getName());
                 old_rConfg.setR_name(new_r.getName());
                 var new_rConfg = new_confg.viewConfGraphOfRouter(new_r.getName());
+                //FIXME 7-16 we should use old generate core instead of from old_rconfg
                 new_rConfg.setR_name(new_r.getName());
                 var old_ospfOps = generate.generateCore(old_rConfg, false);
                 var new_ospfOps = generate.generateCore(new_rConfg, false);
@@ -91,19 +93,23 @@ public class diffPath {
         writeComparableNet(new_confg, deltas, compareNet);
     }
 
-    static int generateSteps(List<Map<String, Object>> steps, List<Router> routers, ConfGraph confg, int max_step, int max_step_time, boolean init){
+    static int generateSteps(List<Map<String, Object>> steps, List<Router> routers, ConfGraph confg, int max_step, int max_step_time, boolean init, Map<String, Map<String, String>> info_round, Map<String, String> initInfo){
         if (init){
             //step 0
             writeStep(steps, null, confg, new transGraph.deltaNodes(), -1);
+            info_round.put("step0", initInfo);
             return 1;
         }else{
             //step 0
             writeStep(steps, null, confg, new transGraph.deltaNodes(), 2);
+            info_round.put("step0", initInfo);
             //FIXME 7-15 we should use transform engine
             for(int i = 0; i < 1; i++){
                 //FIXME dumpInfo every step
-                var res = topo.transformGraph(routers, confg, new ArrayList<>(List.of(phyTran.transRule.addSubGraph)), null);
+                Map<String, String> info_step = new HashMap<>();
+                var res = topo.transformGraph(routers, confg, new ArrayList<>(List.of(phyTran.transRule.addSubGraph)), info_step);
                 writeStep(steps, confg, res.second(), res.first().getDeltaNodes(), -1);
+                info_round.put("step%d".formatted(i + 1), info_step);
             }
             return 2;
         }
@@ -111,21 +117,27 @@ public class diffPath {
 
     public static JsonNode gen(int router_count, int max_step, int max_step_time, int round_num){
         Map<String, Object> conf = new HashMap<>();
-        //ObjectNode dumpInfo = new ObjectMapper().createObjectNode();
         conf.put("conf_name", "test%d".formatted(Instant.now().getEpochSecond()));
         conf.put("conf_type", "diffPath");
         List<Integer> step_nums = new ArrayList<>();
         conf.put("step_nums", step_nums);
         conf.put("round_num", round_num);
-        var res = topo.genInitTransGraph(router_count, topo.areaCount, topo.mxDegree, topo.abrRatio, false, null);
+        Map<String, String> dumpInfo = new HashMap<>();
+        var res = topo.genInitTransGraph(router_count, topo.areaCount, topo.mxDegree, topo.abrRatio, false, dumpInfo);
         var confg = res.second();
         var routers = res.first();
         conf.put("routers", confg.getRouters().stream().map(r -> r.getName()).sorted().toList());
         List<List<Map<String, Object>>> commands = new ArrayList<>();
+        Map<String, Map<String, Map<String, String>>> info = new HashMap<>();
         conf.put("commands", commands);
+        conf.put("info", info);
         for(int i = 0; i < round_num; i++) {
             commands.add(new ArrayList<>());
-            var step_num = generateSteps(commands.getLast(), routers, confg, max_step, max_step_time, i == 0);
+            Map<String, Map<String, String>> info_round = new HashMap<>();
+            info.put("r%d".formatted(i), info_round);
+
+            var step_num = generateSteps(commands.getLast(), routers, confg, max_step, max_step_time, i == 0, info_round, dumpInfo);
+
             step_nums.add(step_num);
         }
 

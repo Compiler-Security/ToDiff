@@ -32,7 +32,7 @@ public class OverrideRedexDef extends BaseRedexDef {
                  */
                 //=====ZEBRA============
                 {IntfName, new OpType[]{}, 0},
-                {IPAddr, new OpType[]{IPAddr}, 1},
+                //{IPAddr, new OpType[]{IPAddr}, 1},
                 //======OSPF============
                 {ROSPF, new OpType[]{}, 0},
                 {IpOspfArea, new OpType[]{}, 0},
