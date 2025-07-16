@@ -120,6 +120,7 @@ public class diffPath {
         var res = topo.genInitTransGraph(router_count, topo.areaCount, topo.mxDegree, topo.abrRatio, false, null);
         var confg = res.second();
         var routers = res.first();
+        conf.put("routers", confg.getRouters().stream().map(r -> r.getName()).sorted().toList());
         List<List<Map<String, Object>>> commands = new ArrayList<>();
         conf.put("commands", commands);
         for(int i = 0; i < round_num; i++) {
