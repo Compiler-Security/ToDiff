@@ -386,6 +386,8 @@ public class phyTran {
             switch (rule){
                 case equalDealNode -> {equalDelNode(transG);}
                 case addSubGraph -> {addSubGraph(transG);}
+                case fakeEdge -> {fakeEdge(transG);}
+                case switchToRouter -> {switchToRouter(transG);}
             }
         }
         return transG;
