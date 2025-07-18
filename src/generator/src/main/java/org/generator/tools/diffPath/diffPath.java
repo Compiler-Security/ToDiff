@@ -101,13 +101,15 @@ public class diffPath {
      * @param new_confg
      * @param deltas
      * @param waitTime
+     * @param init_conf if router a's conf in cur_ospfconf is clear or is not in cur_ospfconf, then init_conf should be set to true
      * @param cur_phyOps aggregate version
      * @param cur_ospfConf  aggregate version
      */
-    static void writeStep(List<Map<String, Object>> steps, ConfGraph old_confg, ConfGraph new_confg, transGraph.deltaNodes deltas, int waitTime, OpCtxG cur_phyOps, Map<String, OpCtxG> cur_ospfConf){
+    static void writeStep(List<Map<String, Object>> steps, ConfGraph old_confg, ConfGraph new_confg, transGraph.deltaNodes deltas, int waitTime, boolean init_conf, OpCtxG cur_phyOps, Map<String, OpCtxG> cur_ospfConf){
         steps.add(writeCommands(old_confg, new_confg, cur_phyOps, cur_ospfConf));
 
         steps.getLast().put("waitTime", waitTime);
+        steps.getLast().put("initConf", init_conf);
 
         List<String> compareNet = new ArrayList<>();
         steps.getLast().put("compareNet", compareNet);
@@ -123,19 +125,19 @@ public class diffPath {
         Map<String, OpCtxG> ospf_confs = new HashMap<>();
         if (init){
             //step 0
-            writeStep(steps, null, confg, new transGraph.deltaNodes(), -1, phy_ops, ospf_confs);
+            writeStep(steps, null, confg, new transGraph.deltaNodes(), -1, true, phy_ops, ospf_confs);
             info_round.put("step0", initInfo);
             return 1;
         }else{
             //step 0
-            writeStep(steps, null, confg, new transGraph.deltaNodes(), 2,  phy_ops, ospf_confs);
+            writeStep(steps, null, confg, new transGraph.deltaNodes(), 2,  true, phy_ops, ospf_confs);
             info_round.put("step0", initInfo);
             //FIXME 7-15 we should use transform engine
             for(int i = 0; i < 1; i++){
                 //FIXME dumpInfo every step
                 Map<String, String> info_step = new HashMap<>();
                 var res = topo.transformGraph(routers, confg, new ArrayList<>(List.of(phyTran.transRule.addSubGraph)), info_step);
-                writeStep(steps, confg, res.second(), res.first().getDeltaNodes(), -1, phy_ops, ospf_confs);
+                writeStep(steps, confg, res.second(), res.first().getDeltaNodes(), -1, false, phy_ops, ospf_confs);
                 info_round.put("step%d".formatted(i + 1), info_step);
             }
             return 2;
