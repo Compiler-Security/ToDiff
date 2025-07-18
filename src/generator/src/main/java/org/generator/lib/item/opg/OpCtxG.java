@@ -31,6 +31,11 @@ public class OpCtxG extends BaseOpG<OpCtx>{
         return opCtxg;
     }
 
+    public void copyFrom(OpCtxG copy_one){
+        getOps().clear();
+        getOps().addAll(copy_one.getOps());
+    }
+
     @Override
     public String toString() {
         var ospfConfWriter = new OspfConfWriter();

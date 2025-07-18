@@ -32,37 +32,37 @@ public class diffPath {
         }
         return router_commands;
     }
-    static Map<String, Object> writeCommands(ConfGraph old_confg, ConfGraph new_confg) {
+    static Map<String, Object> writeCommands(ConfGraph old_confg, ConfGraph new_confg, OpCtxG cur_phyOps, Map<String, OpCtxG> cur_ospfConf) {
         OpCtxG phy_ops;
         if (old_confg == null){
             phy_ops = generate.generatePhyCore(new_confg);
         }else {
-            var old_phyOps = generate.generatePhyCore(old_confg);
             var new_phyOps = generate.generatePhyCore(new_confg);
-            phy_ops = generate.generateDiffPhyOp(old_phyOps, new_phyOps);
+            phy_ops = generate.generateDiffPhyOp(cur_phyOps, new_phyOps);
         }
-        Map<String, List<String>> ospf_ops = new HashMap<>();
+        cur_phyOps.addOps(phy_ops.getOps());
+        Map<String, List<String>> ospf_ops_str = new HashMap<>();
         for(var new_r: new_confg.getRouters()){
             if (old_confg != null && old_confg.containsNode(new_r.getName())){
-                var old_rConfg = old_confg.viewConfGraphOfRouter(new_r.getName());
-                old_rConfg.setR_name(new_r.getName());
                 var new_rConfg = new_confg.viewConfGraphOfRouter(new_r.getName());
-                //FIXME 7-16 we should use old generate core instead of from old_rconfg
                 new_rConfg.setR_name(new_r.getName());
-                var old_ospfOps = generate.generateCore(old_rConfg, false);
+                var old_ospfOps = cur_ospfConf.get(new_r.getName());
                 var new_ospfOps = generate.generateCore(new_rConfg, false);
-                ospf_ops.put(new_r.getName(), dumpOspfCommands(generate.generateDiffProtoOp(old_ospfOps, new_ospfOps)));
+                var add_ospfOps = generate.generateDiffProtoOp(old_ospfOps, new_ospfOps);
+                ospf_ops_str.put(new_r.getName(), dumpOspfCommands(add_ospfOps));
+                cur_ospfConf.get(new_r.getName()).addOps(add_ospfOps.getOps());
             }else{
                 var new_rConfg = new_confg.viewConfGraphOfRouter(new_r.getName());
                 new_rConfg.setR_name(new_r.getName());
                 var new_ospfOps = generate.generateCore(new_rConfg, false);
-                ospf_ops.put(new_r.getName(), dumpOspfCommands(new_ospfOps));
+                ospf_ops_str.put(new_r.getName(), dumpOspfCommands(new_ospfOps));
+                cur_ospfConf.put(new_r.getName(), new_ospfOps);
             }
         }
         Map<String, Object> res = new HashMap<>();
         res.put("phy", phy_ops.getOps().stream().map(IO::writeOp).toList());
         //FIXME 7-15 multiple protocols
-        res.put("ospf", ospf_ops);
+        res.put("ospf", ospf_ops_str);
         res.put("routers", new_confg.getRouters().stream().map(r -> r.getName()).sorted().toList());
         return res;
     }
@@ -83,8 +83,19 @@ public class diffPath {
         }
     }
 
-    static void writeStep(List<Map<String, Object>> steps, ConfGraph old_confg, ConfGraph new_confg, transGraph.deltaNodes deltas, int waitTime){
-        steps.add(writeCommands(old_confg, new_confg));
+    /**
+     * Each writeStep will wirte phy and ospf commands to generate the new Confgraph, update cur_phyOps and cur_ospfConf to the aggregate version
+     * For routers delete, the conf is remained, and will be restored once use OSPF UP
+     * @param steps
+     * @param old_confg
+     * @param new_confg
+     * @param deltas
+     * @param waitTime
+     * @param cur_phyOps aggregate version
+     * @param cur_ospfConf  aggregate version
+     */
+    static void writeStep(List<Map<String, Object>> steps, ConfGraph old_confg, ConfGraph new_confg, transGraph.deltaNodes deltas, int waitTime, OpCtxG cur_phyOps, Map<String, OpCtxG> cur_ospfConf){
+        steps.add(writeCommands(old_confg, new_confg, cur_phyOps, cur_ospfConf));
 
         steps.getLast().put("waitTime", waitTime);
 
@@ -94,21 +105,23 @@ public class diffPath {
     }
 
     static int generateSteps(List<Map<String, Object>> steps, List<Router> routers, ConfGraph confg, int max_step, int max_step_time, boolean init, Map<String, Map<String, String>> info_round, Map<String, String> initInfo){
+        var phy_ops = OpCtxG.Of();
+        Map<String, OpCtxG> ospf_confs = new HashMap<>();
         if (init){
             //step 0
-            writeStep(steps, null, confg, new transGraph.deltaNodes(), -1);
+            writeStep(steps, null, confg, new transGraph.deltaNodes(), -1, phy_ops, ospf_confs);
             info_round.put("step0", initInfo);
             return 1;
         }else{
             //step 0
-            writeStep(steps, null, confg, new transGraph.deltaNodes(), 2);
+            writeStep(steps, null, confg, new transGraph.deltaNodes(), 2,  phy_ops, ospf_confs);
             info_round.put("step0", initInfo);
             //FIXME 7-15 we should use transform engine
             for(int i = 0; i < 1; i++){
                 //FIXME dumpInfo every step
                 Map<String, String> info_step = new HashMap<>();
                 var res = topo.transformGraph(routers, confg, new ArrayList<>(List.of(phyTran.transRule.addSubGraph)), info_step);
-                writeStep(steps, confg, res.second(), res.first().getDeltaNodes(), -1);
+                writeStep(steps, confg, res.second(), res.first().getDeltaNodes(), -1, phy_ops, ospf_confs);
                 info_round.put("step%d".formatted(i + 1), info_step);
             }
             return 2;
