@@ -302,6 +302,10 @@ public class ConfGraph extends AbstractRelationGraph {
         return getNodesByType(NodeType.Router);
     }
 
+    public List<String> getRouterNames(){
+        return  getRouters().stream().map(Router::getName).collect(Collectors.toList());
+    }
+
     public Set<Intf> getIntfsOfRouter(String r_name) {
         return this.<Intf>getDstsByType(r_name, RelationEdge.EdgeType.INTF);
     }
