@@ -83,6 +83,16 @@ public class diffPath {
         }
     }
 
+    static void writeComparableIntf(ConfGraph new_confg, transGraph.deltaNodes deltas, List<String> compareIntf){
+        for(var r: new_confg.getRouters()){
+            for(var intf: new_confg.getIntfsOfRouter(r.getName())){
+                if (!(deltas.isNewIntf(intf.getName()) || deltas.isUpdateIntf(intf.getName()))){
+                    compareIntf.add(intf.getName());
+                }
+            }
+        }
+    }
+
     /**
      * Each writeStep will wirte phy and ospf commands to generate the new Confgraph, update cur_phyOps and cur_ospfConf to the aggregate version
      * For routers delete, the conf is remained, and will be restored once use OSPF UP
@@ -102,6 +112,10 @@ public class diffPath {
         List<String> compareNet = new ArrayList<>();
         steps.getLast().put("compareNet", compareNet);
         writeComparableNet(new_confg, deltas, compareNet);
+
+        List<String> compareIntf = new ArrayList<>();
+        steps.getLast().put("compareIntf", compareIntf);
+        writeComparableIntf(new_confg, deltas, compareIntf);
     }
 
     static int generateSteps(List<Map<String, Object>> steps, List<Router> routers, ConfGraph confg, int max_step, int max_step_time, boolean init, Map<String, Map<String, String>> info_round, Map<String, String> initInfo){
