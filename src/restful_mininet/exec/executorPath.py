@@ -33,6 +33,8 @@ class executorPath(executor):
             
             
             ospf_res = {}
+            if commands[i]["initConf"] == True:
+                
             if i == 0:
                 erroraln(f"+ OSPF commands", "")
                 self.routers = commands[i]["routers"]
@@ -66,7 +68,10 @@ class executorPath(executor):
                     ospf_ops = commands[i]['ospf'][router_name]
                     if router_name in routers_old:
                         tmp = self._run_ospf_commands(net, router_name, ospf_ops)
+                        r = net.get_node_by_name(router_name)
+                        r._save_frr_conf()
                         ospf_res[router_name] = tmp
+                CLI(net.net)
                 erroraln(f"- OSPF commands", "")
                 erroraln(f"- OSPF commands", "")
             
@@ -150,5 +155,5 @@ class executorPath(executor):
             os.system("mn -c")
             return -1
 if __name__ == "__main__":
-    t = executorPath("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1752571655.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "ospf")
+    t = executorPath("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1752656681.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "ospf")
     t.test()
