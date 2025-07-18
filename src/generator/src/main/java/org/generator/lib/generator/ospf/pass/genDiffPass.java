@@ -25,7 +25,7 @@ public class genDiffPass {
         }
 
         var gen_opag = genEqualPass.solve(normal_controller, oldOpas);
-        gen_opag.setOpgroup(gen_opag.getOps().subList(newOpas.getOps().size(), gen_opag.getOps().size()));
+        gen_opag.setOpgroup(gen_opag.getOps().subList(oldOpas.getOps().size(), gen_opag.getOps().size()));
         return gen_opag.toOpCtxGLeaner();
     }
 }
