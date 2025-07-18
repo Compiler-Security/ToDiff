@@ -33,47 +33,29 @@ class executorPath(executor):
             
             
             ospf_res = {}
-            if commands[i]["initConf"] == True:
-                
-            if i == 0:
-                erroraln(f"+ OSPF commands", "")
-                self.routers = commands[i]["routers"]
-                for j in range(0, len(self.routers)):
-                    router_name = self.routers[j]
+            self.routers = commands[i]["routers"]
+
+            if len(commands[i]["initConf"]) > 0:
+                erroraln(f"+ Override OSPF conf", "")
+                for router_name in commands[i]["initConf"]:
                     ospf_ops = commands[i]['ospf'][router_name]
                     self._init_ospf(router_name, ospf_ops)
-                erroraln(f"- OSPF commands", "")
+                erroraln(f"- Override OSPF conf", "")
                 
-                erroraln(f"+ PHY commands", "")
-                phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
-                erroraln(f"- PHY commands", "")
-            
-            else:
-                routers_old = self.routers
-                self.routers = commands[i]["routers"]
-                for j in range(len(self.routers) -1, -1, -1):
-                    router_name = self.routers[j]
-                    ospf_ops = commands[i]['ospf'][router_name]
-                    if router_name not in routers_old:
-                        self._init_ospf(router_name, ospf_ops)
-                        ospf_res[router_name] = []
+            erroraln(f"+ PHY commands", "")
+            phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
+            erroraln(f"- PHY commands", "")
 
-                erroraln(f"+ PHY commands", "")
-                phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
-                erroraln(f"- PHY commands", "")
-
-                erroraln(f"+ OSPF commands", "")
-                for j in range(len(self.routers) -1, -1, -1):
-                    router_name = self.routers[j]
-                    ospf_ops = commands[i]['ospf'][router_name]
-                    if router_name in routers_old:
-                        tmp = self._run_ospf_commands(net, router_name, ospf_ops)
-                        r = net.get_node_by_name(router_name)
-                        r._save_frr_conf()
-                        ospf_res[router_name] = tmp
-                CLI(net.net)
-                erroraln(f"- OSPF commands", "")
-                erroraln(f"- OSPF commands", "")
+            erroraln(f"+ OSPF commands", "")
+            for j in range(len(self.routers) -1, -1, -1):
+                router_name = self.routers[j]
+                if router_name in commands[i]["initConf"]: continue
+                ospf_ops = commands[i]['ospf'][router_name]
+                tmp = self._run_ospf_commands(net, router_name, ospf_ops)
+                ospf_res[router_name] = tmp
+                r = net.get_node_by_name(router_name)
+                r._save_frr_conf()
+            erroraln(f"- OSPF commands", "")
             
             if i == 0:    
                 net.start_net()
@@ -111,9 +93,6 @@ class executorPath(executor):
             warnaln("   + collect from daemons", "")
             res[i]['watch'] = {}
             for r_name in self.routers:
-                #some routers may be deleted
-                if r_name not in net.net.nameToNode:
-                    continue
                 res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_ospf()
             warnaln("   - collect from daemons", "")
             warnaln("   + collect from asan", "")
@@ -155,5 +134,5 @@ class executorPath(executor):
             os.system("mn -c")
             return -1
 if __name__ == "__main__":
-    t = executorPath("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1752656681.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "ospf")
+    t = executorPath("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1752842657.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "ospf")
     t.test()
