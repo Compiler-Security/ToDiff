@@ -144,8 +144,10 @@ public class diffPath {
         writeComparableIntf(new_confg, deltas, compareIntf);
     }
 
-    static int generateSteps(List<Map<String, Object>> steps, List<Router> routers, ConfGraph confg, int max_step, int max_step_time, Map<String, Map<String, String>> info_one_round, Map<String, String> info_step_0){
+    static int genRound(List<Map<String, Object>> steps, List<Router> routers, ConfGraph confg, int max_step, int max_step_time, Map<String, Map<String, String>> info_one_round, Map<String, String> info_step_0){
         var cur_phy_ops = OpCtxG.Of();
+        //proto confs will be keeped and updated all the time, except use initConf to override the conf
+        //if cur_proto_confs key is changed(remove or add router conf), then router should be in initConf
         Map<String, OpCtxG> cur_proto_confs = new HashMap<>();
         List<String> cur_init_conf_routers = new ArrayList<>();
 
@@ -190,7 +192,7 @@ public class diffPath {
             Map<String, Map<String, String>> info_one_round = new HashMap<>();
             info.put("round%d".formatted(i), info_one_round);
 
-            var step_num = generateSteps(commands.getLast(), routers, confg, i + 1, max_step_time, info_one_round, info_step_0);
+            var step_num = genRound(commands.getLast(), routers, confg, i + 1, max_step_time, info_one_round, info_step_0);
 
             step_nums.add(step_num);
         }
