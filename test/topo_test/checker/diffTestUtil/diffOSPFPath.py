@@ -19,7 +19,7 @@ class diffOSPFPath(diffOSPF):
 
     def shrink_routingTable(self, n_dict:dict, compareNet):
         new_dict = copy.deepcopy(n_dict)
-        print(new_dict)
+        #print(new_dict)
         for val in new_dict.values():
             for nexthop in val["nexthops"]:
                 nexthop.pop("advertisedRouter", None)
@@ -33,6 +33,11 @@ class diffOSPFPath(diffOSPF):
         compareNet = self.conf["commands"][rd][self.conf["step_nums"][rd] -1]["compareNet"]
         return util.dict_diff(self.shrink_routingTable(self.routingTable(0, self.step_nums[0] - 1, rt), compareNet), self.shrink_routingTable(self.routingTable(rd, self.step_nums[rd] - 1, rt), compareNet))
 
+    def check_runningConfig(self, rt, rd):
+        #print(self.runningConfig(0, self.step_nums[0] - 1, rt))
+        #print(self.runningConfig(rd, self.step_nums[rd] - 1, rt))
+        return util.str_diff(self.runningConfig(0, self.step_nums[0] - 1, rt), self.runningConfig(rd, self.step_nums[rd] - 1, rt))
+    
 def checkFunc(rd, diff, func, name, buf):
     same = True
     buf.write(f">>>>> +check {name} <<<<<\n")
@@ -68,6 +73,13 @@ def checkTest(test_name, diffAll):
        
     
     return buf.getvalue()
-        
+
+import json
 if __name__ == "__main__":
-    print(checkTest("test1752571655.json", True))
+    test_name = "test1752656681.json"
+    result_path = path.join(util.get_result_dir(test_name), util.get_result_name(test_name))
+    diff_OSPFPath = diffOSPFPath(result_path)
+    #print(checkTest("test1752571655.json", True))
+    
+    pretty = json.dumps(diff_OSPFPath.runningConfig(1, 1, "r0"), indent=4)
+    print(pretty)
