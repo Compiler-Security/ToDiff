@@ -35,7 +35,39 @@ import java.util.List;
 import java.util.Map;
 
 public class topo {
+    public static String dumpGraphOspfTrans(List<Router> routers, int networkId, ConfGraph confGraph){
+        Graph graph = new MultiGraph("BaseGraph");
+        for(int i = 0; i < routers.size(); i++){
+            graph.addNode("r%d".formatted(routers.get(i).id));
+        }
+        var networkIps = confGraph.getNetworks();
+        for(int i = 0; i < networkId; i++){
+            var n = graph.addNode("n%d".formatted(i));
+            if (networkIps.containsKey(i)) {
+                n.setAttribute("label", "n%d\n%s".formatted(i, networkIps.get(i).toRangeString()));
+            }
+            n.setAttribute("shape", "square");
+        }
+        for(int i = 0; i < routers.size(); i++){
+            var r = routers.get(i);
+            int j = 0;
+            for(var intf: r.intfs){
+                var gedge = graph.addEdge("r%d->n%d(%d)".formatted(r.id, intf.networkId, j), "r%d".formatted(r.id), "n%d".formatted(intf.networkId));
+                assert intf.cost > 0: "intf cost should > 0";
+                gedge.setAttribute("label", "c%d, p%d, a%d".formatted(intf.cost, intf.id, intf.area));
+                j++;
+            }
+        }
+        FileSinkDOT fileSinkDOT = new FileSinkDOT(false);
+        StringWriter stringWriter = new StringWriter();
+        try {
+            fileSinkDOT.writeAll(graph, stringWriter);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
 
+        return stringWriter.toString();
+    }
     public static String dumpGraphOspf(List<Router> routers, int networkId){
         Graph graph = new MultiGraph("BaseGraph");
         for(int i = 0; i < routers.size(); i++){
@@ -51,7 +83,7 @@ public class topo {
             for(var intf: r.intfs){
                 var gedge = graph.addEdge("r%d->n%d(%d)".formatted(r.id, intf.networkId, j), "r%d".formatted(r.id), "n%d".formatted(intf.networkId));
                 assert intf.cost > 0: "intf cost should > 0";
-                gedge.setAttribute("label", "%d".formatted(intf.cost));
+                gedge.setAttribute("label", "c%d, p%d".formatted(intf.cost, intf.id));
                 j++;
             }
         }
@@ -195,14 +227,6 @@ public class topo {
     * */
     public static Pair<transGraph, ConfGraph> transformGraph(List<Router> routers, ConfGraph old_confG, List<transRule> rules, Map<String, String> dumpInfo){
         var transG = phyTran.solve(routers, rules);
-        if (dumpInfo != null) {
-            switch (generate.protocol) {
-                case OSPF -> {
-                    dumpInfo.put("topoDot", dumpGraphOspf(transG.getRouters(), transG.getNetworkId()));
-                }
-            }
-        }
-
         ConfGraph new_confg = null;
         if(generate.protocol != generate.Protocol.ISIS && generate.protocol != generate.Protocol.OpenFabric){
             var b = new topoBuild();
@@ -220,6 +244,14 @@ public class topo {
         switch (generate.protocol){
             case OSPF -> {ospfAttriTran.solve(old_confG, new_confg, transG.getDeltaNodes());}
         }
+        if (dumpInfo != null) {
+            switch (generate.protocol) {
+                case OSPF -> {
+                    dumpInfo.put("topoDot", dumpGraphOspfTrans(routers, transG.getNetworkId(), new_confg));
+                }
+            }
+        }
+
         return new Pair<>(transG, new_confg);
     }
 
@@ -256,13 +288,6 @@ public class topo {
             }
             //FIXME TODO ISIS
         }
-        if (dumpInfo != null){
-            switch (generate.protocol) {
-                case OSPF -> {
-                    dumpInfo.put("topoDot", dumpGraphOspf(routers, networkId));
-                }
-            }
-        }
         if (verbose){
             System.out.println(baseGraphStr);
         }
@@ -289,6 +314,14 @@ public class topo {
         if (verbose){
             System.out.println("config graph");
             System.out.println(confgAttrStr);
+        }
+
+        if (dumpInfo != null){
+            switch (generate.protocol) {
+                case OSPF -> {
+                    dumpInfo.put("topoDot", dumpGraphOspfTrans(routers, networkId, confg));
+                }
+            }
         }
         return new Pair<>(routers, confg);
     }

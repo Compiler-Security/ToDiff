@@ -169,7 +169,34 @@ public class diffPath {
             deltas.mergeDeltaNodes(res.first().getDeltaNodes());
             genStep(steps, confg, res.second(), deltas, i == transStep ? -1 : ranHelper.randomInt(1, max_step_time), cur_phy_ops, cur_proto_confs, cur_init_conf_routers);
             info_one_round.put("step%d".formatted(cur_step_num), info_step);
+
             info_step.put("transType", transType.toString());
+
+            StringBuilder networkIps_str = new StringBuilder();
+            networkIps_str.append("{\n");
+            var networkIps = res.second().getNetworks();
+            for(var key: networkIps.keySet()){
+                networkIps_str.append(key);
+                networkIps_str.append(" : ");
+                networkIps_str.append(networkIps.get(key));
+                networkIps_str.append(", \n");
+            }
+            networkIps_str.append("}");
+            info_step.put("networkIps", networkIps_str.toString());
+
+            StringBuilder interfaceIps_str = new StringBuilder();
+            interfaceIps_str.append("{\n");
+            for(var r_name: res.second().getRouterNames()){
+                for(var intf: res.second().getIntfsOfRouter(r_name)){
+                    interfaceIps_str.append(r_name);
+                    interfaceIps_str.append(" : ");
+                    interfaceIps_str.append(intf.getIp().toString());
+                    interfaceIps_str.append(", \n");
+                }
+            }
+            interfaceIps_str.append("}");
+            info_step.put("interfaceIps", interfaceIps_str.toString());
+
             routers = res.first().getRouters();
             confg = res.second();
             cur_step_num++;
