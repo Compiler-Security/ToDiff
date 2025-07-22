@@ -13,6 +13,7 @@ import org.generator.lib.topo.driver.topo;
 import org.generator.lib.topo.item.base.Router;
 import org.generator.lib.topo.item.trans.transGraph;
 import org.generator.lib.topo.pass.trans.phyTran;
+import org.generator.util.ran.ranHelper;
 
 import java.time.Instant;
 import java.util.*;
@@ -144,24 +145,33 @@ public class diffPath {
         writeComparableIntf(new_confg, deltas, compareIntf);
     }
 
-    static int genRound(List<Map<String, Object>> steps, List<Router> routers, ConfGraph confg, int max_step, int max_step_time, Map<String, Map<String, String>> info_one_round, Map<String, String> info_step_0){
+    static int genRound(List<Map<String, Object>> steps, List<Router> routers, ConfGraph confg, int max_trans_step, int max_step_time, Map<String, Map<String, String>> info_one_round, Map<String, String> info_step_0){
         var cur_phy_ops = OpCtxG.Of();
         //proto confs will be keeped and updated all the time, except use initConf to override the conf
         //if cur_proto_confs key is changed(remove or add router conf), then router should be in initConf
         Map<String, OpCtxG> cur_proto_confs = new HashMap<>();
         List<String> cur_init_conf_routers = new ArrayList<>();
 
+        var deltas = new transGraph.deltaNodes();
         int cur_step_num = 1;
-        genStep(steps, null, confg, new transGraph.deltaNodes(), cur_step_num == max_step ? -1:2, cur_phy_ops, cur_proto_confs, cur_init_conf_routers);
+        genStep(steps, null, confg, deltas,  max_trans_step == 0 ? -1:2, cur_phy_ops, cur_proto_confs, cur_init_conf_routers);
         info_one_round.put("step0", info_step_0);
 
-        //FIXME 7-18 we should use transform engine
-        for(int i = 0; i < 1; i++){
+        if (max_trans_step == 0) return cur_step_num;
+        //FIXME 7-22 we should add random not equal transform
+        int transStep = max_trans_step;
+        for(int i = cur_step_num; i <= transStep; i++){
             //FIXME dumpInfo every step
             Map<String, String> info_step = new HashMap<>();
-            var res = topo.transformGraph(routers, confg, new ArrayList<>(List.of(phyTran.transRule.addSubGraph)), info_step);
-            genStep(steps, confg, res.second(), res.first().getDeltaNodes(), -1, cur_phy_ops, cur_proto_confs, cur_init_conf_routers);
-            info_one_round.put("step%d".formatted(i + 1), info_step);
+            var transType = phyTran.transRule.getRandomRule();
+            //var transType = phyTran.transRule.addSubGraph;
+            var res = topo.transformGraph(routers, confg, new ArrayList<>(List.of(transType)), info_step);
+            deltas.mergeDeltaNodes(res.first().getDeltaNodes());
+            genStep(steps, confg, res.second(), deltas, i == transStep ? -1 : ranHelper.randomInt(1, max_step_time), cur_phy_ops, cur_proto_confs, cur_init_conf_routers);
+            info_one_round.put("step%d".formatted(cur_step_num), info_step);
+            info_step.put("transType", transType.toString());
+            routers = res.first().getRouters();
+            confg = res.second();
             cur_step_num++;
         }
 
@@ -192,7 +202,7 @@ public class diffPath {
             Map<String, Map<String, String>> info_one_round = new HashMap<>();
             info.put("round%d".formatted(i), info_one_round);
 
-            var step_num = genRound(commands.getLast(), routers, confg, i + 1, max_step_time, info_one_round, info_step_0);
+            var step_num = genRound(commands.getLast(), routers, confg, i == 0 ? 0: ranHelper.randomInt(4, 5), max_step_time, info_one_round, info_step_0);
 
             step_nums.add(step_num);
         }

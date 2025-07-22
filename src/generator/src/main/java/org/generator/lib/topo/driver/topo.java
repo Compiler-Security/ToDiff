@@ -235,21 +235,23 @@ public class topo {
         List<Router> routers = null;
         List<Router_ISIS> routersIsis = null;
         String baseGraphStr = null;
+        int networkId = 0;
         //MULTI:
         switch (generate.protocol){
             case OSPF -> {
                 var ran = new ospfRanBaseGen();
-                //routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
+                routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
+                networkId = ran.networkId;
                 //FIXME 7-15 we should use random base graph generate
-                routers = new ArrayList<>();
-                for(int i = 0; i < 5; i++) routers.add(new Router(i));
-                for(int i = 0; i < 3; i++) {
-                    routers.get(0).intfs.add(getIntf(0, i, 0, i + 1, i));
-                }
-                routers.get(1).intfs.add(getIntf(1, 0, 0, 4, 0));
-                routers.get(2).intfs.add(getIntf(2, 0, 0, 5, 0));
-                routers.get(3).intfs.add(getIntf(3, 0, 0, 6, 1));
-                routers.get(4).intfs.add(getIntf(4, 0, 0, 7, 2));
+//                routers = new ArrayList<>();
+//                for(int i = 0; i < 5; i++) routers.add(new Router(i));
+//                for(int i = 0; i < 3; i++) {
+//                    routers.get(0).intfs.add(getIntf(0, i, 0, i + 1, i));
+//                }
+//                routers.get(1).intfs.add(getIntf(1, 0, 0, 4, 0));
+//                routers.get(2).intfs.add(getIntf(2, 0, 0, 5, 0));
+//                routers.get(3).intfs.add(getIntf(3, 0, 0, 6, 1));
+//                routers.get(4).intfs.add(getIntf(4, 0, 0, 7, 2));
                 //baseGraphStr = dumpGraphOspf(routers, ran);
             }
             //FIXME TODO ISIS
@@ -257,7 +259,7 @@ public class topo {
         if (dumpInfo != null){
             switch (generate.protocol) {
                 case OSPF -> {
-                    dumpInfo.put("topoDot", dumpGraphOspf(routers, 3));
+                    dumpInfo.put("topoDot", dumpGraphOspf(routers, networkId));
                 }
             }
         }

@@ -7,6 +7,7 @@ import org.generator.lib.topo.item.trans.transGraph;
 import org.generator.lib.topo.pass.base.ripRanBaseGen;
 import org.generator.util.collections.Pair;
 import org.generator.util.ran.ranHelper;
+import org.graphstream.stream.ElementSink;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,9 +26,12 @@ public class phyTran {
         static {
             l.addAll(Arrays.asList(transRule.values()));
         }
-        public transRule getRule(int id){
+        public static transRule getRule(int id){
             assert id < l.size():"not have transRule %d".formatted(id);
             return l.get(id);
+        }
+        public static transRule getRandomRule(){
+            return getRule(ranHelper.randomInt(0, l.size() - 1));
         }
     }
 
@@ -209,10 +213,9 @@ public class phyTran {
     public static boolean equalDelNode(transGraph transG) {
         //found a router which is not an ABR(OSPF), XXX(ISIS) and has at least two neighbors
         Router del_router = null;
-        //TODO 7-3 we should random routers
         //TODO 7-3 stub networks
         //TODO 7-3 remain old networks
-        for (var r : transG.getRouters()) {
+        for (var r : ranHelper.randomElemsOfList(transG.getRouters())) {
             //FOR OSPF, we should delete router which is not an ABR
             var area_num = -1;
             if (generate.protocol == generate.Protocol.OSPF) {
@@ -328,16 +331,15 @@ public class phyTran {
      * @return
      */
     public static boolean switchToRouter(transGraph transG) {
-        //TODO: 7-4 random switch ID
-        for(int i = 0; i < transG.getNetworkId(); i++){
+        var networkIds = ranHelper.randomElemsOfList(transG.getNetworkIds());
+        for(var i: networkIds){
             var intfs = transG.getIntfsOfNetwork(i);
             Set<Router> rs = new HashSet<>();
             intfs.forEach(intf-> rs.add(transG.getRouterOfIntf(intf)));
             if (rs.size() < 3) continue;
             int miCost = intfs.stream().map(intf -> intf.cost).min(Integer::compareTo).get();
             if (miCost == 1) continue;
-            //TODO:7-4 select a random cost between [1,miCost)
-            int deltaCost = miCost -1;
+            int deltaCost = ranHelper.randomInt(1, miCost -1);
             var newR = transG.newRouter();
             var area = intfs.getFirst().area;
             //For each router's all interfaces, we add to an same subnet and connect to the new_router

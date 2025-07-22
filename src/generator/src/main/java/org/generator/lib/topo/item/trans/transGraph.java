@@ -65,6 +65,8 @@ public class transGraph {
             updateIntfName.addAll(_deltaNodes.updateIntfName);
             newRouterName.addAll(_deltaNodes.newRouterName);
             updateRouterName.addAll(_deltaNodes.updateRouterName);
+            newNetworkId.addAll(_deltaNodes.newNetworkId);
+            updateNetworkId.addAll(_deltaNodes.updateNetworkId);
         }
     }
 

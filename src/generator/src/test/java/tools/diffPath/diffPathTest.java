@@ -217,7 +217,7 @@ public class diffPathTest {
 
     @Test
     public void testdiffPath(){
-        var json = diffPath.gen(5, 2, 2, 2);
+        var json = diffPath.gen(5, 1, 2, 2);
         var writer = new ObjectMapper().writer(new DefaultPrettyPrinter());
         try {
             System.out.println(writer.writeValueAsString(json));
