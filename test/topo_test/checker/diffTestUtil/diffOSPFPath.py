@@ -76,10 +76,10 @@ def checkTest(test_name, diffAll):
 
 import json
 if __name__ == "__main__":
-    test_name = "test1752656681.json"
+    test_name = "test1753194472.json"
     result_path = path.join(util.get_result_dir(test_name), util.get_result_name(test_name))
     diff_OSPFPath = diffOSPFPath(result_path)
-    #print(checkTest("test1752571655.json", True))
+    print(checkTest("test1753216813.json", True))
     
-    pretty = json.dumps(diff_OSPFPath.runningConfig(1, 1, "r0"), indent=4)
-    print(pretty)
+    #pretty = str(json.dumps(diff_OSPFPath.runningConfig(1, 3, "r1"), indent=4))
+    #print(pretty)

@@ -79,6 +79,7 @@ class executorPath(executor):
                         time.sleep(self.minWaitTime)
                         res[i]['exec']['convergence'] = True
                         warnaln("   + convergence!", "")
+                        time.sleep(100)
                         break
                     else:
                         if time.time() - begin_t >= self.maxWaitTime:
@@ -88,6 +89,7 @@ class executorPath(executor):
                         else:
                             time.sleep(10)
             else:
+                #CLI(net.net)
                 time.sleep(sleep_time)
             erroraln("+ collect result", "")
             warnaln("   + collect from daemons", "")
@@ -134,5 +136,5 @@ class executorPath(executor):
             os.system("mn -c")
             return -1
 if __name__ == "__main__":
-    t = executorPath("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1752842657.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 60, "ospf")
+    t = executorPath("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1753216813.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 300, "ospf")
     t.test()

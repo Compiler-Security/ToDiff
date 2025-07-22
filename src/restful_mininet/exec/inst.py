@@ -1,6 +1,6 @@
 import sys
 from os import path
-path_to_add = "/home/frr/a/topo-fuzz"
+path_to_add = "/home/frr/topo-fuzz"
 if path_to_add not in sys.path:
     sys.path.append(path_to_add)
 from src.restful_mininet.net.testnet import TestNet
@@ -10,6 +10,7 @@ from os import path
 from mininet.node import Node, Intf, Host
 from mininet.link import Link
 from mininet.link import TCLink
+from mininet.util import quietRun
 import traceback
 class BaseInst:
     EXEC_DONE = 0
@@ -118,7 +119,10 @@ class MininetInst(BaseInst):
         if _cmds_equal_prefix(op_args, ["switch", "add"]):
             if node is not None:
                 return self.EXEC_MISS
-            return self._run_cmd(self.net.net.addSwitch, node_name)
+            #self._run_cmd(self.net.net.addSwitch, node_name)
+            sw = self.net.net.addSwitch(node_name)
+            sw.start(self.net.net.controllers)
+            return self.EXEC_DONE
 
         if _cmds_equal_prefix(op_args, ["switch", "del"]):
             down_node = node
@@ -321,6 +325,7 @@ class MininetInst(BaseInst):
                 self._save_intf_to_ctx(l.intf2)
                 node1.cmd(f"ip -6 addr flush dev {intfname1}")
                 node2.cmd(f"ip -6 addr flush dev {intfname2}")
+                quietRun(f"ovs-vsctl add-port {nodename2} {intfname2}")
                 return self.EXEC_DONE
 
 
@@ -384,11 +389,11 @@ class FRRInst(BaseInst):
 from mininet.cli import CLI
 if __name__ == "__main__":
     net = TestNet()
-    ctx = {"intf":[]}
+    ctx = {"intf":{}}
     MininetInst("node r1 add", net, "", ctx).run()
-    MininetInst("node r2 add", net, "", ctx).run()
-    print(MininetInst("link r1-eth0 r2-eth0 up", net, "", ctx).run())
-    print(MininetInst("link r1-eth0 r2-eth0 down", net, "", ctx).run())
+    #MininetInst("node r2 add", net, "", ctx).run()
+    #print(MininetInst("link r1-eth0 r2-eth0 up", net, "", ctx).run())
+    #print(MininetInst("link r1-eth0 r2-eth0 down", net, "", ctx).run())
     # net.net.start()
     # net.net.addHost("r1")
     # net.net.addHost("r2")
@@ -396,7 +401,13 @@ if __name__ == "__main__":
     #net.net.host[2].addIntf
     # node: Host = net.net["r1"]
     # print(node.cmd("ifconfig"))
+    
+    MininetInst("node s1 add", net, "", ctx).run()
+    MininetInst("link r1-eth0 s1-eth0 add", net, "", ctx).run()
     net.net.start()
+    MininetInst("node r2 add", net, "", ctx).run()
+    MininetInst("link r2-eth0 s1-eth1 add", net, "", ctx).run()
+    #net.net.switches[0].start(net.net.controllers)
     CLI(net.net)
     print(net.net.hosts)
     net.net.stop()
