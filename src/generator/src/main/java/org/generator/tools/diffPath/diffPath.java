@@ -132,7 +132,7 @@ public class diffPath {
         steps.getLast().put("waitTime", waitTime);
 
         //after this step, all routers in initConf is init, so clean it
-        steps.getLast().put("initConf", cur_init_conf_routers);
+        steps.getLast().put("initConf", new ArrayList<>(cur_init_conf_routers));
         cur_init_conf_routers.clear();
 
         List<String> compareNet = new ArrayList<>();
