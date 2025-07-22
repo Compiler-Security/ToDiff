@@ -17,8 +17,10 @@ import org.generator.lib.topo.pass.build.topoBuild;
 import org.generator.lib.topo.pass.trans.phyTran;
 import org.generator.tools.diffPath.diffPath;
 import org.generator.util.collections.Pair;
+import org.generator.util.net.ID;
 import org.generator.util.net.IP;
 import org.generator.util.net.IPBase;
+import org.generator.util.net.IPRange;
 import org.generator.util.ran.ranHelper;
 import org.junit.Test;
 
@@ -224,5 +226,11 @@ public class diffPathTest {
         }catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    @Test
+    public void IPTest(){
+        var iprange = IPRange.of("139.129.201.23/10");
+        System.out.println(iprange.toRangeString());
     }
 }

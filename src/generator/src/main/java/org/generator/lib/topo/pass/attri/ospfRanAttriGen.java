@@ -166,8 +166,9 @@ public class ospfRanAttriGen implements genAttri {
         //set all intfs
         for(var ospfIntf: ospfIntfs){
             //self
-            //FIXME for testing this ratio should be considered
-            ospfIntf.setPassive(ranHelper.randomInt(0, 10) == 0);
+            //FIXME 7-23 we should consider passive in the router level pass
+            //ospfIntf.setPassive(ranHelper.randomInt(0, 10) == 0);
+            ospfIntf.setPassive(false);
             //ospfIntf.setCost(ranHelper.randomInt(1, 65535));
             ospfIntf.setPriority(ranHelper.randomInt(0, 255));
             //we should set helloMulti for testing
