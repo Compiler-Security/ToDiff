@@ -19,7 +19,7 @@ import java.time.Instant;
 import java.util.*;
 
 public class diffPath {
-    static List<String> dumpOspfCommands(OpCtxG opctxg){
+    static List<String> dumpCommands(OpCtxG opctxg){
         List<String> router_commands = new ArrayList<>();
         var front_ctx = "";
         for(var op: opctxg.getOps()){
@@ -39,6 +39,9 @@ public class diffPath {
         switch (generate.protocol){
             case OSPF-> {
                 return cur_confg.getOspfOfRouter(r_name).getStatus() == OSPF.OSPF_STATUS.UP;
+            }
+            case BABEL -> {
+                return cur_confg.containsNode(NodeGen.getBABELName(r_name));
             }
         }
         assert false;
@@ -62,7 +65,7 @@ public class diffPath {
             phy_ops = generate.generateDiffPhyOp(cur_phyOps, new_phyOps);
         }
         cur_phyOps.addOps(phy_ops.getOps());
-        Map<String, List<String>> ospf_ops_str = new HashMap<>();
+        Map<String, List<String>> proto_ops_str = new HashMap<>();
         for(var r_name: target_confg.getRouterNames()){
             //if protocol daemon is not up, then we should not generate protocol commands
             if (!isProtoUp(target_confg, r_name)){continue;}
@@ -77,14 +80,16 @@ public class diffPath {
             }
             var add_ospfOps = generate.generateDiffProtoOp(cur_protoConfs.get(r_name),  target_ospfOps);
 
-            ospf_ops_str.put(r_name, dumpOspfCommands(add_ospfOps));
+            proto_ops_str.put(r_name, dumpCommands(add_ospfOps));
             cur_protoConfs.get(r_name).addOps(add_ospfOps.getOps());
         }
         Map<String, Object> res = new HashMap<>();
         res.put("phy", phy_ops.getOps().stream().map(IO::writeOp).toList());
         //FIXME 7-15 multiple protocols
-        res.put("ospf", ospf_ops_str);
-
+        switch (generate.protocol){
+            case OSPF -> {res.put("ospf", proto_ops_str);}
+            case BABEL -> {res.put("babel", proto_ops_str);}
+        }
         res.put("routers", target_confg.getRouters().stream().map(r -> r.getName()).sorted().toList());
         return res;
     }
@@ -163,8 +168,8 @@ public class diffPath {
         for(int i = cur_step_num; i <= transStep; i++){
             //FIXME dumpInfo every step
             Map<String, String> info_step = new HashMap<>();
-            var transType = phyTran.transRule.getRandomRule();
-            //var transType = phyTran.transRule.addSubGraph;
+            //var transType = phyTran.transRule.getRandomRule();
+            var transType = phyTran.transRule.addSubGraph;
             var res = topo.transformGraph(routers, confg, new ArrayList<>(List.of(transType)), info_step);
             deltas.mergeDeltaNodes(res.first().getDeltaNodes());
             genStep(steps, confg, res.second(), deltas, i == transStep ? -1 : ranHelper.randomInt(1, max_step_time), cur_phy_ops, cur_proto_confs, cur_init_conf_routers);

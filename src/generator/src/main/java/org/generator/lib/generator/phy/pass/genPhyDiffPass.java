@@ -151,6 +151,20 @@ public class genPhyDiffPass {
                     }
                 }
             }
+            case BABEL -> {
+                for(var slots: olds.getSlots(NormalController.CType.BABEL, ".*", null)){
+                    var b1 = news.getSlot(NormalController.CType.BABEL, slots.getName(), null);
+                    if (b1 == null){
+                        deltaOpsProtocol.addOp(getOp(OpType.NODESETBABELSHUTDOWN, slots.getName(), null));
+                    }
+                }
+                for(var slots: news.getSlots(NormalController.CType.BABEL, ".*", null)){
+                    var b1 = olds.getSlot(NormalController.CType.BABEL, slots.getName(), null);
+                    if (b1 == null){
+                        deltaOpsProtocol.addOp(getOp(OpType.NODESETBABELUP, slots.getName(), null));
+                    }
+                }
+            }
             default -> {
                 assert false : "genPhyDiffPass don't support %s protocol".formatted(generate.protocol);
             }

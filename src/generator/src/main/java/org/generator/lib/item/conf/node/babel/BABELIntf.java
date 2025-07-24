@@ -124,4 +124,18 @@ public class BABELIntf extends AbstractNode {
         penalty = 150;
         timeStamps = false;
     }
+
+    public void copyFrom(BABELIntf _babel){
+        this.wired = _babel.wired;
+        this.splitHorizon = _babel.splitHorizon;
+        this.helloInterval = _babel.helloInterval;
+        this.updateInterval = _babel.updateInterval;
+        this.nointerfering = _babel.nointerfering;
+        this.rxcost = _babel.rxcost;
+        this.rttDecay = _babel.rttDecay;
+        this.rttMin = _babel.rttMin;
+        this.rttMax = _babel.rttMax;
+        this.penalty = _babel.penalty;
+        this.timeStamps = _babel.timeStamps;
+    }
 }

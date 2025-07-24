@@ -20,6 +20,7 @@ import org.generator.lib.topo.pass.base.isisRanBaseGen;
 import org.generator.lib.topo.pass.base.openfabricRanBaseGen;
 import org.generator.lib.topo.pass.build.topoBuild;
 import org.generator.lib.topo.pass.build.topoBuild_ISIS;
+import org.generator.lib.topo.pass.trans.babelAttriTran;
 import org.generator.lib.topo.pass.trans.ospfAttriTran;
 import org.generator.lib.topo.pass.trans.phyTran;
 import org.generator.lib.topo.pass.trans.phyTran.transRule;
@@ -35,6 +36,39 @@ import java.util.List;
 import java.util.Map;
 
 public class topo {
+    public static String dumpGraphBABELTrans(List<Router> routers, int networkId, ConfGraph confGraph){
+        Graph graph = new MultiGraph("BaseGraph");
+        for(int i = 0; i < routers.size(); i++){
+            graph.addNode("r%d".formatted(routers.get(i).id));
+        }
+        var networkIps = confGraph.getNetworks();
+        for(int i = 0; i < networkId; i++){
+            var n = graph.addNode("n%d".formatted(i));
+            if (networkIps.containsKey(i)) {
+                n.setAttribute("label", "n%d\n%s".formatted(i, networkIps.get(i).toRangeString()));
+            }
+            n.setAttribute("shape", "square");
+        }
+        for(int i = 0; i < routers.size(); i++){
+            var r = routers.get(i);
+            int j = 0;
+            for(var intf: r.intfs){
+                var gedge = graph.addEdge("r%d->n%d(%d)".formatted(r.id, intf.networkId, j), "r%d".formatted(r.id), "n%d".formatted(intf.networkId));
+                assert intf.cost > 0: "intf cost should > 0";
+                gedge.setAttribute("label", "c%d, p%d".formatted(intf.cost, intf.id));
+                j++;
+            }
+        }
+        FileSinkDOT fileSinkDOT = new FileSinkDOT(false);
+        StringWriter stringWriter = new StringWriter();
+        try {
+            fileSinkDOT.writeAll(graph, stringWriter);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+
+        return stringWriter.toString();
+    }
     public static String dumpGraphOspfTrans(List<Router> routers, int networkId, ConfGraph confGraph){
         Graph graph = new MultiGraph("BaseGraph");
         for(int i = 0; i < routers.size(); i++){
@@ -238,16 +272,24 @@ public class topo {
                 var c = new ospfRanAttriGen();
                 c.generate(new_confg, transG.getRouters());
             }
+            case BABEL -> {
+                var b = new babelRanAttriGen();
+                b.generate(new_confg, transG.getRouters());
+            }
             //FIXME TODO ISIS
         }
         var t = new transGraph(routers);
         switch (generate.protocol){
             case OSPF -> {ospfAttriTran.solve(old_confG, new_confg, transG.getDeltaNodes());}
+            case BABEL -> {babelAttriTran.solve(old_confG, new_confg, transG.getDeltaNodes());}
         }
         if (dumpInfo != null) {
             switch (generate.protocol) {
                 case OSPF -> {
                     dumpInfo.put("topoDot", dumpGraphOspfTrans(routers, transG.getNetworkId(), new_confg));
+                }
+                case BABEL -> {
+                    dumpInfo.put("topoDot", dumpGraphBABELTrans(routers, transG.getNetworkId(), new_confg));
                 }
             }
         }
@@ -274,17 +316,13 @@ public class topo {
                 var ran = new ospfRanBaseGen();
                 routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
                 networkId = ran.networkId;
-                //FIXME 7-15 we should use random base graph generate
-//                routers = new ArrayList<>();
-//                for(int i = 0; i < 5; i++) routers.add(new Router(i));
-//                for(int i = 0; i < 3; i++) {
-//                    routers.get(0).intfs.add(getIntf(0, i, 0, i + 1, i));
-//                }
-//                routers.get(1).intfs.add(getIntf(1, 0, 0, 4, 0));
-//                routers.get(2).intfs.add(getIntf(2, 0, 0, 5, 0));
-//                routers.get(3).intfs.add(getIntf(3, 0, 0, 6, 1));
-//                routers.get(4).intfs.add(getIntf(4, 0, 0, 7, 2));
-                //baseGraphStr = dumpGraphOspf(routers, ran);
+            }
+            case BABEL ->{
+                var ran = new ripRanBaseGen();
+                routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
+                //don't change this, we should give interface id
+                new transGraph(routers);
+                networkId = ran.networkId;
             }
             //FIXME TODO ISIS
         }
@@ -303,6 +341,10 @@ public class topo {
                 var c = new ospfRanAttriGen();
                 c.generate(confg, routers);
             }
+            case BABEL -> {
+                var b = new babelRanAttriGen();
+                b.generate(confg, routers);
+            }
             //FIXME TODO ISIS
         }
 
@@ -320,6 +362,9 @@ public class topo {
             switch (generate.protocol) {
                 case OSPF -> {
                     dumpInfo.put("topoDot", dumpGraphOspfTrans(routers, networkId, confg));
+                }
+                case BABEL -> {
+                    dumpInfo.put("topoDot", dumpGraphBABELTrans(routers, networkId, confg));
                 }
             }
         }

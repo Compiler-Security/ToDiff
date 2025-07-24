@@ -14,7 +14,9 @@ import org.generator.util.net.IP;
 import org.generator.util.net.IPRange;
 import org.generator.util.ran.ranHelper;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class babelRanAttriGen implements genAttri{
 
@@ -26,7 +28,7 @@ public class babelRanAttriGen implements genAttri{
         }
         babel.setSmoothing(0);
     }
-    void generate_babel_intf(BABELIntf babel_intf){
+    void generate_babel_intf(BABELIntf babel_intf, int cost){
         //for wired network
         babel_intf.setWired(true);
         babel_intf.setNointerfering(true);
@@ -43,7 +45,7 @@ public class babelRanAttriGen implements genAttri{
         }
 
         //FIXME we should use router's cost
-        babel_intf.setRxcost(ranHelper.randomInt(1, 65534));
+        babel_intf.setRxcost(cost);
         babel_intf.setRttDecay(ranHelper.randomInt(1, 256));
         babel_intf.setRttMax(ranHelper.randomInt(1, 256));
         babel_intf.setRttMin(ranHelper.randomInt(1, 256));
@@ -61,23 +63,37 @@ public class babelRanAttriGen implements genAttri{
             g.addBABELRelation(babel_name, r_name);
             generate_babel_router(babel);
             for (int j = 0; j < r.intfs.size(); j++) {
-                var intf_name = NodeGen.getIntfName(r_name, j);
+                var intf_name = NodeGen.getIntfName(r_name, r.intfs.get(j).id);
                 var babel_intf_name = NodeGen.getBABELIntfName(intf_name);
                 var babel_intf = new BABELIntf(babel_intf_name);
                 g.addNode(babel_intf);
                 g.addBABELIntfRelation(babel_intf_name, intf_name);
-                generate_babel_intf(babel_intf);
+                generate_babel_intf(babel_intf, r.intfs.get(j).cost);
             }
         }
 
         for (var s : g.getSwitches()) {
-            for (var intf : g.<Intf>getDstsByType(s.getName(), RelationEdge.EdgeType.INTF)) {
-                var prefix = ranHelper.randomInt(10, 20);
-                var ipRange = IPRange.of(ranHelper.randomLong(0x80000000L, 0xE0000000L), prefix);
-                var baseNum = ipRange.getAddressOfIp().IDtoLong();
-                for (var target_intf : g.<Intf>getDstsByType(intf.getName(), RelationEdge.EdgeType.LINK)) {
+            var prefix = ranHelper.randomInt(10, 20);
+            var ipRange = IPRange.of(ranHelper.randomLong(0x80000000L, 0xE0000000L), prefix);
+            var baseNum = ipRange.getAddressOfIp().IDtoLong();
+            var intfs = g.getLinkedIntfsOfSwitch(s.getName());
+            for (var target_intf : intfs) {
                     target_intf.setIp(IP.of(baseNum++, prefix));
-                }
+            }
+        }
+        Map<String, String> intfsToNetwork = new HashMap<>();
+        for (var s : g.getSwitches()) {
+            var intfs = g.getLinkedIntfsOfSwitch(s.getName());
+            for (var intf : intfs) {
+                if (intfsToNetwork.containsKey(intf.getName())) {
+                    assert false:"%s:%s:%s".formatted(intf.getName(), intfsToNetwork.get(intf.getName()), s.getName());
+                } else intfsToNetwork.put(intf.getName(), s.getName());
+            }
+        }
+        for (var s : g.getSwitches()) {
+            var intfs = g.getLinkedIntfsOfSwitch(s.getName());
+            for (var intf : intfs) {
+                assert IPRange.of(intfs.getFirst().getIp().toString()).contains(intf.getIp()):"%s:%s".formatted(intfs.getFirst().getIp().toString(), intf.getIp().toString());
             }
         }
     }

@@ -111,6 +111,7 @@ public class ospfAttriTran {
                 ospfIntf.setHelloMulti(oldOspfIntf.getHelloMulti());
                 ospfIntf.setRetansInter(oldOspfIntf.getRetansInter());
                 //FIXME priority GRHelloDelay should be it self and passive should remain same
+                //FIXME netType should be the same
             }
         }
     }

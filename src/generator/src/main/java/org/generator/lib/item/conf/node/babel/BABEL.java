@@ -33,4 +33,9 @@ public class BABEL extends AbstractNode {
         resendDelay = 2000;
         smoothing = 4;
     }
+
+    public void copyFrom(BABEL _babel){
+        this.resendDelay = _babel.getResendDelay();
+        this.smoothing = _babel.getSmoothing();
+    }
 }

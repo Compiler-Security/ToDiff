@@ -421,6 +421,11 @@ public class ConfGraph extends AbstractRelationGraph {
         return (BABELIntf) getNode(nodeName).get();
     }
 
+    public BABELIntf getBABELIntfOfIntf(String intf_name) {
+        //FIXME intf may not have OSPF Intf
+        return this.<BABELIntf>getDstsByType(intf_name, RelationEdge.EdgeType.BABELINTF).stream().findFirst().get();
+    }
+
     // ------------------OpenFabric----------------------------
 
     public FABRIC getOpenFabricOfRouter(String r_name) {
