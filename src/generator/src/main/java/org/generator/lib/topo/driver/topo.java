@@ -31,9 +31,7 @@ import org.graphstream.stream.file.FileSinkDOT;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class topo {
     public static String dumpGraphBABELTrans(List<Router> routers, int networkId, ConfGraph confGraph){
@@ -320,8 +318,6 @@ public class topo {
             case BABEL ->{
                 var ran = new ripRanBaseGen();
                 routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
-                //don't change this, we should give interface id
-                new transGraph(routers);
                 networkId = ran.networkId;
             }
             //FIXME TODO ISIS

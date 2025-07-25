@@ -168,8 +168,8 @@ public class diffPath {
         for(int i = cur_step_num; i <= transStep; i++){
             //FIXME dumpInfo every step
             Map<String, String> info_step = new HashMap<>();
-            //var transType = phyTran.transRule.getRandomRule();
-            var transType = phyTran.transRule.addSubGraph;
+            var transType = phyTran.transRule.getRandomRule();
+            //var transType = phyTran.transRule.equalDealNode;
             var res = topo.transformGraph(routers, confg, new ArrayList<>(List.of(transType)), info_step);
             deltas.mergeDeltaNodes(res.first().getDeltaNodes());
             genStep(steps, confg, res.second(), deltas, i == transStep ? -1 : ranHelper.randomInt(1, max_step_time), cur_phy_ops, cur_proto_confs, cur_init_conf_routers);
