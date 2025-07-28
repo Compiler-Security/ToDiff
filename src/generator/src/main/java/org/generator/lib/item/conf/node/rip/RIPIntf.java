@@ -70,4 +70,13 @@ public class RIPIntf extends AbstractNode {
         sendVersion = RIP.RIP_VTYPE.V2;
         recvVersion = RIP.RIP_VTYPE.V12;
     }
+
+    public void copyFrom(RIPIntf _ripIntf){
+        passive = _ripIntf.isPassive();
+        recvVersion = _ripIntf.getRecvVersion();
+        poison = _ripIntf.isPoison();
+        splitHorizon = _ripIntf.isSplitHorizon();
+        sendVersion = _ripIntf.getSendVersion();
+        recvVersion = _ripIntf.getRecvVersion();
+    }
 }

@@ -24,6 +24,7 @@ import org.generator.lib.topo.pass.trans.babelAttriTran;
 import org.generator.lib.topo.pass.trans.ospfAttriTran;
 import org.generator.lib.topo.pass.trans.phyTran;
 import org.generator.lib.topo.pass.trans.phyTran.transRule;
+import org.generator.lib.topo.pass.trans.ripAttriTran;
 import org.generator.util.collections.Pair;
 import org.graphstream.graph.Graph;
 import org.graphstream.graph.implementations.MultiGraph;
@@ -274,19 +275,24 @@ public class topo {
                 var b = new babelRanAttriGen();
                 b.generate(new_confg, transG.getRouters());
             }
+            case RIP -> {
+                var r = new ripRanAttriGen();
+                r.generate(new_confg, transG.getRouters());
+            }
             //FIXME TODO ISIS
         }
         var t = new transGraph(routers);
         switch (generate.protocol){
             case OSPF -> {ospfAttriTran.solve(old_confG, new_confg, transG.getDeltaNodes());}
             case BABEL -> {babelAttriTran.solve(old_confG, new_confg, transG.getDeltaNodes());}
+            case RIP -> {ripAttriTran.solve(old_confG, new_confg, transG.getDeltaNodes());}
         }
         if (dumpInfo != null) {
             switch (generate.protocol) {
                 case OSPF -> {
                     dumpInfo.put("topoDot", dumpGraphOspfTrans(routers, transG.getNetworkId(), new_confg));
                 }
-                case BABEL -> {
+                case BABEL,RIP -> {
                     dumpInfo.put("topoDot", dumpGraphBABELTrans(routers, transG.getNetworkId(), new_confg));
                 }
             }
@@ -315,7 +321,7 @@ public class topo {
                 routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
                 networkId = ran.networkId;
             }
-            case BABEL ->{
+            case BABEL,RIP ->{
                 var ran = new ripRanBaseGen();
                 routers = ran.generate(totalRouter, areaCount, mxDegree, abrRatio);
                 networkId = ran.networkId;
@@ -341,6 +347,10 @@ public class topo {
                 var b = new babelRanAttriGen();
                 b.generate(confg, routers);
             }
+            case RIP->{
+                var r = new ripRanAttriGen();
+                r.generate(confg, routers);
+            }
             //FIXME TODO ISIS
         }
 
@@ -359,7 +369,7 @@ public class topo {
                 case OSPF -> {
                     dumpInfo.put("topoDot", dumpGraphOspfTrans(routers, networkId, confg));
                 }
-                case BABEL -> {
+                case BABEL,RIP -> {
                     dumpInfo.put("topoDot", dumpGraphBABELTrans(routers, networkId, confg));
                 }
             }

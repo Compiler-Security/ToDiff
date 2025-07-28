@@ -130,4 +130,14 @@ public class RIP extends AbstractNode {
         distance = 120;
         neighbors = new ArrayList<org.generator.util.net.ID>();
     }
+
+    public void copyFrom(RIP source){
+        status = RIP_STATUS.UP;
+        update = source.update;
+        timeout = source.timeout;
+        garbage = source.garbage;
+        metric = source.metric;
+        distance = source.distance;
+        neighbors = source.neighbors;
+    }
 }

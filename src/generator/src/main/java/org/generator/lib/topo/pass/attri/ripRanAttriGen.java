@@ -74,7 +74,7 @@ public class ripRanAttriGen implements genAttri{
             g.addRIPRelation(rip_name, r_name);
             generate_rip(rip);
             for(int j = 0; j < r.intfs.size(); j++){
-                var intf_name  = NodeGen.getIntfName(r_name, j);
+                var intf_name  = NodeGen.getIntfName(r_name, r.intfs.get(j).id);
                 var rip_intf_name = NodeGen.getRIPIntfName(intf_name);
                 var rip_intf = new RIPIntf(rip_intf_name);
                 g.addNode(rip_intf);

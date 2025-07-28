@@ -384,6 +384,11 @@ public class ConfGraph extends AbstractRelationGraph {
         return (RIPIntf) getNode(nodeName).get();
     }
 
+    public RIPIntf getRIPIntfOfIntf(String intf_name) {
+        //FIXME intf may not have OSPF Intf
+        return this.<RIPIntf>getDstsByType(intf_name, RelationEdge.EdgeType.RIPINTF).stream().findFirst().get();
+    }
+
     // MULTI:
     // ------------------ISIS----------------------------
     public ISIS getISISOfRouter(String r_name) {

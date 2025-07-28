@@ -219,7 +219,7 @@ public class diffPathTest {
 
     @Test
     public void testdiffPath(){
-        generate.protocol = generate.Protocol.BABEL;
+        generate.protocol = generate.Protocol.RIP;
         var json = diffPath.gen(5, 1, 2, 2);
         var writer = new ObjectMapper().writer(new DefaultPrettyPrinter());
         try {

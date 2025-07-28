@@ -7,6 +7,7 @@ import org.generator.lib.generator.driver.generate;
 import org.generator.lib.item.conf.graph.ConfGraph;
 import org.generator.lib.item.conf.node.NodeGen;
 import org.generator.lib.item.conf.node.ospf.OSPF;
+import org.generator.lib.item.conf.node.rip.RIP;
 import org.generator.lib.item.opg.OpCtxG;
 import org.generator.lib.reducer.semantic.CtxOpDef;
 import org.generator.lib.topo.driver.topo;
@@ -42,6 +43,9 @@ public class diffPath {
             }
             case BABEL -> {
                 return cur_confg.containsNode(NodeGen.getBABELName(r_name));
+            }
+            case RIP -> {
+                return cur_confg.containsNode(NodeGen.getRIPName(r_name)) && cur_confg.getRipOfRouter(r_name).getStatus() == RIP.RIP_STATUS.UP;
             }
         }
         assert false;
