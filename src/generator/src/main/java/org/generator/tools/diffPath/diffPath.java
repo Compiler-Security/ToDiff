@@ -88,11 +88,14 @@ public class diffPath {
             cur_protoConfs.get(r_name).addOps(add_ospfOps.getOps());
         }
         Map<String, Object> res = new HashMap<>();
+        //FIXME 7-25 BABEL and RIP new router missing set ... up
         res.put("phy", phy_ops.getOps().stream().map(IO::writeOp).toList());
         //FIXME 7-15 multiple protocols
         switch (generate.protocol){
             case OSPF -> {res.put("ospf", proto_ops_str);}
             case BABEL -> {res.put("babel", proto_ops_str);}
+            case RIP ->    {res.put("rip", proto_ops_str);}
+            default -> {assert  false;}
         }
         res.put("routers", target_confg.getRouters().stream().map(r -> r.getName()).sorted().toList());
         return res;
