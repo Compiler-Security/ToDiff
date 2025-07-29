@@ -71,7 +71,7 @@ class executorPath(executor):
                 #handle convergence
                     #min(_check_convergence() + minWaitTime, maxWaitTime)
                     #for simplicity, maxWaitTime % minWaitTime == 0
-                #CLI(net.net)
+                CLI(net.net)
                 erroraln("+ check convergence", "")
                 begin_t = time.time()
                 while True:
@@ -96,6 +96,149 @@ class executorPath(executor):
             res[i]['watch'] = {}
             for r_name in self.routers:
                 res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_ospf()
+            warnaln("   - collect from daemons", "")
+            warnaln("   + collect from asan", "")
+            for r_name in self.routers:
+                if r_name not in net.net.nameToNode:
+                    continue
+                net.net.nameToNode[r_name].check_asan()
+            warnaln("   - collect from asan", "")
+            erroraln("- collect result", "")
+        net.stop_net()
+        return res
+
+    def _run_for_rip(self, r):
+        erroraln(f"\n\n======round{r}======","")
+        erroraln("+ mininet init", "")
+        net = testnet.TestNet()
+        erroraln("- mininet init", "")
+        ctx = {"intf":{}}
+        commands = self.conf['commands'][r]
+        res = []
+        for i in range(0, self.step_nums[r]):
+            erroraln(f"\n\n>>>> + step{i} <<<<", "")
+            
+            
+            ospf_res = {}
+            self.routers = commands[i]["routers"]
+            print(self.routers)
+
+            if len(commands[i]["initConf"]) > 0:
+                erroraln(f"+ Override RIP conf", "")
+                for router_name in commands[i]["initConf"]:
+                    ospf_ops = commands[i]['rip'][router_name]
+                    self._init_rip(router_name, ospf_ops)
+                erroraln(f"- Override RIP conf", "")
+                
+            erroraln(f"+ PHY commands", "")
+            phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
+            erroraln(f"- PHY commands", "")
+
+            erroraln(f"+ RIP commands", "")
+            for j in range(len(self.routers) -1, -1, -1):
+                router_name = self.routers[j]
+                if router_name in commands[i]["initConf"]: continue
+                ospf_ops = commands[i]['rip'][router_name]
+                tmp = self._run_rip_commands(net, router_name, ospf_ops)
+                ospf_res[router_name] = tmp
+                r = net.get_node_by_name(router_name)
+                r._save_frr_conf()
+            erroraln(f"- RIP commands", "")
+            
+            if i == 0:    
+                net.start_net()
+            res.append({})
+            res[i]['exec'] = {}
+            res[i]['exec']['phy'] = phy_res
+            res[i]['exec']['ospf'] = ospf_res
+            
+            sleep_time = commands[i]['waitTime']
+            erroraln(f"wait {sleep_time} s ", "")
+            
+            if sleep_time == -1:
+                #handle convergence
+                    #min(_check_convergence() + minWaitTime, maxWaitTime)
+                    #for simplicity, maxWaitTime % minWaitTime == 0
+                time.sleep(30)
+            else:
+                #CLI(net.net)
+                time.sleep(sleep_time)
+            erroraln("+ collect result", "")
+            warnaln("   + collect from daemons", "")
+            res[i]['watch'] = {}
+            for r_name in self.routers:
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_rip()
+            warnaln("   - collect from daemons", "")
+            warnaln("   + collect from asan", "")
+            for r_name in self.routers:
+                if r_name not in net.net.nameToNode:
+                    continue
+                net.net.nameToNode[r_name].check_asan()
+            warnaln("   - collect from asan", "")
+            erroraln("- collect result", "")
+        net.stop_net()
+        return res
+
+    def _run_for_babel(self, r):
+        erroraln(f"\n\n======round{r}======","")
+        erroraln("+ mininet init", "")
+        net = testnet.TestNet()
+        erroraln("- mininet init", "")
+        ctx = {"intf":{}}
+        commands = self.conf['commands'][r]
+        res = []
+        for i in range(0, self.step_nums[r]):
+            erroraln(f"\n\n>>>> + step{i} <<<<", "")
+            
+            
+            ospf_res = {}
+            self.routers = commands[i]["routers"]
+
+            if len(commands[i]["initConf"]) > 0:
+                erroraln(f"+ Override BABEL conf", "")
+                for router_name in commands[i]["initConf"]:
+                    ospf_ops = commands[i]['babel'][router_name]
+                    self._init_rip(router_name, ospf_ops)
+                erroraln(f"- Override BABEL conf", "")
+                
+            erroraln(f"+ PHY commands", "")
+            phy_res = self._run_phy_commands(net, ctx, commands[i]['phy'])
+            erroraln(f"- PHY commands", "")
+
+            erroraln(f"+ BABEL commands", "")
+            for j in range(len(self.routers) -1, -1, -1):
+                router_name = self.routers[j]
+                if router_name in commands[i]["initConf"]: continue
+                ospf_ops = commands[i]['babel'][router_name]
+                tmp = self._run_babel_commands(net, router_name, ospf_ops)
+                ospf_res[router_name] = tmp
+                r = net.get_node_by_name(router_name)
+                r._save_frr_conf()
+            erroraln(f"- BABEL commands", "")
+            
+            if i == 0:    
+                net.start_net()
+            res.append({})
+            res[i]['exec'] = {}
+            res[i]['exec']['phy'] = phy_res
+            res[i]['exec']['ospf'] = ospf_res
+            
+            sleep_time = commands[i]['waitTime']
+            erroraln(f"wait {sleep_time} s ", "")
+            
+            if sleep_time == -1:
+                #handle convergence
+                    #min(_check_convergence() + minWaitTime, maxWaitTime)
+                    #for simplicity, maxWaitTime % minWaitTime == 0
+                time.sleep(30)
+            else:
+                #CLI(net.net)
+                time.sleep(sleep_time)
+            erroraln("+ collect result", "")
+            warnaln("   + collect from daemons", "")
+            res[i]['watch'] = {}
+            for r_name in self.routers:
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_babel()
             warnaln("   - collect from daemons", "")
             warnaln("   + collect from asan", "")
             for r_name in self.routers:
@@ -136,5 +279,5 @@ class executorPath(executor):
             os.system("mn -c")
             return -1
 if __name__ == "__main__":
-    t = executorPath("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1753216813.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 300, "ospf")
+    t = executorPath("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1753802885.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 300, "rip")
     t.test()
