@@ -121,6 +121,7 @@ class executorPath(executor):
             
             ospf_res = {}
             self.routers = commands[i]["routers"]
+            print(self.routers)
 
             if len(commands[i]["initConf"]) > 0:
                 erroraln(f"+ Override RIP conf", "")
@@ -166,7 +167,7 @@ class executorPath(executor):
             warnaln("   + collect from daemons", "")
             res[i]['watch'] = {}
             for r_name in self.routers:
-                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_ospf()
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_rip()
             warnaln("   - collect from daemons", "")
             warnaln("   + collect from asan", "")
             for r_name in self.routers:
@@ -237,7 +238,7 @@ class executorPath(executor):
             warnaln("   + collect from daemons", "")
             res[i]['watch'] = {}
             for r_name in self.routers:
-                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_ospf()
+                res[i]['watch'][r_name] = net.net.nameToNode[r_name].dump_info_babel()
             warnaln("   - collect from daemons", "")
             warnaln("   + collect from asan", "")
             for r_name in self.routers:
@@ -262,7 +263,7 @@ class executorPath(executor):
             res = {}
             start = time.time()
             res['result'] = []
-            for i in range(1, self.round_num):
+            for i in range(0, self.round_num):
                 # here is isis or ospf
                 # isis: _run_for_isis   ospf: _run
                 res['result'].append(self.run_pocess[self.protocol](i))
@@ -278,5 +279,5 @@ class executorPath(executor):
             os.system("mn -c")
             return -1
 if __name__ == "__main__":
-    t = executorPath("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1753223207.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 300, "ospf")
+    t = executorPath("/home/frr/topo-fuzz/test/topo_test/data/testConf/test1753802885.json", "/home/frr/topo-fuzz/test/topo_test/data/result", 1, 300, "rip")
     t.test()

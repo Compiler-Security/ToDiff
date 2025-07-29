@@ -97,7 +97,7 @@ class diffRIPPath(diffRIP):
         return new_dict
 
 
-    def shrink_routingTable(self, n_dict:dict):
+    def shrink_routingTable(self, n_dict:dict, compareNet):
         new_dict = copy.deepcopy(n_dict)
         for val in new_dict.values():
             val[0].pop("uptime")
@@ -106,6 +106,10 @@ class diffRIPPath(diffRIP):
                 val[0].pop("installedNexthopGroupId")
             for nextHop in val[0]["nexthops"]:
                 nextHop.pop("interfaceIndex")
+        l = [k for k in new_dict.keys()]
+        for val in l:
+            if val not in compareNet:
+                new_dict.pop(val)
         return new_dict
    
 
